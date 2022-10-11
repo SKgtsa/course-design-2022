@@ -12,6 +12,6 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     @Query(value = "from User u where u.loginName=?1")
     Optional<User> findUserByLoginName(String loginName);
 
-    @Query(value = "from User u where u.token=?1")
-    Optional<User> findUserByToken(String token);
+    @Query(value = "from User u where u.id=?1")
+    Optional<User> findUserById(long id);
 }
