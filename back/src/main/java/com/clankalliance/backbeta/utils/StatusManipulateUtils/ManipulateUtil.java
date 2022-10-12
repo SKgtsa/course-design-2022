@@ -39,23 +39,32 @@ public class ManipulateUtil {
     /**
      * 清理过期状态，可选择传入token或userId,会自动进行比较判断是否属于已过期状态
      * 若查到该节点发现过期则返回true,查不到则返回false
-     * 只能传入一个参数或不传入参数
-     * @param id 可选参数
+     * @param id 可以是token或userId
      */
-    public static boolean deleteExpiredStatus(String... id){
-        if(id[0] == null){
-            id[0] = "";
+    public static boolean deleteExpiredStatus(String id){
+        if(id == null){
+            id = "";
         }
         long currentTime = System.currentTimeMillis();
         boolean result = false;
-        while(headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
-            if(headNode.getNext().getToken().equals(id[0]) || ("" + headNode.getNext().getUserId()).equals(id[0])){
+        while(headNode.getNext() != null && headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
+            if(headNode.getNext().getToken().equals(id) || ("" + headNode.getNext().getUserId()).equals(id)){
                 result = true;
             }
 
             headNode.setNext(headNode.getNext().getNext());
         }
         return result;
+    }
+
+    /**
+     * 清理过期状态，无参方法，无返回值
+     */
+    public static void deleteExpiredStatus(){
+        long currentTime = System.currentTimeMillis();
+        while(headNode.getNext() != null && headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
+            headNode.setNext(headNode.getNext().getNext());
+        }
     }
 
     /**
@@ -74,7 +83,7 @@ public class ManipulateUtil {
      * @return
      */
     public static StatusNode findStatusByToken(String token){
-        if(deleteExpiredStatus()){
+        if(deleteExpiredStatus(token)){
             //token已过期并删除
             return new StatusNode();
         }else{
