@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +15,9 @@ import javax.validation.constraints.Size;
 import java.util.Set;
 
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(	name = "user",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "loginName"),
@@ -25,7 +31,7 @@ public class User {
 
     @NotBlank
     @Size(max = 50)
-    private String loginName;//LoginName
+    private long userNumber;//LoginName
 
     @NotBlank
     @Size(max = 50)
@@ -36,98 +42,10 @@ public class User {
     private String password;
 
     @NotBlank
-    @Size(max = 50)
-    private String token;
+    @JsonSerialize(using= ToStringSerializer.class)
+    private long phone;
 
-
-    private String phone;
-
-    private long  lastLoginTime;
-
-    private boolean isManager;
-    public User(long id, String loginName, String name, String password,String token,long lastLoginTime){
-        this.id = id;
-        this.loginName = loginName;
-        this.name = name;
-        this.password = password;
-        this.isManager = false;
-        this.token = token;
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", loginName='" + loginName + '\'' +
-                ", name='" + name + '\'' +
-                ", password='" + password + '\'' +
-                ", token='" + token + '\'' +
-                ", lastLoginTime=" + lastLoginTime +
-                ", isManager=" + isManager +
-                '}';
-    }
-
-
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public long getLastLoginTime() {
-        return lastLoginTime;
-    }
-
-    public void setLastLoginTime(long lastLoginTime) {
-        this.lastLoginTime = lastLoginTime;
-    }
-
-    public boolean isManager() {
-        return isManager;
-    }
-
-    public void setManager(boolean manager) {
-        isManager = manager;
-    }
-
-    public User() {
-
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getLoginName() {
-        return loginName;
-    }
-
-    public void setLoginName(String loginName) {
-        this.loginName = loginName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    @NotBlank
+    private Integer power;
 
 }

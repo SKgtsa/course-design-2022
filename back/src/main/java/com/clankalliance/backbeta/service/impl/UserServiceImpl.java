@@ -5,8 +5,9 @@ import com.clankalliance.backbeta.repository.UserRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.SnowFlake;
+import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -21,19 +22,11 @@ public class UserServiceImpl implements UserService {
     private SnowFlake snowFlake;
 
     @Override
-    public CommonResponse handleLogin(String loginName,String password) {
+    public CommonResponse handleLogin(long userNumber,String password) {
         CommonResponse  response = new CommonResponse<>();
-        if(loginName.equals("")){
-            response.setMessage("请输入登录名");
-            return response;
-        }
         response.setSuccess(false);
-        if(password.equals("")){
-            response.setMessage("请输入密码");
-            return response;
-        }
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
-        Optional<User> uop = userRepository.findUserByLoginName(loginName);
+        password = DigestUtils.sha1Hex(password);
+        Optional<User> uop = userRepository.findByUserNumber(userNumber);
         if(uop.isEmpty()){
             response.setMessage("用户不存在");
             return response;
@@ -45,30 +38,28 @@ public class UserServiceImpl implements UserService {
         }
         response.setSuccess(true);
         response.setMessage("登陆成功");
-        long currentTime = System.currentTimeMillis();
-        String token = DigestUtils.md5DigestAsHex((currentTime + "" + user.getId()).getBytes());
-        response.setToken(token);
-        user.setToken(token);
-        user.setLastLoginTime(currentTime);
+        ManipulateUtil.updateStatus(user.getId());
+        response.setToken(ManipulateUtil.endNode.getToken());
         userRepository.save(user);
         response.setUser(user);
         return response;
     }
 
     @Override
-    public CommonResponse handleRegister(String loginName, String password,String name) {
-        password = DigestUtils.md5DigestAsHex(password.getBytes());
+    public CommonResponse handleRegister(long userNumber, String name, String password, long phone) {
+        password = DigestUtils.sha1Hex(password.getBytes());
         CommonResponse  response = new CommonResponse<User>();
-        Optional<User> uop = userRepository.findUserByLoginName(loginName);
+        Optional<User> uop = userRepository.findByUserNumber(userNumber);
         if(uop.isPresent()){
+            //该用户已存在 进行判定是统一注册的空号还是用户重复注册
+
+
             response.setSuccess(false);
             response.setMessage("账户已存在");
             return response;
         }
         long id = snowFlake.nextId();
-        long loginTime = System.currentTimeMillis();
-        String token = DigestUtils.md5DigestAsHex((loginTime + "" + id).getBytes());
-        User user = new User(id,loginName,name, password,token,loginTime);
+        User user = new User(id, userNumber,name,password,phone ,0);
         try{
             userRepository.save(user);
         }catch (Exception e){
@@ -76,10 +67,11 @@ public class UserServiceImpl implements UserService {
             response.setMessage("请填写完整");
             return response;
         }
+        ManipulateUtil.updateStatus(id);
         response.setSuccess(true);
         response.setMessage("注册成功");
         response.setUser(user);
-        response.setToken(token);
+        response.setToken(ManipulateUtil.endNode.getToken());
         System.out.println(response);
         return response;
     }

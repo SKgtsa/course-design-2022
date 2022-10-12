@@ -4,7 +4,7 @@ import com.clankalliance.backbeta.response.CommonResponse;
 
 public interface UserService {
 
-    CommonResponse handleLogin(String loginName,String password);
+    CommonResponse handleLogin(long userNumber,String password);
 
-    CommonResponse handleRegister(String loginName,String password,String name);
+    CommonResponse handleRegister(long userNumber, String name, String password, long phone);
 }

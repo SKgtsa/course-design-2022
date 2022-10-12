@@ -9,8 +9,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-    @Query(value = "from User u where u.loginName=?1")
-    Optional<User> findUserByLoginName(String loginName);
+    @Query(value = "from User u where u.userNumber=?1")
+    Optional<User> findByUserNumber(long userNumber);
 
     @Query(value = "from User u where u.id=?1")
     Optional<User> findUserById(long id);

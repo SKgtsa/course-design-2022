@@ -27,12 +27,12 @@ public class UserController {
 
     @PostMapping("/login")
     public CommonResponse login(@RequestBody UserLoginRequest request){
-        return userService.handleLogin(request.getLoginName(), request.getPassword());
+        return userService.handleLogin(request.getUserNumber(), request.getPassword());
     }
 
     @PostMapping("/register")
     public CommonResponse register(@RequestBody UserSaveRequest request){
-        return userService.handleRegister(request.getLoginName(), request.getPassword(), request.getName());
+        return userService.handleRegister(request.getUserNumber(), request.getName(), request.getPassword(), request.getPhone());
     }
 
     @PostMapping("/tokenCheck")
