@@ -1,14 +1,5 @@
-/*
-
-此处css代码功能不确定，已知全部启用会导致html撑不满
-建议进行梳理后整合进src/common/common.css
-后删除base.css ,main.css以及main.ts中的全局引入
-
-*/
-
-
 /* color palette from <https://github.com/vuejs/theme> */
-/* :root {
+:root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
@@ -80,4 +71,4 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-} */
+} */ 
