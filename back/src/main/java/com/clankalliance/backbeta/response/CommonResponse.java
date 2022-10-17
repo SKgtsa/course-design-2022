@@ -1,6 +1,6 @@
 package com.clankalliance.backbeta.response;
 
-import com.clankalliance.backbeta.entity.User;
+import com.clankalliance.backbeta.entity.user.User;
 
 public class CommonResponse<T> {
 

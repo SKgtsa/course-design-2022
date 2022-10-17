@@ -3,6 +3,8 @@ package com.clankalliance.backbeta.utils.StatusManipulateUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 
 /**
  * 基于链表实现用户登陆状态的管理
@@ -14,14 +16,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class ManipulateUtil {
 
+
     @Value("${clankToken.statusExpireTime}")
     private static int STATUS_EXPIRE_TIME;
 
     //空节点,有效数据节点从headNode.next开始存储
-    public static StatusNode headNode = new StatusNode();
+    public static StatusNode headNode;
 
     //endNode == headNode代表链表长度为0
-    public static StatusNode endNode = headNode;
+    public static StatusNode endNode;
+
+    /**
+     * 初始化方法
+     */
+    @PostConstruct
+    private void init(){
+        headNode = new StatusNode();
+        endNode = headNode;
+    }
+
 
 //废弃
     /**
@@ -29,11 +42,10 @@ public class ManipulateUtil {
      * @param nodeBefore 被删除节点之前的节点
      */
     public static void deleteNextStatus(StatusNode nodeBefore){
-        if(nodeBefore.getNext().getToken().equals(nodeBefore.getNext().getNext().getToken())){
-            headNode = headNode.getNext();
-        }else{
-            nodeBefore.setNext(nodeBefore.getNext().getNext());
-        }
+        System.out.println(headNode);
+        System.out.println(endNode);
+        System.out.println(nodeBefore);
+        nodeBefore.setNext(nodeBefore.getNext().getNext());
     }
 
     /**
@@ -42,9 +54,6 @@ public class ManipulateUtil {
      * @param id 可以是token或userId
      */
     public static boolean deleteExpiredStatus(String id){
-        if(id == null){
-            id = "";
-        }
         long currentTime = System.currentTimeMillis();
         boolean result = false;
         while(headNode.getNext() != null && headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
@@ -56,14 +65,18 @@ public class ManipulateUtil {
         }
         return result;
     }
-
     /**
      * 清理过期状态，无参方法，无返回值
      */
     public static void deleteExpiredStatus(){
         long currentTime = System.currentTimeMillis();
         while(headNode.getNext() != null && headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
-            headNode.setNext(headNode.getNext().getNext());
+            if(headNode.getNext().getNext().getToken() == null){
+                headNode.setNext(null);
+                endNode = headNode;
+            }else{
+                headNode.setNext(headNode.getNext().getNext());
+            }
         }
     }
 
@@ -90,9 +103,9 @@ public class ManipulateUtil {
             //进一步判定
             StatusNode lastNode = headNode;
             StatusNode result = new StatusNode();
-            StatusNode node = lastNode.getNext();
+            StatusNode node = headNode.getNext();
             boolean find = false;
-            while(node.getNext() != null && !find){
+            while(node != null && !find){
                 if(node.getToken().equals(token)){
                     result = node;
                     deleteNextStatus(lastNode);

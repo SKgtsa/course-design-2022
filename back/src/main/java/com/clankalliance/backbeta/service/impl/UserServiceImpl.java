@@ -1,6 +1,6 @@
 package com.clankalliance.backbeta.service.impl;
 
-import com.clankalliance.backbeta.entity.User;
+import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.repository.UserRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.UserService;
