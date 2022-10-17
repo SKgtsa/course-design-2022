@@ -49,6 +49,9 @@ public class ScoreServiceImpl implements ScoreService {
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             //token验证成功
+
+
+
             Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
             long id;
             if(scoreOp.isEmpty()){
