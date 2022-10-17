@@ -4,23 +4,30 @@ import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(	name = "teacher",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id"),
         })
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@Component
 public class Teacher extends User {
+
+        public Teacher(){
+                super();
+        }
+
+        public Teacher(long id, long userNumber, String name, String password, long phone, Integer power){
+                super(id, userNumber, name, password, phone, power);
+        }
+
 
         //删除老师会一并删除他的课程
         @JsonIgnore

@@ -1,7 +1,8 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.user.User;
-import com.clankalliance.backbeta.repository.UserRepository;
+import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.SnowFlake;
@@ -48,18 +49,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse handleRegister(long userNumber, String name, String password, long phone) {
         password = DigestUtils.sha1Hex(password.getBytes());
-        CommonResponse  response = new CommonResponse<User>();
+        CommonResponse  response = new CommonResponse();
         Optional<User> uop = userRepository.findByUserNumber(userNumber);
         if(uop.isPresent()){
             //该用户已存在 进行判定是统一注册的空号还是用户重复注册
-
-
             response.setSuccess(false);
             response.setMessage("账户已存在");
             return response;
         }
         long id = snowFlake.nextId();
-        User user = new User(id, userNumber,name,password,phone ,0);
+        User user = new Student(id, userNumber,name,password,phone ,0);
         try{
             userRepository.save(user);
         }catch (Exception e){

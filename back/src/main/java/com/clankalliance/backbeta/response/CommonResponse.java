@@ -1,17 +1,15 @@
 package com.clankalliance.backbeta.response;
 
-import com.clankalliance.backbeta.entity.user.User;
-
-public class CommonResponse<T> {
+public class CommonResponse<T1,T2> {
 
     //业务成功与失败
     private Boolean success = true;
     //返回信息
     private String message;
     //返回用户对象
-    private User user;
+    private T2 user;
     //返回泛型数据 自定义类型
-    private T content;
+    private T1 content;
 
     private String token;
 
@@ -39,19 +37,19 @@ public class CommonResponse<T> {
         this.message = message;
     }
 
-    public User getUser() {
+    public T2 getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(T2 user) {
         this.user = user;
     }
 
-    public T getContent() {
+    public T1 getContent() {
         return content;
     }
 
-    public void setContent(T content) {
+    public void setContent(T1 content) {
         this.content = content;
     }
 
