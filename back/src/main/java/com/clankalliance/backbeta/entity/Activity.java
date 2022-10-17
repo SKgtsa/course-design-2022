@@ -1,0 +1,30 @@
+package com.clankalliance.backbeta.entity;
+
+import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Entity
+@Table(name = "activity")
+public class Activity {
+
+    @Id
+    @JsonSerialize(using= ToStringSerializer.class)
+    private long id;
+
+    private String name;
+
+    private String description;
+
+    @OneToOne
+    private Student student;
+
+}
