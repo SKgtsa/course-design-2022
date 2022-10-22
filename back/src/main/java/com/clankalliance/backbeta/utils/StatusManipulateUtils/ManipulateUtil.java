@@ -45,6 +45,9 @@ public class ManipulateUtil {
         System.out.println(headNode);
         System.out.println(endNode);
         System.out.println(nodeBefore);
+        if(nodeBefore.getNext().getToken().equals(endNode.getToken())){
+            endNode = nodeBefore;
+        }
         nodeBefore.setNext(nodeBefore.getNext().getNext());
     }
 
@@ -52,21 +55,39 @@ public class ManipulateUtil {
      * 清理过期状态，可选择传入token或userId,会自动进行比较判断是否属于已过期状态
      * 若查到该节点发现过期则返回true,查不到则返回false
      * @param id 可以是token或userId
+     * @param deleteTarget 若目标状态即使未过期仍需要删除，输入true
      */
-    public static boolean deleteExpiredStatus(String id){
+    public static boolean deleteExpiredStatus(String id, boolean deleteTarget){
         long currentTime = System.currentTimeMillis();
-        boolean result = false;
+        boolean find = false;
         while(headNode.getNext() != null && headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
             if(headNode.getNext().getToken().equals(id) || ("" + headNode.getNext().getUserId()).equals(id)){
-                result = true;
+                find = true;
             }
 
             headNode.setNext(headNode.getNext().getNext());
         }
-        return result;
+        if(deleteTarget && !find){
+            //即使未过期也需要删除目标节点并且未找到目标节点
+            //进一步按照id来查找重复节点
+            //进一步判定
+            StatusNode lastNode = headNode;
+            StatusNode node = headNode.getNext();
+            while(node != null && !find){
+                if(node.getToken().equals(id) || ("" + node.getUserId()).equals(id)){
+                    deleteNextStatus(lastNode);
+                    find = true;
+                }
+                lastNode = node;
+                node = node.getNext();
+            }
+        }
+
+        return find;
     }
     /**
      * 清理过期状态，无参方法，无返回值
+     * 未测试
      */
     public static void deleteExpiredStatus(){
         long currentTime = System.currentTimeMillis();
@@ -96,7 +117,7 @@ public class ManipulateUtil {
      * @return
      */
     public static StatusNode findStatusByToken(String token){
-        if(deleteExpiredStatus(token)){
+        if(deleteExpiredStatus(token,false)){
             //token已过期并删除
             return new StatusNode();
         }else{
@@ -152,7 +173,7 @@ public class ManipulateUtil {
      */
     public static void updateStatus(long userId){
         //清理过期状态
-        deleteExpiredStatus();
+        deleteExpiredStatus("" +  userId, true);
         //新增状态
         appendStatus(userId);
 

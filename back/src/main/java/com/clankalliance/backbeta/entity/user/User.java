@@ -37,6 +37,7 @@ public abstract class User {
     @JsonSerialize(using= ToStringSerializer.class)
     private long phone;
 
-    private Integer power;
+    //需要增加头像url属性
+    private String avatarURL;
 
 }
