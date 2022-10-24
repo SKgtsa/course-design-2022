@@ -44,9 +44,7 @@ public class AvatarTestController {
     public CommonResponse changeAvatar(HttpSession session,
                                        // 路径变量 解决前后端不一致
                                        @RequestParam("file") MultipartFile file) throws IOException {
-
-
-
+        System.out.println("intoAvatarProcess");
 
         // 文件是否为空
         if (file.isEmpty()) {
@@ -90,11 +88,9 @@ public class AvatarTestController {
             System.out.println("文件状态异常或文件读写异常");
         }
 
-        Integer uid = getuidFromSession(session);
-        String username = getUsernameFromSession(session);
+
         // 返回头像的路径/upload/test.png
         String avatar = "/static" + filename;
-        userService.changeAvatar(uid, avatar, username);
         // 返回用户头像的路径给前端，将来用于头像的展示使用
         CommonResponse response = new CommonResponse();
         response.setSuccess(true);

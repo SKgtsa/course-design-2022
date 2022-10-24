@@ -86,7 +86,7 @@ public class ScoreServiceImpl implements ScoreService {
             course.setScoreSet(courseScoreSet);
             //保存
             studentRepository.save(student);
-            courseRepository.save(courseScoreSet);
+            courseRepository.save(course);
             scoreRepository.save(score);
             response.setSuccess(true);
             response.setMessage("保存成功");

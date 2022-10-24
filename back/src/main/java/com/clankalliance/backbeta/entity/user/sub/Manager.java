@@ -23,8 +23,8 @@ public class Manager extends User {
                 super();
         }
 
-        public Manager(long id, long userNumber, String name, String password, long phone, Integer power){
-                super(id, userNumber, name, password, phone, power);
+        public Manager(long id, long userNumber, String name, String password, long phone){
+                super(id, userNumber, name, password, phone, "");
         }
 
 

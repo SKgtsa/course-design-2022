@@ -1,6 +1,5 @@
 package com.clankalliance.backbeta.utils;
 
-import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;

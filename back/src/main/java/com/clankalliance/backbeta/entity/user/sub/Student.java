@@ -27,8 +27,8 @@ public class Student extends User {
                 super();
         }
 
-        public Student(long id, long userNumber, String name, String password, long phone, Integer power){
-                super(id, userNumber, name, password, phone, power);
+        public Student(long id, long userNumber, String name, String password, long phone){
+                super(id, userNumber, name, password, phone,"");
         }
 
         @JsonIgnore

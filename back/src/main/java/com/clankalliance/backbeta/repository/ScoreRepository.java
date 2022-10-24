@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ScoreRepository extends JpaRepository {
+public interface ScoreRepository extends JpaRepository<Score,Integer> {
     @Query("from Score s where s.id=?1")
     Optional<Score> findById(long id);
 

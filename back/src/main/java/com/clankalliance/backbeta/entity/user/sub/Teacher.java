@@ -24,8 +24,8 @@ public class Teacher extends User {
                 super();
         }
 
-        public Teacher(long id, long userNumber, String name, String password, long phone, Integer power){
-                super(id, userNumber, name, password, phone, power);
+        public Teacher(long id, long userNumber, String name, String password, long phone){
+                super(id, userNumber, name, password, phone, "");
         }
 
 

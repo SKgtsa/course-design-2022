@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface CourseRepository extends JpaRepository {
+public interface CourseRepository extends JpaRepository<Course,Integer> {
 
     @Query("from Course c where c.id=?1")
     Optional<Course> findById(long id);

@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
             return response;
         }
         long id = snowFlake.nextId();
-        User user = new Student(id, userNumber,name,password,phone ,0);
+        User user = new Student(id, userNumber,name,password,phone);
         try{
             userRepository.save(user);
         }catch (Exception e){
