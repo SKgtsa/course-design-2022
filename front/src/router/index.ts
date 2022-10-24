@@ -26,7 +26,7 @@ const router = createRouter({
   ]
 })
 //导入nprogress 为了路由跳转有进度条
-import NProgress from 'nprogress'
+import NProgress from 'nprogress/nprogress.js'
 import 'nprogress/nprogress.css'
 router.beforeEach(async(to,from,next)=>{
   /* console.log('进入beforeEach函数') */

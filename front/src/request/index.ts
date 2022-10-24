@@ -1,18 +1,22 @@
-/* import axios from 'axios'
+ import axios from 'axios'
 
 
 //已创建的axios实例
-const instance = axios.create({
-    baseURL: 'http://81.68.109.154:8083',
+const service = axios.create({
+    //这里本来的baseURL填错了
+    baseURL: 'http://localhost:5174/api',
     timeout: 60000,
 })
-axios.interceptors.request.use(function (config) {
-    // 在发送请求之前做些什么
-    return config;
-  }, function (error) {
-    // 对请求错误做些什么
-    return Promise.reject(error);
-  });
+ export default service;
+ //拦截函数不需要 目前业务不涉及
+// axios.interceptors.request.use(function (config) {
+//     // 在发送请求之前做些什么
+//     return config;
+//   }, function (error) {
+//     // 对请求错误做些什么
+//     return Promise.reject(error);
+//   });
+/*
 
 // 添加响应拦截器
 instance.interceptors.response.use(function (response) {

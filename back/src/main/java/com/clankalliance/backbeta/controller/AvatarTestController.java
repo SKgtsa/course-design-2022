@@ -40,7 +40,7 @@ public class AvatarTestController {
         AVATAR_TYPE.add("images/gif");
     }
 
-    @RequestMapping("change_avatar")
+    @RequestMapping("/change_avatar")
     public CommonResponse changeAvatar(HttpSession session,
                                        // 路径变量 解决前后端不一致
                                        @RequestParam("file") MultipartFile file) throws IOException {
@@ -87,10 +87,7 @@ public class AvatarTestController {
             file.transferTo(dest); //将file文件中的数据写入到dest文件中
         }
         catch (Exception e) {
-            throw new FileStateExceptioin("文件状态异常");
-        }
-        catch (IOException e) {
-            throw new FileUploadIOException("文件读写异常");
+            System.out.println("文件状态异常或文件读写异常");
         }
 
         Integer uid = getuidFromSession(session);

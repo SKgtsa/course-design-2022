@@ -1,6 +1,6 @@
-
+<!--文件命名规范！！-->
 <script lang ="ts" setup>
-import {Login} from '../api/admin'
+import Login from '../api/admin'
 import{reactive,ref,onMounted,toRefs} from 'vue';
 import bar from '@/assets/images/first.jpg'
 import axios from 'axios';
@@ -18,8 +18,8 @@ const rules = reactive({   /* 定义校验规则 */
   userName:[{required:true,message:'请输入用户名！',trigger:'blur'}],
   password:[{required:true,message:'请输入密码！',trigger:'blur'},
   {min:6,max:16,message:'长度需要在6到16位之间!',trigger:'blur'}
-] 
-}) 
+]
+})
 const onSubmit= ()=>{
   let{userName,password} = login_data;
   let success = Login({});//登录成功返回，没写完
@@ -60,13 +60,13 @@ onMounted( ()=>{
     console.log(r)
     alert(r.data.msg)
   })
- 
+
 } */
 </script>
 <template>
   <div class="login-background">
     <div class="loginPage">
-    <div class="logoPage">    
+    <div class="logoPage">
       <div class="logo">
       <el-image src= ''></el-image>
     </div>
@@ -75,35 +75,35 @@ onMounted( ()=>{
       <strong>学生管理系统</strong>
       </div>
     <div class="loginPage_form" >
-      <el-form ref="loginForm" :model="login_data" :label-width="0" 
+      <el-form ref="loginForm" :model="login_data" :label-width="0"
       label-position="left" :rules="rules" status-icon>
         <el-form-item class="loginPageFormText" label="" prop="userName">
-          <el-input 
-          :prefix-icon="User"  
-          class="loginPage_form_input" 
-          id="username" 
-          v-model="login_data.userName" 
+          <el-input
+          :prefix-icon="User"
+          class="loginPage_form_input"
+          id="username"
+          v-model="login_data.userName"
           placeholder="请输入用户名"
-        
+
           ></el-input>
         </el-form-item>
         <el-form-item class="loginPageFormText" label="" prop="password">
-          <el-input 
-          :prefix-icon="Lock" 
+          <el-input
+          :prefix-icon="Lock"
           class="loginPage_form_input"
-          type="password" 
-          id="pwd" 
-          v-model="login_data.password" 
-          placeholder="请输入密码" 
-          maxlength="16"  
-          
+          type="password"
+          id="pwd"
+          v-model="login_data.password"
+          placeholder="请输入密码"
+          maxlength="16"
+
           />   <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
         </el-form-item>
-        <el-row> 
+        <el-row>
           <el-col :span="12">
             <el-form-item label="">
           <el-checkbox v-model="login_data.rememberPassword" label="记住密码"></el-checkbox>
-        </el-form-item> 
+        </el-form-item>
             </el-col>
         </el-row>
         <el-form-item>
@@ -120,7 +120,7 @@ onMounted( ()=>{
 
 <style  scoped>
 .login-background{
-  background-image:url("../assets/images/aoteman.jpg"); 
+  background-image:url("../assets/images/aoteman.jpg");
   /* background-color: rgba(14, 207, 133, 0.25); */
   background-repeat: no-repeat;
   background-size: 100%;
@@ -145,8 +145,8 @@ onMounted( ()=>{
   /* top:25vh; */
   align-items: center;
   position: absolute;
-  background: #c9c4ce60; 
-  
+  background: #c9c4ce60;
+
 }
 .loginPage_form{
   width: 80%;
