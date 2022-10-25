@@ -4,7 +4,7 @@
 //已创建的axios实例
 const service = axios.create({
     //这里本来的baseURL填错了
-    baseURL: 'http://localhost:5174/api',
+    baseURL: '/api',
     timeout: 60000,
 })
  export default service;
