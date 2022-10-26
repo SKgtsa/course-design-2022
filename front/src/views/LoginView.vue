@@ -42,10 +42,10 @@
             </el-col>
           </el-row>
           <el-form-item>
-            <el-button type="success" @click = "submit" class="loginPageEl-botton">登录</el-button>
+            <el-button type="success" @click = "submit" class="loginPageEl-button">登录</el-button>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary"  class="loginPageEl-botton">注册</el-button>
+            <el-button type="primary"  class="loginPageEl-button">注册</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -119,25 +119,29 @@ const submit = async (formEl: FormInstance | undefined) => {
   display: none !important;
 }
 .loginContainer{
-  background-image: url("../assets/images/山大.jpg");
+  background-image: url("../assets/images/LoginBackground.jpg");
   background-size: cover;
+  background-color: #464646;
+  background-repeat: no-repeat;
+  background-attachment:fixed;
+  background-position: center center;
   padding: 0;
   margin: 0;
-  width: 100%;
-  height: 100%;
+  width: auto;
+  height: auto;
 }
 .topText{
   height: 20vh;
   text-align: left;
   font-size: 5vh;
-  color: #FFF;
+  color: #ffffff;
   font-weight: bolder;
   padding-top: 1vh;
   padding-left: 3vw;
 }
 .middleWindow{
   height: 60vh;
-  text-align: right;
+  text-align: center;
 }
 .loginWindow{
   width: 40vw;
@@ -150,7 +154,7 @@ const submit = async (formEl: FormInstance | undefined) => {
 }
 .bottomText{
   height: 20vh;
-  text-align: left;
+  text-align: center;
 }
 
 </style>
