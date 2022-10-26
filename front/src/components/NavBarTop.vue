@@ -5,10 +5,14 @@
     mode="horizontal"
     :ellipsis="false"
     @select="handleSelect"
-    background-color="#112aab"
+    background-color="#003366"
     text-color="#FFF"
-    active-text-color="#fdda39"
+    active-text-color="#FFFF66"
   >
+    <div class="title">
+      学生管理系统
+    </div>
+    <img src="../assets/images/logo.png" alt="logo未加载">
     <el-menu-item index="0" class="logo">教学系统</el-menu-item>
     <div class="flex-grow" />
     <el-sub-menu index="1">
@@ -43,7 +47,7 @@ const handleSelect = (key: string, keyPath: string[])=> {
 
 <style scoped>
 .nav-bar-top{
-  height: 7vh;
+  height: 10vh;
 }
 .flex-grow {
   flex-grow: 1;
@@ -51,5 +55,19 @@ const handleSelect = (key: string, keyPath: string[])=> {
 .logo{
   font-weight: bold;
   font-size: 3vh;
+}
+.title{
+  font-family: 华文楷体,serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight: bold;
+  font-size: 5vh;
+  margin-right:1vh;
+  margin-left: 5vh;
+  color: #FFFFFF;
+}
+img{
+margin: 10px;
 }
 </style>

@@ -2,8 +2,8 @@
 
   <el-menu router
            default-active="/HomePage"
-           active-text-color="#fdda39"
-           background-color="#112278"
+           active-text-color="#FFFF66"
+           background-color="#3399CC"
            class="nav-bar-aside"
            text-color="#fff"
            @open="handleOpen"
