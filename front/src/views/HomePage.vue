@@ -1,7 +1,6 @@
 <script lang="ts" setup>
-import { ref,reactive,toRefs} from 'vue'
+import {ref, reactive, toRefs} from 'vue'
 import logo from '../assets/images/logo.png'
-import first from '../assets/images/first.jpg'
 import {
   Document,
   Menu as IconMenu,
@@ -15,6 +14,7 @@ import {
   Promotion,
   Search,
 } from '@element-plus/icons-vue'
+
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
 }
@@ -25,7 +25,7 @@ const onSubmit = () => {
   console.log('submit!')
 }
 let menuDataTop = reactive({
-    activeIndex1:'1'
+  activeIndex1: '1'
 })
 const input = ref('')
 const searchBotton = ref('')
@@ -56,126 +56,145 @@ const imgLoad=()=>{
   <div class="back">
     <el-container>
       <el-header class="el-header">
-            <div class="logoDiv">
-            <img :src="logo" class="img" alt="logo"/>
-            </div>
-            <div class="search">
-              <el-input 
-              class="inputSearch"
-              placeholder="请输入您想搜索的内容" 
-              v-model="input"
-              maxlength="16"
-              type="text"
-              @keyup.enter.native="onSubmit"
-              :suffix-icon="Search"
-              />
-                <!-- <el-botton @click="searchBotton" ><Search /></el-botton> -->
-            </div>
+        <el-menu
+            :default-active="activeIndex"
+            class="nav-bar-top"
+            mode="horizontal"
+            :ellipsis="false"
+            @select="handleSelect"
+            background-color="#003366"
+            text-color="#FFF"
+            active-text-color="#FFFF66"
+        >
+          <div class="title">
+            学生管理系统
+          </div>
+          <img src="../assets/images/logo.png" alt="logo未加载">
+          <el-menu-item index="0" class="logo">教学系统</el-menu-item>
+          <div class="flex-grow" />
+          <el-sub-menu index="1">
+            <template #title>{{userName}}</template>
+            <el-menu-item index="1-1">个人信息</el-menu-item>
+            <el-menu-item index="1-2" disabled>临时设置</el-menu-item>
+          </el-sub-menu>
+        </el-menu>
       </el-header>
       <el-container>
         <el-aside width="200px">
-            <el-menu router 
-        default-active="/HomePage"
-        active-text-color="#ffd04b"
-        background-color="#003366"
-        class="el-menu-vertical-demo asideMenu"
-        text-color="#fff"
-        @open="handleOpen"
-        @close="handleClose"
-      >
-        <el-menu-item index="/SelfInformation">
-          <el-icon><UserFilled /></el-icon>
-          <span>个人信息</span>
-        </el-menu-item>
-        <el-sub-menu index="">
-          <template #title>
-            <el-icon><Menu /></el-icon>
-            <span>课程系统</span>
-          </template>
-            <el-menu-item index="/CourseSelect">选课指南</el-menu-item>
-            <el-menu-item index="/CourseEvaluate">课程评价</el-menu-item>
-        </el-sub-menu>
-        <el-menu-item index="/ScoreManage">
-          <el-icon><StarFilled /></el-icon>
-          <span>成绩管理</span>
-        </el-menu-item>
-        <el-menu-item index="/Practice">
-          <el-icon><Compass /></el-icon>
-          <span>社会实践</span>
-        </el-menu-item>
-        <el-menu-item index="/Activity">
-         <el-icon><Promotion /></el-icon>
-          <span>课外活动</span>
-        </el-menu-item>
-        <el-menu-item index="/Reward">
-          <el-icon><Medal /></el-icon>
-          <span>成果奖励</span>
-        </el-menu-item>
-      </el-menu>
+          <el-menu router
+                   default-active="/HomePage"
+                   active-text-color="#ffd04b"
+                   background-color="#003366"
+                   class="el-menu-vertical-demo asideMenu"
+                   text-color="#fff"
+                   @open="handleOpen"
+                   @close="handleClose"
+          >
+            <el-sub-menu index="">
+              <template #title>
+                <el-icon>
+                  <Menu/>
+                </el-icon>
+                <span>课程系统</span>
+              </template>
+              <el-menu-item index="/CourseSelect">选课指南</el-menu-item>
+              <el-menu-item index="/CourseEvaluate">课程评价</el-menu-item>
+            </el-sub-menu>
+            <el-menu-item index="/ScoreManage">
+              <el-icon>
+                <StarFilled/>
+              </el-icon>
+              <span>成绩管理</span>
+            </el-menu-item>
+            <el-menu-item index="/Practice">
+              <el-icon>
+                <Compass/>
+              </el-icon>
+              <span>社会实践</span>
+            </el-menu-item>
+            <el-menu-item index="/Activity">
+              <el-icon>
+                <Promotion/>
+              </el-icon>
+              <span>课外活动</span>
+            </el-menu-item>
+            <el-menu-item index="/Reward">
+              <el-icon>
+                <Medal/>
+              </el-icon>
+              <span>成果奖励</span>
+            </el-menu-item>
+          </el-menu>
         </el-aside>
         <el-main>     <!-- 在这里写一个走马灯动态展示通知 -->
-    <!--       <el-carousel :interval="5000" arrow="always" height="600px">
-    <el-carousel-item v-for="item in 4" :key="item">
-      <h3 text="2xl" justify="center">{{ item }}</h3>
-    </el-carousel-item>
-  </el-carousel> -->
-  <router-view>
-    
-  </router-view>
-        <!-- <div class="mainLeft">
-          这里面放个人博客主页，还没有定下来博客这个东西，先不写
+          <!--       <el-carousel :interval="5000" arrow="always" height="600px">
+          <el-carousel-item v-for="item in 4" :key="item">
+            <h3 text="2xl" justify="center">{{ item }}</h3>
+          </el-carousel-item>
+        </el-carousel> -->
+          <router-view>
+
+          </router-view>
+          <!-- <div class="mainLeft">
+            这里面放个人博客主页，还没有定下来博客这个东西，先不写
+            </div> -->
+          <!-- 展示通知 -->
+          <!-- <div class="mainRight">
+
+            在这个侧边栏放通知，形式是什么，然后是否需要走马灯
           </div> -->
-           <!-- 展示通知 -->
-        <!-- <div class="mainRight">    
-         
-          在这个侧边栏放通知，形式是什么，然后是否需要走马灯
-        </div> -->
-    </el-main>
+        </el-main>
       </el-container>
     </el-container>
   </div>
 </template>
 <style scoped lang='scss'>
-.back{
+.back {
   margin: 0;
   padding: 0;
 }
-.el-header{
-    padding:0 0!important;
-    height: 70px!important;
-    background-color:#336699;
-    display: flex; //设置显示为flex布局
-    justify-content: space-between;//设置为flex左右布局
+
+.el-header {
+  padding: 0 0 !important;
+  height: 80px !important;
 }
-.headerMenu{
-    height: 100%;
+
+.headerMenu {
+  height: 100%;
 }
-.el-aside{
-    height: 100vh!important;
-    margin-top: 3px;
+
+.el-aside {
+  height: 89vh !important;
+  margin-top: 3px;
 }
-.el-main{
+
+.el-main {
   padding: 0;
 }
-.mainRight{
-  position:absolute;
-  background-color:#CCFFFF;
+
+.mainRight {
+  position: absolute;
+  background-color: #CCFFFF;
   height: 100%;
   width: 300px;
-  margin-top:3px;
+  margin-top: 3px;
   right: 1px;
 }
-.asideMenu{
-    height: 100%;
+
+.asideMenu {
+  height: 100%;
 }
-.flex-grow{
-    flex-grow: 1;
+
+.flex-grow {
+  flex-grow: 1;
 }
- .container{
-     width: 100vw;
-     height: 100vh;
-     display:flex;
+
+.container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
 }
+
 .el-carousel__item h3 {
   color: #475669;
   opacity: 0.75;
@@ -191,38 +210,46 @@ const imgLoad=()=>{
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
 }
-.logoDiv{
-  height: 70px!important;
+
+.logoDiv {
+  height: 70px !important;
   width: 35%;
 }
-.logoImage{
+
+.logoImage {
   display: inline-block;
 }
-.img{
-  height: 65px!important;
+
+.img {
+  height: 65px !important;
   margin-top: 2px;
   margin-left: 2px;
   width: 280px;
- /*  margin-top: 8px;
-  margin-bottom: 8px; */
+  /*  margin-top: 8px;
+   margin-bottom: 8px; */
 }
-.search{
-  position: absolute;
-  right: 5px;
-  width: 40%;
-  height: 70px;
-  
+.nav-bar-top{
+  height: 83px;
 }
-.inputSearch{
-  position: absolute;
-  width: 40%;
-  height: 45%;
-  right: 65px;
-  margin-top: 20px;
-  background-color:#b1cde9;
+.flex-grow {
+  flex-grow: 1;
 }
-.inputSearch>>>.el-input__suffix{ /*修改内部input的小图标，用检查
-  来看类名 */
-color: black;
+.logo{
+  font-weight: bold;
+  font-size: 3vh;
+}
+.title{
+  font-family: 华文楷体,serif;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-weight: bold;
+  font-size: 5vh;
+  margin-right:1vh;
+  margin-left: 3vh;
+  color: #FFFFFF;
+}
+img{
+  margin: 10px;
 }
 </style>

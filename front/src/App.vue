@@ -7,21 +7,21 @@ import router from "@/router";
 </script>
 
 <template>
-<!--   <div>
-    <el-container>
-      <el-header class="header" style="padding: 0; margin: 0; height: 100%; width: 100%">
-        <nav-bar-top/>
-      </el-header>
-      <el-container>
-        <el-aside class="aside">
-          <nav-bar-aside/>
-        </el-aside>
-        <el-main> -->
+<!--   <div>-->
+<!--    <el-container>-->
+<!--      <el-header class="header" style="padding: 0; margin: 0; height: 100%; width: 100%">-->
+<!--        <nav-bar-top/>-->
+<!--      </el-header>-->
+<!--      <el-container>-->
+<!--        <el-aside class="aside">-->
+<!--          <nav-bar-aside/>-->
+<!--        </el-aside>-->
+<!--        <el-main>-->
           <router-view/>
- <!--        </el-main>
-      </el-container>
-    </el-container>
-  </div> -->
+<!--        </el-main>-->
+<!--      </el-container>-->
+<!--    </el-container>-->
+<!--  </div>-->
 </template>
 
 <style scoped>
