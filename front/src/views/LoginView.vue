@@ -1,3 +1,4 @@
+
 <template>
 <div class="loginContainer">
   <div class="topText">
@@ -37,20 +38,19 @@
               id="username"
               v-model="login_data.userNumber"
               placeholder="请输入学工号"
-
-          ></el-input>
-        </el-form-item>
-        <el-form-item class="loginPageFormText" label="" prop="password">
-          <el-input
-              :prefix-icon="Lock"
-              class="loginPage_form_input"
-              type="password"
-              id="pwd"
-              v-model="login_data.password"
-              placeholder="请输入密码"
-              maxlength="16"
-
-          />   <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
+            ></el-input>
+          </el-form-item>
+          <el-form-item class="loginPageFormText" label="" prop="password">
+            <el-input
+                :prefix-icon="Lock"
+                class="loginPage_form_input"
+                type="password"
+                id="pwd"
+                v-model="login_data.password"
+                placeholder="请输入密码"
+                maxlength="16"
+          />   
+          <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
         </el-form-item>
         <el-row>
           <el-col :span="12">
@@ -121,10 +121,7 @@
       </el-form>
     </div>
   </div>
-  <div class="bottomText">
-    <a>Copyright@</a>
   </div>
-</div>
 </template>
 
 <script lang="ts" setup>
@@ -255,19 +252,20 @@ const submit = async (formEl: FormInstance | undefined) => {
   margin: 0;
   width: 100vw;
   height: 100vh !important;
+
 }
 .topText{
   height: 20vh;
   text-align: left;
   font-size: 5vh;
-  color: #FFF;
+  color: #ffffff;
   font-weight: bolder;
   padding-top: 1vh;
   padding-left: 3vw;
 }
 .middleWindow{
   height: 60vh;
-  text-align: right;
+  text-align: center;
 }
 .loginWindow{
   width: 360px;
@@ -303,7 +301,7 @@ color: black;
 }
 .bottomText{
   height: 20vh;
-  text-align: left;
+  text-align: center;
 }
 .switchButtonDiv{
   position: absolute;
