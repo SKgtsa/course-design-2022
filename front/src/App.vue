@@ -7,7 +7,7 @@ import router from "@/router";
 </script>
 
 <template>
-  <div>
+<!--   <div>
     <el-container>
       <el-header class="header" style="padding: 0; margin: 0; height: 100%; width: 100%">
         <nav-bar-top/>
@@ -16,12 +16,12 @@ import router from "@/router";
         <el-aside class="aside">
           <nav-bar-aside/>
         </el-aside>
-        <el-main>
+        <el-main> -->
           <router-view/>
-        </el-main>
+ <!--        </el-main>
       </el-container>
     </el-container>
-  </div>
+  </div> -->
 </template>
 
 <style scoped>
