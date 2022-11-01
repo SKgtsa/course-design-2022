@@ -39,28 +39,73 @@ public class UserServiceImpl implements UserService {
     private ManagerRepository managerRepository;
 
     @Resource
+    private UserRepository userRepository;
+
+    @Resource
     private TencentSmsService tencentSmsService;
 
     @Resource
     private SnowFlake snowFlake;
+
+
+    @Override
+    public User findById(long id){
+        Optional<Student> sop = studentRepository.findUserById(id);
+        Optional<Teacher> top = teacherRepository.findUserById(id);
+        Optional<Manager> mop = managerRepository.findUserById(id);
+        if(sop.isPresent()){
+            return sop.get();
+        }else if(top.isPresent()){
+            return top.get();
+        }else if(mop.isPresent()){
+            return mop.get();
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public User findByUserNumber(long userNumber){
+        Optional<Student> sop = studentRepository.findByUserNumber(userNumber);
+        Optional<Teacher> top = teacherRepository.findByUserNumber(userNumber);
+        Optional<Manager> mop = managerRepository.findByUserNumber(userNumber);
+        if(sop.isPresent()){
+            return sop.get();
+        }else if(top.isPresent()){
+            return top.get();
+        }else if(mop.isPresent()){
+            return mop.get();
+        }else{
+            return null;
+        }
+    }
+
+    @Override
+    public User findByPhone(long phone){
+        Optional<Student> sop = studentRepository.findByPhone(phone);
+        Optional<Teacher> top = teacherRepository.findByPhone(phone);
+        Optional<Manager> mop = managerRepository.findByPhone(phone);
+        if(sop.isPresent()){
+            return sop.get();
+        }else if(top.isPresent()){
+            return top.get();
+        }else if(mop.isPresent()){
+            return mop.get();
+        }else{
+            return null;
+        }
+    }
 
     @Override
     public CommonResponse handleLogin(long userNumber,String password) {
         CommonResponse  response = new CommonResponse<>();
         response.setSuccess(false);
         password = DigestUtils.sha1Hex(password);
-        Optional<Student> sop = studentRepository.findByUserNumber(userNumber);
-        Optional<Teacher> top = teacherRepository.findByUserNumber(userNumber);
-        Optional<Manager> mop = managerRepository.findByUserNumber(userNumber);
-        User user;
-        if(sop.isPresent()){
-            user = sop.get();
-        }else if(top.isPresent()){
-            user = top.get();
-        }else if(mop.isPresent()){
-            user = mop.get();
-        }else{
-            response.setMessage("用户不存在");
+        User user = findByUserNumber(userNumber);
+        if(user == null){
+            //该用户已存在 进行判定是统一注册的空号还是用户重复注册
+            response.setSuccess(false);
+            response.setMessage("账户已存在");
             return response;
         }
         if(!password.equals(user.getPassword())){
@@ -81,8 +126,8 @@ public class UserServiceImpl implements UserService {
     public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail) {
         password = DigestUtils.sha1Hex(password.getBytes());
         CommonResponse  response = new CommonResponse();
-        Optional<User> uop = userRepository.findByUserNumber(userNumber);
-        if(uop.isPresent()){
+        User user = findByUserNumber(userNumber);
+        if(user != null){
             //该用户已存在 进行判定是统一注册的空号还是用户重复注册
             response.setSuccess(false);
             response.setMessage("账户已存在");
@@ -103,7 +148,6 @@ public class UserServiceImpl implements UserService {
             return response;
         }
         long id = snowFlake.nextId();
-        User user = new Student();
         switch (identity){
             case 0:
                 user = new Student(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
@@ -134,9 +178,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse handlePhoneLogin(long phone){
         CommonResponse response = new CommonResponse();
-        Optional<User> uop = userRepository.findUserByPhone(phone);
-        if(uop.isPresent()){
-            User user = uop.get();
+        User user = findByPhone(phone);
+        if(user != null){
             ManipulateUtil.updateStatus(user.getId());
             String code = ManipulateUtil.endNode.getVerifyCode();
             tencentSmsService.sendSms("" + phone,code);
@@ -158,8 +201,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public CommonResponse handlePhoneRegister(long phone){
         CommonResponse response = new CommonResponse();
-        Optional<User> uop = userRepository.findUserByPhone(phone);
-        if(uop.isPresent()){
+        User user = findByPhone(phone);
+        if(user != null){
             //手机已被绑定
             response.setSuccess(false);
             response.setMessage("手机已被绑定");
