@@ -37,7 +37,22 @@ public abstract class User {
     @JsonSerialize(using= ToStringSerializer.class)
     private long phone;
 
-    //需要增加头像url属性
+    private String idCardNumber;
+
+    //男：false 女：true
+    private Boolean gender;
+
+    //民族
+    private String ethnic;
+
+    //政治面貌
+    private String politicalAffiliation;
+
+    //电子邮箱
+    private String eMail;
+
+    //头像url
     private String avatarURL;
+
 
 }

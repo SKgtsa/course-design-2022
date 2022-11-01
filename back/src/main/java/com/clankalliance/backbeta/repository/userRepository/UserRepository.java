@@ -17,13 +17,9 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User,Integer> {
 
-    //跨表联查
+    //跨表联查没用 逻辑问题
 
-    @Query("from Student s, Teacher t, Manager m where s.userNumber=?1 or t.userNumber=?1 or m.userNumber=?1 ")
-    Optional<User> findByUserNumber(long userNumber);
 
-    @Query("from Student s, Teacher t, Manager m where s.id=?1 or t.id=?1 or m.id=?1 ")
-    Optional<User> findUserById(long id);
 
 
 }
