@@ -38,17 +38,17 @@ const router = createRouter({
         {
           path:'/Activity',
           name:'Activity',
-          component:() =>import('../views/Activity.vue')
+          component:() =>import('../views/ActivityView.vue')
         },
         {
           path:'/Practice',
           name:'Practice',
-          component:() =>import('../views/Practice.vue')
+          component:() =>import('../views/PracticeView.vue')
         },
         {
           path:'/Reward',
           name:'Reward',
-          component:() =>import('../views/Reward.vue')
+          component:() =>import('../views/RewardView.vue')
         },
         {
           path:'/ScoreManage',

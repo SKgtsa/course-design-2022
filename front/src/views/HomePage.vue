@@ -132,9 +132,11 @@ const imgLoad=()=>{
             <h3 text="2xl" justify="center">{{ item }}</h3>
           </el-carousel-item>
         </el-carousel> -->
+        <div class="el-main-div">
           <router-view>
 
           </router-view>
+        </div>
           <!-- <div class="mainLeft">
             这里面放个人博客主页，还没有定下来博客这个东西，先不写
             </div> -->
@@ -158,7 +160,10 @@ const imgLoad=()=>{
   padding: 0 0 !important;
   height: 80px !important;
 }
-
+.el-main-div{
+  padding-left: 5px;
+  padding-top: 8px;
+}
 .headerMenu {
   height: 100%;
 }
