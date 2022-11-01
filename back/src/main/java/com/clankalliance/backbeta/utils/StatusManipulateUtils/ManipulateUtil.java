@@ -42,9 +42,6 @@ public class ManipulateUtil {
      * @param nodeBefore 被删除节点之前的节点
      */
     public static void deleteNextStatus(StatusNode nodeBefore){
-        System.out.println(headNode);
-        System.out.println(endNode);
-        System.out.println(nodeBefore);
         if(nodeBefore.getNext().getToken().equals(endNode.getToken())){
             endNode = nodeBefore;
         }
@@ -132,38 +129,61 @@ public class ManipulateUtil {
                     deleteNextStatus(lastNode);
                     find = true;
                 }
+                lastNode = node;
                 node = node.getNext();
             }
             return result;
         }
     }
-//废弃
-//    /**
-//     * 【内部方法】正常使用不应调用该函数。
-//     * 根据用户id查询登陆状态
-//     * 若存在节点且没过期，则返回状态。若不存在或过期，返回空节点
-//     * @param userId 用户id
-//     * @return
-//     */
-//    private static StatusNode findStatusByUserId(long userId){
-//        if(deleteExpiredStatus()){
-//            //登录已过期并删除
-//            return new StatusNode();
-//        }else{
-//            //进一步判定
-//            StatusNode node = headNode;
-//            StatusNode result = new StatusNode();
-//            boolean find = false;
-//            while(node.getNext() != null && !find){
-//                if(node.getUserId() == userId){
-//                    result = node;
-//                    find = true;
-//                }
-//                node = node.getNext();
-//            }
-//            return result;
-//        }
-//    }
+
+    /**
+     * 【内部方法】正常使用不应调用该函数。
+     * 根据用户id查询登陆状态
+     * 若存在节点且没过期，则返回状态。若不存在或过期，返回空节点
+     * @param userId 用户id
+     * @return
+     */
+    public static StatusNode findStatusByUserId(long userId){
+        if(deleteExpiredStatus("" + userId, false)){
+            //登录已过期并删除
+            return new StatusNode();
+        }else{
+            //进一步判定
+            StatusNode lastNode = headNode;
+            StatusNode node = headNode;
+            StatusNode result = new StatusNode();
+            boolean find = false;
+            while(node != null && !find){
+                if(node.getUserId() == userId){
+                    result = node;
+                    deleteNextStatus(lastNode);
+                    find = true;
+                }
+                lastNode = node;
+                node = node.getNext();
+            }
+            return result;
+        }
+    }
+
+    /**
+     * 删除节点
+     * @param targetNode 待删除节点
+     */
+    public static Boolean delete(StatusNode targetNode){
+        boolean result = false;
+        deleteExpiredStatus();
+        StatusNode node = headNode;
+        boolean find = false;
+        while(node.getNext().getNext() != null && !find){
+            if(node.getNext().getUserId() == targetNode.getUserId()){
+                deleteNextStatus(node);
+                result = true;
+            }
+            node = node.getNext();
+        }
+        return result;
+    }
 
     /**
      * 输入用户id,延续该用户登录有效时间.
