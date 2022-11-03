@@ -380,7 +380,7 @@ const sumbitEditRow=()=>{
     
   }else if(typeOperation.value==='edit'){
     /* handleEdit() */
-    service.post('api/practice/save',
+    service.post('/api/practice/save',
     {token:editForm.token,practiceName:editForm.practiceName,practiceDescription:editForm.practiceDescription,id:editForm.practiceId})
     .then(res=>{  //直接把这一行的数据给出去可以吗
       if(res.data.success){
