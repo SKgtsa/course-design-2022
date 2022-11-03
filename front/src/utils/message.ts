@@ -1,7 +1,7 @@
 //封装消息框
 import { ElMessage } from "element-plus";
 //成功
-export let msgSuccess = (message,duration=2000)=>{
+export let messageSuccess = (message,duration=2000)=>{
     ElMessage({
         showClose:true,
         message,
@@ -10,7 +10,7 @@ export let msgSuccess = (message,duration=2000)=>{
     })
 }
 //警告
-export let msgWarning = (message,duration=2000)=>{
+export let messageWarning = (message,duration=2000)=>{
     ElMessage({
         showClose:true,
         message,
@@ -19,11 +19,19 @@ export let msgWarning = (message,duration=2000)=>{
     })
 }
 //错误
-export let msgError= (message,duration=2000)=>{
+export let messageError= (message,duration=2000)=>{
     ElMessage({
         showClose:true,
         message,
         duration,
         type:'error'
+    })
+}
+export let messageInfo = (message,duration=2000)=>{
+    ElMessage({
+        showClose:true,
+        message,
+        duration,
+        type:'info'
     })
 }
