@@ -51,30 +51,23 @@
                 maxlength="16"
           />   
           <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
-        </el-form-item>
-        <el-row>
-          <el-col :span="12">
-            <el-form-item label="">
-              <el-checkbox v-model="login_data.rememberPassword" class="rememberPwd" label="记住密码"></el-checkbox>
             </el-form-item>
-          </el-col>
-        </el-row>
-        <el-form-item>
+          <el-form-item>
           <el-button 
           type="success"  
-          @click = "submit" 
-          class="loginPageEl-botton"
+          @click = "submitPwd" 
+          class="loginPageEl-botton buttonLogin"
           color="rgb(200,255,255,1)"
           >登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary"  class="loginPageEl-botton">注册</el-button>
+          <el-button type="primary"  class="loginPageEl-botton"  @click="toRegister">注册</el-button>
         </el-form-item>
       </el-form>
-      <el-form
+      <el-form          
               v-if="loginType=='phone'"
               ref="loginFormPhone"
-              :model="login_data"
+              :model="login_data_phone"
               class="loginPage_form"
               :label-width="0"
               label-position="left"
@@ -103,7 +96,10 @@
           />
             </el-col>
             <el-col :span="8">
-              <el-button type="success" class="captchaButton">获取验证码</el-button>
+              <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
+                <span v-show="show">获取验证码</span>
+                <span v-show="!show" class="count">{{count}} s</span>
+              </el-button>
             </el-col>
           </el-row>
           </el-form-item>
@@ -111,12 +107,12 @@
           <el-button 
           type="success"  
           @click = "submitPhone" 
-          class="loginPageEl-botton captchaButtonLogin"
+          class="loginPageEl-botton buttonLogin"
           color="rgb(200,255,255,1)"
           >登录</el-button>
           </el-form-item>
         <el-form-item>
-          <el-button type="primary"  class="loginPageEl-botton">注册</el-button>
+          <el-button type="primary"  class="loginPageEl-botton" @click="toRegister">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -131,39 +127,95 @@ import type {FormInstance} from "element-plus";
 import {ElMessage} from "element-plus";
 import axios from "axios";
 import service from "@/request";
-import { Lock, User,Message} from '@element-plus/icons-vue';
+import { Lock, User,Message, Phone} from '@element-plus/icons-vue';
+import { messageError, messageSuccess } from "@/utils/message";
 const login_data=reactive({
   userNumber:'',
   password:'',
-  rememberPassword:false,
 })
 const loginFormPwd = ref();
 const loginFormPhone = ref();
+let show = ref(true);
+let count = ref();
+let timer = reactive(null);
 const login_data_phone = reactive({
   userPhone:'',
   captcha:'',
 })
-const submitPhone = async (formEl: FormInstance | undefined) => {
-  if(!formEl)return
 
-  service.post('/api/user/login',login_data_phone).then(res => {
-    console.log(res)
+const sendCode =async () =>{
+  await service.post('/api/user/loginPhone',{phone:login_data_phone.userPhone}).then(res=>{
     const data = res.data;
     if(data.success){
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("userPhone", data.user.phone)
-      ElMessage({
-        message: '登陆成功',
-        type: 'success'
-      })
-      router.push('/')
+      show.value = false;
+      messageSuccess('发送成功！')  //这个还得把发送验证码那个按钮给他禁用了，不然一直发
+      const TIME_COUNT = 60; //更改倒计时时间
+                if (!timer) {
+                    count.value = TIME_COUNT;
+                    show.value = false;
+                    timer = setInterval(() => {
+                      if (count.value > 0 && count.value <= TIME_COUNT) {
+                            count.value--;
+                        } else {
+                            show.value = true;
+                            clearInterval(timer); // 清除定时器
+                            timer = null;
+                        }
+                    }, 1000);
+                }
     }else{
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      messageError(data.message)
     }
   })
+}
+
+const submitPwd = (formEl: FormInstance | undefined) => {
+  if(!formEl)return
+  loginFormPwd.value.validate((valid)=>{
+    if(valid){
+      service.post('/api/user/normalLogin',login_data).then(res => {
+      console.log(res)
+      const data = res.data;
+      if(data.success){
+          localStorage.setItem("token", data.token)
+/*       localStorage.setItem("userName", data.user.name) */
+          messageSuccess("登陆成功！")
+          router.push('/')
+      }else{
+          messageError(data.message)
+      }
+    })
+  }else{
+      messageError("请填写正确的用户名和密码！")
+    }
+})
+}
+
+const submitPhone = async (formEl: FormInstance | undefined) => {
+  if(!formEl)return
+  console.log(login_data_phone.userPhone)
+  loginFormPhone.value.validate((valid)=>{
+    if(valid){
+      service.post('/api/user/loginCode',{code:login_data_phone.captcha}).then(res => {
+      console.log(res)
+      const data = res.data;
+      if(data.success){
+        localStorage.setItem("token", data.token)
+        localStorage.setItem("userPhone", data.user.phone)
+        messageSuccess("登录成功!")
+        router.push('/')
+      }else{
+        messageError(data.message)
+      }
+  })}
+   else{
+       messageError("请填写正确的手机号和验证码！")
+    }
+  })
+}
+
+const toRegister = () => {
+  router.push('/Register')
 }
 var loginType = ref('userNumber');   //写成ref就获取到了，响应式
 const toUserNumber=()=>{
@@ -177,7 +229,7 @@ const toPhone=()=>{
   console.log(loginType.value)
 }
 const validatePhone=(rule,value,callback)=>{
-  const reg =/^[1][3-9][0-9]{9}$/;
+  const reg =/^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
   if(value==''||value==undefined||value==null){
     callback(new Error('请输入电话号码！'));
   }else {
@@ -191,48 +243,17 @@ const validatePhone=(rule,value,callback)=>{
 const rulesPwd = reactive({   /* 定义校验规则 */
   userNumber:[{required:true,message:'请输入用户名！',trigger:'blur'}],
   password:[{required:true,message:'请输入密码！',trigger:'blur'},
-    {min:6,max:16,message:'长度需要在6到16位之间!',trigger:'blur'}
+    {min:6,max:16,message:'长度需要在8到16位之间!',trigger:'blur'}
   ]
 })
+
 const rulesCaptcha = reactive({
-  userPhone:[{required:true,validator:validatePhone,message:'请输入手机号！',trigger:'blur'}
+  userPhone:[{validator:validatePhone,trigger:'blur'}
 ],
   captcha:[{required:true,message:'请输入验证码！',trigger:'blur'},
   ]
 })
-const submit = async (formEl: FormInstance | undefined) => {
-  if(!formEl)return
-  // await formEl.validate((valid, fields) => {
-  //   if(valid){
-  //
-  //
-  //
-  //   }else{
-  //     ElMessage({
-  //       message: '填写错误',
-  //       type: 'error'
-  //     })
-  //   }
-  // })
-  service.post('/api/user/login',login_data).then(res => {
-    console.log(res)
-    const data = res.data;
-    if(data.success){
-      localStorage.setItem("token", data.token)
-      localStorage.setItem("userName", data.user.name)
-      ElMessage({
-        message: '登陆成功',
-        type: 'success'
-      })
-      router.push('/')
-    }else{
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
-    }
-  })
-}
+
 </script>
 
 <style scoped>
@@ -360,7 +381,7 @@ color: black;
   align-items: center;
   border-radius: 3px!important;
 }
-.captchaButtonLogin{
+.buttonLogin{
   margin-top: 40px;
 }
 .el-checkbox{
@@ -368,5 +389,7 @@ color: black;
   --el-checkbox-font-weight:1000;
   color:rgb(134, 102, 54);
 }
-
+.spacing{
+  padding-top: 30px;
+}
 </style>
