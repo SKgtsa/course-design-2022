@@ -278,7 +278,7 @@
     let isShow = ref(false);
     let currentPage = ref(1);
     let pageSize = ref(8);
-    const formData = reactive({});
+    const formData = ref();
     const rulesEditForm = reactive({   /* 定义校验规则 */
       rewardName:[{required:true,message:'请输入成果奖励的标题！',trigger:'blur'},
         {max:30,message:'长度不得超过30位!',trigger:'blur'}
@@ -304,21 +304,28 @@
     
     
     
-    const loadrewardTable = async() =>{   //查找所有的数据,这个接口是不是有点问题,学生端还用传userNumber吗
-      await service.post('/api/reward/find',{token:localStorage.getItem("token")}).then(res => {
-        if (res.data.success) {
-          const data = res.data;
-          let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
-          tableData = arr
-          localStorage.setItem('token',data.token)
-        } else {
-          messageWarning(res.data.message)
-          }
-        })
-      .catch(function(error) {
-        console.log(error)
-      })
+const loadrewardTable = () =>{   //查找所有的数据,这个接口是不是有点问题,学生端还用传userNumber吗
+  /* formData.value.valid */
+  formData.value.validate((valid)=>{
+    if(valid){
+      service.post('/api/reward/find',{token:localStorage.getItem("token")}).then(res => {
+      if (res.data.success) {
+      const data = res.data;
+      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
+      tableData = arr
+      localStorage.setItem('token',data.token)
+    } else {
+      messageWarning(res.data.message)
     }
+  })
+  .catch(function(error) {
+    console.log(error)
+  })
+  }else{
+    messageError("请完善全部信息")
+  }
+})  
+}
     loadrewardTable() //进入默认执行
     
     const add =  () => {
