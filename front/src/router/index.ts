@@ -22,6 +22,11 @@ const router = createRouter({
       name: 'home',
       component: () => import('../views/AboutView.vue')
     }, */
+      {
+        path:'/CourseSelect',
+        name:'CourseSelect',
+        component:() =>import('../views/CourseSelect.vue')
+      },
     {
       path:'/HomePage',
       name:'HomePage',
@@ -30,11 +35,11 @@ const router = createRouter({
         keepAlive:true // 需要缓存
     },
       children:[
-        {
+      /*   {
           path:'/CourseSelect',
           name:'CourseSelect',
           component:() =>import('../views/CourseSelect.vue')
-        },
+        }, */
         {
           path:'/CourseEvaluate',
           name:'CourseEvaluate',

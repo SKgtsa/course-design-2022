@@ -275,15 +275,13 @@ let editForm = reactive({
   studentName: ''
 });
 const search = ref('')
-
-const PracticeTableData = computed(() =>
+const filterTableData = computed(() =>
   tableData.filter(
     (data) =>
       !search.value ||
       data.practiceName.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-
 /* loginFormPhone.value.validate((valid)=>{
     if(valid){
       service.post('/api/user/loginCode',{code:login_data_phone.captcha}).then(res => {
