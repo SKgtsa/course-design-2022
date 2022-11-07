@@ -66,9 +66,9 @@ const imgLoad=()=>{
             text-color="#FFF"
             active-text-color="#FFFF66"
         >
-          <div class="title">
+          <el-link class="title" href="/">
             学生管理系统
-          </div>
+          </el-link>
           <img src="../assets/images/logo.png" alt="logo未加载">
           <el-menu-item index="0" class="logo">教学系统</el-menu-item>
           <div class="flex-grow" />
@@ -80,7 +80,7 @@ const imgLoad=()=>{
         </el-menu>
       </el-header>
       <el-container>
-        <el-aside width="200px">
+        <el-aside >
           <el-menu router
                    default-active="/HomePage"
                    active-text-color="#ffd04b"
@@ -126,25 +126,10 @@ const imgLoad=()=>{
             </el-menu-item>
           </el-menu>
         </el-aside>
-        <el-main>     <!-- 在这里写一个走马灯动态展示通知 -->
-          <!--       <el-carousel :interval="5000" arrow="always" height="600px">
-          <el-carousel-item v-for="item in 4" :key="item">
-            <h3 text="2xl" justify="center">{{ item }}</h3>
-          </el-carousel-item>
-        </el-carousel> -->
-        <div class="el-main-div">
+        <el-main>
           <router-view>
 
           </router-view>
-        </div>
-          <!-- <div class="mainLeft">
-            这里面放个人博客主页，还没有定下来博客这个东西，先不写
-            </div> -->
-          <!-- 展示通知 -->
-          <!-- <div class="mainRight">
-
-            在这个侧边栏放通知，形式是什么，然后是否需要走马灯
-          </div> -->
         </el-main>
       </el-container>
     </el-container>
@@ -159,18 +144,22 @@ const imgLoad=()=>{
 .el-header {
   padding: 0 0 !important;
   height: 80px !important;
+  width: 100%;
+  position: fixed;
+  z-index: 9999;
 }
-.el-main-div{
-  padding-left: 5px;
-  padding-top: 8px;
-}
+
 .headerMenu {
   height: 100%;
 }
 
 .el-aside {
-  height: 89vh !important;
+  height: 100vh !important;
+  width: 200px;
+  padding-top: 80px;
   margin-top: 3px;
+  position: fixed;
+  top: 0;
 }
 
 .el-main {
@@ -199,23 +188,6 @@ const imgLoad=()=>{
   height: 100vh;
   display: flex;
 }
-
-.el-carousel__item h3 {
-  color: #475669;
-  opacity: 0.75;
-  line-height: 600px;
-  margin: 0;
-  text-align: center;
-}
-
-.el-carousel__item:nth-child(2n) {
-  background-color: #99a9bf;
-}
-
-.el-carousel__item:nth-child(2n + 1) {
-  background-color: #d3dce6;
-}
-
 .logoDiv {
   height: 70px !important;
   width: 35%;

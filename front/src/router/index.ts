@@ -3,11 +3,12 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    // {
+    //   path: '/',
+    //   name: 'main',
+    //   component: () => import('../views/MainView.vue')
+    // },
     {
-      path: '/',
-      name: 'main',
-      component: () => import('../views/MainView.vue')
-    },{
       path: '/Login',
       name: 'Login',
       component: () => import('../views/LoginView.vue')
@@ -69,7 +70,12 @@ const router = createRouter({
           path:'/SelfInformation',
           name:'SelfInformation',
           component:() =>import('../views/SelfInformation.vue')
-        }
+        },
+        {
+          path: '/',
+          name: 'main',
+          component: () => import('../views/MainView.vue')
+        },
       ]
     },
   ]

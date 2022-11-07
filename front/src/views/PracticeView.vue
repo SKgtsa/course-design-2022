@@ -5,76 +5,78 @@
 然后找个位置设置个添加按钮
 这个查找是搞一个输入框？ -->
   <!--这个不能添加姓名是别人的社会实践吧，这个不确定有没有问题-->
-  <div class="pageContent">
-    <!-- :row-key="record=>record.id" -->
-    <div class="title">
-      title
-      <el-button type="success" @click="add">添加</el-button>
-    </div>
-    <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
-      stripe size="large">
-      <!-- 显示斑马纹和边框 -->
-      <el-table-column label="序号" type="index" width="80" />
-      <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
-      <el-table-column label="标题" prop="practiceName" width="350" show-overflow-tooltip />
+  <div class="content">
+    <div class="pageContent">
+      <!-- :row-key="record=>record.id" -->
+      <div class="title">
+        社会实践
+        <el-button type="success" @click="add">添加</el-button>
+      </div>
+      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
+                stripe size="large">
+        <!-- 显示斑马纹和边框 -->
+        <el-table-column label="序号" type="index" width="80" />
+        <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
+        <el-table-column label="标题" prop="practiceName" width="350" show-overflow-tooltip />
 
-      <el-table-column>
-        <template #header>
-          <!-- 默认表头 -->
-          <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />
-        </template>
-        <template #default="scope">
-          <!-- 默认行和列 -->
-          <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
-          <el-button size="medium" @click="handleEdit(scope.row)" class="button">编辑</el-button>
-          <el-button size="medium" type="danger" class="button" @click="handleDelete(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="pagination">
-      <el-pagination background layout="prev, pager, next,jumper, ->" :total="tableData.length"
-        @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
-        style="text-align: center">
-      </el-pagination>
+        <el-table-column>
+          <template #header>
+            <!-- 默认表头 -->
+            <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />
+          </template>
+          <template #default="scope">
+            <!-- 默认行和列 -->
+            <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
+            <el-button size="medium" @click="handleEdit(scope.row)" class="button">编辑</el-button>
+            <el-button size="medium" type="danger" class="button" @click="handleDelete(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination background layout="prev, pager, next,jumper, ->" :total="tableData.length"
+                       @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
+                       style="text-align: center">
+        </el-pagination>
+      </div>
     </div>
+    <!-- 用一个变量来判断是否弹出这个对话框 -->
+    <!-- 再用一个变量判断是查看还是编辑，添加感觉和编辑差不多，编辑和添加用input框住，
+      编辑要有初始的数值，查看用span框住，也要有初始值，添加用input框住，没有初始值-->
+    <el-dialog v-model="centerDialogVisible" width="45%">
+      <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
+        <!-- <el-form-item label="日期" prop="practiceDate">
+            <el-date-picker
+              type="daterange"
+              range-separator="To"
+              start-placeholder="Start date"
+              end-placeholder="End date"
+              v-model = "editForm.practiceDate"
+            />
+          </el-form-item> -->
+        <el-form-item label="标题" prop="practiceName">
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}</el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName"></el-input>
+        </el-form-item>
+        <el-form-item label="内容" prop="practiceDescription">
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.practiceDescription">
+            {{ editForm.practiceDescription }}</el-input>
+          <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.practiceDescription">
+            {{ editForm.practiceDescription }}</el-input>
+        </el-form-item>
+        <!-- <el-form-item label="成员" prop="character">
+            <span v-if="typeOperation==='check'">{{editForm.character}}</span> 这个editForm初始值，还得赋值为那一行的数据吧
+            <el-input v-if="typeOperation==='edit'" v-model="editForm.character">{{editForm.character}}</el-input>
+            <el-input v-if="typeOperation==='add'" v-model="editForm.character">{{editForm.character}}</el-input>
+          </el-form-item> -->
+      </el-form>
+      <div class="dialogButtonPage">
+        <el-button @click="closeDialog" class="dialogButton">取消</el-button>
+        <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
+      </div>
+    </el-dialog>
   </div>
-  <!-- 用一个变量来判断是否弹出这个对话框 -->
-  <!-- 再用一个变量判断是查看还是编辑，添加感觉和编辑差不多，编辑和添加用input框住，
-    编辑要有初始的数值，查看用span框住，也要有初始值，添加用input框住，没有初始值-->
-  <el-dialog v-model="centerDialogVisible" width="45%">
-    <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
-      <!-- <el-form-item label="日期" prop="practiceDate">
-					<el-date-picker
-            type="daterange"
-            range-separator="To"
-            start-placeholder="Start date"
-            end-placeholder="End date"
-            v-model = "editForm.practiceDate" 
-          />
-				</el-form-item> -->
-      <el-form-item label="标题" prop="practiceName">
-        <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
-        <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}</el-input>
-        <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName"></el-input>
-      </el-form-item>
-      <el-form-item label="内容" prop="practiceDescription">
-        <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
-        <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.practiceDescription">
-          {{ editForm.practiceDescription }}</el-input>
-        <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.practiceDescription">
-          {{ editForm.practiceDescription }}</el-input>
-      </el-form-item>
-      <!-- <el-form-item label="成员" prop="character">
-          <span v-if="typeOperation==='check'">{{editForm.character}}</span> 这个editForm初始值，还得赋值为那一行的数据吧
-					<el-input v-if="typeOperation==='edit'" v-model="editForm.character">{{editForm.character}}</el-input>
-          <el-input v-if="typeOperation==='add'" v-model="editForm.character">{{editForm.character}}</el-input>
-				</el-form-item> -->
-    </el-form>
-    <div class="dialogButtonPage">
-      <el-button @click="closeDialog" class="dialogButton">取消</el-button>
-      <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
-    </div>
-  </el-dialog>
 </template>
 <script lang="ts" setup>
 import { computed, ref, reactive } from 'vue'
@@ -259,7 +261,7 @@ let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false);
 let isShow = ref(false);
 let currentPage = ref(1);
-let pageSize = ref(8);
+let pageSize = ref(7);
 const formData = ref();
 const rulesEditForm = reactive({   /* 定义校验规则 */
   practiceName: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
@@ -441,12 +443,16 @@ const handleCurrentChange = (currentPage) => {
 </script>
 <style scoped>
 .title {
+  margin-top: 30px;
   height: 60px;
+  font-family: 华文楷体;
+  font-size: 4vh;
+  font-weight: bold;
 }
 
 .pageContent {
-  padding-left: 100px;
-  height: 420px;
+  padding-left: 200px;
+  height: 400px;
 }
 
 .search {
@@ -480,5 +486,11 @@ const handleCurrentChange = (currentPage) => {
 .pagination {
   padding-top: 30px;
   padding-left: 230px;
+}
+.content{
+  padding-top: 80px;
+  padding-left: 200px;
+  background-color: rgb(255, 255, 255);
+  height: 650px;
 }
 </style>
