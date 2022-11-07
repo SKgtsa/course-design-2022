@@ -1,28 +1,30 @@
 <template>
+  <div class="content">
     <div class="selfInformationPage">
-        <el-container>
-            <el-aside width="300px" class="aside">
-                <div class="selfImage">
-                    <AvatarUploadTestViewVue class="image" />
-                </div>
-                <div class="selfInf">
-                    <el-table :data="tableData" size="mini" class="tableStyle">
-                        <el-table-column prop="title" label="" width="120">
-                        </el-table-column>
-                        <el-table-column prop="information" label="" width="120">
-                        </el-table-column>
-                    </el-table>
-                    <el-button type="info" class="changeButton" plain>
-                        修改个人信息
-                    </el-button>
+      <el-container>
+        <el-aside width="300px" class="aside">
+          <div class="selfImage">
+            <AvatarUploadTestViewVue class="image" />
+          </div>
+          <div class="selfInf">
+            <el-table :data="tableData" size="mini" class="tableStyle">
+              <el-table-column prop="title" label="" width="120">
+              </el-table-column>
+              <el-table-column prop="information" label="" width="120">
+              </el-table-column>
+            </el-table>
+            <el-button type="info" class="changeButton" plain>
+              修改个人信息
+            </el-button>
 
-                </div>
-            </el-aside>
-            <el-main class="main">
+          </div>
+        </el-aside>
+        <el-main class="main">
 
-            </el-main>
-        </el-container>
+        </el-main>
+      </el-container>
     </div>
+  </div>
 </template>
 <script lang="ts" setup>
 import AvatarUploadTestViewVue from '@/components/AvatarUploadTestView.vue';
@@ -51,58 +53,62 @@ const tableData = reactive([
 ])
 </script>
 <style lang="scss" scoped>
-.selfInformationPage {
+.content{
+  padding-top: 88px;
+  padding-left: 200px;
+  .selfInformationPage {
     position: relative;
-
     .aside {
+      position: absolute;
+      background-color: aqua;
+      height: 650px;
+
+      .selfImage {
         position: absolute;
-        background-color: aqua;
-        height: 650px;
+        width: 280px;
+        height: 200px;
+        left: 10px;
+        display: flex;
+        padding-top: 20px;
+        justify-content: center;
+        background-color: rgb(196, 255, 201);
 
-        .selfImage {
-            position: absolute;
-            width: 280px;
-            height: 200px;
-            left: 10px;
-            display: flex;
-            padding-top: 20px;
-            justify-content: center;
-            background-color: rgb(196, 255, 201);
-
-            .image {
-                display: flex;
-                justify-content: center;
-            }
+        .image {
+          display: flex;
+          justify-content: center;
         }
+      }
 
-        .selfInf {
-            display: flex;
-            position: absolute;
-            top: 230px;
-            margin-top: 2px;
-            width: 280px;
-            height: 400px;
-            left: 10px;
-            background-color: brown;
-            .tableStyle{
-                margin-top: 40px;
-                padding-top: 10px;
-                padding-left: 5px;
-            }
-            .changeButton{
-                position: absolute;
-                top:340px;
-                width: 220px;
-                height: 35px;
-                left: 25px;
-                color: #FFFF99;
-            }
+      .selfInf {
+        display: flex;
+        position: absolute;
+        top: 230px;
+        margin-top: 2px;
+        width: 280px;
+        height: 400px;
+        left: 10px;
+        background-color: brown;
+        .tableStyle{
+          margin-top: 40px;
+          padding-top: 10px;
+          padding-left: 5px;
         }
+        .changeButton{
+          position: absolute;
+          top:340px;
+          width: 220px;
+          height: 35px;
+          left: 25px;
+          color: #FFFF99;
+        }
+      }
     }
 
     .main {
-        background-color: bisque;
-        height: 650px;
+      background-color: bisque;
+      height: 650px;
     }
+  }
 }
+
 </style>
