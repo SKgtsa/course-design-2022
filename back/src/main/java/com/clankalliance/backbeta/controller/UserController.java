@@ -5,7 +5,6 @@ import com.clankalliance.backbeta.request.TokenCheckRequest;
 import com.clankalliance.backbeta.request.UserLoginRequest;
 import com.clankalliance.backbeta.request.UserSaveRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
-import com.clankalliance.backbeta.service.TencentSmsService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +24,6 @@ public class UserController {
 
     @Resource
     private UserService userService;
-
-    @Resource
-    private TencentSmsService tencentSmsService;
 
 
     @PostMapping("/login")

@@ -14,7 +14,6 @@ import javax.validation.constraints.Size;
 
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
 public abstract class User {
@@ -53,6 +52,11 @@ public abstract class User {
 
     //头像url
     private String avatarURL;
+
+    //对默认头像进行一个设置
+    public User(){
+        this.avatarURL = "/static/default.jpg";
+    }
 
 
 }

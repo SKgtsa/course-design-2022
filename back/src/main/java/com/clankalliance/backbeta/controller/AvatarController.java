@@ -1,9 +1,10 @@
 package com.clankalliance.backbeta.controller;
 
+import com.clankalliance.backbeta.request.TokenCheckRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
+import com.clankalliance.backbeta.service.AvatarService;
 import com.clankalliance.backbeta.utils.TokenUtil;
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
-import org.apache.tomcat.util.http.fileupload.impl.FileUploadIOException;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,15 +18,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static javax.security.auth.callback.ConfirmationCallback.OK;
 
+/**
+ * 头像控制器
+ * 用于控制头像的删改查
+ */
 @RestController
 @RequestMapping("/api/upload")
-public class AvatarTestController {
+public class AvatarController {
 
 
     @Resource
     private TokenUtil tokenUtil;
+
+    @Resource
+    private AvatarService avatarService;
 
 
     // 设置上传文件的最大值
@@ -38,9 +45,14 @@ public class AvatarTestController {
         AVATAR_TYPE.add("images/png");
         AVATAR_TYPE.add("images/bmp");
         AVATAR_TYPE.add("images/gif");
+        AVATAR_TYPE.add("image/jpeg");
+        AVATAR_TYPE.add("image/png");
+        AVATAR_TYPE.add("image/bmp");
+        AVATAR_TYPE.add("image/gif");
+
     }
 
-    @RequestMapping("/change_avatar")
+    @RequestMapping("/changeAvatar")
     public CommonResponse changeAvatar(HttpSession session,
                                        // 路径变量 解决前后端不一致
                                        @RequestParam("file") MultipartFile file) throws IOException {
@@ -61,8 +73,7 @@ public class AvatarTestController {
         }
         // 上传的文件.../upload/文件.png
         String parent =
-                session.getServletContext().
-                        getRealPath("static");
+                System.getProperty("user.dir") + "/static";
         // File对象指向这个路径，file是否存在
         File dir = new File(parent);
         if (!dir.exists()) { // 检测目录是否存在
@@ -90,13 +101,19 @@ public class AvatarTestController {
 
 
         // 返回头像的路径/upload/test.png
-        String avatar = "/static" + filename;
+        String avatar = "/static/" + filename;
         // 返回用户头像的路径给前端，将来用于头像的展示使用
+        System.out.println("内容保存至" + avatar);
         CommonResponse response = new CommonResponse();
         response.setSuccess(true);
         response.setContent(avatar);
         return response;
 
+    }
+
+    @RequestMapping("/getAvatar")
+    public CommonResponse getAvatar(@RequestBody TokenCheckRequest request){
+        return avatarService.handleGet(request.getToken());
     }
 
 

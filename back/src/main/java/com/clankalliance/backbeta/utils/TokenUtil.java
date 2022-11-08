@@ -30,7 +30,8 @@ public class TokenUtil {
             ManipulateUtil.appendStatus(status.getUserId());
             response.setSuccess(true);
             response.setToken(ManipulateUtil.endNode.getToken());
-            response.setUser(userService.findById(status.getUserId()));
+            //以message传出用户id
+            response.setMessage("" + status.getUserId());
         }else{
             response.setSuccess(false);
             response.setMessage("登录失效");
