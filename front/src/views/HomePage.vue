@@ -65,6 +65,7 @@ const imgLoad=()=>{
             background-color="#003366"
             text-color="#FFF"
             active-text-color="#FFFF66"
+            router
         >
           <el-link class="title" href="/">
             学生管理系统
@@ -74,8 +75,7 @@ const imgLoad=()=>{
           <div class="flex-grow" />
           <el-sub-menu index="1">
             <template #title>{{userName}}</template>
-            <el-menu-item index="1-1">个人信息</el-menu-item>
-            <el-menu-item index="1-2" disabled>临时设置</el-menu-item>
+            <el-menu-item route="/SelfInformation" index="1-1">个人信息</el-menu-item>
           </el-sub-menu>
         </el-menu>
       </el-header>

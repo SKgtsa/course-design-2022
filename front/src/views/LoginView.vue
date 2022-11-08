@@ -1,22 +1,24 @@
 
-<template>
+<template xmlns="http://www.w3.org/1999/html">
 <div class="loginContainer">
-  <div class="topText">
-    <a>大学</a>
+
+  <div>
+    <img class="img" src="../assets/images/logo.png" alt="未加载">
+    <a class="topText">山大教务系统</a>
   </div>
   <div class="middleWindow">
     <div class="loginWindow">  <!-- 登录界面哪个窗口 -->
       <div class="switchButtonDiv">
         <el-button 
         class="switchButton switchButtonLeft" 
-        color="#333399"
+        color="rgba(30,30,30,0.8)"
         type="success"
         @click="toUserNumber"
         >
         学号登录</el-button>
         <el-button 
         class="switchButton switchButtonRight" 
-        color="#333399" 
+        color="rgba(30,30,30,0.8)"
         type="success"
         @click="toPhone"
         >短信登录</el-button>
@@ -57,11 +59,11 @@
           type="success"  
           @click = "submitPwd" 
           class="loginPageEl-botton buttonLogin"
-          color="rgb(200,255,255,1)"
+          color="rgb(51,126,204,0.3)"
           >登录</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary"  class="loginPageEl-botton"  @click="toRegister">注册</el-button>
+          <el-button type="primary" color="rgb(51,126,204,0.3)" class="loginPageEl-botton"  @click="toRegister">注册</el-button>
         </el-form-item>
       </el-form>
       <el-form          
@@ -108,11 +110,16 @@
           type="success"  
           @click = "submitPhone" 
           class="loginPageEl-botton buttonLogin"
-          color="rgb(200,255,255,1)"
+          color="rgb(51,126,204,0.3)"
           >登录</el-button>
           </el-form-item>
         <el-form-item>
-          <el-button type="primary"  class="loginPageEl-botton" @click="toRegister">注册</el-button>
+          <el-button
+              type="primary"
+              class="loginPageEl-botton"
+              color="rgb(51,126,204,0.3)"
+              @click="toRegister"
+          >注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -276,13 +283,14 @@ const rulesCaptcha = reactive({
 
 }
 .topText{
-  height: 20vh;
+  font-family: 微软雅黑;
+  /*height: 20vh;*/
   text-align: left;
-  font-size: 5vh;
+  font-size: 6vh;
   color: #ffffff;
   font-weight: bolder;
-  padding-top: 1vh;
-  padding-left: 3vw;
+  margin-bottom: 3vh;
+
 }
 .middleWindow{
   height: 60vh;
@@ -337,13 +345,13 @@ color: black;
   float: left;
   padding: 0px;
   margin-left: 0px !important;
-  border-bottom-color: rgb(147, 190, 30);
+  border-bottom-color: rgb(255, 255, 255);
   border-width: 2px;
   border-style:double;
   /* background-color: rgb(0,0,150,0.5) */;
 }
 .switchButtonDiv>>>.el-button-bg-color{
-  color: #333399;
+  color: #a0cfff;
 }
 .switchButtonLeft{
   border-radius: 2vw 0 0 0 ;
@@ -360,7 +368,7 @@ color: black;
   border-radius: 15px;
   margin-top: 10px;
   height: 40px;
-  font-weight: 400px;
+  font-weight: bold;
   font-style:inherit;
   font-size:medium;
 }
@@ -372,6 +380,7 @@ color: black;
   border-bottom-right-radius: 0px!important;
 }
 .captchaButton{
+  background-color:rgba(103,194,58,0.5);
   margin-top: 4px;
   margin-left: 5px;
   height: 43px !important;
@@ -387,9 +396,15 @@ color: black;
 .el-checkbox{
   --el-checkbox-font-size: 15px;
   --el-checkbox-font-weight:1000;
-  color:rgb(134, 102, 54);
+  color: rgb(255, 255, 255);
 }
 .spacing{
   padding-top: 30px;
+}
+.img {
+  height: 10vh !important;
+  padding-left: 5vh;
+  padding-right: 3vh;
+  padding-top: 3vh;
 }
 </style>

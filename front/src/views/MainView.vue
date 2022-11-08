@@ -77,7 +77,7 @@ const bolgButton = () => {
 .content{
   padding-top: 80px;
   padding-left: 200px;
-  background-color: #d9ecff;
+  background-color: #D9ECFF7E;
 }
 .blogSend{
   padding-right: 30vh;
