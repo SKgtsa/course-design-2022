@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/back/backbeta.iml" filepath="$PROJECT_DIR$/back/backbeta.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/course-design-2022.iml" filepath="$PROJECT_DIR$/.idea/course-design-2022.iml" />
       <module fileurl="file://$PROJECT_DIR$/back/后端.iml" filepath="$PROJECT_DIR$/back/后端.iml" />
     </modules>
