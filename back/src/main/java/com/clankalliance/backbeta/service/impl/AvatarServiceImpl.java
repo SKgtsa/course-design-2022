@@ -80,7 +80,7 @@ public class AvatarServiceImpl implements AvatarService {
         }
         // 上传的文件.../upload/文件.png
         String parent =
-                System.getProperty("user.dir") + "/static";
+                System.getProperty("user.dir") + "/static/avatar";
         // File对象指向这个路径，file是否存在
         File dir = new File(parent);
         if (!dir.exists()) { // 检测目录是否存在
@@ -108,7 +108,7 @@ public class AvatarServiceImpl implements AvatarService {
 
 
         // 返回头像的路径/upload/test.png
-        String avatar = "/static/" + filename;
+        String avatar = "/static/avatar" + filename;
 
         User user = userService.findById(Long.valueOf(response.getMessage()));
         user.setAvatarURL(avatar);
