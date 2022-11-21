@@ -22,7 +22,7 @@
         <el-table-column>
           <template #header>
             <!-- 默认表头 -->
-            <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />
+<!--            <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />-->
           </template>
           <template #default="scope">
             <!-- 默认行和列 -->
@@ -445,7 +445,7 @@ const handleCurrentChange = (currentPage) => {
 .title {
   margin-top: 30px;
   height: 60px;
-  font-family: 华文楷体;
+  font-family: 微软雅黑;
   font-size: 4vh;
   font-weight: bold;
 }

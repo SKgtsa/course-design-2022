@@ -11,19 +11,12 @@
       <div class="blogContent">
         <div class="blogSend">
           <div>
-            <el-input
-                v-model="blog"
-                :rows="5"
-                type="textarea"
-                placeholder="在这里发你的博客吧"
-                clearable
-            />
+            <TEditor ref="editor" v-model="formState.content" :disabled='disabled' @getContent="getContent"/>
           </div>
           <div>
             <el-button @click="submitBlog" class="blogButton">发送</el-button>
           </div>
         </div>
-
         <div>
           <!--看博客模块-->
 
@@ -36,12 +29,11 @@
 
 <script lang="ts" setup>
 
-import {ref} from "vue";
+import {reactive, ref} from "vue";
 import axios from "axios";
 import {ElMessage} from "element-plus";
-
+import TEditor from '@/components/TEditor.vue';
 const blog = ref('')
-
 const bolgButton = () => {
   axios.post('blog/submit' , {token: localStorage.getItem("token") , content: blog.value}).then(res => {
     const data = res.data;
@@ -61,6 +53,10 @@ const bolgButton = () => {
       })
     }
   })
+}
+const formState = reactive({contents :''})
+const getContent = (v: string) => {
+  formState.contents = v
 }
 </script>
 

@@ -23,10 +23,10 @@
         
         <el-table-column  >
           <template #header> <!-- 默认表头 -->
-            <el-input 
-            class="search" 
-            v-model="search" 
-            size="large" 
+            <el-input
+            class="search"
+            v-model="search"
+            size="large"
             placeholder="搜索你的成果奖励"
             :suffix-icon="Search"
              />
