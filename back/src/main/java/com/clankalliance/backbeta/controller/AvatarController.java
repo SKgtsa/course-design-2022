@@ -4,10 +4,7 @@ import com.clankalliance.backbeta.request.TokenCheckRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.AvatarService;
 import com.clankalliance.backbeta.utils.TokenUtil;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
@@ -23,6 +20,7 @@ import java.util.UUID;
  * 头像控制器
  * 用于控制头像的删改查
  */
+@CrossOrigin
 @RestController
 @RequestMapping("/api/upload")
 public class AvatarController {

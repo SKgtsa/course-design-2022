@@ -9,15 +9,15 @@
   <div class="middleWindow">
     <div class="loginWindow">  <!-- 登录界面哪个窗口 -->
       <div class="switchButtonDiv">
-        <el-button 
-        class="switchButton switchButtonLeft" 
+        <el-button
+        class="switchButton switchButtonLeft"
         color="rgba(30,30,30,0.8)"
         type="success"
         @click="toUserNumber"
         >
         学号登录</el-button>
-        <el-button 
-        class="switchButton switchButtonRight" 
+        <el-button
+        class="switchButton switchButtonRight"
         color="rgba(30,30,30,0.8)"
         type="success"
         @click="toPhone"
@@ -51,13 +51,13 @@
                 v-model="login_data.password"
                 placeholder="请输入密码"
                 maxlength="16"
-          />   
+          />
           <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
             </el-form-item>
           <el-form-item>
-          <el-button 
-          type="success"  
-          @click = "submitPwd" 
+          <el-button
+          type="success"
+          @click = "submitPwd"
           class="loginPageEl-botton buttonLogin"
           color="rgb(51,126,204,0.3)"
           >登录</el-button>
@@ -66,7 +66,7 @@
           <el-button type="primary" color="rgb(51,126,204,0.3)" class="loginPageEl-botton"  @click="toRegister">注册</el-button>
         </el-form-item>
       </el-form>
-      <el-form          
+      <el-form
               v-if="loginType=='phone'"
               ref="loginFormPhone"
               :model="login_data_phone"
@@ -106,9 +106,9 @@
           </el-row>
           </el-form-item>
         <el-form-item>
-          <el-button 
-          type="success"  
-          @click = "submitPhone" 
+          <el-button
+          type="success"
+          @click = "submitPhone"
           class="loginPageEl-botton buttonLogin"
           color="rgb(51,126,204,0.3)"
           >登录</el-button>
@@ -180,16 +180,18 @@ const submitPwd = (formEl: FormInstance | undefined) => {
   if(!formEl)return
   loginFormPwd.value.validate((valid)=>{
     if(valid){
-      service.post('/api/user/normalLogin',login_data).then(res => {
+      service.post('/api/user/login',login_data).then(res => {
       console.log(res)
       const data = res.data;
       if(data.success){
-          localStorage.setItem("token", data.token)
+        console.log('data.success')
+        localStorage.setItem("token", data.token)
 /*       localStorage.setItem("userName", data.user.name) */
-          messageSuccess("登陆成功！")
-          router.push('/')
+        messageSuccess("登陆成功！")
+        router.push('/')
       }else{
-          messageError(data.message)
+        console.log('!data.success')
+        messageError(data.message)
       }
     })
   }else{
@@ -203,19 +205,20 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
   console.log(login_data_phone.userPhone)
   loginFormPhone.value.validate((valid)=>{
     if(valid){
-      service.post('/api/user/loginCode',{code:login_data_phone.captcha}).then(res => {
-      console.log(res)
-      const data = res.data;
-      if(data.success){
-        localStorage.setItem("token", data.token)
-        localStorage.setItem("userPhone", data.user.phone)
-        messageSuccess("登录成功!")
-        router.push('/')
-      }else{
-        messageError(data.message)
-      }
-  })}
-   else{
+      service.post('/api/user/loginCode',{code:login_data_phone.captcha,phone:login_data_phone.userPhone}).then(res => {
+        console.log(res)
+        const data = res.data;
+        if(data.success){
+          localStorage.setItem("token", data.token)
+          localStorage.setItem("userPhone", data.user.phone)
+          messageSuccess("登录成功!")
+          router.push('/')
+        }else{
+          messageError(data.message)
+        }
+      })
+    }
+    else{
        messageError("请填写正确的手机号和验证码！")
     }
   })
@@ -271,7 +274,7 @@ const rulesCaptcha = reactive({
   display: none !important;
 }
 .loginContainer{
-  background-image: url("../assets/images/LoginPageBackground.jpg"); 
+  background-image: url("../assets/images/LoginPageBackground.jpg");
   background-size:cover;
   background-attachment: fixed;
   background-position: center center;

@@ -24,6 +24,7 @@ import "tinymce/plugins/link"
 import { reactive, ref } from "vue"
 import { onMounted, defineEmits, watch } from "@vue/runtime-core"
 import axios from 'axios'
+import service from "@/request";
 // import { updateImg } from '@/api/order/order'
 const emits = defineEmits(["getContent"])
 //这里我选择将数据定义在props里面，方便在不同的页面也可以配置出不同的编辑器，当然也可以直接在组件中直接定义
@@ -76,6 +77,8 @@ const init = reactive({
   paste_auto_cleanup_on_paste: false,
   // resize: false,
   file_picker_types: 'file',
+  images_upload_url: '/api/upload/generalUpload',
+  images_upload_base_path: 'http://localhost:5174',
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
 
@@ -86,6 +89,7 @@ const init = reactive({
       const ph = import.meta.env.VITE_BASE_PATH + ":" + import.meta.env.VITE_SERVER_PORT + "/"
       let params = new FormData()
       params.append('file', blobInfo.blob())
+      params.append('token',localStorage.getItem('token'))
 
       let config = {
         headers: {
@@ -94,11 +98,14 @@ const init = reactive({
         }
       }
 
-      axios.post('xxxx', params, config).then(res => {
-        if (res.data.code == 200) {
+      service.post('api/upload/generalUpload', params, config).then(res => {
+        console.log(res);
+        if (res.data.success) {
           resolve(ph + res.data.msg)  //上传成功，在成功函数里填入图片路径
+          localStorage.setItem('token',res.data.token)
+          init.images_upload_url = res.data.content;
         } else {
-          reject('HTTP Error: 上传失败' + res.data.code);
+          reject('HTTP Error: 上传失败');
           return
         }
       }).catch(() => {

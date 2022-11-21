@@ -70,7 +70,7 @@ public class GeneralUploadServiceImpl implements GeneralUploadService {
 
         // 返回文件的路径/upload/test.png
         String filePath = "/static/file/" + filename;
-
+        response.setMessage("上传成功");
         response.setContent(filePath);
         return response;
     }
