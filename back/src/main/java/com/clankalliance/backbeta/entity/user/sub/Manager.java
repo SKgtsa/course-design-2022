@@ -23,8 +23,8 @@ public class Manager extends User {
                 super();
         }
 
-        public Manager(long id,long userNumber,String name,String password,long phone,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL){
-                super(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL);
+        public Manager(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL){
+                super(id,userNumber,name,password,phone,gradeClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL);
         }
 
 

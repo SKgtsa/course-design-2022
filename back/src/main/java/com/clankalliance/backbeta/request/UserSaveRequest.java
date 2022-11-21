@@ -42,6 +42,8 @@ public class UserSaveRequest {
     @JsonSerialize(using= ToStringSerializer.class)
     private long phone;
 
+    private String studentClass;
+
     private String idCardNumber;
 
     //男：false 女：true

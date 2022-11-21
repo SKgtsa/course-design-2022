@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
     //存在bug: 保存时数据库条目不全 email接收有问题
 
     @Override
-    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail) {
+    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail) {
         password = DigestUtils.sha1Hex(password.getBytes());
         CommonResponse  response = new CommonResponse();
         User user = findByUserNumber(userNumber);
@@ -150,13 +150,13 @@ public class UserServiceImpl implements UserService {
         long id = snowFlake.nextId();
         switch (identity){
             case 0:
-                user = new Student(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
+                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
                 break;
             case 1:
-                user = new Teacher(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
+                user = new Teacher(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
                 break;
             case 2:
-                user = new Manager(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
+                user = new Manager(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
                 break;
         }
         try{

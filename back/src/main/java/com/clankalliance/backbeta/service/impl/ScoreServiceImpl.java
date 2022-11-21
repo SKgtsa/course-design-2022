@@ -2,7 +2,10 @@ package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.Course;
+import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.ScoreRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
@@ -13,6 +16,8 @@ import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -92,6 +97,45 @@ public class ScoreServiceImpl implements ScoreService {
             response.setMessage("保存成功");
         }
         //token无效，直接将token验证的数据返回前端
+        return response;
+    }
+
+    /**
+     * 处理成绩查询的方法，先进行token验证身份，teacher可以查询所教课程的成绩，student只能查询自己
+     * @param token token
+     * @param courseId 课程id
+     * @param Year 学年
+     * @param Semester 学期
+     * @return
+     */
+    public CommonResponse handleFind(String token, long courseId, Integer Year, String  Semester){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            //身份为教师
+            if(response.getUser() instanceof Teacher || response.getUser() instanceof Manager){
+
+                Course course = courseRepository.findById(courseId).get();
+                Set<Student> studentSet = course.getStudentSet();
+                List<Score> scoreList = new ArrayList<>();
+                for(Student s: studentSet){
+                    Optional<Score> sop = scoreRepository.findByCourseStudentId(courseId,s.getId());
+                    if(sop.isPresent()){
+                        scoreList.add(sop.get());
+                    }
+                }
+            response.setContent(scoreList);
+            }//身份为学生
+            else if(response.getUser() instanceof Student){
+                User user = (User) response.getUser();
+                long userId = user.getId();
+                List<Score> scoreList = new ArrayList<>();
+                Optional<Score> sop = scoreRepository.findByTime(userId,courseId,Year,Semester);
+                while(sop.isPresent()){
+                    scoreList.add(sop.get());
+                }
+                response.setContent(scoreList);
+            }
+        }
         return response;
     }
 

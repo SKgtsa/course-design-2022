@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -29,6 +29,7 @@ public abstract class User {
     @Size(max = 50)
     private String name;
 
+
     @NotBlank
     @Size(max = 50)
     private String password;
@@ -36,7 +37,10 @@ public abstract class User {
     @JsonSerialize(using= ToStringSerializer.class)
     private long phone;
 
+    private String studentClass;
+
     private String idCardNumber;
+
 
     //男：false 女：true
     private Boolean gender;
