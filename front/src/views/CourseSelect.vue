@@ -1,131 +1,140 @@
 <template>
-    <div class="content">
-        <el-container>
+  <div class="mainArea">
+    <div class="mainCard">
+      <el-scrollbar height="80vh">
+        <div class="content">
+          <el-container>
             <el-aside class="classSchedulePage">
-                <el-table :data="tableData" style="width: 100%" height="550" :cell-style="{ padding: '22px 0' }"
-                    class="tableStyle" border stripe>
-                    <el-table-column class="cellStyle" prop="title" label="节次" width="180"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Monday" label="周一"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Tuesday" label="周二"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Wednesday" label="周三"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Thursday" label="周四"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Friday" label="周五"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Saturday" label="周六"></el-table-column>
-                    <el-table-column class="cellStyle" prop="Sunday" label="周日"></el-table-column>
-                </el-table>
+              <el-table :data="tableData" style="width: 100%" height="550" :cell-style="{ padding: '22px 0' }"
+                        class="tableStyle" border stripe>
+                <el-table-column class="cellStyle" prop="title" label="节次" width="180"></el-table-column>
+                <el-table-column class="cellStyle" prop="Monday" label="周一"></el-table-column>
+                <el-table-column class="cellStyle" prop="Tuesday" label="周二"></el-table-column>
+                <el-table-column class="cellStyle" prop="Wednesday" label="周三"></el-table-column>
+                <el-table-column class="cellStyle" prop="Thursday" label="周四"></el-table-column>
+                <el-table-column class="cellStyle" prop="Friday" label="周五"></el-table-column>
+                <el-table-column class="cellStyle" prop="Saturday" label="周六"></el-table-column>
+                <el-table-column class="cellStyle" prop="Sunday" label="周日"></el-table-column>
+              </el-table>
             </el-aside>
             <el-main class="operationPage">
-                <div class="title">
-                    <h4>选课指南</h4>
-                </div>
-                <el-timeline>
-                    <el-timeline-item v-for="(activity, index) in activities" :key="index" :type="activity.type"
-                        :size="activity.size" :hollow="activity.hollow" :timestamp="activity.timestamp">
-                        {{ activity.content }}
-                    </el-timeline-item>
-                </el-timeline>
-                <div class="buttonSet">
-                    <!--         需要更新课表按钮(虽然这个有点鸡肋吧，选一节就更新一节了)
-                    需要能够查看自己所有选课的详细信息
-                    能够退课 -->
-                    <el-button type="defult" @click="courseSelected">刷新课表</el-button>
-                    <el-button type="defult" @click="viewDetails">查看已选课程</el-button>
-                    <el-button type="defult" @click="loadDropDialog">退选课程</el-button>
-                </div>
-                <div class="progressPage">
-                    <el-steps :active="2" align-center finish-status="success">
-                        <el-step title="选课通知" />
-                        <el-step title="正式选课" />
-                        <el-step title="退补选" />
-                        <el-step title="系统关闭" />
-                    </el-steps>
-                </div>
+              <div class="title">
+                <h4>选课指南</h4>
+              </div>
+              <el-timeline>
+                <el-timeline-item v-for="(activity, index) in activities" :key="index" :type="activity.type"
+                                  :size="activity.size" :hollow="activity.hollow" :timestamp="activity.timestamp">
+                  {{ activity.content }}
+                </el-timeline-item>
+              </el-timeline>
+              <div class="buttonSet">
+                <!--         需要更新课表按钮(虽然这个有点鸡肋吧，选一节就更新一节了)
+                需要能够查看自己所有选课的详细信息
+                能够退课 -->
+                <el-button type="defult" @click="courseSelected">刷新课表</el-button>
+                <el-button type="defult" @click="viewDetails">查看已选课程</el-button>
+                <el-button type="defult" @click="loadDropDialog">退选课程</el-button>
+              </div>
+              <div class="progressPage">
+                <el-steps :active="2" align-center finish-status="success">
+                  <el-step title="选课通知" />
+                  <el-step title="正式选课" />
+                  <el-step title="退补选" />
+                  <el-step title="系统关闭" />
+                </el-steps>
+              </div>
             </el-main>
-        </el-container>
-        <div class="courseSelectPage">
+          </el-container>
+          <div class="courseSelectPage">
             <span class="courseSelectPageTitle">
                 logo<h4>进入选课</h4>
             </span>
             <div class="selectTable">
-                <el-table :data="courseInfo.slice((currentPage - 1) * pageSize, currentPage * pageSize)" height="550"
-                    width="600" :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ padding: '20px 0' }"
-                    style="font-size: 16px" border>
-                    <!-- 还得实现分页,我把后端给我的处理一下吧......,感觉这个显示不太好显示 -->
-                    <el-table-column prop="courseName" label="课程名称" align="center" width="200" />
-                    <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
-                    <el-table-column prop="credit" align="center" label="学分" />
-                    <el-table-column prop="weekStart" align="center" label="开始周" width="100" />
-                    <el-table-column prop="weekEnd" align="center" label="结束周" width="100" />
-                    <el-table-column prop="classTime" align="center" label="上课时间" width="150">
-                        <template #default="time">
-                            <p v-for="(item, index) in time.row.classTime.weekDay">
-                                第{{ time.row.classTime.weekDay[index] }}周的第{{ time.row.classTime.section[index] }}大节
-                            </p>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="capacity" align="center" label="课容量" width="120" />
-                    <el-table-column prop="location" align="center" label="上课地点" width="150" />
-                    <el-table-column label="选课" width="200" align="center">
-                        <template #default="scope">
-                            <el-button size="large" @click="handleSelect(scope.row)">选课</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <div class="pagination">
-                    <el-pagination background layout="prev, pager, next,jumper, ->" :total="courseInfo.length"
-                        @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
-                        style="text-align: center">
-                    </el-pagination>
-                </div>
+              <el-table :data="courseInfo.slice((currentPage - 1) * pageSize, currentPage * pageSize)" height="550"
+                        width="600" :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ padding: '20px 0' }"
+                        style="font-size: 16px" border>
+                <!-- 还得实现分页,我把后端给我的处理一下吧......,感觉这个显示不太好显示 -->
+                <el-table-column prop="courseName" label="课程名称" align="center" width="200" />
+                <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
+                <el-table-column prop="credit" align="center" label="学分" />
+                <el-table-column prop="weekStart" align="center" label="开始周" width="100" />
+                <el-table-column prop="weekEnd" align="center" label="结束周" width="100" />
+                <el-table-column prop="classTime" align="center" label="上课时间" width="150">
+                  <template #default="time">
+                    <p v-for="(item, index) in time.row.classTime.weekDay">
+                      第{{ time.row.classTime.weekDay[index] }}周的第{{ time.row.classTime.section[index] }}大节
+                    </p>
+                  </template>
+                </el-table-column>
+                <el-table-column prop="capacity" align="center" label="课容量" width="120" />
+                <el-table-column prop="location" align="center" label="上课地点" width="150" />
+                <el-table-column label="选课" width="200" align="center">
+                  <template #default="scope">
+                    <el-button size="large" @click="handleSelect(scope.row)">选课</el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+              <div class="pagination">
+                <el-pagination background layout="prev, pager, next,jumper, ->" :total="courseInfo.length"
+                               @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
+                               style="text-align: center">
+                </el-pagination>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
-    <el-dialog v-model="dialogTableVisibleDetails" title="查看课程信息" width="800" class="dialogPage" align="true"
-        align-center="true">
-        <el-table :data="backData" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
-            :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
+        <el-dialog v-model="dialogTableVisibleDetails" title="查看课程信息" width="800" class="dialogPage" align="true"
+                   align-center="true">
+          <el-table :data="backData" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
+                    :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
             <el-table-column prop="courseName" label="课程名称" align="center" width="180" />
             <el-table-column prop="teacherName" label="教师姓名" align="center" width="100" />
             <el-table-column prop="credit" align="center" label="学分" width="60" />
             <el-table-column prop="weekStart" align="center" label="开始周" width="80" />
             <el-table-column prop="weekEnd" align="center" label="结束周" width="80" />
             <el-table-column prop="classTime" align="center" label="上课时间" width="400">
-                <template #default="time">
-                    <p v-for="(item, index) in time.row.classTime.weekDay">
-                        第{{ time.row.classTime.weekDay[index] }}周的第{{ time.row.classTime.section[index] }}大节
-                    </p>
-                </template>
+              <template #default="time">
+                <p v-for="(item, index) in time.row.classTime.weekDay">
+                  第{{ time.row.classTime.weekDay[index] }}周的第{{ time.row.classTime.section[index] }}大节
+                </p>
+              </template>
             </el-table-column>
             <el-table-column prop="capacity" align="center" label="课容量" width="120" />
             <el-table-column prop="location" align="center" label="上课地点" width="150" />
 
-        </el-table>
-    </el-dialog>
-    <el-dialog v-model="dialogTableVisibleDrop" title="退选课程" width="800" class="dialogPage" align="true"
-        align-center="true">
-        <el-table :data="backData" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
-            :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
+          </el-table>
+        </el-dialog>
+        <el-dialog v-model="dialogTableVisibleDrop" title="退选课程" width="800" class="dialogPage" align="true"
+                   align-center="true">
+          <el-table :data="backData" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
+                    :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
             <el-table-column prop="courseName" label="课程名称" align="center" width="180" />
             <el-table-column prop="teacherName" label="教师姓名" align="center" width="100" />
             <el-table-column prop="credit" align="center" label="学分" width="60" />
             <el-table-column prop="weekStart" align="center" label="开始周" width="80" />
             <el-table-column prop="weekEnd" align="center" label="结束周" width="80" />
             <el-table-column prop="classTime" align="center" label="上课时间" width="300">
-                <template #default="time">
-                    <p v-for="(item, index) in time.row.classTime.weekDay">
-                        第{{ time.row.classTime.weekDay[index] }}周的第{{ time.row.classTime.section[index] }}大节
-                    </p>
-                </template>
+              <template #default="time">
+                <p v-for="(item, index) in time.row.classTime.weekDay">
+                  第{{ time.row.classTime.weekDay[index] }}周的第{{ time.row.classTime.section[index] }}大节
+                </p>
+              </template>
             </el-table-column>
             <el-table-column prop="capacity" align="center" label="课容量" width="120" />
             <el-table-column prop="location" align="center" label="上课地点" width="150" />
             <el-table-column label="操作" width="200" align="center">
-                <template #default="scope">
-                    <el-button size="large" @click="dropCourse(scope.row)">退课</el-button>
-                </template>
+              <template #default="scope">
+                <el-button size="large" @click="dropCourse(scope.row)">退课</el-button>
+              </template>
             </el-table-column>
-        </el-table>
-    </el-dialog>
+          </el-table>
+        </el-dialog>
+      </el-scrollbar>
+    </div>
+  </div>
+
+
+
 </template>
 <script lang="ts" setup>
 import service from '@/request';
@@ -597,7 +606,7 @@ const courseSelected =async () =>{
 //进去即使没有选课也把空课表给我，让我给backData赋初始值
 courseSelected();
  //退课是否退课，发送请求，退课成功，要后端课表数据，调用函数
- const dropCourse = (row) => { //学生的id没有写 
+ const dropCourse = (row) => { //学生的id没有写
     ElMessageBox.confirm(
     '确认退课吗?',
     'Warning',
@@ -621,7 +630,7 @@ courseSelected();
     .catch(() => {
       messageInfo("取消删除")
     })
-} 
+}
 
 //选课
 const handleSelect =async(row) => { //选课
@@ -655,10 +664,24 @@ const loadDropDialog = (row) => {
 
 </script>
 <style lang="scss" scoped>
+.mainArea{
+  padding-top: 4vh;
+  padding-bottom: 3vh;
+}
+.mainCard{
+  background-color: #FFFFFF;
+  padding-top: 6vh;
+  padding-bottom: 6vh;
+  padding-left: 3vw;
+  padding-right: 3vw;
+  border-radius: 4vw;
+
+
+}
 //scss的,有的想强制修改element-plus的默认样式，那我再创一个普通css的？
 .content {
-    padding-top: 80px;
-    padding-left: 200px;
+
+
     /*     background-color: rgb(145, 193, 62); */
     height: 1300px;
 
@@ -695,7 +718,7 @@ const loadDropDialog = (row) => {
         .selectTable {
  /*               --el-table-tr-bg-color : #d5cccc !important;
 
-            //表格内背景颜色 
+            //表格内背景颜色
                 --el-table-header-text-color:'#202124' !important;
                 //表头颜色
                 --el-table-row-hover-bg-color: reb(135, 135, 113, 0.3) !important;
@@ -714,7 +737,7 @@ const loadDropDialog = (row) => {
     }
 }
 </style>
-<style scoped>  
+<style scoped>
 .content.courseSelectPage.selectTable>>>.--el-table-tr-bg-color{
     color: #dd1c1c!important;
 }

@@ -1,4 +1,8 @@
 <script lang="ts" setup>
+import { useStore } from 'vuex' // 引入useStore 方法
+const store = useStore()  // 该方法用于返回store 实例
+console.log(store)  // store 实例对象
+
 import {ref, reactive, toRefs} from 'vue'
 import logo from '../assets/images/logo.png'
 import {
@@ -14,6 +18,15 @@ import {
   Promotion,
   Search,
 } from '@element-plus/icons-vue'
+import router from "@/router";
+
+let avatarURL = store.getters.avatarURL;
+
+console.log(avatarURL)
+
+const handleToSelfInfo = () => {
+  router.push('/SelfInformation')
+}
 
 const handleOpen = (key: string, keyPath: string[]) => {
   console.log(key, keyPath)
@@ -62,74 +75,78 @@ const imgLoad=()=>{
             mode="horizontal"
             :ellipsis="false"
             @select="handleSelect"
-            background-color="#003366"
-            text-color="#FFF"
-            active-text-color="#FFFF66"
+            background-color="#e9eff9"
+            text-color="#3e5ca8"
+            active-text-color="#2d67fd"
             router
         >
-          <el-link class="title" href="/">
-            学生管理系统
-          </el-link>
           <img src="../assets/images/logo.png" alt="logo未加载">
           <el-menu-item index="0" class="logo">教学系统</el-menu-item>
           <div class="flex-grow" />
-          <el-sub-menu index="1">
-            <template #title>{{userName}}</template>
-            <el-menu-item route="/SelfInformation" index="1-1">个人信息</el-menu-item>
-          </el-sub-menu>
+<!--          <el-sub-menu index="1">-->
+<!--            <template #title>{{userName}}</template>-->
+<!--            <el-menu-item route="/SelfInformation" index="1-1">个人信息</el-menu-item>-->
+<!--          </el-sub-menu>-->
+          <div style="padding-right: 12px; padding-top: 17px">
+            <el-button class="avatar" @click="handleToSelfInfo">
+              <el-image class="avatarImage" :src="avatarURL"/>
+            </el-button>
+          </div>
+
         </el-menu>
       </el-header>
       <el-container>
-        <el-aside >
-          <el-menu router
-                   default-active="/HomePage"
-                   active-text-color="#ffd04b"
-                   background-color="#003366"
-                   class="el-menu-vertical-demo asideMenu"
-                   text-color="#fff"
-                   @open="handleOpen"
-                   @close="handleClose"
-          >
-            <el-sub-menu index="">
-              <template #title>
+        <el-main class="mainWindow">
+          <div class="rightWindow">
+            <el-menu router
+                     default-active="/HomePage"
+                     active-text-color="#2d67fd"
+                     background-color="#e9eff9"
+                     class="el-menu-vertical-demo asideMenu"
+                     text-color="#3e5ca8"
+                     @open="handleOpen"
+                     @close="handleClose"
+                     :collapse="true"
+            >
+              <el-sub-menu index="">
+                <template #title>
+                  <el-icon>
+                    <Menu/>
+                  </el-icon>
+                  <span>课程系统</span>
+                </template>
+                <el-menu-item index="/CourseSelect">选课指南</el-menu-item>
+                <el-menu-item index="/CourseEvaluate">课程评价</el-menu-item>
+              </el-sub-menu>
+              <el-menu-item index="/ScoreManage">
                 <el-icon>
-                  <Menu/>
+                  <StarFilled/>
                 </el-icon>
-                <span>课程系统</span>
-              </template>
-              <el-menu-item index="/CourseSelect">选课指南</el-menu-item>
-              <el-menu-item index="/CourseEvaluate">课程评价</el-menu-item>
-            </el-sub-menu>
-            <el-menu-item index="/ScoreManage">
-              <el-icon>
-                <StarFilled/>
-              </el-icon>
-              <span>成绩管理</span>
-            </el-menu-item>
-            <el-menu-item index="/Practice">
-              <el-icon>
-                <Compass/>
-              </el-icon>
-              <span>社会实践</span>
-            </el-menu-item>
-            <el-menu-item index="/Activity">
-              <el-icon>
-                <Promotion/>
-              </el-icon>
-              <span>课外活动</span>
-            </el-menu-item>
-            <el-menu-item index="/Reward">
-              <el-icon>
-                <Medal/>
-              </el-icon>
-              <span>成果奖励</span>
-            </el-menu-item>
-          </el-menu>
-        </el-aside>
-        <el-main>
-          <router-view>
-
-          </router-view>
+                <span>成绩管理</span>
+              </el-menu-item>
+              <el-menu-item index="/Practice">
+                <el-icon>
+                  <Compass/>
+                </el-icon>
+                <span>社会实践</span>
+              </el-menu-item>
+              <el-menu-item index="/Activity">
+                <el-icon>
+                  <Promotion/>
+                </el-icon>
+                <span>课外活动</span>
+              </el-menu-item>
+              <el-menu-item index="/Reward">
+                <el-icon>
+                  <Medal/>
+                </el-icon>
+                <span>成果奖励</span>
+              </el-menu-item>
+            </el-menu>
+          </div>
+          <div class="leftMenu">
+            <router-view/>
+          </div>
         </el-main>
       </el-container>
     </el-container>
@@ -139,41 +156,49 @@ const imgLoad=()=>{
 .back {
   margin: 0;
   padding: 0;
+  background-color: #e9eff9;
 }
 
 .el-header {
-  padding: 0 0 !important;
-  height: 80px !important;
-  width: 100%;
-  position: fixed;
-  z-index: 9999;
+
+  padding: 0;
+  //padding: 0 0 !important;
+  //height: 80px !important;
+  //width: 100%;
+  //position: fixed;
+  //z-index: 9999;
 }
 
 .headerMenu {
   height: 100%;
 }
 
+.avatar{
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+.avatarImage{
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+}
+
 .el-aside {
-  height: 100vh !important;
   width: 200px;
-  padding-top: 80px;
-  margin-top: 3px;
-  position: fixed;
-  top: 0;
+  padding-top: 2.2vh;
 }
 
 .el-main {
   padding: 0;
 }
 
-.mainRight {
-  position: absolute;
-  background-color: #CCFFFF;
-  height: 100%;
-  width: 300px;
-  margin-top: 3px;
-  right: 1px;
+.mainWindow{
+  display: flex;
+  flex-direction: row-reverse;
 }
+
 
 .asideMenu {
   height: 100%;

@@ -10,7 +10,7 @@
       <!-- :row-key="record=>record.id" -->
       <div class="title">
         社会实践
-        <el-button type="success" @click="add">添加</el-button>
+        <el-button class="addButton" @click="add">添加</el-button>
       </div>
       <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
                 stripe size="large">
@@ -446,20 +446,40 @@ const handleCurrentChange = (currentPage) => {
   margin-top: 30px;
   height: 60px;
   font-family: 微软雅黑;
-  font-size: 4vh;
-  font-weight: bold;
+  font-size: 6vh;
+  font-weight: 500;
+  line-height: 1vh;
+  color: #0273f1;
 }
 
 .pageContent {
-  padding-left: 200px;
-  height: 400px;
+  width: 80vw;
+  height: 70vh;
+  background-color: #FFFFFF;
+  border-radius: 3vw;
+  padding-left: 5vw;
+  padding-top: 5vh;
 }
-
+.content{
+  width: 100%;
+  height: 89vh;
+  padding-top: 5vh;
+  padding-right: 2vw;
+}
 .search {
   /* margin-right: 30px!important; */
   width: 300px !important;
 }
-
+.addButton{
+  width: 10vw;
+  height: 5vh;
+  border-color:#0273f1;
+  border-style: solid;
+  border-width: 4px;
+  border-radius: 1vw;
+  color: #0273f1;
+  font-size: 2.5vh;
+}
 .button {
   width: 48px;
   height: 30px;
@@ -487,10 +507,5 @@ const handleCurrentChange = (currentPage) => {
   padding-top: 30px;
   padding-left: 230px;
 }
-.content{
-  padding-top: 80px;
-  padding-left: 200px;
-  background-color: rgb(255, 255, 255);
-  height: 650px;
-}
+
 </style>

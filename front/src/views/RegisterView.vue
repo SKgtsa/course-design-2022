@@ -64,14 +64,14 @@ const validateUserName = (rule, value, callback) => {  //校验姓名，考虑�
 }
 
 const validatepassword = (rule, value, callback) => {  //校验密码复杂度
-  const reg = /(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,32}/;
-  if (value == '' || value == undefined || value == null) {
-    callback(new Error('请设置您的密码！'));
-  } else {
-    if ((!reg.test(value)) && value != '') {
-      callback(new Error('您的密码复杂度太低（密码中必须包含字母、数字,长度在8-16位之间），请及时修改密码！'));
-    }
-  }
+  // const reg = /(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).{8,32}/;
+  // if (value == '' || value == undefined || value == null) {
+  //   callback(new Error('请设置您的密码！'));
+  // } else {
+  //   if ((!reg.test(value)) && value != '') {
+  //     callback(new Error('您的密码复杂度太低（密码中必须包含字母、数字,长度在8-16位之间），请及时修改密码！'));
+  //   }
+  // }
 }
 
 const validateIdCardNumber = (rule, value, callback) => {  //检验身份证号(精确校验)
@@ -124,7 +124,7 @@ const rules = reactive({
 
 /* loginForm.value.validate((valid,fields)=>{
     if(!valid){
-      isSubmit = false; 
+      isSubmit = false;
     }
   });
   if(!isSubmit){
