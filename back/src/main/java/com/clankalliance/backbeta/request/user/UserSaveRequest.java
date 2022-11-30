@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.request;
+package com.clankalliance.backbeta.request.user;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,6 +21,9 @@ public class UserSaveRequest {
     @Id
     @JsonSerialize(using= ToStringSerializer.class)
     private long id;
+
+    //用户名
+    private String nickName;
 
     //第一次注册时需要，根据身份建立账户 学生：0，老师：1，管理员：2
     private Integer identity;
@@ -60,4 +63,9 @@ public class UserSaveRequest {
 
     //头像url
     private String avatarURL;
+
+    //照片url
+    private String photoURL;
+
+    private String token;
 }

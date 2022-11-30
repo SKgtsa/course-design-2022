@@ -112,42 +112,46 @@ public class ScoreServiceImpl implements ScoreService {
     }
 
     /**
-     * 处理成绩查询的方法，先进行token验证身份，teacher可以查询所教课程的成绩，student只能查询自己
+     * 处理成绩查询的方法，先进行token验证身份，teacher可以查询所教所有课程的成绩，student查询自己所有课程的成绩 均按学年学期筛选
      * @param token token
-     * @param courseId 课程id
      * @param Year 学年
      * @param Semester 学期
      * @return
      */
-    public CommonResponse handleFind(String token, long courseId, Integer Year, String  Semester){
-        CommonResponse response = tokenUtil.tokenCheck(token);
-        if(response.getSuccess()){
-            User user = userService.findById(Long.parseLong(response.getMessage()));
-            //身份为教师
-            if(user instanceof Teacher || user instanceof Manager){
+    public CommonResponse handleFind(String token, Integer Year, String  Semester){
+//        CommonResponse response = tokenUtil.tokenCheck(token);
+//        if(response.getSuccess()){
+//            User user = userService.findById(Long.parseLong(response.getMessage()));
+//            //身份为教师
+//            if(user instanceof Teacher || user instanceof Manager){
+//
+//                Course course = courseRepository.findById(courseId).get();
+//                Set<Student> studentSet = course.getStudentSet();
+//                List<Score> scoreList = new ArrayList<>();
+//                for(Student s: studentSet){
+//                    Optional<Score> sop = scoreRepository.findByCourseStudentId(courseId,s.getId());
+//                    if(sop.isPresent()){
+//                        scoreList.add(sop.get());
+//                    }
+//                }
+//            response.setContent(scoreList);
+//            }//身份为学生
+//            else if(user instanceof Student){
+//                long userId = user.getId();
+//                List<Score> scoreList = new ArrayList<>();
+//                Optional<Score> sop = scoreRepository.findByTime(userId,courseId,Year,Semester);
+//                while(sop.isPresent()){
+//                    scoreList.add(sop.get());
+//                }
+//                response.setContent(scoreList);
+//            }
+//        }
+//        return response;
+        return null;
+    }
 
-                Course course = courseRepository.findById(courseId).get();
-                Set<Student> studentSet = course.getStudentSet();
-                List<Score> scoreList = new ArrayList<>();
-                for(Student s: studentSet){
-                    Optional<Score> sop = scoreRepository.findByCourseStudentId(courseId,s.getId());
-                    if(sop.isPresent()){
-                        scoreList.add(sop.get());
-                    }
-                }
-            response.setContent(scoreList);
-            }//身份为学生
-            else if(user instanceof Student){
-                long userId = user.getId();
-                List<Score> scoreList = new ArrayList<>();
-                Optional<Score> sop = scoreRepository.findByTime(userId,courseId,Year,Semester);
-                while(sop.isPresent()){
-                    scoreList.add(sop.get());
-                }
-                response.setContent(scoreList);
-            }
-        }
-        return response;
+    public CommonResponse handleFindDetail(String token,long courseId){
+        return null;
     }
 
 }

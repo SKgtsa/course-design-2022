@@ -18,8 +18,6 @@ public class TeacherCourseEditRequest {
 
     private String name;
 
-    private long teacherId;
-
     private String studentSection;
 
     private String studentClass;
@@ -39,5 +37,7 @@ public class TeacherCourseEditRequest {
     private String semester;
 
     private Double credit;
+
+    private String description;
 }
 

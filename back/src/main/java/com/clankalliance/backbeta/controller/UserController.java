@@ -1,12 +1,17 @@
 package com.clankalliance.backbeta.controller;
 
 import com.clankalliance.backbeta.request.*;
+import com.clankalliance.backbeta.request.user.UserLoginRequest;
+import com.clankalliance.backbeta.request.user.UserSaveRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
+import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpSession;
 
 
 @CrossOrigin
@@ -20,6 +25,13 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private GeneralUploadService generalUploadService;
+
+
+    /*
+    每一个CommonResponse都要返回一个character
+     */
 
     @PostMapping("/login")
     public CommonResponse login(@RequestBody UserLoginRequest request){
@@ -28,7 +40,7 @@ public class UserController {
 
     @PostMapping("/register")
     public CommonResponse register(@RequestBody UserSaveRequest request){
-        return userService.handleRegister(request.getIdentity(), request.getCode(), request.getPhone(), request.getUserNumber(), request.getPassword(),request.getName(),request.getStudentClass(),request.getIdCardNumber(),request.getGender(),request.getEthnic(),request.getPoliticalAffiliation(), request.getEMail());
+        return userService.handleRegister(request.getIdentity(), request.getCode(), request.getPhone(), request.getUserNumber(), request.getPassword(),request.getName(),request.getStudentClass(),request.getIdCardNumber(),request.getGender(),request.getEthnic(),request.getPoliticalAffiliation(), request.getEMail(),request.getNickName());
     }
 
     @PostMapping("/tokenCheck")
@@ -51,7 +63,33 @@ public class UserController {
         return userService.handlePhoneRegister(request.getPhone());
     }
 
+    @PostMapping("/myInfo")
+    public CommonResponse handleGetInfo(@RequestBody TokenCheckRequest request){
+        return userService.handleGetInfo(request.getToken());
+    }
 
+    @PostMapping("/editInfo")
+    public CommonResponse handleEditInfo(@RequestBody UserSaveRequest request){
+        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEMail(),request.getPoliticalAffiliation());
+    }
 
+    @PostMapping("/editBlogInfo")
+    public CommonResponse handleEditBlogInfo(@RequestBody BlogInfoSaveRequest request){
+        return userService.handleSaveBlogInfo(request.getToken(),request.getNickName());
+    }
+
+    @PostMapping("/changeAvatar")
+    public CommonResponse handleChangeAvatar(HttpSession session,
+                                             // 路径变量 解决前后端不一致
+                                             @RequestParam("avatar") MultipartFile avatar, @RequestParam("token") String token){
+        return generalUploadService.handleSaveAvatar(avatar,token);
+    }
+
+    @PostMapping("/changePhoto")
+    public CommonResponse handleChangePhoto(HttpSession session,
+                                             // 路径变量 解决前后端不一致
+                                             @RequestParam("photo") MultipartFile photo, @RequestParam("token") String token){
+        return generalUploadService.handleSavePhoto(photo,token);
+    }
 
 }

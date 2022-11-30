@@ -1,5 +1,6 @@
 package com.clankalliance.backbeta.entity.course;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -23,16 +24,14 @@ import java.util.Date;
 public class ClassTime {
 
     @Id
+    @JsonIgnore
     @JsonSerialize(using= ToStringSerializer.class)
     private long id;
 
     //周几上课
     private Integer weekDay;
 
-    //开始时间
-    private Date start;
-
-    //结束时间
-    private Date end;
+    //第几节课
+    private Integer section;
 
 }

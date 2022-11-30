@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.entity;
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,11 @@ public class Activity {
 
     private String description;
 
+    private String date;
+
+    private String result;
+
+    @JsonIgnore
     @OneToOne
     private Student student;
 
