@@ -106,18 +106,24 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
     }
   }
 }
-const rules = reactive({
-  userName: [{validator: validateUserName, trigger: 'blur'}],
+/* validator: validatepassword, 
+validator: validateUserName
+validator: validateEMail
+validator: validatePhone
+validator: validateIdCardNumber
+*/
+const rules = {
+  userName: [{required:true,message:'输入姓名',trigger: 'blur'}],
   userNumber: [{required: true, message: '请输入学号', trigger: 'blur'}],
   gender: [{required: true, message: '请选择性别', trigger: 'blur'}],
-  idCardNumber: [{validator: validateIdCardNumber, trigger: 'blur'}],
-  eMail: [{validator: validateEMail, trigger: 'blur'}],
+  idCardNumber: [{required: true, message: '请选择性别', trigger: 'blur'}],
+  eMail: [{required:true,message:'请输入邮箱', trigger: 'blur'}],
   ethnic: [{required: true, message: '请填写您的民族', triggwe: 'blur'}],
   politicalAffiliation: [{required: true, message: '请选择您的政治面貌', triggwe: 'blur'}],
-  phone: [{validator: validatePhone, trigger: 'blur'}],
-  password: [{validator: validatepassword, trigger: 'blur'}],
+  phone: [{required:true,message:'电话写上', trigger: 'blur'}],
+  password: [{required:true,message:'请填写你的密码',trigger: 'blur'}],
   code: [{required: true, message: '请输入验证码', trigger: 'blur'}],
-})
+}
 /* const onSubmit = () => {
   console.log('submit!')
 } */
@@ -130,14 +136,22 @@ const rules = reactive({
   if(!isSubmit){
     return;
   } */
-const register = () => {
+  /* phone:formData.phone,userNumber:formData.userNumber,
+          password:formData.password,userName:formData.userName,idCardNumber:formData.idCardNumber,
+          gender:formData.gender,ethnic:formData.ethnic,politicalAffiliation:formData.politicalAffiliation,
+          eMail:formData.eMail,code:formData.code */
+const register = async() => {
   console.log(formData),     //这个下面这么写不知道对不对，提交表单的时候,出现的问题是直接往后端传的时候发现表单为
       //空的时候也能传过去，所以又写了个整个表单的校验
-      registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
+      await registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
         if (valid) {
-          service.post('/api/user/loginCode', {formData}).then(res => {
+          console.log('进来了')
+          service.post('/api/user/loginCode',{formData}).then(res => {
             const data = res.data;
+            console.log('拿到了');
+            console.log(data);
             if (data.success) {
+              console.log('注册成功')
               messageSuccess('注册成功！')
               router.push('/Login')
             } else {

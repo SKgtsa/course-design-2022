@@ -13,7 +13,7 @@
         <el-button class="addButton" @click="add">添加</el-button>
       </div>
       <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
-                stripe size="large">
+        stripe size="large" class="pracitceTable">
         <!-- 显示斑马纹和边框 -->
         <el-table-column label="序号" type="index" width="80" />
         <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
@@ -22,7 +22,7 @@
         <el-table-column>
           <template #header>
             <!-- 默认表头 -->
-<!--            <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />-->
+            <!--            <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />-->
           </template>
           <template #default="scope">
             <!-- 默认行和列 -->
@@ -34,8 +34,8 @@
       </el-table>
       <div class="pagination">
         <el-pagination background layout="prev, pager, next,jumper, ->" :total="tableData.length"
-                       @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
-                       style="text-align: center">
+          @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
+          style="text-align: center">
         </el-pagination>
       </div>
     </div>
@@ -55,11 +55,13 @@
           </el-form-item> -->
         <el-form-item label="标题" prop="practiceName">
           <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}</el-input>
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}
+          </el-input>
           <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName"></el-input>
         </el-form-item>
         <el-form-item label="内容" prop="practiceDescription">
-          <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span>
+          <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
           <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.practiceDescription">
             {{ editForm.practiceDescription }}</el-input>
           <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.practiceDescription">
@@ -441,7 +443,7 @@ const handleCurrentChange = (currentPage) => {
     tableData.splice(index,1) //存在就给他删了，这个有必要吗
 }*/
 </script>
-<style scoped>
+<style lang="scss" scoped>
 .title {
   margin-top: 30px;
   height: 60px;
@@ -452,38 +454,40 @@ const handleCurrentChange = (currentPage) => {
   color: #0273f1;
 }
 
-.pageContent {
-  width: 80vw;
-  height: 70vh;
-  background-color: #FFFFFF;
-  border-radius: 3vw;
-  padding-left: 5vw;
-  padding-top: 5vh;
-}
-.content{
+
+.content {
   width: 100%;
-  height: 89vh;
-  padding-top: 5vh;
-  padding-right: 2vw;
+  height: 100%;
+
+  .pageContent {
+    width: 70vw;
+    height: 70vh;
+    background-color: #FFFFFF;
+    border-radius: 3vw;
+    padding-left: 5vw;
+    padding-top: 3vh;
+
+    .addButton {
+      width: 10vw;
+      height: 5vh;
+      border-color: #0273f1;
+      border-style: solid;
+      border-width: 4px;
+      border-radius: 1vw;
+      color: #0273f1;
+      font-size: 2.5vh;
+    }
+    .pracitceTable{
+      background-color: aqua;
+      .button {
+      width: 48px;
+      height: 30px;
+    }
+    }
+  }
 }
-.search {
-  /* margin-right: 30px!important; */
-  width: 300px !important;
-}
-.addButton{
-  width: 10vw;
-  height: 5vh;
-  border-color:#0273f1;
-  border-style: solid;
-  border-width: 4px;
-  border-radius: 1vw;
-  color: #0273f1;
-  font-size: 2.5vh;
-}
-.button {
-  width: 48px;
-  height: 30px;
-}
+
+
 
 .practiceDialog {
   width: 300px !important;
@@ -507,5 +511,4 @@ const handleCurrentChange = (currentPage) => {
   padding-top: 30px;
   padding-left: 230px;
 }
-
 </style>

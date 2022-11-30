@@ -1,24 +1,19 @@
 <script lang="ts" setup>
+import { ref, reactive, toRefs } from 'vue'
+import logo from '../assets/images/logo.png'
+import {
+  Menu as IconMenu,
+  Menu,
+  StarFilled,
+  Promotion,
+  House,
+} from '@element-plus/icons-vue'
+import router from "@/router";
 import { useStore } from 'vuex' // 引入useStore 方法
 const store = useStore()  // 该方法用于返回store 实例
 console.log(store)  // store 实例对象
 
-import {ref, reactive, toRefs} from 'vue'
-import logo from '../assets/images/logo.png'
-import {
-  Document,
-  Menu as IconMenu,
-  Location,
-  Setting,
-  UserFilled,
-  Menu,
-  Compass,
-  StarFilled,
-  Medal,
-  Promotion,
-  Search,
-} from '@element-plus/icons-vue'
-import router from "@/router";
+
 
 let avatarURL = store.getters.avatarURL;
 
@@ -69,27 +64,18 @@ const imgLoad=()=>{
   <div class="back">
     <el-container>
       <el-header class="el-header">
-        <el-menu
-            :default-active="activeIndex"
-            class="nav-bar-top"
-            mode="horizontal"
-            :ellipsis="false"
-            @select="handleSelect"
-            background-color="#e9eff9"
-            text-color="#3e5ca8"
-            active-text-color="#2d67fd"
-            router
-        >
+        <el-menu :default-active="1" class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
+          background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
           <img src="../assets/images/logo.png" alt="logo未加载">
           <el-menu-item index="0" class="logo">教学系统</el-menu-item>
           <div class="flex-grow" />
-<!--          <el-sub-menu index="1">-->
-<!--            <template #title>{{userName}}</template>-->
-<!--            <el-menu-item route="/SelfInformation" index="1-1">个人信息</el-menu-item>-->
-<!--          </el-sub-menu>-->
+          <!--          <el-sub-menu index="1">-->
+          <!--            <template #title>{{userName}}</template>-->
+          <!--            <el-menu-item route="/SelfInformation" index="1-1">个人信息</el-menu-item>-->
+          <!--          </el-sub-menu>-->
           <div style="padding-right: 12px; padding-top: 17px">
             <el-button class="avatar" @click="handleToSelfInfo">
-              <el-image class="avatarImage" :src="avatarURL"/>
+              <el-image class="avatarImage" :src="avatarURL" />
             </el-button>
           </div>
 
@@ -98,54 +84,38 @@ const imgLoad=()=>{
       <el-container>
         <el-main class="mainWindow">
           <div class="rightWindow">
-            <el-menu router
-                     default-active="/HomePage"
-                     active-text-color="#2d67fd"
-                     background-color="#e9eff9"
-                     class="el-menu-vertical-demo asideMenu"
-                     text-color="#3e5ca8"
-                     @open="handleOpen"
-                     @close="handleClose"
-                     :collapse="true"
-            >
+            <el-menu router default-active="/Main" active-text-color="#2d67fd" background-color="#e9eff9"
+              class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
+              :collapse="true">
+              <el-menu-item index="/Main">
+                <template #title>我的主页</template>
+                <el-icon><House /></el-icon>
+              </el-menu-item>
               <el-sub-menu index="">
                 <template #title>
                   <el-icon>
-                    <Menu/>
+                    <Menu />
                   </el-icon>
-                  <span>课程系统</span>
                 </template>
                 <el-menu-item index="/CourseSelect">选课指南</el-menu-item>
                 <el-menu-item index="/CourseEvaluate">课程评价</el-menu-item>
               </el-sub-menu>
               <el-menu-item index="/ScoreManage">
                 <el-icon>
-                  <StarFilled/>
+                  <StarFilled />
                 </el-icon>
-                <span>成绩管理</span>
+                <template #title>成绩管理</template>
               </el-menu-item>
-              <el-menu-item index="/Practice">
+              <el-menu-item index="/AcademicManagement">
                 <el-icon>
-                  <Compass/>
+                  <Promotion />
                 </el-icon>
-                <span>社会实践</span>
-              </el-menu-item>
-              <el-menu-item index="/Activity">
-                <el-icon>
-                  <Promotion/>
-                </el-icon>
-                <span>课外活动</span>
-              </el-menu-item>
-              <el-menu-item index="/Reward">
-                <el-icon>
-                  <Medal/>
-                </el-icon>
-                <span>成果奖励</span>
+                <template #title>学工管理</template>
               </el-menu-item>
             </el-menu>
           </div>
           <div class="leftMenu">
-            <router-view/>
+            <router-view />
           </div>
         </el-main>
       </el-container>
@@ -173,13 +143,13 @@ const imgLoad=()=>{
   height: 100%;
 }
 
-.avatar{
+.avatar {
   width: 40px;
   height: 40px;
   border-radius: 20px;
 }
 
-.avatarImage{
+.avatarImage {
   width: 40px;
   height: 40px;
   border-radius: 20px;
@@ -194,12 +164,14 @@ const imgLoad=()=>{
   padding: 0;
 }
 
-.mainWindow{
+.mainWindow {
   display: flex;
   flex-direction: row-reverse;
 }
 
-
+.leftMenu{
+  width: 100%;
+}
 .asideMenu {
   height: 100%;
 }
@@ -213,6 +185,7 @@ const imgLoad=()=>{
   height: 100vh;
   display: flex;
 }
+
 .logoDiv {
   height: 70px !important;
   width: 35%;
@@ -230,28 +203,33 @@ const imgLoad=()=>{
   /*  margin-top: 8px;
    margin-bottom: 8px; */
 }
-.nav-bar-top{
+
+.nav-bar-top {
   height: 83px;
 }
+
 .flex-grow {
   flex-grow: 1;
 }
-.logo{
+
+.logo {
   font-weight: bold;
   font-size: 3vh;
 }
-.title{
-  font-family: 华文楷体,serif;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+
+.title {
+  font-family: 华文楷体, serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-weight: bold;
   font-size: 5vh;
-  margin-right:1vh;
+  margin-right: 1vh;
   margin-left: 3vh;
   color: #FFFFFF;
 }
-img{
+
+img {
   margin: 10px;
 }
 </style>

@@ -683,14 +683,16 @@ const loadDropDialog = (row) => {
 
 
     /*     background-color: rgb(145, 193, 62); */
-    height: 1300px;
-
+    height: 1300px; 
+    padding-left:5vw;
     .classSchedulePage {
         width: 900px;
         height: 550px;
         /*         background-color: aqua; */
 
-        .tableStyle {}
+        .tableStyle {
+            border: 0.5px solid;
+        }
     }
 
     .operationPage {
