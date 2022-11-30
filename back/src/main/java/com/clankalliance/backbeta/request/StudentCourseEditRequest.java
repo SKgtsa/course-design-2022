@@ -19,6 +19,10 @@ public class StudentCourseEditRequest {
 
     private String studentClass;
 
+    private Integer year;
+
+    private String semester;
+
 
 }
 

@@ -1,8 +1,8 @@
 package com.clankalliance.backbeta.controller;
 
-import com.clankalliance.backbeta.entity.course.Course;
-import com.clankalliance.backbeta.entity.user.sub.Student;
-import com.clankalliance.backbeta.request.StudentCourseEditRequest;
+
+
+import com.clankalliance.backbeta.request.*;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.CourseService;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +17,14 @@ public class CourseController {
     @Resource
     private CourseService courseService;
 
-    @PostMapping("/save")
-    public CommonResponse save(@RequestBody StudentCourseEditRequest request){
-        return courseService.handleSave(request.getToken(), request.getCourseId(), request.getTeacherId(),request.getStudentSection(),request.getStudentClass());
+    @PostMapping("/studentSave")
+    public CommonResponse saveStudent(@RequestBody StudentCourseEditRequest request){
+        return courseService.handleStudentSave(request.getToken(), request.getCourseId(), request.getTeacherId(),request.getStudentSection(),request.getStudentClass(),request.getYear(),request.getSemester());
+    }
+
+    @PostMapping("/teacherSave")
+    public CommonResponse saveTeacher(@RequestBody TeacherCourseEditRequest request){
+        return courseService.handleTeacherSave(request.getToken(), request.getCourseId(),request.getName(),request.getWeekStart(),request.getWeekEnd(),request.getTime(),request.getCapacity(),request.getStudentClass(),request.getStudentSection(),request.getLocation(),request.getYear(),request.getSemester(),request.getCredit());
     }
 
 }
