@@ -281,47 +281,55 @@ const sumbitEditRow = () => {
   if (typeOperation.value === 'check') {
     /* handleCheck() */
 
-  } else if (typeOperation.value === 'edit') {
-    /* handleEdit() */
-    service.post('/api/activity/save',
-      {
-        token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
-        date: editForm.date, result: editForm.result, id: editForm.id
-      })
-      .then(res => {  //直接把这一行的数据给出去可以吗
-        if (res.data.success) {
-          messageSuccess("编辑成功！")
-          typeOperation.value = '';
-          loadactivityTable()
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageError("编辑失败!")
-          console.log(res.data.message)
-        }
-      })
-    isShow.value = false;
-  } else if (typeOperation.value === 'add') {
-    service.post('/api/activity/save',
-      {
-        token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
-        date: editForm.date, result: editForm.result
-      })
-      .then(res => {
-        if (res.data.success) {
-          messageSuccess("添加成功！")
-          typeOperation.value = '';
-          loadactivityTable()
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageError("添加失败！")
-          console.log(res.data.message)
-        }
-      }
-      )
-    isShow.value = false;
-  } else {
-    messageError('出现错误！')
   }
+  formData.value.validate(((valid) => {
+    if (valid) {
+      if (typeOperation.value === 'edit') {
+        /* handleEdit() */
+        service.post('/api/activity/save',
+          {
+            token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
+            date: editForm.date, result: editForm.result, id: editForm.id
+          })
+          .then(res => {  //直接把这一行的数据给出去可以吗
+            if (res.data.success) {
+              messageSuccess("编辑成功！")
+              typeOperation.value = '';
+              loadactivityTable()
+              localStorage.setItem("token", res.data.token)
+            } else {
+              messageError("编辑失败!")
+              console.log(res.data.message)
+            }
+          })
+        isShow.value = false;
+      } else if (typeOperation.value === 'add') {
+        service.post('/api/activity/save',
+          {
+            token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
+            date: editForm.date, result: editForm.result
+          })
+          .then(res => {
+            if (res.data.success) {
+              messageSuccess("添加成功！")
+              typeOperation.value = '';
+              loadactivityTable()
+              localStorage.setItem("token", res.data.token)
+            } else {
+              messageError("添加失败！")
+              console.log(res.data.message)
+            }
+          }
+          )
+        isShow.value = false;
+      } else {
+        messageError('出现错误！')
+      }
+    } else {
+      messageWarning("请填写完整!")
+    }
+  }))
+
   editForm.activityName = '',
     editForm.activityDescription = '',
     editForm.id = '',
