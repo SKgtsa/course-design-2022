@@ -75,4 +75,14 @@ public class GeneralUploadServiceImpl implements GeneralUploadService {
         return response;
     }
 
+    @Override
+    public CommonResponse handleSaveAvatar(MultipartFile avatar,String token){
+        return null;
+    }
+
+    @Override
+    public CommonResponse handleSavePhoto(MultipartFile photo, String token){
+        return null;
+    }
+
 }

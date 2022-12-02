@@ -17,6 +17,7 @@ import com.clankalliance.backbeta.utils.StatusManipulateUtils.StatusNode;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -25,6 +26,9 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final String DEFAULT_AVATAR_URL = "default";
+
+    private final String DEFAULT_PHOTO_URL = "default";
+
 
     @Resource
     private TokenUtil tokenUtil;
@@ -98,6 +102,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse handleLogin(long userNumber,String password) {
+        /*
+        增加nickName,avatarURL,character 0Teacher 1Student 2Manager
+         */
         CommonResponse  response = new CommonResponse<>();
         response.setSuccess(false);
         password = DigestUtils.sha1Hex(password);
@@ -123,7 +130,7 @@ public class UserServiceImpl implements UserService {
     //存在bug: 保存时数据库条目不全 email接收有问题
 
     @Override
-    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail) {
+    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName) {
         password = DigestUtils.sha1Hex(password.getBytes());
         CommonResponse  response = new CommonResponse();
         User user = findByUserNumber(userNumber);
@@ -150,13 +157,13 @@ public class UserServiceImpl implements UserService {
         long id = snowFlake.nextId();
         switch (identity){
             case 0:
-                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
+                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
             case 1:
-                user = new Teacher(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
+                user = new Teacher(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
             case 2:
-                user = new Manager(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL);
+                user = new Manager(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
         }
         try{
@@ -183,7 +190,6 @@ public class UserServiceImpl implements UserService {
             ManipulateUtil.updateStatus(user.getId());
             String code = ManipulateUtil.endNode.getVerifyCode();
             tencentSmsService.sendSms("" + phone,code);
-            response.setContent(code);
             response.setSuccess(true);
             response.setMessage("已发送验证码");
         }else{
@@ -212,10 +218,26 @@ public class UserServiceImpl implements UserService {
             ManipulateUtil.updateStatus(tempId);
             String code = ManipulateUtil.endNode.getVerifyCode();
             tencentSmsService.sendSms("" + phone,code);
-            response.setContent(code);
             response.setSuccess(true);
             response.setMessage("已发送验证码");
         }
         return response;
     }
+
+    @Override
+    public CommonResponse handleGetInfo(String token){
+        return null;
+    }
+
+    @Override
+    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation){
+        return null;
+    }
+
+    @Override
+    public CommonResponse handleSaveBlogInfo(String token,String nickName){
+        return null;
+    }
+
+
 }

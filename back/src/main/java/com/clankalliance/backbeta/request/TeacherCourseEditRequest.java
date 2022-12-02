@@ -1,8 +1,11 @@
 package com.clankalliance.backbeta.request;
 
+import com.clankalliance.backbeta.entity.course.ClassTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,13 +16,17 @@ public class TeacherCourseEditRequest {
 
     private long courseId;
 
-    private long teacherId;
+    private String name;
+
+    private String studentSection;
 
     private String studentClass;
 
     private Integer weekStart;
 
     private Integer weekEnd;
+
+    private List<ClassTime> time;
 
     private Integer capacity;
 
@@ -30,5 +37,7 @@ public class TeacherCourseEditRequest {
     private String semester;
 
     private Double credit;
+
+    private String description;
 }
 

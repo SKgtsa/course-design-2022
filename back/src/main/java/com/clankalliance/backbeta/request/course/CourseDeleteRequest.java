@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.request;
+package com.clankalliance.backbeta.request.course;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,19 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ScoreFindRequest {
+public class CourseDeleteRequest {
 
     private String token;
 
     private long courseId;
-
-    private long studentId;
-
-    private long scoreId;
-
-    private Integer Year;
-
-    private String Semester;
-
 
 }

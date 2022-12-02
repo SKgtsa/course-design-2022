@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.entity.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
@@ -11,6 +12,12 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+
+/*
+增加tag
+每次数据更新时，统计变更数据并更新tag表
+学生互评可直接增加tag
+ */
 
 
 @Data
@@ -25,11 +32,15 @@ public abstract class User {
     @JsonSerialize(using= ToStringSerializer.class)
     private long userNumber;//LoginName
 
+
+    private String nickName;
+
     @NotBlank
     @Size(max = 50)
     private String name;
 
 
+    @JsonIgnore
     @NotBlank
     @Size(max = 50)
     private String password;
@@ -56,6 +67,11 @@ public abstract class User {
 
     //头像url
     private String avatarURL;
+
+    //个人照片
+    private String photoURL;
+
+
 
     //对默认头像进行一个设置
     public User(){

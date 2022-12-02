@@ -60,6 +60,9 @@ public class Course {
     //学分
     private Double credit;
 
+    //课程描述
+    private String description;
+
     @JsonIgnore
     @OneToMany
     private Set<Student> studentSet;
