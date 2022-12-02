@@ -83,8 +83,8 @@
 <script lang="ts" setup>
 import { computed, ref, reactive } from 'vue'
 import { Search, User } from '@element-plus/icons-vue'
-import service from '../request/index'
-import { messageSuccess, messageWarning, messageError, messageInfo } from '../utils/message'
+import service from '../../request/index'
+import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
 /* import { time } from 'console'; */
 /* import { title } from 'process'; */

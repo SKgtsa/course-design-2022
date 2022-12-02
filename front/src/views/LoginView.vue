@@ -136,6 +136,7 @@ import axios from "axios";
 import service from "@/request";
 import { Lock, User,Message, Phone} from '@element-plus/icons-vue';
 import { messageError, messageSuccess } from "@/utils/message";
+import {nickName,avatarURL} from '../global/global'
 const login_data=reactive({
   userNumber:'',
   password:'',
@@ -186,8 +187,17 @@ const submitPwd = (formEl: FormInstance | undefined) => {
       if(data.success){
         console.log('data.success')
         localStorage.setItem("token", data.token)
+        nickName.value = data.nickName;
+        avatarURL.value = data.avatarURL;
 /*       localStorage.setItem("userName", data.user.name) */
         messageSuccess("登陆成功！")
+        if(data.character==0){
+          router.push('/') //学生页面
+        }else if(data.character==1){
+          router.push('/'); //教师界面
+        }else if(data.character==2){
+          router.push('/'); //管理员界面，最后再改
+        }
         router.push('/')
       }else{
         console.log('!data.success')
@@ -210,8 +220,14 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
         const data = res.data;
         if(data.success){
           localStorage.setItem("token", data.token)
-          localStorage.setItem("userPhone", data.user.phone)
           messageSuccess("登录成功!")
+          if(data.character==0){
+
+          }else if(data.character==1){
+
+          }else if(data.character==2){
+
+          }
           router.push('/')
         }else{
           messageError(data.message)

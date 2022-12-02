@@ -66,7 +66,7 @@ const imgLoad=()=>{
       <el-header class="el-header">
         <el-menu :default-active="1" class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
           background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
-          <img src="../assets/images/logo.png" alt="logo未加载">
+          <img src="../../assets/images/logo.png" alt="logo未加载">
           <el-menu-item index="0" class="logo">教学系统</el-menu-item>
           <div class="flex-grow" />
           <!--          <el-sub-menu index="1">-->
