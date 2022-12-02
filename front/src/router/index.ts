@@ -31,12 +31,12 @@ const router = createRouter({
     {
       path: '/CourseSelect',
       name: 'CourseSelect',
-      component: () => import('../views/CourseSelect.vue')
+      component: () => import('../views/student/CourseSelect.vue')
     },
     {
       path: '/HomePage',
       name: 'HomePage',
-      component: () => import('../views/HomePage.vue'),
+      component: () => import('../views/student/HomePage.vue'),
       meta: {
         keepAlive: true // 需要缓存
       },
@@ -49,54 +49,54 @@ const router = createRouter({
         {
           path: '/CourseEvaluate',
           name: 'CourseEvaluate',
-          component: () => import('../views/CourseEvaluate.vue')
+          component: () => import('../views/student/CourseEvaluate.vue')
         },
         {
           path: '/CourseSelect',
           name: 'CourseSelect',
-          component: () => import('../views/CourseSelect.vue')
+          component: () => import('../views/student/CourseSelect.vue')
         },
         {
           path: '/ScoreManage',
           name: 'ScoreManage',
-          component: () => import('../views/ScoreManage.vue')
+          component: () => import('../views/student/ScoreManage.vue')
         },
         {
           path: '/SelfInformation',
           name: 'SelfInformation',
-          component: () => import('../views/SelfInformation.vue')
+          component: () => import('../views/student/SelfInformation.vue')
         },
         {
           path: '/Main',
           name: 'main',
-          component: () => import('../views/MainView.vue')
+          component: () => import('../views/student/MainView.vue')
         },
 
         {
           path: '/AcademicManagement',
           name: 'AcademicManagement',
-          component: () => import('../views/AcademicManagement.vue'),
+          component: () => import('../views/student/AcademicManagement.vue'),
           children: [
             {
               path: '/AcademicManagement/StudentEvaluate',
               name: 'StudentEvaluate',
-              component: () => import('../views/StudentEvaluate.vue')
+              component: () => import('../views/student/StudentEvaluate.vue')
             },
             {
               path: '/AcademicManagement/Practice',
               name: 'Practice',
-              component: () => import('../views/PracticeView.vue')
+              component: () => import('../views/student/PracticeView.vue')
             },
             {
               path: '/AcademicManagement/Activity',
               name: 'Activity',
-              component: () => import('../views/ActivityView.vue')
+              component: () => import('../views/student/ActivityView.vue')
             },
 
             {
               path: '/AcademicManagement/Reward',
               name: 'Reward',
-              component: () => import('../views/RewardView.vue')
+              component: () => import('../views/student/RewardView.vue')
             },
           ]
         },

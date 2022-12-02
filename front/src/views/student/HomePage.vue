@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, reactive, toRefs } from 'vue'
-import logo from '../assets/images/logo.png'
+import logo from '../../assets/images/logo.png'
 import {
   Menu as IconMenu,
   Menu,

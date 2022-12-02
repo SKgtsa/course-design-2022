@@ -151,6 +151,18 @@ let dialogTableVisibleDetails = ref(false);
 let dialogTableVisibleDrop = ref(false);
 
 
+time:[
+            {
+                weekDay:,
+                section:,
+            },
+            {
+
+            },
+            {
+
+            },
+     ]
 //获得已经选课的课程信息,用于更新课表
 const activities = [
     {
@@ -313,6 +325,7 @@ let courseInfo = reactive([  //希望后端给我的,然后我选课表的table�
         teacherName: '陈志勇',
         weekStart: 1, //第几周开始
         weekEnd: 16, //第几周结束
+     
         classTime: {
             weekDay: [1, 3], //周几上课
             section: [2, 3],//上第几节
