@@ -9,15 +9,15 @@
     <div class="pageContent">
       <!-- :row-key="record=>record.id" -->
       <div class="title">
-        社会实践
-        <el-button class="addButton" @click="add">添加</el-button>
+        课程管理
+        <el-button class="addButton" @click="add">添加课程</el-button>
       </div>
       <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
-        stripe size="large" class="pracitceTable">
+                stripe size="large" class="pracitceTable">
         <!-- 显示斑马纹和边框 -->
         <el-table-column label="序号" type="index" width="80" />
         <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
-        <el-table-column label="标题" prop="practiceName" width="350" show-overflow-tooltip />
+        <el-table-column label="课程" prop="practiceName" width="350" show-overflow-tooltip />
 
         <el-table-column>
           <template #header>
@@ -26,16 +26,16 @@
           </template>
           <template #default="scope">
             <!-- 默认行和列 -->
-            <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
-            <el-button size="medium" @click="handleEdit(scope.row)" class="button">编辑</el-button>
-            <el-button size="medium" type="danger" class="button" @click="handleDelete(scope.row)">删除</el-button>
+            <el-button size="small" @click="handleCheck(scope.row)" class="button" type="primary">选课学生</el-button>
+            <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑课程</el-button>
+            <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
           </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
         <el-pagination background layout="prev, pager, next,jumper, ->" :total="tableData.length"
-          @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
-          style="text-align: center">
+                       @current-change="handleCurrentChange" v-model:current-page="currentPage" :page-size="pageSize"
+                       style="text-align: center">
         </el-pagination>
       </div>
     </div>
@@ -111,6 +111,56 @@ let tableData = reactive([
     practiceId: null,
     studentName: '信步'
   },
+  {
+
+    practiceName: '宣传红色基因,致力乡村振兴',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+  {
+
+    practiceName: '关于临工重击的企业调研',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+  {
+
+    practiceName: '义务支教',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+  {
+
+    practiceName: '宣传红色基因,致力乡村振兴',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+  {
+
+    practiceName: '宣传红色基因,致力乡村振兴',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+  {
+
+    practiceName: '宣传红色基因,致力乡村振兴',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+  {
+
+    practiceName: '宣传红色基因,致力乡村振兴',
+    practiceDescription: '',
+    practiceId: null,
+    studentName: '信步'
+  },
+
 ])
 /* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
@@ -121,7 +171,7 @@ let pageSize = ref(7);
 const formData = ref();
 const rulesEditForm = reactive({   /* 定义校验规则 */
   practiceName: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
-  { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
+    { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
   ],
   practiceDescription: [{ required: true, message: '请输入实践的内容！', trigger: 'blur' }]
 })
@@ -134,11 +184,11 @@ let editForm = reactive({
 });
 const search = ref('')
 const filterTableData = computed(() =>
-  tableData.filter(
-    (data) =>
-      !search.value ||
-      data.practiceName.toLowerCase().includes(search.value.toLowerCase())
-  )
+    tableData.filter(
+        (data) =>
+            !search.value ||
+            data.practiceName.toLowerCase().includes(search.value.toLowerCase())
+    )
 )
 /* loginFormPhone.value.validate((valid)=>{
     if(valid){
@@ -169,9 +219,9 @@ const loadPracticeTable = async () => {   //查找所有的数据,这个接口�
           messageWarning(res.data.message)
         }
       })
-        .catch(function (error) {
-          console.log(error)
-        })
+          .catch(function (error) {
+            console.log(error)
+          })
     } else {
       messageError("请完善全部信息")
     }
@@ -207,28 +257,28 @@ const handleEdit = (row) => {  //改
 
 const handleDelete = (row) => {  //删  //异步可能有问题
   ElMessageBox.confirm(
-    '确认删除该条社会实践吗?',
-    'Warning',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
+      '确认删除该条社会实践吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
   )
-    .then(() => {
-      service.post('/api/practice/delete', { token: localStorage.getItem("token"), id: row.id }).then(res => {
-        if (res.data.success) {
-          messageSuccess('删除成功!')
-          loadPracticeTable() //重新加载现在表单中的数据
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageWarning(res.data.message)
-        }
+      .then(() => {
+        service.post('/api/practice/delete', { token: localStorage.getItem("token"), id: row.id }).then(res => {
+          if (res.data.success) {
+            messageSuccess('删除成功!')
+            loadPracticeTable() //重新加载现在表单中的数据
+            localStorage.setItem("token", res.data.token)
+          } else {
+            messageWarning(res.data.message)
+          }
+        })
       })
-    })
-    .catch(() => {
-      messageInfo("取消删除")
-    })
+      .catch(() => {
+        messageInfo("取消删除")
+      })
 }
 
 const sumbitEditRow = () => {
@@ -239,42 +289,42 @@ const sumbitEditRow = () => {
   } else if (typeOperation.value === 'edit') {
     /* handleEdit() */
     service.post('/api/practice/save',
-      { token: editForm.token, practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription, id: editForm.practiceId })
-      .then(res => {  //直接把这一行的数据给出去可以吗
-        if (res.data.success) {
-          messageSuccess("编辑成功！")
-          typeOperation.value = '';
-          loadPracticeTable()
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageError("编辑失败!")
-          console.log(res.data.message)
-        }
-      })
+        { token: editForm.token, practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription, id: editForm.practiceId })
+        .then(res => {  //直接把这一行的数据给出去可以吗
+          if (res.data.success) {
+            messageSuccess("编辑成功！")
+            typeOperation.value = '';
+            loadPracticeTable()
+            localStorage.setItem("token", res.data.token)
+          } else {
+            messageError("编辑失败!")
+            console.log(res.data.message)
+          }
+        })
     isShow.value = false;
   } else if (typeOperation.value === 'add') {
     service.post('/api/practice/save',
-      { token: editForm.token, practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription })
-      .then(res => {
-        if (res.data.success) {
-          messageSuccess("添加成功！")
-          typeOperation.value = '';
-          loadPracticeTable()
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageError("添加失败！")
-          console.log(res.data.message)
-        }
-      }
-      )
+        { token: editForm.token, practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription })
+        .then(res => {
+              if (res.data.success) {
+                messageSuccess("添加成功！")
+                typeOperation.value = '';
+                loadPracticeTable()
+                localStorage.setItem("token", res.data.token)
+              } else {
+                messageError("添加失败！")
+                console.log(res.data.message)
+              }
+            }
+        )
     isShow.value = false;
   } else {
     messageError('出现错误！')
   }
   editForm.practiceName = '',
-    editForm.practiceDescription = '',
-    editForm.practiceId = null,
-    editForm.studentName = ''
+      editForm.practiceDescription = '',
+      editForm.practiceId = null,
+      editForm.studentName = ''
   centerDialogVisible.value = false;
   typeOperation.value = '';
 };
@@ -311,17 +361,21 @@ const handleCurrentChange = (currentPage) => {
 
 .content {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  margin-left: 20vh;
+  padding-top: 5vh;
 
 
   .pageContent {
+    width: 70vw;
+    height: 70vh;
     width: 70vw;
     height: 70vh;
     background-color: #FFFFFF;
     border-radius: 3vw;
     padding-left: 5vw;
     padding-top: 3vh;
-    margin-left: 5vh;
+    padding-bottom: 3vh;
 
     .addButton {
       width: 10vw;
@@ -336,9 +390,9 @@ const handleCurrentChange = (currentPage) => {
     .pracitceTable{
       background-color: aqua;
       .button {
-      width: 48px;
-      height: 30px;
-    }
+        width: 60px;
+        height: 30px;
+      }
     }
   }
 }

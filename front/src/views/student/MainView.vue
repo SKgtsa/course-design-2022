@@ -1,30 +1,4 @@
 <template>
-<!--  <div class="content">-->
-<!--    <div>-->
-<!--      <div class="blogTitle">-->
-<!--        <img class="img" src="../assets/images/blogLogo.png" alt="未加载">-->
-<!--        博客圈——分享你的学习生活-->
-<!--      </div>-->
-<!--      <div class="right">-->
-<!--&lt;!&ndash;        右侧信息栏&ndash;&gt;-->
-<!--      </div>-->
-<!--      <div class="blogContent">-->
-<!--        <div class="blogSend">-->
-<!--          <div>-->
-<!--            <TEditor ref="editor" v-model="formState.content" :disabled='disabled' @getContent="getContent"/>-->
-<!--          </div>-->
-<!--          <div>-->
-<!--            <el-button @click="submitBlog" class="blogButton">发送</el-button>-->
-<!--          </div>-->
-<!--        </div>-->
-<!--        <div>-->
-<!--          &lt;!&ndash;看博客模块&ndash;&gt;-->
-
-<!--        </div>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--  </div>-->
   <div class="main">
     <div class="leftWindow">
       <div class="panel">
@@ -56,7 +30,7 @@
     </div>
     <div class="rightWindow">
       <el-container class="operationCard">
-
+        博客
       </el-container>
     </div>
   </div>
@@ -110,6 +84,7 @@ const getContent = (v: string) => {
   display: flex;
   flex-direction: column;
   width: 18vw;
+  padding-left: 5vh;
 }
 .panel{
   padding-top: 4vh;
@@ -174,11 +149,10 @@ const getContent = (v: string) => {
 
 .rightWindow{
   padding: 5vh 1vw 2vh 2vw;
-
 }
 .operationCard{
   background-color: #FFFFFF;
-  width: 75vw;
+  width: 70vw;
   height: 80vh;
   border-radius: 2vw;
   box-shadow: 0 0 10px 0 #b9ccee;

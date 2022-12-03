@@ -20,7 +20,7 @@ let avatarURL = store.getters.avatarURL;
 console.log(avatarURL)
 
 const handleToSelfInfo = () => {
-  router.push('/SelfInformation')
+  router.push('/TeacherSelfInformation')
 }
 
 const handleOpen = (key: string, keyPath: string[]) => {
@@ -65,7 +65,7 @@ const imgLoad=()=>{
     <el-container>
       <el-header class="el-header">
         <el-menu :default-active="1" class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
-          background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
+                 background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
           <img src="../../assets/images/logo.png" alt="logo未加载">
           <el-menu-item index="0" class="logo">教学系统</el-menu-item>
           <div class="flex-grow" />
@@ -84,34 +84,37 @@ const imgLoad=()=>{
       <el-container>
         <el-main class="mainWindow">
           <div class="rightWindow">
-            <el-menu router default-active="/Main" active-text-color="#2d67fd" background-color="#e9eff9"
-              class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
-              :collapse="true">
-              <el-menu-item index="/Main">
+            <el-menu router default-active="/TeacherMain" active-text-color="#2d67fd" background-color="#e9eff9"
+                     class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
+                     :collapse="true">
+              <el-menu-item index="/TeacherMain">
                 <template #title>我的主页</template>
                 <el-icon><House /></el-icon>
               </el-menu-item>
-              <el-sub-menu index="">
-                <template #title>
-                  <el-icon>
-                    <Menu />
-                  </el-icon>
-                </template>
-                <el-menu-item index="/CourseSelect">选课指南</el-menu-item>
-                <el-menu-item index="/CourseEvaluate">课程评价</el-menu-item>
-              </el-sub-menu>
-              <el-menu-item index="/ScoreManage">
+              <el-menu-item index="/TeacherCourseManage">
+                <el-icon>
+                  <StarFilled />
+                </el-icon>
+                <template #title>课程管理</template>
+              </el-menu-item>
+              <el-menu-item index="/TeacherScoreManage">
                 <el-icon>
                   <StarFilled />
                 </el-icon>
                 <template #title>成绩管理</template>
               </el-menu-item>
-              <el-menu-item index="/AcademicManagement">
-                <el-icon>
-                  <Promotion />
-                </el-icon>
-                <template #title>学工管理</template>
-              </el-menu-item>
+<!--              <el-menu-item index="/TeacherSelfInformation">-->
+<!--                <el-icon>-->
+<!--                  <StarFilled />-->
+<!--                </el-icon>-->
+<!--                <template #title>个人信息</template>-->
+<!--              </el-menu-item>-->
+<!--              <el-menu-item index="/TeacherScoreManage">-->
+<!--                <el-icon>-->
+<!--                  <Promotion />-->
+<!--                </el-icon>-->
+<!--                <template #title>学工管理</template>-->
+<!--              </el-menu-item>-->
             </el-menu>
           </div>
           <div class="leftMenu">
