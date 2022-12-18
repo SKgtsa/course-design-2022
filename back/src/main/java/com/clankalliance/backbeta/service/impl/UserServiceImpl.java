@@ -52,6 +52,14 @@ public class UserServiceImpl implements UserService {
     private SnowFlake snowFlake;
 
 
+    public String getDEFAULT_AVATAR_URL() {
+        return DEFAULT_AVATAR_URL;
+    }
+
+    public String getDEFAULT_PHOTO_URL() {
+        return DEFAULT_PHOTO_URL;
+    }
+
     @Override
     public User findById(long id){
         Optional<Student> sop = studentRepository.findUserById(id);
@@ -239,5 +247,17 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+
+    @Override
+    public boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName){
+        password = DigestUtils.sha1Hex(password.getBytes());
+        try{
+            Student student = new Student(snowFlake.nextId(), userNumber, name, password, phone, studentClass, idCardNumber, gender, ethnic, politicalAffiliation, eMail, DEFAULT_AVATAR_URL, nickName, DEFAULT_PHOTO_URL);
+            studentRepository.save(student);
+        }catch (Exception e){
+            return false;
+        }
+        return true;
+    }
 
 }

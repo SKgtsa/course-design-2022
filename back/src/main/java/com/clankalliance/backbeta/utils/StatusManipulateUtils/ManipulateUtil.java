@@ -47,7 +47,7 @@ public class ManipulateUtil {
      * @param nodeBefore 被删除节点之前的节点
      */
     public static void deleteNextStatus(StatusNode nodeBefore){
-        if(nodeBefore.getNext().getToken().equals(endNode.getToken())){
+        if(nodeBefore.getNext().getToken() != null && nodeBefore.getNext().getToken().equals(endNode.getToken())){
             endNode = nodeBefore;
         }
         nodeBefore.setNext(nodeBefore.getNext().getNext());
@@ -63,7 +63,7 @@ public class ManipulateUtil {
         long currentTime = System.currentTimeMillis();
         boolean find = false;
         while(headNode.getNext() != null && headNode.getNext().getNext() != null && currentTime - headNode.getNext().getUpdateTime() >= STATUS_EXPIRE_TIME){
-            if(headNode.getNext().getToken().equals(id) || ("" + headNode.getNext().getUserId()).equals(id)){
+            if(headNode.getNext().getToken() != null &&  (headNode.getNext().getToken().equals(id) || ("" + headNode.getNext().getUserId()).equals(id))){
                 find = true;
             }
 
@@ -76,7 +76,7 @@ public class ManipulateUtil {
             StatusNode lastNode = headNode;
             StatusNode node = headNode.getNext();
             while(node != null && !find){
-                if(node.getToken().equals(id) || ("" + node.getUserId()).equals(id)){
+                if(node.getToken() != null && (node.getToken().equals(id) || ("" + node.getUserId()).equals(id))){
                     deleteNextStatus(lastNode);
                     find = true;
                 }
