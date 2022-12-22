@@ -3,7 +3,7 @@
         <el-container>
             <el-aside class="aside">
                 <div class="operationPage">
-                    <el-button type="default" class="changeButton" @click="router.push('/AcademicManagement/Practice')">
+                    <!-- <el-button type="default" class="changeButton" @click="router.push('/AcademicManagement/Practice')">
                         <a>社会实践</a>
                     </el-button>
                     <el-button type="default" class="changeButton" @click="router.push('/AcademicManagement/Reward')">
@@ -15,9 +15,51 @@
                     <el-button type="default" class="changeButton"
                         @click="router.push('/AcademicManagement/StudentEvaluate')">
                         <a>学生评价</a>
-                    </el-button>
+                    </el-button> -->
+                    <el-menu router default-active="/AcademicManagement/AMHome" class="menu">
+                        <el-menu-item index="/AcademicManagement/AMHome">
+                            <el-icon>
+                                <location />
+                            </el-icon>
+                            <span>学工首页</span>
+                        </el-menu-item>
+                        <el-sub-menu index="1">
+                            <template #title>
+                                <el-icon><Bicycle /></el-icon>
+                                <span>精彩生活</span>
+                            </template>
+                            <el-menu-item-group>
+                                <el-menu-item index="/AcademicManagement/Practice">社会实践</el-menu-item>
+                                <el-menu-item index="/AcademicManagement/Activity">课外活动</el-menu-item>
+                                <el-menu-item index="/AcademicManagement/Reward">成果奖励</el-menu-item>
+                            </el-menu-item-group>
+                        </el-sub-menu>
+                        <el-menu-item index="/AcademicManagement/StudentEvaluate">
+                            <el-icon>
+                                <location />
+                            </el-icon>
+                            <span>学生评价</span>
+                        </el-menu-item>
+                    </el-menu>
                 </div>
                 <div class="notice">
+                           <el-carousel height="100%" direction="vertical" class="carouselPage" :autoplay="false">
+                        <el-carousel-item class="carouselItem">
+                            <img class="img" src='../../assets/images/小确幸.jpg' />
+                        </el-carousel-item>
+                        <el-carousel-item class="carouselItem">
+                            <img class="img" src='../../assets/images/学代会.jpg' />
+                        </el-carousel-item>
+                        <el-carousel-item class="carouselItem">
+                            <img class="img" src='../../assets/images/支教.jpg' />
+                        </el-carousel-item>
+                        <el-carousel-item class="carouselItem">
+                            <img class="img" src='../../assets/images/志愿.jpg' />
+                        </el-carousel-item>
+                        <el-carousel-item class="carouselItem">
+                            <img class="img" src='../../assets/images/座谈会.jpg' />
+                        </el-carousel-item>
+                    </el-carousel>
                 </div>
             </el-aside>
             <el-main class="main">
@@ -53,13 +95,18 @@ import { reactive, ref } from "vue";
         .operationPage {
             border-radius: 1vw;
             width: 18vw;
-            height: 35vh;
+            height: 50vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            /*             justify-content: center; */
             background-color: #FFFFFF;
             border-radius: 1vw;
             box-shadow: 0 0 10px 0 #b9ccee;
+
+            .menu {
+                padding-top: 0px !important;
+                padding-bottom: 0px !important;
+            }
 
             .changeButton {
                 display: flex;
@@ -100,8 +147,22 @@ import { reactive, ref } from "vue";
             margin-top: 2vh;
             width: 18vw;
             height: 51vh;
-            background-color: #FFFFFF;
+           /*  background-color: #FFFFFF;
+ */
+            .carouselPage {
+                height: 100%;
+                width: 100%;
 
+                .carouselItem {
+                    height: 100%;
+                    width: 100%;
+
+                    .img {
+                        height: 100%;
+                        width: 100%;
+                    }
+                }
+            }
         }
     }
 

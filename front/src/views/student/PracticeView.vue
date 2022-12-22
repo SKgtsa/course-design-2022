@@ -12,18 +12,16 @@
         社会实践
         <el-button class="addButton" @click="add">添加</el-button>
       </div>
-      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
-        stripe size="large" class="pracitceTable">
+      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe size="large"
+        class="practiceTable"
+        :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
+        :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
         <!-- 显示斑马纹和边框 -->
-        <el-table-column label="序号" type="index" width="80" />
+        <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip />
         <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
-        <el-table-column label="标题" prop="practiceName" width="350" show-overflow-tooltip />
-
-        <el-table-column>
-          <template #header>
-            <!-- 默认表头 -->
-            <!--            <el-input class="search" v-model="search" size="large" placeholder="搜索你的社会实践" :suffix-icon="Search" />-->
-          </template>
+        <el-table-column label="标题" prop="practiceName" width="400" show-overflow-tooltip />
+        <!--         <el-table-column label="成果" prop="result" width="200"></el-table-column> -->
+        <el-table-column width="300" label="操作">
           <template #default="scope">
             <!-- 默认行和列 -->
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
@@ -42,36 +40,52 @@
     <!-- 用一个变量来判断是否弹出这个对话框 -->
     <!-- 再用一个变量判断是查看还是编辑，添加感觉和编辑差不多，编辑和添加用input框住，
       编辑要有初始的数值，查看用span框住，也要有初始值，添加用input框住，没有初始值-->
-    <el-dialog v-model="centerDialogVisible" width="45%">
+    <el-dialog v-model="centerDialogVisible" width="45%" draggable="true">
       <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
-        <!-- <el-form-item label="日期" prop="practiceDate">
-            <el-date-picker
-              type="daterange"
-              range-separator="To"
-              start-placeholder="Start date"
-              end-placeholder="End date"
-              v-model = "editForm.practiceDate"
-            />
-          </el-form-item> -->
+        <el-form-item label="日期" prop="date">
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date">{{ editForm.date }}
+          </el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.date"></el-input>
+        </el-form-item>
         <el-form-item label="标题" prop="practiceName">
-          <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
           <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}
           </el-input>
           <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName"></el-input>
         </el-form-item>
         <el-form-item label="内容" prop="practiceDescription">
-          <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span>
           <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
           <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.practiceDescription">
             {{ editForm.practiceDescription }}</el-input>
           <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.practiceDescription">
-            {{ editForm.practiceDescription }}</el-input>
+          </el-input>
         </el-form-item>
-        <!-- <el-form-item label="成员" prop="character">
-            <span v-if="typeOperation==='check'">{{editForm.character}}</span> 这个editForm初始值，还得赋值为那一行的数据吧
-            <el-input v-if="typeOperation==='edit'" v-model="editForm.character">{{editForm.character}}</el-input>
-            <el-input v-if="typeOperation==='add'" v-model="editForm.character">{{editForm.character}}</el-input>
-          </el-form-item> -->
+        <el-form-item label="成果" prop="result">
+          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="6" v-model="editForm.result">{{
+              editForm.result
+          }}</el-input>
+          <el-input v-if="typeOperation === 'add'" type="textarea" rows="6" v-model="editForm.result"></el-input>
+        </el-form-item>
+      </el-form>
+      <div class="dialogButtonPage">
+        <el-button @click="closeDialog" class="dialogButton">取消</el-button>
+        <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
+      </div>
+    </el-dialog>
+
+    <el-dialog v-model="centerDialogVisibleCheck" width="45%" draggable="true">
+      <el-form :model="editForm" class="areaTextInput" ref="formData">
+        <el-form-item label="日期" prop="date">
+          <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>
+        </el-form-item>
+        <el-form-item label="标题" prop="practiceName">
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span>
+        </el-form-item>
+        <el-form-item label="内容" prop="practiceDescription">
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span>
+        </el-form-item>
+        <el-form-item label="成果" prop="result">
+          <span v-if="typeOperation === 'check'">{{ editForm.result }}</span>
+        </el-form-item>
       </el-form>
       <div class="dialogButtonPage">
         <el-button @click="closeDialog" class="dialogButton">取消</el-button>
@@ -86,6 +100,7 @@ import { Search, User } from '@element-plus/icons-vue'
 import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { editorProps } from '@tinymce/tinymce-vue/lib/cjs/main/ts/components/EditorPropTypes'
 /* import { time } from 'console'; */
 /* import { title } from 'process'; */
 interface User {
@@ -94,7 +109,7 @@ interface User {
   practiceId: string,
   studentName: string
 }
-/* let findPractice = reactive([{
+/* let findpractice = reactive([{
   practiceDate:'',
   practiceName:'',
   practiceDiscription:'',
@@ -103,159 +118,52 @@ interface User {
 }]) */
 let tableData = reactive([
   {
-    //有个id在tableData中的每个对象里
-    //不对用户呈现，仅储存
-
-    practiceName: '回访母校-情系山大',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '关于临工重击的企业调研',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '义务支教',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
   {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  }, {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
-  },
-  {
-
-    practiceName: '宣传红色基因,致力乡村振兴',
-    practiceDescription: '',
-    practiceId: null,
-    studentName: '信步'
+    practiceName: '社会实践名字',
+    practiceDescription: '社会实践描述',
+    date: '2021年5月6日',
+    result: '被表扬了',
   },
 ])
 /* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
@@ -265,18 +173,24 @@ let isShow = ref(false);
 let currentPage = ref(1);
 let pageSize = ref(7);
 const formData = ref();
+let centerDialogVisibleCheck = ref(false);
 const rulesEditForm = reactive({   /* 定义校验规则 */
   practiceName: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
   { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
   ],
-  practiceDescription: [{ required: true, message: '请输入实践的内容！', trigger: 'blur' }]
+  practiceDescription: [{ required: true, message: '请输入活动的内容！', trigger: 'blur' }],
+  date: [{ required: true, message: '请输入日期', trigger: 'blur' },
+  { max: 20, message: '请输入正确的日期', trigger: 'blur' }],
+  result: [{ required: true, message: '请输入您的成果', trigger: 'blur' },
+  { max: 30, message: '不要太长，简要概述即可', trigger: 'blur' }
+  ],
 })
 let editForm = reactive({
-  token: '',
   practiceName: '',
   practiceDescription: '',
-  practiceId: null,
-  studentName: ''
+  date: '',
+  result: '',
+  id: '',
 });
 const search = ref('')
 const filterTableData = computed(() =>
@@ -286,56 +200,41 @@ const filterTableData = computed(() =>
       data.practiceName.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-/* loginFormPhone.value.validate((valid)=>{
-    if(valid){
-      service.post('/api/user/loginCode',{code:login_data_phone.captcha}).then(res => {
-      console.log(res)
-      const data = res.data;
-      if(data.success){
-        localStorage.setItem("token", data.token)
-        localStorage.setItem("userPhone", data.user.phone)
-        messageSuccess("登录成功!")
-        router.push('/')
-      }else{
-        messageError(data.message)
-      }
-  })
- */
-const loadPracticeTable = async () => {   //查找所有的数据,这个接口是不是有点问题,学生端还用传userNumber吗
+const loadpracticeTable = async () => {   //查找所有的数据
   /* formData.value.valid */
-  formData.value.validate((valid) => {
-    if (valid) {
-      service.post('/api/practice/find', { token: localStorage.getItem("token") }).then(res => {
-        if (res.data.success) {
-          const data = res.data;
-          let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
-          tableData = arr
-          localStorage.setItem('token', data.token)
-        } else {
-          messageWarning(res.data.message)
-        }
-      })
-        .catch(function (error) {
-          console.log(error)
-        })
+  await service.post('/api/practice/find', { token: localStorage.getItem("token"), pageNum: currentPage, pageSize: pageSize }).then(res => {
+    if (res.data.success) {
+      const data = res.data;
+      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
+      tableData = arr
+      localStorage.setItem('token', data.token)
     } else {
-      messageError("请完善全部信息")
+      messageWarning(res.data.message)
     }
   })
+    .catch(function (error) {
+      console.log(error)
+    })
 }
-loadPracticeTable() //进入默认执行
+loadpracticeTable() //进入默认执行
 
 const add = () => {
   centerDialogVisible.value = true;
   typeOperation.value = 'add';
+  editForm.practiceName = '';
+  editForm.practiceDescription = '';
+  editForm.id = '';
+  editForm.date = '';
+  editForm.result = '';
 }
 
 const handleCheck = (row) => {   //查看单个的数据 //一条一条赋值吧，一起赋值出bug了
-  centerDialogVisible.value = true;
+  centerDialogVisibleCheck.value = true;
   editForm.practiceDescription = row.practiceDescription;
   editForm.practiceName = row.practiceName;
-  editForm.practiceId = row.practiceId;
-  editForm.studentName = row.studentName;
+  editForm.date = row.date;
+  editForm.result = row.result;
+  editForm.id = row.id;
   console.log(editForm)
   typeOperation.value = 'check'; //查看完就完事儿
 }
@@ -344,8 +243,9 @@ const handleEdit = (row) => {  //改
   centerDialogVisible.value = true;
   editForm.practiceDescription = row.practiceDescription;
   editForm.practiceName = row.practiceName;
-  editForm.practiceId = row.practiceId;
-  editForm.studentName = row.studentName;
+  editForm.date = row.date;
+  editForm.result = row.result;
+  editForm.id = row.id;
   // editForm = Object.assign({}, row);//先弹对话框，然后提交，提交之后再传参数吧
   console.log(editForm)
   typeOperation.value = 'edit';
@@ -362,10 +262,10 @@ const handleDelete = (row) => {  //删  //异步可能有问题
     }
   )
     .then(() => {
-      service.post('/api/practice/delete', { token: localStorage.getItem("token"), id: row.id }).then(res => {
+      service.post('/api/practice/delete', { token: localStorage.getItem("token"), practiceId: row.id }).then(res => {
         if (res.data.success) {
           messageSuccess('删除成功!')
-          loadPracticeTable() //重新加载现在表单中的数据
+          loadpracticeTable() //重新加载现在表单中的数据
           localStorage.setItem("token", res.data.token)
         } else {
           messageWarning(res.data.message)
@@ -378,58 +278,76 @@ const handleDelete = (row) => {  //删  //异步可能有问题
 }
 
 const sumbitEditRow = () => {
-  editForm.token = localStorage.getItem("token")
   if (typeOperation.value === 'check') {
     /* handleCheck() */
 
-  } else if (typeOperation.value === 'edit') {
-    /* handleEdit() */
-    service.post('/api/practice/save',
-      { token: editForm.token, practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription, id: editForm.practiceId })
-      .then(res => {  //直接把这一行的数据给出去可以吗
-        if (res.data.success) {
-          messageSuccess("编辑成功！")
-          typeOperation.value = '';
-          loadPracticeTable()
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageError("编辑失败!")
-          console.log(res.data.message)
-        }
-      })
-    isShow.value = false;
-  } else if (typeOperation.value === 'add') {
-    service.post('/api/practice/save',
-      { token: editForm.token, practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription })
-      .then(res => {
-        if (res.data.success) {
-          messageSuccess("添加成功！")
-          typeOperation.value = '';
-          loadPracticeTable()
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageError("添加失败！")
-          console.log(res.data.message)
-        }
-      }
-      )
-    isShow.value = false;
-  } else {
-    messageError('出现错误！')
   }
+  formData.value.validate(((valid) => {
+    if (valid) {
+      if (typeOperation.value === 'edit') {
+        /* handleEdit() */
+        service.post('/api/practice/save',
+          {
+            token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
+            date: editForm.date, result: editForm.result, id: editForm.id
+          })
+          .then(res => {  //直接把这一行的数据给出去可以吗
+            if (res.data.success) {
+              messageSuccess("编辑成功！")
+              typeOperation.value = '';
+              loadpracticeTable()
+              localStorage.setItem("token", res.data.token)
+            } else {
+              messageError("编辑失败!")
+              console.log(res.data.message)
+            }
+          })
+        isShow.value = false;
+      } else if (typeOperation.value === 'add') {
+        service.post('/api/practice/save',
+          {
+            token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
+            date: editForm.date, result: editForm.result
+          })
+          .then(res => {
+            if (res.data.success) {
+              messageSuccess("添加成功！")
+              typeOperation.value = '';
+              loadpracticeTable()
+              localStorage.setItem("token", res.data.token)
+            } else {
+              messageError("添加失败！")
+              console.log(res.data.message)
+            }
+          }
+          )
+        isShow.value = false;
+      } else {
+        messageError('出现错误！')
+      }
+    } else {
+      messageWarning("请填写完整!")
+    }
+  }))
+
   editForm.practiceName = '',
     editForm.practiceDescription = '',
-    editForm.practiceId = null,
-    editForm.studentName = ''
-  centerDialogVisible.value = false;
+    editForm.id = '',
+    editForm.date = '',
+    editForm.result = '',
+    centerDialogVisible.value = false;
+  centerDialogVisibleCheck.value = false;
   typeOperation.value = '';
 };
 
 const closeDialog = () => {
-  centerDialogVisible.value = false;
-  if (typeOperation.value === 'edit') {
+  if (typeOperation.value === 'check') {
+    centerDialogVisibleCheck.value = false;
+  } else if (typeOperation.value === 'edit') {
+    centerDialogVisible.value = false;
     messageInfo("编辑取消")
   } else if (typeOperation.value === 'add') {
+    centerDialogVisible.value = false;
     messageInfo("添加取消")
   }
 }
@@ -445,9 +363,9 @@ const handleCurrentChange = (currentPage) => {
 </script>
 <style lang="scss" scoped>
 .title {
-  margin-top: 30px;
+  margin-top: 15px;
   height: 60px;
-  font-family: 微软雅黑;
+  font-family: LiSu;
   font-size: 6vh;
   font-weight: 500;
   line-height: 1vh;
@@ -458,14 +376,19 @@ const handleCurrentChange = (currentPage) => {
 .content {
   width: 100%;
   height: 100%;
+  background-image: url("../../assets/images/activity.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center center;
+  background-repeat: repeat;
 
   .pageContent {
     width: 70vw;
     height: 70vh;
-    background-color: #FFFFFF;
     border-radius: 3vw;
-    padding-left: 5vw;
+    padding-left: 2vw;
     padding-top: 3vh;
+    padding-right: 2vw;
 
     .addButton {
       width: 10vw;
@@ -477,12 +400,39 @@ const handleCurrentChange = (currentPage) => {
       color: #0273f1;
       font-size: 2.5vh;
     }
-    .pracitceTable{
-      background-color: aqua;
-      .button {
-      width: 48px;
-      height: 30px;
+
+    ::v-deep .el-table th {
+      //更改table 头部背景
+      background-color: rgba(19, 69, 193, 0.867);
+      color: #f2dc19;
+      /*  color: '#fff';
+      background-color: '#0a3370'; */
+      font-weight: '700';
     }
+
+    ::v-deep .el-table {
+      //表格边框
+      border: solid 1px #922eef;
+      // box-sizing: border-box;
+    }
+
+    ::v-deep .el-table tr {
+      //内部的单元行
+      background-color: rgb(174, 233, 246);
+    }
+
+
+    ::v-deep .el-table tbody tr:hover>td {
+      background: #40b3dc !important;
+    }
+
+    .practiceTable {
+      border: 2px solid;
+
+      .button {
+        width: 48px;
+        height: 30px;
+      }
     }
   }
 }

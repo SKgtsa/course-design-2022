@@ -71,12 +71,16 @@ const router = createRouter({
           name: 'main',
           component: () => import('../views/student/MainView.vue')
         },
-
         {
           path: '/AcademicManagement',
           name: 'AcademicManagement',
           component: () => import('../views/student/AcademicManagement.vue'),
           children: [
+            {
+              path:'/AcademicManagement/AMHome',
+              name:'AMHome',
+              component:()=>import('../views/student/AMHome.vue')
+            },
             {
               path: '/AcademicManagement/StudentEvaluate',
               name: 'StudentEvaluate',

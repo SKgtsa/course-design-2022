@@ -5,10 +5,10 @@
             <a class="title">学生评价</a>
         </div>
         <div class="panel">
-            <el-button type="default" class="opButton">
+            <el-button class="opButton">
                 <a>查看对我的评价</a>
             </el-button>
-            <el-button type="default" class="opButton">
+            <el-button class="opButton">
                 <a>给别人评价</a>
             </el-button>
         </div>
@@ -92,10 +92,10 @@ let pageSize = ref(7);
             text-transform: uppercase;
         }
 
-        .opButton:hover {
-            background-color: #eb6a37;
+         .opButton:hover {
+            background-color: rgb(142, 133, 249);
             color: white;
-        }
+        } 
     }
 
     .checkEvaluation {}

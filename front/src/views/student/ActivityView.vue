@@ -363,7 +363,7 @@ const handleCurrentChange = (currentPage) => {
 </script>
 <style lang="scss" scoped>
 .title {
-  margin-top: 30px;
+  margin-top: 15px;
   height: 60px;
   font-family: LiSu;
   font-size: 6vh;
