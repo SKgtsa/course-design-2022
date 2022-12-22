@@ -96,8 +96,6 @@ import { reactive, ref } from "vue";
             border-radius: 1vw;
             width: 18vw;
             height: 50vh;
-            height: 40vh;
-
             display: flex;
             flex-direction: column;
             /*             justify-content: center; */

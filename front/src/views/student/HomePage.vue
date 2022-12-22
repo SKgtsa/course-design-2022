@@ -144,7 +144,7 @@ let uploadImg=(f)=>{
     let data = res.data;
     if(data.success){
       localStorage.setItem('token',data.token);
-      setAvatarURL(f.file);
+      setAvatarURL(data.content);
       messageSuccess("更换成功！")
     }else{
       messageError(data.message)

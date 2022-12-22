@@ -165,7 +165,6 @@ let tableData = reactive([
     date: '2021年5月6日',
     result: '被表扬了',
   },
-
 ])
 /* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
@@ -383,7 +382,6 @@ const handleCurrentChange = (currentPage) => {
   background-position: center center;
   background-repeat: repeat;
 
-
   .pageContent {
     width: 70vw;
     height: 70vh;
@@ -391,7 +389,6 @@ const handleCurrentChange = (currentPage) => {
     padding-left: 2vw;
     padding-top: 3vh;
     padding-right: 2vw;
-    margin-left: 5vh;
 
     .addButton {
       width: 10vw;
