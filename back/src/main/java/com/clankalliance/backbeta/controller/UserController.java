@@ -4,6 +4,7 @@ import com.clankalliance.backbeta.request.*;
 import com.clankalliance.backbeta.request.user.UserLoginRequest;
 import com.clankalliance.backbeta.request.user.UserSaveRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
+import com.clankalliance.backbeta.service.ExcelService;
 import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
@@ -27,6 +28,9 @@ public class UserController {
 
     @Resource
     private GeneralUploadService generalUploadService;
+
+    @Resource
+    private ExcelService excelService;
 
 
     /*
@@ -90,6 +94,14 @@ public class UserController {
                                              // 路径变量 解决前后端不一致
                                              @RequestParam("photo") MultipartFile photo, @RequestParam("token") String token){
         return generalUploadService.handleSavePhoto(photo,token);
+    }
+
+    //批量注册
+    @PostMapping("/batchRegister")
+    public CommonResponse handleBatchRegister(HttpSession session,
+                                              // 路径变量 解决前后端不一致
+                                              @RequestParam("file") MultipartFile file, @RequestParam("token") String token){
+        return excelService.handleBatchRegister(file,token);
     }
 
 }
