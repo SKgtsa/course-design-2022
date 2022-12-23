@@ -13,12 +13,12 @@
             <el-table-column prop="value" label="" width="120">
             </el-table-column>
           </el-table>
-          <el-button type="default" class="changeButton" @click="editInf" plain>
-            <a>修改个人信息和密码</a>
+          <el-button type="default" class="changeButton" @click="checkInf" plain>
+            <a>查看个人信息</a>
           </el-button>
-<!--           <el-button type="default" class="changeButton" @click="editNick" plain>
-            <a>修改用户名和头像</a>
-          </el-button> -->
+          <el-button type="default" class="changeButton" @click="editInf" plain>
+            <a>修改个人信息</a>
+          </el-button>
         </div>
       </el-aside>
       <el-main class="main">
@@ -27,38 +27,47 @@
       </el-main>
     </el-container>
   </div>
-  <el-dialog v-model="centerDialogVisibleInf" width="30%">
-    <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
-      <!-- <el-form-item label="日期" prop="practiceDate">
-            <el-date-picker
-              type="daterange"
-              range-separator="To"
-              start-placeholder="Start date"
-              end-placeholder="End date"
-              v-model = "editForm.practiceDate"
-            />
-          </el-form-item> -->
+  <el-dialog v-model="centerDialogVisibleInfCheck" width="40%">
+    <el-form :model="information" class="areaTextInput">
       <el-form-item label="学号:" prop="userNumber">
-        <span>{{ editForm.userNumber }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.userNumber }}</span>
       </el-form-item>
       <el-form-item label="姓名:" prop="name">
-        <span>{{ editForm.name }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.name }}</span>
       </el-form-item>
       <el-form-item label="性别:" prop="gender">
-        <span>{{ editForm.gender }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.gender }}</span>
       </el-form-item>
       <el-form-item label="身份证号:" prop="idcardNumber">
-        <span>{{ editForm.idcardNumber }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.idcardNumber }}</span>
       </el-form-item>
       <el-form-item label="班级:" prop="studentClass">
-        <span>{{ editForm.studentClass }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.studentClass }}</span>
       </el-form-item>
       <el-form-item label="政治面貌:" prop="politicalAffiliation">
-        <span>{{ editForm.politicalAffiliation }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.politicalAffiliation }}</span>
       </el-form-item>
       <el-form-item label="民族:" prop="ethnic">
-        <span>{{ editForm.ethnic }}</span> <!-- 这个editForm初始值，还得赋值为那一行的数据吧 -->
+        <span>{{ information.ethnic }}</span>
       </el-form-item>
+
+      <el-form-item label="邮箱:" prop="eMail">
+        <span>
+          {{ information.eMail }}</span>
+      </el-form-item>
+      <el-form-item label="电话:" prop="phone">
+        <span>{{ information.phone }}</span>
+      </el-form-item>
+      <el-form-item label="地址:" prop="location">
+        <span>{{ information.location }}</span>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
+
+
+  <!-- 修改个人信息 -->
+  <el-dialog v-model="centerDialogVisibleInf" width="30%">
+    <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
       <el-form-item label="邮箱:" prop="eMail">
         <el-input v-model="editForm.eMail">
           {{ editForm.eMail }}</el-input>
@@ -71,23 +80,13 @@
       </el-form-item>
     </el-form>
     <div class="dialogButtonPage">
-      <el-button @click="closeDialog" class="dialogButton">取消</el-button>
-      <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
-    </div>
-  </el-dialog>
-  <el-dialog v-model="centerDialogVisibleNick" width="30%">
-    <el-form :model="nickEditForm" class="areaTextInput" ref="nickFormData" :rules="rulesNickEditForm">
-      <el-form-item label="昵称:" prop="nickName">
-        <el-input v-model="nickEditForm.nickName">{{ nickEditForm.nickName }}</el-input>
-      </el-form-item>
-      <!-- <el-form-item label="头像:" prop="avatarURL">
-        <el-input v-model= "nickEditForm.avatarURL">{{ editForm.location }}</el-input>
-      </el-form-item> -->
-    </el-form>
-    <div class="dialogButtonPage">
-      <el-button @click="closeDialog" class="dialogButton">取消</el-button>
-      <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
-    </div>
+    <el-button @click="sumbitEditRow" class="dialogButton">
+      <a>确定</a>
+    </el-button>
+    <el-button @click="closeDialog" class="dialogButton">
+      <a>取消</a>
+    </el-button>
+  </div>
   </el-dialog>
 </template>
 <script lang="ts" setup>
@@ -95,16 +94,18 @@ import AvatarUploadTestViewVue from '@/components/AvatarUploadTestView.vue';
 import service from '@/request';
 import { messageWarning, messageError, messageInfo, messageSuccess } from '@/utils/message';
 import { reactive, ref } from "vue";
-import {setNickName,setAvatarURL } from '../../global/global';
+import { setNickName, setAvatarURL } from '../../global/global';
 import TEditor from '../../components/TEditor.vue'
 //变量
 
 let centerDialogVisibleInf = ref(false);
 let centerDialogVisibleNick = ref(false);
+let centerDialogVisibleInfCheck = ref(false);
+/* let information = reactive({}); */
 let selfId = ref('');
 /* nickName.value = '';
 avatarURL.value = ''; */
-let backData = reactive({
+let information = reactive({
   name: '彭帅豪',
   eMail: '859455675@qq.com',
   phone: '12345678910',
@@ -123,39 +124,40 @@ let backData = reactive({
 const tableData = reactive([
   {
     title: "姓名",
-    value: backData.name,
+    value: information.name,
   },
   {
     title: '邮箱',
-    value: backData.eMail,
+    value: information.eMail,
   },
   {
     title: '电话',
-    value: backData.phone,
+    value: information.phone,
   },
   {
     title: '地址',
-    value: backData.location,
+    value: information.location,
   },
 ])
 
 /* const formData = ref(); */
 let editForm = reactive({  //家庭成员这个感觉可以不弄了，显示的时候不太好显示
-  name: backData.name,       //身份证都传了,要不都返回来
-  eMail: backData.eMail,
-  phone: backData.phone,
-  location: backData.location,
-  gender: backData.gender,
-  ethnic: backData.ethnic,
-  politicalAffiliation: backData.politicalAffiliation,
-  userNumber: backData.userNumber,
-  password: backData.password,
-  studentClass: backData.studentClass,
-  idcardNumber: backData.idcardNumber,
-  photoURL: backData.photoURL,
-  id: backData.id,
+  name: information.name,       //身份证都传了,要不都返回来
+  eMail: information.eMail,
+  phone: information.phone,
+  location: information.location,
+  gender: information.gender,
+  ethnic: information.ethnic,
+  politicalAffiliation: information.politicalAffiliation,
+  userNumber: information.userNumber,
+  password: information.password,
+  studentClass: information.studentClass,
+  idcardNumber: information.idcardNumber,
+  photoURL: information.photoURL,
+  id: information.id,
 });
-let formData = ref(); 
+/* let editForm = reactive({}); */
+let formData = ref();
 const validateEMail = (rule, value, callback) => {  //检验邮箱
   const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
   if (value == '' || value == undefined || value == null) {
@@ -200,8 +202,25 @@ const rulesEditForm = reactive({
 }
 loadInformationData();//进入时自动执行调用 */
 
+const getInf = () => {
+  service.post('/api/user/myInfo', { token: localStorage.getItem('token') }).then(res => {
+    let data = res.data;
+    if (data.success) {
+      localStorage.setItem('token', data.token);
+      information = data.content;
+    } else {
+      messageError(data.message);
+    }
+  })
+}
 
+const checkInf = () => {
+  centerDialogVisibleInfCheck.value = true;
+
+}
 const editInf = () => {
+  getInf(); //编辑的时候先调用获取数据的
+  editForm = information; //把information的信息给editForm
   centerDialogVisibleInf.value = true;
 }
 const closeDialog = () => {
@@ -215,11 +234,14 @@ const sumbitEditRow = () => {
       service.post('/api/user/editInfo', {
         token: localStorage.getItem("token"), //这个修改信息，绑定的值
         //是editForm绑定还是用formData绑定？
-        phone: editForm.phone, eMail: editForm.eMail, location: editForm.location
+        id: editForm.id, phone: editForm.phone, eMail: editForm.eMail,
+        gender: editForm.gender, ethnic: editForm.ethnic, politicalAffiliation: editForm.politicalAffiliation,
+        userNumber: editForm.userNumber, name: editForm.name, studentClass: editForm.studentClass,
+        idcardNumber: editForm.idcardNumber, photoURL: editForm.photoURL
       }).then(res => {
         if (res.data.success) {
           const data = res.data;
-          backData = data.content;
+          information = data.content;
           localStorage.setItem('token', data.token)
           messageSuccess("提交成功！")
         } else {

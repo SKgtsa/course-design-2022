@@ -210,7 +210,9 @@ const validatePhone = (rule, value, callback) => {
   }
 }
 const rulesPwd = reactive({   /* 定义校验规则 */
-  userNumber: [{ required: true, message: '请输入用户名！', trigger: 'blur' }],
+  userNumber: [{ required: true, message: '请输入用户名！', trigger: 'blur' },{
+    max:16,message:'学号没有超过16位!',trigger:'blur'
+  }],
   password: [{ required: true, message: '请输入密码！', trigger: 'blur' },
   { min: 6, max: 16, message: '长度需要在8到16位之间!', trigger: 'blur' }
   ]
