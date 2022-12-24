@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface ScoreRepository extends JpaRepository<Score,Integer> {
@@ -24,4 +25,5 @@ public interface ScoreRepository extends JpaRepository<Score,Integer> {
 
     @Query("from Score s where s.student.id=?1 and s.course.id=?2 and s.course.year=?3 and s.course.semester=?4")
     Optional<Score> findByTime(long studentId, long courseId ,Integer year, String semester);
+
 }

@@ -10,7 +10,6 @@ import com.clankalliance.backbeta.request.course.EditCourseStudentRequest;
 import com.clankalliance.backbeta.request.course.FindStudentOfCourseRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.CourseService;
-import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +31,7 @@ public class CourseController {
 
     //学生选课
     @PostMapping("/select")
-    public CommonResponse selectCourse(@RequestBody StudentCourseEditRequest request){
+    public CommonResponse selectCourse(@RequestBody StudentCourseSaveRequest request){
         CommonResponse response = tokenUtil.tokenCheck(request.getToken());
         if(!response.getSuccess())
             return response;
@@ -42,7 +41,7 @@ public class CourseController {
 
     //学生退课
     @PostMapping("/quit")
-    public CommonResponse quitCourse(@RequestBody StudentCourseEditRequest request){
+    public CommonResponse quitCourse(@RequestBody StudentCourseSaveRequest request){
         return courseService.handleQuit(request.getToken(),request.getCourseId());
     }
 
@@ -66,7 +65,7 @@ public class CourseController {
 
     //保存课程
     @PostMapping("/save")
-    public CommonResponse saveCourse(@RequestBody TeacherCourseEditRequest request){
+    public CommonResponse saveCourse(@RequestBody TeacherCourseSaveRequest request){
         return courseService.handleTeacherSave(request.getToken(),request.getCourseId(),request.getName(),request.getWeekStart(),request.getWeekEnd(),request.getTime(),request.getCapacity(),request.getStudentClass(),request.getStudentSection(),request.getLocation(), request.getYear(), request.getSemester(),request.getCredit(),request.getDescription());
     }
 

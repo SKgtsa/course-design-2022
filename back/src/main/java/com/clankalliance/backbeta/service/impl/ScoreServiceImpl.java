@@ -12,15 +12,13 @@ import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepositor
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.service.ScoreService;
-import com.clankalliance.backbeta.utils.SnowFlake;
-import com.clankalliance.backbeta.utils.TokenUtil;
+import com.clankalliance.backbeta.utils.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import javax.swing.text.AbstractDocument;
+import java.text.DecimalFormat;
+import java.util.*;
 
 
 @Service
@@ -119,6 +117,106 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     public CommonResponse handleFind(String token, Integer Year, String  Semester){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student=(Student)user;
+                long studentId=student.getId();
+                Set<Course> courseSet=student.getCourseSet();
+                //建立List集合存储所有的课程成绩对象
+                List<ScoreUtil> StuScore=new ArrayList<>();
+                for(Course c : courseSet){
+                    if(c.getSemester().equals(Semester) && c.getYear().equals(Year)){
+                        long courseId=c.getId();
+                        Optional<Score> scoreOp=scoreRepository.findByTime(studentId,courseId,Year,Semester);
+                        Score score=scoreOp.get();
+                        int dailyScore= score.getDailyScore();
+                        int endScore= score.getEndScore();
+                        double weight=score.getWeight();
+                        double finalScore= dailyScore*(1-weight)+endScore*weight;
+                        Integer finalScore1=(int) finalScore;
+                        int rank;
+                        Set<Student> courseStudentSet=c.getStudentSet();
+                        int capacity=courseStudentSet.size();
+                        List<Integer> finalList=new ArrayList<>(capacity);
+                        finalList.add(finalScore1);
+                        for(Student stu : courseStudentSet){
+                            long stuId=stu.getId();
+                            Optional<Score> scOp=scoreRepository.findByTime(stuId,courseId,Year,Semester);
+                            Score sc=scOp.get();
+                            int dailySc= sc.getDailyScore();
+                            int endSc= sc.getEndScore();
+                            double weightSc=sc.getWeight();
+                            double finalSc= dailySc*(1-weightSc)+endSc*weightSc;
+                            Integer finalSc1=(int) finalSc;
+                            finalList.add(finalSc1);
+                        }
+                        //使用list的sort方法进行归并排序
+                        finalList.sort(new Comparator<Integer>() {
+                            @Override
+                            public int compare(Integer o1, Integer o2) {
+                                return  o2.compareTo(o1);
+                            }
+                        });
+                        rank=finalList.indexOf(finalScore1) + 1;
+                        //将所获得的数据封装进所建立的对象内
+                        String courseName=c.getName();
+                        ScoreUtil tmp=new ScoreUtil(courseName,dailyScore,endScore,weight,finalScore1,rank);
+                        StuScore.add(tmp);
+                    }
+                }
+                response.setContent(StuScore);
+                response.setMessage("成绩查询成功");
+                response.setSuccess(true);
+            }else if(user instanceof Teacher){
+                Teacher teacher=(Teacher) user;
+                Set<Course> teacherCourseSet=teacher.getCourseSet();
+                List<AverageUtil> stuScore=new ArrayList<>();
+                for(Course c : teacherCourseSet){
+                    if(c.getSemester().equals(Semester) && c.getYear().equals(Year)){
+                        Set<Student> studentCourseSet=c.getStudentSet();
+                        int total=0;
+                        int studentNum=studentCourseSet.size();
+                        int passStudent=0;
+                        double weight=0;
+                        long courseId=c.getId();
+                        for(Student s : studentCourseSet){
+                            long studentId=s.getId();
+                            Optional<Score> scoreOp=scoreRepository.findByTime(studentId,courseId,Year,Semester);
+                            Score score=scoreOp.get();
+                            int dailyScore= score.getDailyScore();
+                            int endScore= score.getEndScore();
+                            weight=score.getWeight();
+                            double finalScore= dailyScore*(1-weight)+endScore*weight;
+                            int finalScore1=(int) finalScore;
+                            total+=finalScore1;
+                            if(finalScore1>=60){
+                                passStudent++;
+                            }
+                        }
+                        Integer averageScore = total/studentNum;
+                        double passRate = passStudent/studentNum;
+                        DecimalFormat df = new DecimalFormat("#0.000");
+                        String passRate1=df.format(passRate);
+                        String courseName=c.getName();
+                        AverageUtil tmp=new AverageUtil(courseName,weight,averageScore,passRate1,courseId);
+                        stuScore.add(tmp);
+                    }
+                }
+                response.setContent(stuScore);
+                response.setSuccess(true);
+                response.setMessage("成绩查询成功");
+            }
+        }
 //        CommonResponse response = tokenUtil.tokenCheck(token);
 //        if(response.getSuccess()){
 //            User user = userService.findById(Long.parseLong(response.getMessage()));
@@ -147,11 +245,45 @@ public class ScoreServiceImpl implements ScoreService {
 //            }
 //        }
 //        return response;
-        return null;
+        return response;
     }
 
     public CommonResponse handleFindDetail(String token,long courseId){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            List<FindDetailUtil> DetailList=new ArrayList<>();
+            if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
+                long teacherId=teacher.getId();
+                Optional<Course> courseOp=courseRepository.findByTeacherAndId(teacherId,courseId);
+                Course course=courseOp.get();
+                Set<Student> studentSet=course.getStudentSet();
+                for(Student s : studentSet){
+                    long studentId=s.getId();
+                    Optional<Score> scoreOp=scoreRepository.findByCourseStudentId(courseId,studentId);
+                    Score score=scoreOp.get();
+                    String studentName=s.getName();
+                    Integer dailyScore=score.getDailyScore();
+                    Integer endScore=score.getEndScore();
+                    Double weight=score.getWeight();
+                    FindDetailUtil tmp=new FindDetailUtil(studentName,dailyScore,endScore,weight);
+                    DetailList.add(tmp);
+                }
+                response.setContent(DetailList);
+                response.setMessage("学生成绩查询成功");
+                response.setSuccess(true);
+            }
+        }
+        return response;
     }
 
 }

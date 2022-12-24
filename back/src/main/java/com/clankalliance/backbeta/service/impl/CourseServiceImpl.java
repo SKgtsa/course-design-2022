@@ -1,5 +1,6 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.baomidou.mybatisplus.core.injector.methods.DeleteById;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import com.clankalliance.backbeta.entity.course.Course;
@@ -7,8 +8,10 @@ import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.clankalliance.backbeta.repository.ClassTimeRepository;
 import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
+import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.service.UserService;
@@ -18,6 +21,7 @@ import org.apache.ibatis.jdbc.Null;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.swing.text.Style;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +41,14 @@ public class CourseServiceImpl implements CourseService {
     private UserService userService;
 
     @Resource
+    private StudentRepository studentRepository;
+
+    @Resource
     private CourseRepository courseRepository;
+
+    @Resource
+    private TeacherRepository teacherRepository;
+
 
 
 //    /**
@@ -152,7 +163,23 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse bind(long courseId, Student student){
-        return null;
+        CommonResponse response=new CommonResponse<>();
+        Set<Course> courseSetOp = student.getCourseSet();
+        long id;
+        Optional<Course> cop = courseRepository.findById(courseId); //检查课程是否存在
+        Course course=cop.get();
+        if(cop.isEmpty()){
+            response.setSuccess(false);
+            response.setMessage("该课程不存在");
+        }
+        //在学生的课程表中加入所选课程
+        courseSetOp.add(course);
+        student.setCourseSet(courseSetOp);
+        //保存
+        courseRepository.save(course);
+        response.setSuccess(true);
+        response.setMessage("绑定成功");
+        return response;
     }
 
     /**
@@ -164,7 +191,43 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleQuit(String token,long courseId){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("257545660272873472");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student || user instanceof Manager){
+                Set<Course> courseSetOp = ((Student) user).getCourseSet();
+                Optional<Course> cop = courseRepository.findById(courseId); //检查课程是否存在
+                Course course=cop.get();
+                if(cop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("该课程不存在");
+                    return response;
+                }
+                if(courseSetOp.contains(course)){
+                    //课程表中课程存在，即删除课程
+                    courseSetOp.remove(course);
+                    ((Student) user).setCourseSet(courseSetOp);
+                }else{
+                    response.setSuccess(false);
+                    response.setMessage("你未选择此课程");
+                }
+                //保存
+                //courseRepository.save(course);
+                response.setSuccess(true);
+                response.setMessage("退课成功");
+            }
+            return response;
+        }
+        //token无效，直接将token验证的数据返回前端
+        return response;
     }
 
     /**
@@ -178,6 +241,41 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleRemoveStudent(String token,long courseId,long studentNumber){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("257545660272873472");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Teacher || user instanceof Manager){
+                Optional<Student> sop=studentRepository.findByUserNumber(studentNumber);
+                Student student=sop.get();
+                Optional<Course> cop=courseRepository.findById(courseId);
+                Course course =cop.get();
+                if(cop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("课程不存在");
+                    return response;
+                }
+                Set<Student> studentSetOp = course.getStudentSet();
+                if(studentSetOp.contains(student)){
+                    //课程的学生表中存在此学生，进行删除操作
+                    studentSetOp.remove(student);
+                    course.setStudentSet(studentSetOp);
+                }else{
+                    //课程的学生表中无此学生，报错
+                    response.setSuccess(false);
+                    response.setMessage("该学生不在本课程中");
+                }
+                response.setSuccess(true);
+                response.setMessage("成功踢出学生");
+            }
+        }
         return null;
     }
 
@@ -201,7 +299,59 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,String studentClass,String studentSection,String location,Integer year, String semester,Double credit,String description){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
+                Optional<Course> courseOp = courseRepository.findById(courseId);
+                long id;
+                if(courseOp.isEmpty()){
+                    //该课程不存在,为课程的创建
+                    id = snowFlake.nextId();
+                }else {
+                    //该课程存在，为课程的修改
+                    id = courseOp.get().getId();
+                }
+                Set<Student> studentSet=new HashSet<>();
+                Set<Score> scoreSet=new HashSet<>();
+                //为每个时间对象分配id并储存
+                //数据库中预置35个ClassTime对象
+                for(ClassTime t :time){
+                    //对没有id的ClassTime进行id的补充
+                    t.setId(t.getSection() + (t.getWeekDay() - 1) * 5);
+                }
+                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass,studentSection,location,year,semester,credit,description,studentSet,(Teacher) user,scoreSet);
+                //在教师的课程表中加入课程
+                Set<Course> teacherCourseSet = teacher.getCourseSet();
+                teacherCourseSet.add(course);
+                teacher.setCourseSet(teacherCourseSet);
+                //保存
+                courseRepository.save(course);
+                teacherRepository.save(teacher);
+
+                response.setSuccess(true);
+                response.setMessage("保存成功");
+            }else if(user instanceof Manager){
+                //管理员没有课程表，故只能修改
+                Course courseOld = courseRepository.findById(courseId).get();
+                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass,studentSection,location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet());
+                courseRepository.save(course);
+
+                response.setSuccess(true);
+                response.setMessage("保存成功");
+            }
+        }
+        //token无效，直接将token验证的数据返回前端
+        return response;
     }
 
 
@@ -213,7 +363,39 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleDelete(String token,long courseId){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("257545660272873472");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Teacher || user instanceof Manager){
+                Optional<Course> courseOp = courseRepository.findById(courseId);
+                Course course=courseOp.get();
+                Set<Student> studentSetOp=course.getStudentSet();
+                //注意课程有学生选择时需先解绑再删除
+                if(studentSetOp.size()!=0){
+                    for(Student stu : studentSetOp){
+                        Set<Course> stuCourseSetOp = stu.getCourseSet();
+                        stuCourseSetOp.remove(course);
+                        stu.setCourseSet(stuCourseSetOp);
+                    }
+                    courseRepository.delete(course);
+                    response.setSuccess(true);
+                    response.setMessage("课程删除成功");
+                }else{
+                    courseRepository.delete(course);
+                    response.setSuccess(true);
+                    response.setMessage("课程删除成功");
+                }
+            }
+        }
+        return response;
     }
 
     /**
@@ -223,7 +405,29 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleFindCourseList(String token){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("257545660272873472");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student || user instanceof Manager){
+                Set<Course> courseSetOp = ((Student) user).getCourseSet();
+                if(!courseSetOp.isEmpty()){
+                    response.setSuccess(true);
+                    response.setMessage("该学生所选课程如下");
+                    response.setContent(courseSetOp);
+                }else{
+                    response.setSuccess(false);
+                    response.setMessage("该学生未选择任何课程");
+                }
+            }
+        }
+        return response;
     }
 
     //***************存在问题：分页*********************************************

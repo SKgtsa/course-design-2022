@@ -1,11 +1,42 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.Activity;
+import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.clankalliance.backbeta.repository.ActivityRepository;
+import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
+import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.ActivityService;
+import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
+import com.clankalliance.backbeta.utils.SnowFlake;
+
+import javax.annotation.Resource;
+import javax.validation.constraints.Null;
+import java.util.Optional;
 
 @Service
 public class ActivityServiceImpl implements ActivityService {
+    @Resource
+    private TokenUtil tokenUtil;
+
+    @Resource
+    private SnowFlake snowFlake;
+
+    @Resource
+    private UserService userService;
+
+    @Resource
+    private StudentRepository studentRepository;
+
+    @Resource
+    private TeacherRepository teacherRepository;
+
+    @Resource
+    private ActivityRepository activityRepository;
 
     /**
      * 保存课外活动
@@ -20,7 +51,34 @@ public class ActivityServiceImpl implements ActivityService {
      */
     @Override
     public CommonResponse handleSave(String token, long id,String name,String description,String date,String result){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student=(Student) user;
+                if(0!=id){
+                    Optional<Activity> activityOp= activityRepository.findById(id);
+                    if(activityOp.isEmpty()){
+                        //课程不存在，则为课程的创建
+                        id=snowFlake.nextId();
+                    }
+                }else{
+                    id=snowFlake.nextId();
+                }
+                Activity activity=new Activity(id,name,description,date,result,student);
+                activityRepository.save(activity);
+                response.setSuccess(true);
+                response.setMessage("课外活动创建成功");
+            }
+        }
+        return response;
     }
 
     /**

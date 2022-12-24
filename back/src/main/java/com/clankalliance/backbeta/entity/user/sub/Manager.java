@@ -10,7 +10,6 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Data
 @Table(	name = "manager",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id"),
@@ -29,3 +28,4 @@ public class Manager extends User {
 
 
 }
+

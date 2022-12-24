@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
 @Table(	name = "student",
         uniqueConstraints = {
                 @UniqueConstraint(columnNames = "id"),
@@ -29,10 +29,54 @@ public class Student extends User {
 
         public Student(){
                 super();
+                courseSet = new HashSet<>();
+                scoreSet = new HashSet<>();
+                practiceSet = new HashSet<>();
+                rewardSet = new HashSet<>();
         }
 
         public Student(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
                 super(id,userNumber,nickName,name,password,phone,gradeClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
+        }
+
+        public Set<Course> getCourseSet() {
+                return courseSet;
+        }
+
+        public void setCourseSet(Set<Course> courseSet) {
+                this.courseSet = courseSet;
+        }
+
+        public Set<Score> getScoreSet() {
+                return scoreSet;
+        }
+
+        public void setScoreSet(Set<Score> scoreSet) {
+                this.scoreSet = scoreSet;
+        }
+
+        public Set<Activity> getActivity() {
+                return activity;
+        }
+
+        public void setActivity(Set<Activity> activity) {
+                this.activity = activity;
+        }
+
+        public Set<Practice> getPracticeSet() {
+                return practiceSet;
+        }
+
+        public void setPracticeSet(Set<Practice> practiceSet) {
+                this.practiceSet = practiceSet;
+        }
+
+        public Set<Practice> getRewardSet() {
+                return rewardSet;
+        }
+
+        public void setRewardSet(Set<Practice> rewardSet) {
+                this.rewardSet = rewardSet;
         }
 
         @JsonIgnore
@@ -44,8 +88,8 @@ public class Student extends User {
         private Set<Score> scoreSet;
 
         @JsonIgnore
-        @OneToOne
-        private Activity activity;
+        @OneToMany
+        private Set<Activity> activity;
 
         @JsonIgnore
         @ManyToMany(cascade = CascadeType.PERSIST)

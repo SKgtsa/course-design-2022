@@ -20,4 +20,11 @@ public interface CourseRepository extends JpaRepository<Course,Integer> {
     @Query("from Course c where c.studentSet=?1")
     Set<Course> findCourseSetByStudentId(long studentId);
 
+    @Query("from Course c where c.id=?1")
+    Optional<Course> deleteById(long id);
+
+    @Query("from Course c where c.teacher.id=?1 and c.id=?2")
+    Optional<Course> findByTeacherAndId(Long teacherId,Long courseId);
+
+
 }
