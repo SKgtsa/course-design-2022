@@ -13,4 +13,7 @@ public class FindStudentOfCourseRequest {
 
     private long courseId;
 
+    private Integer pageNum;
+
+    private Integer pageSize;
 }

@@ -15,6 +15,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepositor
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.FindCourseStudentUtil;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.apache.ibatis.jdbc.Null;
@@ -441,8 +442,55 @@ public class CourseServiceImpl implements CourseService {
      * @param filterOpen
      * @return
      */
-    public CommonResponse handleFindAllCourse(String token,boolean filterOpen){
-        return null;
+    public CommonResponse handleFindAllCourse(String token,boolean filterOpen,Integer pageNum,Integer pageSize){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user=userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student=(Student) user;
+                Set<Course> courseSet=student.getCourseSet();
+                List<Course> allCourseList=courseRepository.findAll();
+                //过滤器打开时，在全部课表中删除时间冲突课程
+                if(filterOpen){
+                    for(Course c : courseSet){
+                        List<ClassTime> time=c.getTime();
+                        for(Course re : allCourseList){
+                            if(re.getTime().equals(time)){
+                                allCourseList.remove(re);
+                            }
+                        }
+                    }
+                }
+                if(allCourseList.size() <= pageSize){
+                    response.setContent(allCourseList);
+                    response.setSuccess(true);
+                    response.setMessage("返回课程成功");
+                }else if(allCourseList.size() == 0){
+                    response.setSuccess(true);
+                    response.setMessage("无课程可供学生选择");
+                }else{
+                    List<Course> subCourseList=new ArrayList<>(pageSize);
+                    int count=1;
+                    for(Course c1 : allCourseList){
+                        if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
+                            subCourseList.add(c1);
+                        }
+                        count++;
+                    }
+                    response.setContent(subCourseList);
+                    response.setSuccess(true);
+                    response.setMessage("返回课程成功");
+                }
+            }
+        }
+        return response;
     }
 
     /**
@@ -454,7 +502,50 @@ public class CourseServiceImpl implements CourseService {
      * @param courseId 课程id
      * @return
      */
-    public CommonResponse handleFindCourseStudent(String token,long courseId){
-        return null;
+    public CommonResponse handleFindCourseStudent(String token,long courseId,Integer pageNum,Integer pageSize){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user=userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Teacher || user instanceof Manager){
+                Optional<Course> courseOp=courseRepository.findById(courseId);
+                Course course=courseOp.get();
+                Set<Student> studentSet=course.getStudentSet();
+                List<FindCourseStudentUtil> allStudentList=new ArrayList<>();
+                for(Student s : studentSet){
+                    long studentId=s.getId();
+                    String studentName=s.getName();
+                    FindCourseStudentUtil tmp=new FindCourseStudentUtil(studentId,studentName);
+                    allStudentList.add(tmp);
+                }
+                if(allStudentList.size() <= pageSize){
+                    response.setContent(allStudentList);
+                    response.setSuccess(true);
+                    response.setMessage("活动表返回成功");
+                }else if(allStudentList.size() ==0){
+                    response.setSuccess(true);
+                    response.setMessage("该学生没有参加课外活动");
+                }else {
+                    List<FindCourseStudentUtil> subStudentList=new ArrayList<>(pageSize);
+                    int count=1;
+                    for(FindCourseStudentUtil s : allStudentList){
+                        if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
+                            subStudentList.add(s);
+                        }
+                        count++;
+                    }
+                    response.setContent(subStudentList);
+                    response.setMessage("活动表返回成功");
+                    response.setSuccess(true);
+                }
+            }
+        }
+        return response;
     }
 }

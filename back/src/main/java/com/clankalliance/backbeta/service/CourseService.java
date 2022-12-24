@@ -20,7 +20,7 @@ public interface CourseService {
 
     CommonResponse handleFindCourseList(String token);
 
-    CommonResponse handleFindAllCourse(String token,boolean filterOpen);
+    CommonResponse handleFindAllCourse(String token,boolean filterOpen,Integer pageNum,Integer pageSize);
 
-    CommonResponse handleFindCourseStudent(String token,long courseId);
+    CommonResponse handleFindCourseStudent(String token, long courseId, Integer pageNum, Integer pageSize);
 }

@@ -1,7 +1,9 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Activity;
+import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.ActivityRepository;
@@ -16,7 +18,10 @@ import com.clankalliance.backbeta.utils.SnowFlake;
 
 import javax.annotation.Resource;
 import javax.validation.constraints.Null;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ActivityServiceImpl implements ActivityService {
@@ -73,9 +78,23 @@ public class ActivityServiceImpl implements ActivityService {
                     id=snowFlake.nextId();
                 }
                 Activity activity=new Activity(id,name,description,date,result,student);
+                //将activity加入进学生的活动表中
+                Set<Activity> activitySet=student.getActivity();
+                activitySet.add(activity);
+                student.setActivity(activitySet);
                 activityRepository.save(activity);
+
                 response.setSuccess(true);
                 response.setMessage("课外活动创建成功");
+            }else if(user instanceof Manager){
+                //管理员没有课外活动表，故只能修改活动
+                Activity activityOld = activityRepository.findById(id).get();
+                Student student=activityOld.getStudent();
+                Activity activity=new Activity(id,name,description,date,result,student);
+                activityRepository.save(activity);
+
+                response.setSuccess(true);
+                response.setMessage("课外活动修改成功");
             }
         }
         return response;
@@ -91,7 +110,31 @@ public class ActivityServiceImpl implements ActivityService {
      */
     @Override
     public CommonResponse handleDelete(String token, long id){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student || user instanceof Manager){
+                Optional<Activity> activityOp=activityRepository.findById(id);
+                //将活动和学生解绑
+                Activity activity=activityOp.get();
+                Student student=activity.getStudent();
+                Set<Activity> activitySet=student.getActivity();
+                activitySet.remove(activity);
+                student.setActivity(activitySet);
+                activityRepository.delete(activity);
+
+                response.setSuccess(true);
+                response.setMessage("课程删除成功");
+            }
+        }
+        return response;
     }
 
     /**

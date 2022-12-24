@@ -13,4 +13,8 @@ public class FindAllCourseRequest {
 
     private boolean filterOpen;
 
+    private Integer pageNum;
+
+    private Integer pageSize;
+
 }

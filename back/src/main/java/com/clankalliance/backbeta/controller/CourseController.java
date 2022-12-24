@@ -82,13 +82,13 @@ public class CourseController {
     //选课时候用来返回所有课程
     @PostMapping("/findAllCourse")
     public CommonResponse findAllCourse(@RequestBody FindAllCourseRequest request){
-        return courseService.handleFindAllCourse(request.getToken(),request.isFilterOpen());
+        return courseService.handleFindAllCourse(request.getToken(),request.isFilterOpen(),request.getPageNum(),request.getPageSize());
     }
 
     //打分时返回该课程所有学生
     @PostMapping("/findCourseStudent")
     public CommonResponse findCourseStudent(@RequestBody FindStudentOfCourseRequest request){
-        return courseService.handleFindCourseStudent(request.getToken(),request.getCourseId());
+        return courseService.handleFindCourseStudent(request.getToken(),request.getCourseId(),request.getPageNum(),request.getPageSize());
     }
 
 
