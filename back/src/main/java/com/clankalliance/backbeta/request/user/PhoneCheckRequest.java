@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.request;
+package com.clankalliance.backbeta.request.user;
 
 
 import lombok.AllArgsConstructor;

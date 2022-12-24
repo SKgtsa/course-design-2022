@@ -1,6 +1,8 @@
 package com.clankalliance.backbeta.utils;
 
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;
@@ -50,6 +52,14 @@ public class TokenUtil {
                 response.setSuccess(true);
                 response.setToken(ManipulateUtil.endNode.getToken());
                 response.setMessage("登陆成功");
+                response.setUser(user);
+                if(user instanceof Student){
+                    response.setCharacter(0);
+                }else if(user instanceof Teacher){
+                    response.setCharacter(1);
+                }else{
+                    response.setCharacter(2);
+                }
                 return response;
             }
         }

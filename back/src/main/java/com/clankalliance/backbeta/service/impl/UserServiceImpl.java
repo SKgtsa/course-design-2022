@@ -17,7 +17,6 @@ import com.clankalliance.backbeta.utils.StatusManipulateUtils.StatusNode;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.Optional;
@@ -132,6 +131,13 @@ public class UserServiceImpl implements UserService {
         ManipulateUtil.updateStatus(user.getId());
         response.setToken(ManipulateUtil.endNode.getToken());
         response.setUser(user);
+        if(user instanceof Student){
+            response.setCharacter(0);
+        }else if(user instanceof Teacher){
+            response.setCharacter(1);
+        }else{
+            response.setCharacter(2);
+        }
         return response;
     }
 
@@ -185,6 +191,13 @@ public class UserServiceImpl implements UserService {
         response.setSuccess(true);
         response.setMessage("注册成功");
         response.setUser(user);
+        if(user instanceof Student){
+            response.setCharacter(0);
+        }else if(user instanceof Teacher){
+            response.setCharacter(1);
+        }else{
+            response.setCharacter(2);
+        }
         response.setToken(ManipulateUtil.endNode.getToken());
         System.out.println(response);
         return response;
@@ -234,17 +247,62 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse handleGetInfo(String token){
-        return null;
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = findById(Long.parseLong(response.getMessage()));
+        if(user instanceof Student){
+            response.setCharacter(0);
+        }else if(user instanceof  Teacher){
+            response.setCharacter(1);
+        }else{
+            response.setCharacter(2);
+        }
+        response.setUser(user);
+        return response;
     }
 
     @Override
     public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation){
-        return null;
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        User user = findById(Long.parseLong(response.getMessage()));
+        if(user instanceof Manager){
+            user = findById(id);
+        }else if(user.getId() != id){
+            response.setMessage("无权进行操作");
+            response.setSuccess(false);
+            return response;
+        }
+        user.setName(name);
+        user.setUserNumber(userNumber);
+        user.setEthnic(ethnic);
+        user.setEMail(eMail);
+        user.setPoliticalAffiliation(politicalAffiliation);
+        try{
+            userRepository.save(user);
+        }catch (Exception e){
+            response.setSuccess(false);
+            response.setMessage("保存失败");
+            return response;
+        }
+        response.setMessage("保存成功");
+        return response;
     }
 
     @Override
     public CommonResponse handleSaveBlogInfo(String token,String nickName){
-        return null;
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        User user = findById(Long.parseLong(response.getMessage()));
+        user.setNickName(nickName);
+        try{
+            userRepository.save(user);
+        }catch (Exception e){
+            response.setSuccess(false);
+            response.setMessage("保存失败");
+            return response;
+        }
+        response.setMessage("保存成功");
+        return response;
     }
 
 

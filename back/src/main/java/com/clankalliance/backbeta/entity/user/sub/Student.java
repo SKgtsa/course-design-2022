@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.entity.user.sub;
 
 import com.clankalliance.backbeta.entity.Activity;
+import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.Course;
@@ -16,6 +17,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -79,6 +81,30 @@ public class Student extends User {
                 this.rewardSet = rewardSet;
         }
 
+        public Set<Student> getFriendS() {
+                return friendS;
+        }
+
+        public void setFriendS(Set<Student> friendS) {
+                this.friendS = friendS;
+        }
+
+        public Set<Teacher> getFriendT() {
+                return friendT;
+        }
+
+        public void setFriendT(Set<Teacher> friendT) {
+                this.friendT = friendT;
+        }
+
+        public List<Post> getPostList() {
+                return postList;
+        }
+
+        public void setPostList(List<Post> postList) {
+                this.postList = postList;
+        }
+
         @JsonIgnore
         @OneToMany
         private Set<Course> courseSet;
@@ -98,4 +124,17 @@ public class Student extends User {
         @JsonIgnore
         @ManyToMany(cascade = CascadeType.PERSIST)
         private Set<Practice> rewardSet;
+
+        //学生好友
+        @JsonIgnore
+        @ManyToMany
+        private Set<Student> friendS;
+        //教师好友
+        @JsonIgnore
+        @ManyToMany
+        private Set<Teacher> friendT;
+
+        @JsonIgnore
+        @OneToMany
+        private List<Post> postList;
 }

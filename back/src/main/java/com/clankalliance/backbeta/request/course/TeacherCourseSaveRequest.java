@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.request;
+package com.clankalliance.backbeta.request.course;
 
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import lombok.AllArgsConstructor;

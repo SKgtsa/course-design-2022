@@ -4,10 +4,8 @@ package com.clankalliance.backbeta.controller;
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
-import com.clankalliance.backbeta.request.*;
-import com.clankalliance.backbeta.request.course.CourseDeleteRequest;
-import com.clankalliance.backbeta.request.course.EditCourseStudentRequest;
-import com.clankalliance.backbeta.request.course.FindStudentOfCourseRequest;
+import com.clankalliance.backbeta.request.course.*;
+import com.clankalliance.backbeta.request.user.TokenCheckRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.utils.TokenUtil;
