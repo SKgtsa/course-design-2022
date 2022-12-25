@@ -3,7 +3,7 @@
     <div class="leftWindow">
       <div class="panel">
         <div class="panelCard">
-          <el-button class="writeButton">
+          <el-button class="writeButton" @click="writeBlog">
             <el-image />
             <a>写博客</a>
           </el-button>
@@ -32,25 +32,259 @@
     </div>
     <div class="rightWindow">
       <el-container class="operationCard">
-        博客
+        <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto">
+          <li v-for="i in postList" :key="i" class="infinite-list-item">{{ i }}</li>
+        </ul>
       </el-container>
     </div>
   </div>
+  <!--弹出框 写博客-->
+  <el-drawer
+      v-model="drawerOpen"
+      title="撰写博客"
+      :direction="'rtl'"
+      :before-close="handleClose"
+      :size="'90%'"
+  >
+    <div class="writeBox">
+      <editor v-model="postContent"
+              :init="init"
+              :disabled="disabled"
+              :id="tinymceId">
+      </editor>
+    </div>
+  </el-drawer>
+
+
 </template>
 
 <script lang="ts" setup>
+
+//TinyMCE使用引入
+import tinymce from 'tinymce/tinymce'
+import 'tinymce/skins/content/default/content.css'
+import Editor from '@tinymce/tinymce-vue'
+import 'tinymce/themes/silver'
+import 'tinymce/themes/silver/theme'
+import 'tinymce/icons/default';
+import 'tinymce/models/dom'
+import "tinymce/icons/default/icons"
+import "tinymce/plugins/image"
+import "tinymce/plugins/link"
+import { onMounted, defineEmits, watch } from "@vue/runtime-core"
+
 import { reactive, ref } from "vue";
-import axios from "axios";
-import { ElMessage } from "element-plus";
-import TEditor from '@/components/TEditor.vue';
+import {ElMessage, ElMessageBox} from "element-plus";
+import service from "@/request";
 const blog = ref('')
 const testURL = 'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp';
 const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
   'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
 ]
+//博客列表陈列分页用
+const startIndex = ref(0);
+const length = 5;
+//抽屉是否打开（呈现）
+const drawerOpen = ref(false);
+
+const postList = ref([
+  {
+    id: 12345,
+    heading: '文章A',
+    nickName: '作者A',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  },{
+    id: 12345,
+    heading: '文章B',
+    nickName: '作者B',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  },{
+    id: 12345,
+    heading: '文章C',
+    nickName: '作者C',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  }
+]);
+
+
+const emits = defineEmits(["getContent"])
+//这里我选择将数据定义在props里面，方便在不同的页面也可以配置出不同的编辑器，当然也可以直接在组件中直接定义
+const props = defineProps({
+  value: {
+    type: String,
+    default: () => {
+      return ""
+    },
+  },
+  baseUrl: {
+    type: String,
+    default: "",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
+  plugins: {
+    type: [String, Array],
+    default: "image link",
+  },//必填
+  toolbar: {
+    type: [String, Array],
+    default:
+        "bold forecolor backcolor |fontfamily fontsize|image link",
+  },//必填
+})
+//编辑器内容
+const postContent = ref(props.value)
+const tinymceId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
+//定义一个对象 init初始化
+const init = reactive({
+  selector: '#' + tinymceId.value, //富文本编辑器的id,
+  language_url: "/tinymce/langs/zh_CN.js", // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
+  language: "zh_CN", //语言
+  skin_url: "/tinymce/skins/ui/oxide", // skin路径，具体路径看自己的项目
+  placeholder: '分享你的学习生活',
+  height: 200, //编辑器高度
+  branding: false, //是否禁用“Powered by TinyMCE”
+  menubar: false, //顶部菜单栏显示
+  image_dimensions: false, //去除宽高属性
+  plugins: props.plugins,  //这里的数据是在props里面就定义好了的
+  toolbar: props.toolbar, //这里的数据是在props里面就定义好了的
+  font_family_formats: '微软雅黑=Microsoft Yahei; Arial=arial,helvetica,sans-serif; 宋体=SimSun;  Impact=impact,chicago;', //字体
+  font_size_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
+  paste_webkit_styles: "all",
+  paste_merge_formats: true,
+  nonbreaking_force_tab: false,
+  paste_auto_cleanup_on_paste: false,
+  // resize: false,
+  file_picker_types: 'file',
+  images_upload_url: '/api/upload/generalUpload',
+  images_upload_base_path: 'http://localhost:5174',
+  content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
+  images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
+
+    if (blobInfo.blob().size / 1024 / 1024 > 2) {
+      reject({ message: '上传失败，图片大小请控制在 2M 以内', remove: true })
+      return
+    } else {
+      const ph = import.meta.env.VITE_BASE_PATH + ":" + import.meta.env.VITE_SERVER_PORT + "/"
+      let params = new FormData()
+      params.append('file', blobInfo.blob())
+      params.append('token',localStorage.getItem('token'))
+
+      let config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+
+        }
+      }
+
+      service.post('api/upload/generalUpload', params, config).then(res => {
+        console.log(res);
+        if (res.data.success) {
+          resolve(ph + res.data.msg)  //上传成功，在成功函数里填入图片路径
+          localStorage.setItem('token',res.data.token)
+          init.images_upload_url = res.data.content;
+        } else {
+          reject('HTTP Error: 上传失败');
+          return
+        }
+      }).catch(() => {
+        reject('上传出错，服务器开小差了呢')
+        return
+      })
+    }
+  }),
+
+  // 文件上传
+  file_picker_callback: (callback, value, meta) => {
+    // Provide file and text for the link dialog
+    if (meta.filetype == 'file') {
+      callback('mypage.html', { text: 'My text' });
+    }
+
+    // Provide image and alt text for the image dialog
+    if (meta.filetype == 'image') {
+      callback('myimage.jpg', { alt: 'My alt text' });
+    }
+
+    // Provide alternative source and posted for the media dialog
+    if (meta.filetype == 'media') {
+      callback('movie.mp4', { source2: 'alt.ogg', poster: 'image.jpg' });
+    }
+  }
+})
+
+//监听外部传递进来的的数据变化
+watch(
+    () => props.value,
+    () => {
+      myValue.value = props.value
+      emits("getContent", myValue.value)
+    }
+)
+//监听富文本中的数据变化
+watch(
+    () => myValue.value,
+    () => {
+      emits("getContent", myValue.value)
+    }
+)
+//在onMounted中初始化编辑器
+onMounted(() => {
+  tinymce.init({})
+})
+
+const handleClose = (done: () => void) => {
+  ElMessageBox.confirm('你确定要放弃所有未保存的变更吗？').then(() => {
+      done()
+    }).catch(() => {
+      // catch error
+    })
+}
+
+const writeBlog = () => {
+  drawerOpen.value = true;
+}
+
+const refresh = () => {
+  //在此处添加加载开始
+
+  //刷新列表方法 自动延长列表，无限滚动每次触底触发该方法
+  service.post('blog/getMain',{token: localStorage.getItem("token"), length: length, startIndex: startIndex}).then(res => {
+    const data = res.data;
+    if (data.success) {
+      blog.value = '';
+      postList.value.push(data.content);
+      startIndex.value = data.startIndex;
+      localStorage.setItem('token', data.token)
+    } else {
+      ElMessage({
+        message: data.message,
+        type: 'error'
+      })
+    }
+    //在此处添加加载结束
+
+  })
+}
+
+//页面刷新时就进行列表刷新方法
+refresh();
+
+
 const bolgButton = () => {
-  axios.post('blog/submit', { token: localStorage.getItem("token"), content: blog.value }).then(res => {
+  service.post('blog/submit', { token: localStorage.getItem("token"), content: blog.value }).then(res => {
     const data = res.data;
     if (data.success) {
       blog.value = '';
@@ -76,6 +310,8 @@ const getContent = (v: string) => {
 </script>
 
 <style scoped lang="scss">
+.writeBox{
+}
 .main {
   display: flex;
   height: 100vh;
