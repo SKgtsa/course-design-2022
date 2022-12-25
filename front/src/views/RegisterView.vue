@@ -11,6 +11,9 @@
           <el-form-item label="姓名:" prop="name">
             <el-input v-model="formData.name" />
           </el-form-item>
+          <el-form-item label="用户名:" prop="nickName">
+            <el-input v-model="formData.nickName" />
+          </el-form-item>
           <el-form-item label="身份:" prop="identity">
             <el-select v-model="formData.identity" placeholder="选择身份">
               <el-option label="老师" value=1 />
@@ -203,6 +206,8 @@ const rules = reactive({
   phone: [{ validator: validatePhone, trigger: 'blur' }],
   password: [{ validator: validatepassword, trigger: 'blur' }],
   code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+  nickName:[{ required: true, message: '请输入验证码', trigger: 'blur' },
+  { max: 8, message: '长度请不要超过8位', trigger: 'blur' }]
 })
 
 const register = async () => {
@@ -214,7 +219,7 @@ const register = async () => {
         phone: formData.phone, userNumber: formData.userNumber,
         password: formData.password, name: formData.name, idCardNumber: formData.idCardNumber,identify:formData.identity,
         gender: formData.gender, ethnic: formData.ethnic, politicalAffiliation: formData.politicalAffiliation,
-        eMail: formData.eMail, code: formData.code
+        eMail: formData.eMail, code: formData.code,nickName:formData.nickName
       }).then(res => {
         const data = res.data;
         console.log(data);
@@ -261,10 +266,10 @@ const register = async () => {
 
 .registerForm {
   width: 30%;
-  height: 85%;
+  height: 90%;
   align-items: center;
   position: absolute;
-  top: 5%;
+  top: 3%;
   background: #c9c4ce96;
   bottom: 20%;
 }
@@ -289,18 +294,6 @@ const register = async () => {
   border-radius: 35px;
 }
 
-/* .loginPageEl-botton{
-  width: 80%;
-  margin-left: 25px;
-  margin-right: 25px;
-  line-height: 25px;
-  border-radius: 15px;
-  margin-top: 40px;
-  height: 40px;
-  font-weight: 400px;
-  font-style:inherit;
-  font-size:medium;
-} */
 .captchaInput {
   height: 50px;
   width: 100% ! important;
