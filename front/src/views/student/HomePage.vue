@@ -4,8 +4,8 @@
       <el-header class="el-header">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
           background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
-          <img src="../../assets/images/logo.png" alt="logo未加载">
-          <el-menu-item index="/Main" class="logo">教学系统</el-menu-item>
+          <img src="../../assets/images/logo.png" @click="checkCopyright" alt="logo未加载">
+          <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
           <!--          <el-sub-menu index="1">-->
           <!--            <template #title>{{userName}}</template>-->
@@ -14,7 +14,7 @@
           <div class="nick">
             <el-dropdown trigger="click">
               <el-button class="avatar">
-                <el-image class="avatarImage" :src="url" />
+                <el-image class="avatarImage" :src="getAvatarURL()" />
               </el-button>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -28,75 +28,82 @@
             </el-dropdown>
             <a class="nickName">{{ nick }}</a>
           </div>
-          <!-- 修改头像弹出框 -->
-          <el-dialog v-model="dialogVisibleImg">
-            <!--  上传头像没有用action的写法，用到是http-request的 -->
-            <section>
-              <el-upload class="img-btn" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
-                :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
-                <!--  :action="base_url+target""，这个没有写  --><!-- :on-change="onchangeUpload" -->
-                <img class="dialogImg" :src="getAvatarURL()" />
-                <div class="head-img">
-                  <!--  <el-progress type="circle" :percentage="progressPercent"></el-progress> -->
-                </div>
-              </el-upload>
-            </section>
-          </el-dialog>
-          <!-- 修改昵称弹出框 -->
-          <el-dialog v-model="dialogVisibleName" width="20vw">
-            <el-form :model="nickNameData" :rules="nickNameRules" ref="nickData">
-              <el-form-item label="昵称" prop="nickName">
-                <el-input v-model="nickNameData.nickName">{{ getNickName() }}</el-input>
+          <a @click="checkCopyright" class="copyright">@版权</a>
+        </el-menu>
+       
+        <el-dialog v-model="dialogCopyright">
+          <!--  上传头像没有用action的写法，用到是http-request的 -->
+          <h3>版权说明</h3>
+          <p3>该网站归属某组所有，任何侵权行为均要付相应的法律责任!(确信)</p3>
+        </el-dialog>
+        <!-- 修改头像弹出框 -->
+        <el-dialog v-model="dialogVisibleImg">
+          <!--  上传头像没有用action的写法，用到是http-request的 -->
+          <section>
+            <el-upload class="img-btn" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
+              :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
+              <!--  :action="base_url+target""，这个没有写  --><!-- :on-change="onchangeUpload" -->
+              <img class="dialogImg" :src="getAvatarURL()" />
+              <div class="head-img">
+                <!--  <el-progress type="circle" :percentage="progressPercent"></el-progress> -->
+              </div>
+            </el-upload>
+          </section>
+        </el-dialog>
+        <!-- 修改昵称弹出框 -->
+        <el-dialog v-model="dialogVisibleName" width="20vw">
+          <el-form :model="nickNameData" :rules="nickNameRules" ref="nickData">
+            <el-form-item label="昵称" prop="nickName">
+              <el-input v-model="nickNameData.nickName">{{ getNickName() }}</el-input>
+            </el-form-item>
+          </el-form>
+          <div style="width:60%;padding-left:20%">
+            <el-button @click="submitNickName">
+              <a>确定</a>
+            </el-button>
+            <el-button @click="closeNickNameDialog">
+              <a>取消</a>
+            </el-button>
+          </div>
+        </el-dialog>
+        <!-- 修改密码弹出框 -->
+        <el-dialog v-model="dialogVisiblePwd" width="25vw">
+          <!-- 没有校验的时候显示，就是密码不正确或者没有执行找回密码操作的时候 -->
+          <div v-if="!isPass">
+            <el-form :model="originFormPwd" :rules="OriginPwdRules" ref="originPwdData">
+              <el-form-item label="之前密码:" prop="originPwd">
+                <el-input v-model="originFormPwd.originPwd"></el-input>
               </el-form-item>
             </el-form>
             <div style="width:60%;padding-left:20%">
-              <el-button @click="submitNickName">
+              <el-button @click="submitOriginPwd">
                 <a>确定</a>
               </el-button>
-              <el-button @click="closeNickNameDialog">
+              <el-button @click="closePwd">
                 <a>取消</a>
               </el-button>
             </div>
-          </el-dialog>
-          <!-- 修改密码弹出框 -->
-          <el-dialog v-model="dialogVisiblePwd" width="25vw">
-            <!-- 没有校验的时候显示，就是密码不正确或者没有执行找回密码操作的时候 -->
-            <div v-if="!isPass">
-              <el-form :model="originFormPwd" :rules="OriginPwdRules" ref="originPwdData">
-                <el-form-item label="之前密码:" prop="nickName">
-                  <el-input v-model="originFormPwd.originPwd"></el-input>
-                </el-form-item>
-              </el-form>
-              <div style="width:60%;padding-left:20%">
-                <el-button @click="submitOriginPwd">
-                  <a>确定</a>
-                </el-button>
-                <el-button @click="closePwd">
-                  <a>取消</a>
-                </el-button>
-              </div>
-            </div>
+          </div>
 
-            <div v-if="isPass">
-              <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData">
-                <el-form-item label="新的密码:" prop="newPwd">
-                  <el-input v-model="formEditPwd.newPwd"></el-input>
-                </el-form-item>
-                <el-form-item label="再次输入:" prop="newPwdCheck">
-                  <el-input v-model="formEditPwd.newPwdCheck"></el-input>
-                </el-form-item>
-              </el-form>
-              <div style="width:60%;padding-left:20%">
-                <el-button @click="submitNewPwd">
-                  <a>确定</a>
-                </el-button>
-                <el-button @click="closeNewPwdDialog">
-                  <a>取消</a>
-                </el-button>
-              </div>
+          <div v-if="isPass">
+            <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData">
+              <el-form-item label="新的密码:" prop="newPwd">
+                <el-input v-model="formEditPwd.newPwd"></el-input>
+              </el-form-item>
+              <el-form-item label="再次输入:" prop="newPwdCheck">
+                <el-input v-model="formEditPwd.newPwdCheck"></el-input>
+              </el-form-item>
+            </el-form>
+            <div style="width:60%;padding-left:20%">
+              <el-button @click="submitNewPwd">
+                <a>确定</a>
+              </el-button>
+              <el-button @click="closeNewPwdDialog">
+                <a>取消</a>
+              </el-button>
             </div>
-          </el-dialog>
-        </el-menu>
+          </div>
+        </el-dialog>
       </el-header>
       <el-container>
         <el-main class="mainWindow">
@@ -157,33 +164,26 @@ import {
 } from '@element-plus/icons-vue'
 import router from "@/router";
 import { useStore } from 'vuex' // 引入useStore 方法
-import { getAvatarURL, getNickName, setAvatarURL, setNickName } from '../../global/global';
+import { getAvatarURL, getNickName, setAvatarURL, setNickName } from '../../global/globalStudent';
 import { RouterView } from 'vue-router';
 import type { UploadFile } from 'element-plus'
 import { messageError, messageSuccess } from '@/utils/message';
 import service from '@/request';
 import axios from 'axios';
 import { dataType } from 'element-plus/es/components/table-v2/src/common';
+
+//查看版权说明
+let dialogCopyright = ref(false);
+const checkCopyright = () =>{
+  dialogCopyright.value = true;
+};
+
 let progressFlag = ref(false);
 /* let actionURL = ref('http://localhost:5174/api/user/changeAvatar'); */
 let base_url = 'http://localhost:5174';
 let target = '/api/user/changeAvatar';
 let progressPercent = ref();
-//有个博客说写成baseURL+接口的形式就可以，直接写完整就不行，不知道为什么,我按照他这个写的,
-//然后uploadImg方法是更改头像，好像是action和http-request是一样的，但是他要求action又必须写
-//一个是action随便写一个，然后执行http-request,就是目前这种写法
-//另一种是 :action="base_url+target",然后把http-request去了
-//不知道哪个行......也可能都不行(bushi)
-let uploadImg = (f) => {
-  progressFlag.value = true;
-  let formData = new FormData();
-  formData.append('avatar', f.file);
-  const request = axios.create({  //新创建了一个
-    baseURL: 'http://localhost:5174',
-    timeout: 60000,
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
-  //最后参考的那篇文章
+//最后参考的那篇文章
   //https://blog.csdn.net/qq_40663357/article/details/100049258
   //https://blog.csdn.net/Tai4lin/article/details/96974619?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522167176624816800188526592%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=167176624816800188526592&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-96974619-null-null.142^v68^pc_rank_34_queryrelevant25,201^v4^add_ask,213^v2^t3_control1&utm_term=el-upload%E4%B8%8A%E4%BC%A0%E5%A4%B4%E5%83%8F
   /*   axios({ //别人写的
@@ -203,7 +203,12 @@ let uploadImg = (f) => {
                   // progressEvent.total:被上传文件的总大小
                   progressPercent.value = (progressEvent.loaded / progressEvent.total * 100)
               } */
-  request.post('/api/user/changeAvatar', { avatar: formData, token: localStorage.getItem('token') }).then(res => {
+//有个博客说写成baseURL+接口的形式就可以，直接写完整就不行，不知道为什么,我按照他这个写的,
+//然后uploadImg方法是更改头像，好像是action和http-request是一样的，但是他要求action又必须写
+//一个是action随便写一个，然后执行http-request,就是目前这种写法
+//另一种是 :action="base_url+target",然后把http-request去了
+let uploadImg = (f) => {
+  service.post('/api/user/changeAvatar', { avatar:f.file, token: localStorage.getItem('token') }).then(res => {
     let data = res.data;
     if (data.success) {
       localStorage.setItem('token', data.token);
@@ -324,6 +329,18 @@ const closeNickNameDialog = () => {
 
 const submitOriginPwd = () => {
   /* dialogVisiblePwd.value = false; */
+  /*   originPwdData.value.validdate((valid)=>{
+      if(valid){
+        if(){
+  
+        }else{
+  
+        }
+      }else{
+        messageError("请填写旧密码！")
+      }
+    }) */
+
   isPass.value = true;
 }
 const closePwd = () => {
@@ -475,7 +492,13 @@ img {
   position: bottom;
   font-size: 14px;
 }
+.copyright{
+  padding-top:5px;
+  padding-right: 5px;
+  font-family: 华文楷体;
+  cursor: pointer;
 
+}
 .dialogImg {
   width: 60%;
   padding-left: 20%;
