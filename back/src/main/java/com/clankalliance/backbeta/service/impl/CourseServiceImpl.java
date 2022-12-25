@@ -484,9 +484,16 @@ public class CourseServiceImpl implements CourseService {
                         }
                         count++;
                     }
+                    int size=allCourseList.size();
+                    //计算总页数
+                    Integer totalPage = size / pageSize;
+                    if(size - totalPage*pageSize != 0){
+                        totalPage++;
+                    }
                     response.setContent(subCourseList);
                     response.setSuccess(true);
                     response.setMessage("返回课程成功");
+                    response.setTotalPage(totalPage);
                 }
             }
         }
@@ -540,9 +547,16 @@ public class CourseServiceImpl implements CourseService {
                         }
                         count++;
                     }
+                    int size=allStudentList.size();
+                    //计算总页数
+                    Integer totalPage = size / pageSize;
+                    if(size - totalPage*pageSize != 0){
+                        totalPage++;
+                    }
                     response.setContent(subStudentList);
                     response.setMessage("活动表返回成功");
                     response.setSuccess(true);
+                    response.setTotalPage(totalPage);
                 }
             }
         }
