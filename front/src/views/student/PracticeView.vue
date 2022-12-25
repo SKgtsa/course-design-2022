@@ -1,27 +1,18 @@
 <template>
-  <!-- 界面显示：姓名，标题，按钮
-按钮：编辑，查找，删除
-顶部需不需要提示一下目前所处的版块
-然后找个位置设置个添加按钮
-这个查找是搞一个输入框？ -->
-  <!--这个不能添加姓名是别人的社会实践吧，这个不确定有没有问题-->
   <div class="content">
     <div class="pageContent">
-      <!-- :row-key="record=>record.id" -->
       <div class="title">
         社会实践
         <el-button class="addButton" @click="add">添加</el-button>
       </div>
-      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe size="large"
-        class="practiceTable"
+      <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" stripe
+        class="practiceTable" width="500"
         :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
         <!-- 显示斑马纹和边框 -->
-        <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip />
-        <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
-        <el-table-column label="标题" prop="practiceName" width="400" show-overflow-tooltip />
-        <!--         <el-table-column label="成果" prop="result" width="200"></el-table-column> -->
-        <el-table-column width="300" label="操作">
+        <el-table-column label="日期" prop="date" width="" show-overflow-tooltip />
+        <el-table-column label="标题" prop="practiceName" width="" show-overflow-tooltip />
+        <el-table-column width="" label="操作">
           <template #default="scope">
             <!-- 默认行和列 -->
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
@@ -73,7 +64,7 @@
     </el-dialog>
 
     <el-dialog v-model="centerDialogVisibleCheck" width="45%" draggable="true">
-      <el-form :model="editForm" class="areaTextInput" ref="formData">
+      <el-form :model="editForm" class="areaTextInput">
         <el-form-item label="日期" prop="date">
           <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>
         </el-form-item>
@@ -87,10 +78,6 @@
           <span v-if="typeOperation === 'check'">{{ editForm.result }}</span>
         </el-form-item>
       </el-form>
-      <div class="dialogButtonPage">
-        <el-button @click="closeDialog" class="dialogButton">取消</el-button>
-        <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
-      </div>
     </el-dialog>
   </div>
 </template>
@@ -116,7 +103,7 @@ interface User {
   studentName:'',
   practiceIdentify:'',
 }]) */
-let tableData = reactive([
+/* let tableData = reactive([
   {
     practiceName: '社会实践名字',
     practiceDescription: '社会实践描述',
@@ -165,14 +152,14 @@ let tableData = reactive([
     date: '2021年5月6日',
     result: '被表扬了',
   },
-])
-/* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
+]) */
+ let tableData =reactive([]);  //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false);
 let isShow = ref(false);
 let currentPage = ref(1);
 let pageSize = ref(7);
-const formData = ref();
+let formData = ref();
 let centerDialogVisibleCheck = ref(false);
 const rulesEditForm = reactive({   /* 定义校验规则 */
   practiceName: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
@@ -192,19 +179,13 @@ let editForm = reactive({
   result: '',
   id: '',
 });
-const search = ref('')
-const filterTableData = computed(() =>
-  tableData.filter(
-    (data) =>
-      !search.value ||
-      data.practiceName.toLowerCase().includes(search.value.toLowerCase())
-  )
-)
+
+
 const loadpracticeTable = async () => {   //查找所有的数据
   /* formData.value.valid */
   await service.post('/api/practice/find', { token: localStorage.getItem("token"), pageNum: currentPage, pageSize: pageSize }).then(res => {
     if (res.data.success) {
-      const data = res.data;
+      let data = res.data;
       let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
       tableData = arr
       localStorage.setItem('token', data.token)
@@ -235,7 +216,6 @@ const handleCheck = (row) => {   //查看单个的数据 //一条一条赋值吧
   editForm.date = row.date;
   editForm.result = row.result;
   editForm.id = row.id;
-  console.log(editForm)
   typeOperation.value = 'check'; //查看完就完事儿
 }
 
@@ -246,12 +226,10 @@ const handleEdit = (row) => {  //改
   editForm.date = row.date;
   editForm.result = row.result;
   editForm.id = row.id;
-  // editForm = Object.assign({}, row);//先弹对话框，然后提交，提交之后再传参数吧
-  console.log(editForm)
   typeOperation.value = 'edit';
 }
 
-const handleDelete = (row) => {  //删  //异步可能有问题
+const handleDelete = (row) => {  //删  //没有异步，不确定是否有问题
   ElMessageBox.confirm(
     '确认删除该条社会实践吗?',
     'Warning',
@@ -277,12 +255,8 @@ const handleDelete = (row) => {  //删  //异步可能有问题
     })
 }
 
-const sumbitEditRow = () => {
-  if (typeOperation.value === 'check') {
-    /* handleCheck() */
-
-  }
-  formData.value.validate(((valid) => {
+const sumbitEditRow = async () => {
+  await formData.value.validate(((valid) => {
     if (valid) {
       if (typeOperation.value === 'edit') {
         /* handleEdit() */
@@ -298,8 +272,7 @@ const sumbitEditRow = () => {
               loadpracticeTable()
               localStorage.setItem("token", res.data.token)
             } else {
-              messageError("编辑失败!")
-              console.log(res.data.message)
+              messageError(res.data.message)
             }
           })
         isShow.value = false;
@@ -316,8 +289,7 @@ const sumbitEditRow = () => {
               loadpracticeTable()
               localStorage.setItem("token", res.data.token)
             } else {
-              messageError("添加失败！")
-              console.log(res.data.message)
+              messageError(res.data.message)
             }
           }
           )
@@ -338,6 +310,7 @@ const sumbitEditRow = () => {
     centerDialogVisible.value = false;
   centerDialogVisibleCheck.value = false;
   typeOperation.value = '';
+  formData.value = '';
 };
 
 const closeDialog = () => {
@@ -346,8 +319,10 @@ const closeDialog = () => {
   } else if (typeOperation.value === 'edit') {
     centerDialogVisible.value = false;
     messageInfo("编辑取消")
+    typeOperation.value = '';
   } else if (typeOperation.value === 'add') {
     centerDialogVisible.value = false;
+    typeOperation.value = '';
     messageInfo("添加取消")
   }
 }
@@ -356,10 +331,6 @@ const handleCurrentChange = (currentPage) => {
   console.log(currentPage)
 }
 
-
-/* if(!row.id){
-    tableData.splice(index,1) //存在就给他删了，这个有必要吗
-}*/
 </script>
 <style lang="scss" scoped>
 .title {
@@ -376,7 +347,7 @@ const handleCurrentChange = (currentPage) => {
 .content {
   width: 100%;
   height: 100%;
-  background-image: url("../../assets/images/activity.jpg");
+  background-image: url("../../assets/images/practice.jpg");
   background-size: cover;
   background-attachment: fixed;
   background-position: center center;
@@ -428,7 +399,6 @@ const handleCurrentChange = (currentPage) => {
 
     .practiceTable {
       border: 2px solid;
-
       .button {
         width: 48px;
         height: 30px;

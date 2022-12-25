@@ -3,19 +3,6 @@
         <el-container>
             <el-aside class="aside">
                 <div class="operationPage">
-                    <!-- <el-button type="default" class="changeButton" @click="router.push('/AcademicManagement/Practice')">
-                        <a>社会实践</a>
-                    </el-button>
-                    <el-button type="default" class="changeButton" @click="router.push('/AcademicManagement/Reward')">
-                        <a>成果奖励</a>
-                    </el-button>
-                    <el-button type="default" class="changeButton" @click="router.push('/AcademicManagement/Activity')">
-                        <a>课外活动</a>
-                    </el-button>
-                    <el-button type="default" class="changeButton"
-                        @click="router.push('/AcademicManagement/StudentEvaluate')">
-                        <a>学生评价</a>
-                    </el-button> -->
                     <el-menu router default-active="/AcademicManagement/AMHome" class="menu">
                         <el-menu-item index="/AcademicManagement/AMHome">
                             <el-icon>
@@ -25,7 +12,9 @@
                         </el-menu-item>
                         <el-sub-menu index="1">
                             <template #title>
-                                <el-icon><Bicycle /></el-icon>
+                                <el-icon>
+                                    <Bicycle />
+                                </el-icon>
                                 <span>精彩生活</span>
                             </template>
                             <el-menu-item-group>
@@ -43,7 +32,7 @@
                     </el-menu>
                 </div>
                 <div class="notice">
-                           <el-carousel height="100%" direction="vertical" class="carouselPage" :autoplay="false">
+                    <el-carousel height="100%" direction="vertical" class="carouselPage" :autoplay="false">
                         <el-carousel-item class="carouselItem">
                             <img class="img" src='../../assets/images/小确幸.jpg' />
                         </el-carousel-item>
@@ -147,7 +136,8 @@ import { reactive, ref } from "vue";
             margin-top: 2vh;
             width: 18vw;
             height: 51vh;
-           /*  background-color: #FFFFFF;
+
+            /*  background-color: #FFFFFF;
  */
             .carouselPage {
                 height: 100%;

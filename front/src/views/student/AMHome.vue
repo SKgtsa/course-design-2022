@@ -20,10 +20,6 @@
 </template>
 <script lang="ts" setup>
 import { reactive,ref } from 'vue';
-/*   const urls = reactive([
-    {url:require('../../assets/images/activity.jpg')},
-]);
- */
 </script>
 <style lang="scss" scoped>
 .carouselPage{

@@ -4,7 +4,7 @@
             <div class="content">
                 <el-container>
                     <el-aside class="classSchedulePage">
-                        <el-table :data="tableData" style="width: 100%" height="600" @cell-click="checkDetails"
+                        <el-table :data="tableData" style="width: 100%" height="600"
                             :cell-style="{ padding: '22px 0' }" class="tableStyle" border stripe>
                             <el-table-column class="cellStyle" prop="title" label="节次" width="180"></el-table-column>
                             <el-table-column class="cellStyle" prop="Monday" label="周一"></el-table-column>
@@ -63,7 +63,7 @@
                             <el-table-column prop="name" label="课程名称" align="center" width="150" />
                             <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
                             <el-table-column prop="description" label="课程描述" align="center" width="265" />
-                            <el-table-column prop="credit" align="center" label="学分" width="60"/>
+                            <el-table-column prop="credit" align="center" label="学分" width="60" />
                             <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
                             <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
                             <el-table-column prop="classTime" align="center" label="上课时间" width="150">
@@ -164,13 +164,13 @@ let filter = ref(false);
 const activities = [
     {
         content: '系统关闭',
-        timestamp: '2018-10-10 18:00',
+        timestamp: '2022-1-10 18:00',
         type: 'danger',
         hollow: true,
     },
     {
         content: '退补选',
-        timestamp: '2022-10-05 10:00',
+        timestamp: '2022-11-05 10:00',
         type: 'success',
         hollow: true,
     },
@@ -197,7 +197,7 @@ const activities = [
 ]
 //从这开始删交互的时候
 //******************************************************************************* 
-let backData = reactive([  //后端传的已经选了的课的数据,希望给的weekDay和section是一一对应的
+/* let backData = reactive([  //后端传的已经选了的课的数据,希望给的weekDay和section是一一对应的
     {
         name: '数据结构',
         teacherName: "侯孟波",
@@ -255,8 +255,8 @@ let backData = reactive([  //后端传的已经选了的课的数据,希望给�
         description:"倾情大作，为你讲述计算机的前世今生",
     },
 ])
-
-let courseInfo = reactive([  //希望后端给我的,然后我选课表的table就绑定这个
+ */
+/* let courseInfo = reactive([  //希望后端给我的,然后我选课表的table就绑定这个
     {
         name: '计算机组织与结构',
         teacherName: '波波',
@@ -498,8 +498,8 @@ let courseInfo = reactive([  //希望后端给我的,然后我选课表的table�
         description:"倾情大作，为你讲述计算机的前世今生",
     },
    
-])
-let tableData = reactive([ //课表中的数据
+]) */
+/* let tableData = reactive([ //课表中的数据
     {
         title: '第一大节(8:00-9:50)',
         Monday: '',
@@ -550,13 +550,13 @@ let tableData = reactive([ //课表中的数据
         Saturday: '',
         Sunday: '',
     },
-])
+]) */
 //用这个来拼接课表中的数据
-const checkCourseTime = () => {   //更新课表页
+/* const checkCourseTime = () => {   //更新课表页
 
     for (let i = 0; i < backData.length; i++) {
         for (let j = 0; j < backData[i].classTime.length; j++) {
-            let n = backData[i].classTime[j].section - 1; //数组下标从0开始 */
+            let n = backData[i].classTime[j].section - 1; 
             if (backData[i].classTime[j].weekDay == 1) {
                 console.log(backData[i].name);
                 tableData[n].Monday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
@@ -575,20 +575,20 @@ const checkCourseTime = () => {   //更新课表页
             }
         }
     }
-}
-checkCourseTime();
+} */
+/* checkCourseTime();
 const checkDetails = (row, column, cell, event) => {
     if (row != 1 && column != 1 && cell.value != '') {
         messageSuccess("点击成功!")
     }
 }
 const mouseHover = (row, column, cell, event) => {
-}
+}  */
 //到这删完
 //交互的时候给它解开
 //***************************************************************
 
-/* let courseInfo = reactive([]); //后端给我的所有课程，用于选课
+let courseInfo = reactive([]); //后端给我的所有课程，用于选课
 let backData = reactive([]); //我的课程，用于生成课表
 let tableData = reactive([ //课表中的数据
     {
@@ -647,8 +647,8 @@ const checkCourseTime = () => {   //更新课表页
 
     for (let i = 0; i < backData.length; i++) {
         for (let j = 0; j < backData[i].classTime.length; j++) {
-             let n = backData[i].classTime[j].section - 1; //数组下标从0开始
-             if (backData[i].classTime[j].weekDay == 1) {
+            let n = backData[i].classTime[j].section - 1; //数组下标从0开始
+            if (backData[i].classTime[j].weekDay == 1) {
                 console.log(backData[i].name);
                 tableData[n].Monday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
             } else if (backData[i].classTime[j].weekDay == 2) {
@@ -670,80 +670,83 @@ const checkCourseTime = () => {   //更新课表页
 checkCourseTime();
 //加载所有的课程信息
 
-getCourseInformation();//进入页面自动加载
+
 
 //课表方法
-const courseSelected =async () =>{
-//后端发给我一个已经选课的数组，我绑定到backData里，然后执行checkCourseTime来
-//拼接课表,所以那个查看已选课程信息的按钮绑定的函数还是viewDetails,在这个函数中调用
-//checkCourseTime方法
-    await service.post('/api/course/findCourseList',{token:localStorage.getItem('token')}).then(res=>{
+const courseSelected = async () => {
+    //后端发给我一个已经选课的数组，我绑定到backData里，然后执行checkCourseTime来
+    //拼接课表,所以那个查看已选课程信息的按钮绑定的函数还是viewDetails,在这个函数中调用
+    //checkCourseTime方法
+    await service.post('/api/course/findCourseList', { token: localStorage.getItem('token') }).then(res => {
         let data = res.data;
-        if(data.success){
-            localStorage.setItem('token',data.token);
-            backData.value = data.content;  //如果不对用values试试
+        if (data.success) {
+            localStorage.setItem('token', data.token);
+            backData = data.content;  //如果不对用values试试
             checkCourseTime();//调用拼接的方法
-        }else{
+        } else {
             messageError(data.message);
         }
     })
 }
- const getCourseInformation =async () =>{ //进入页面动态加载
-//发送请求后传给我一个数组，数组中有每个课程，我绑定到courseInfo中
-    await service.post('/api/course/findAllCourse',{token:localStorage.getItem('token'),filterOpern:filter}).then(res=>{
+const getCourseInformation = async () => { //进入页面动态加载
+    //发送请求后传给我一个数组，数组中有每个课程，我绑定到courseInfo中
+    await service.post('/api/course/findAllCourse', { token: localStorage.getItem('token'), filterOpern: filter,pageNum:currentPage,pageSize:pageSize }).then(res => {
         let data = res.data;
-        if(data.success){
-            localStorage.setItem('token',data.token);
-            courseInfo.value = data.content;
-        }else{
+        if (data.success) {
+            localStorage.setItem('token', data.token);
+            courseInfo = data.content;
+        } else {
             console.log(data.message);
         }
     })
 }
+getCourseInformation();//进入页面自动加载
 //进去即使没有选课也把空课表给我，让我给backData赋初始值
 courseSelected();
- //退课是否退课，发送请求，退课成功，要后端课表数据，调用函数
- const dropCourse = (row) => { 
+//退课是否退课，发送请求，退课成功，要后端课表数据，调用函数
+const dropCourse = (row) => {
     ElMessageBox.confirm(
-    '确认退课吗?',
-    'Warning',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-    }
-  )
-    .then(() => {
-      service.post('/api/course/quit', { token: localStorage.getItem("token"), courseId: row.id}).then(res => {
-        if (res.data.success) {
-          messageSuccess('退课成功!')
-          checkCourseTime() //重新加载现在表单中的数据
-          localStorage.setItem("token", res.data.token)
-        } else {
-          messageWarning(res.data.message)
+        '确认退课吗?',
+        'Warning',
+        {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning',
         }
-      })
-    })
-    .catch(() => {
-      messageInfo("取消删除")
-    })
+    )
+        .then(() => {
+            service.post('/api/course/quit', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
+                if (res.data.success) {
+                    messageSuccess('退课成功!')
+                    courseSelected();//退课要重新获得选课信息
+                    checkCourseTime() //重新加载现在表单中的数据
+                    getCourseInformation();//重新更改可选课程数据
+                    localStorage.setItem("token", res.data.token)
+                } else {
+                    messageWarning(res.data.message)
+                }
+            })
+        })
+        .catch(() => {
+            messageInfo("取消删除")
+        })
 }
 
 //选课
-const handleSelect =async(row) => { //选课
-    await service.post('/api/course/select',token: localStorage.getItem("token"), courseId: row.id).then(res=>{
+const handleSelect = async (row) => { //选课
+    await service.post('/api/course/select', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
         let data = res.data;
-        if(data.success){
+        if (data.success) {
             messageSuccess('选课成功！');
-            localStorage.setItem('token',data.token);
+            localStorage.setItem('token', data.token);
             courseSelected();//加载已经选完的课程信息！更新课表
-        }else{
+            checkCourseTime();
+            getCourseInformation();
+        } else {
             messageError(data.message);
         }
     })
 }
-******************************************************************
- */
 
 
 const handleCurrentChange = (currentPage) => {  //切换页码
@@ -815,6 +818,7 @@ const loadDropDialog = (row) => {
                     display: flex;
                     flex-direction: column;
                     padding-left: 48px;
+
                     .opButton {
                         display: flex;
                         flex-direction: column;
@@ -866,7 +870,7 @@ const loadDropDialog = (row) => {
 
                 .checkBox {
                     padding-left: 40px;
-                    text-color:black;
+                    text-color: black;
                 }
 
                 .selectTable {
