@@ -3,7 +3,13 @@
     <el-container>
       <el-aside class="aside">
         <div class="selfImage">
-          <AvatarUploadTestViewVue class="image" />
+          <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
+            :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
+            <img v-if="information.photoURL" class="avatar" :src="information.photoURL" />
+            <el-icon v-else class="avatar-uploader-icon">
+              <Plus />
+            </el-icon>
+          </el-upload>
         </div>
         <div class="selfInf">
           <a class="infTitle">个人信息</a>
@@ -23,7 +29,7 @@
       </el-aside>
       <el-main class="main">
         <h1>个人简介</h1>
-        <TEditor />
+        <TEditor ref="editor" v-model="editorData" @click="onClick" />
       </el-main>
     </el-container>
   </div>
@@ -80,36 +86,31 @@
       </el-form-item>
     </el-form>
     <div class="dialogButtonPage">
-    <el-button @click="sumbitEditRow" class="dialogButton">
-      <a>确定</a>
-    </el-button>
-    <el-button @click="closeDialog" class="dialogButton">
-      <a>取消</a>
-    </el-button>
-  </div>
+      <el-button @click="sumbitEditRow" class="dialogButton">
+        <a>确定</a>
+      </el-button>
+      <el-button @click="closeDialog" class="dialogButton">
+        <a>取消</a>
+      </el-button>
+    </div>
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import AvatarUploadTestViewVue from '@/components/AvatarUploadTestView.vue';
 import service from '@/request';
 import { messageWarning, messageError, messageInfo, messageSuccess } from '@/utils/message';
 import { reactive, ref } from "vue";
-import { setNickName, setAvatarURL } from '../../global/global';
+import { showLoading, hideLoading } from '@/utils/loading';
 import TEditor from '../../components/TEditor.vue'
+import serviceFile from '@/request/indexFile';
 //变量
-
+//控制查看，更改信息弹出框
 let centerDialogVisibleInf = ref(false);
-let centerDialogVisibleNick = ref(false);
 let centerDialogVisibleInfCheck = ref(false);
-/* let information = reactive({}); */
-let selfId = ref('');
-/* nickName.value = '';
-avatarURL.value = ''; */
 let information = reactive({
-  name: '彭帅豪',
-  eMail: '859455675@qq.com',
-  phone: '12345678910',
-  location: '山东大学软件园校区',
+  name: '',       //身份证都传了,要不都返回来
+  eMail: '',
+  phone: '',
+  location: '',
   gender: '',
   ethnic: '',
   politicalAffiliation: '',
@@ -119,44 +120,40 @@ let information = reactive({
   idcardNumber: '',
   photoURL: '',
   id: '',
-})
-
-const tableData = reactive([
-  {
-    title: "姓名",
-    value: information.name,
-  },
-  {
-    title: '邮箱',
-    value: information.eMail,
-  },
-  {
-    title: '电话',
-    value: information.phone,
-  },
-  {
-    title: '地址',
-    value: information.location,
-  },
-])
-
-/* const formData = ref(); */
-let editForm = reactive({  //家庭成员这个感觉可以不弄了，显示的时候不太好显示
-  name: information.name,       //身份证都传了,要不都返回来
-  eMail: information.eMail,
-  phone: information.phone,
-  location: information.location,
-  gender: information.gender,
-  ethnic: information.ethnic,
-  politicalAffiliation: information.politicalAffiliation,
-  userNumber: information.userNumber,
-  password: information.password,
-  studentClass: information.studentClass,
-  idcardNumber: information.idcardNumber,
-  photoURL: information.photoURL,
-  id: information.id,
 });
-/* let editForm = reactive({}); */
+let editorData = ref();
+const onClick = () => {
+
+}
+let uploadImg = async (f) => {
+  showLoading();
+  await serviceFile.post('/api/user/changePhoto', { photo: f.file, token: localStorage.getItem('token') }).then(res => {
+    let data = res.data;
+    console.log(res)
+    if (data.success) {
+      hideLoading();
+      localStorage.setItem('token', data.token);
+      information.photoURL = data.content;
+      messageSuccess("更换成功！")
+    } else {
+      hideLoading();
+      messageError(data.message)
+    }
+  })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
+}
+let beforeAvatarUpload = (file) => {
+  const isLt2M = (file.size / 1024 / 1024) < 2
+  if (!isLt2M) {
+    messageError('上传头像图片大小不能超过 2MB!')
+  }
+  return isLt2M
+}
+
 let formData = ref();
 const validateEMail = (rule, value, callback) => {  //检验邮箱
   const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
@@ -179,48 +176,68 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
   }
 }
 
-const rulesEditForm = reactive({
+let rulesEditForm = reactive({
   eMail: [{ validator: validateEMail, trigger: 'blur' },],
   phone: [{ validator: validatePhone, trigger: 'blur' },],
-  location: [{ require: true, message: "请输入地址", trigger: 'blur' }]
+  location: [{ require: true, message: "请输入地址", trigger: 'blur' },],
 
 })
 /* let backData = ref(); */
 //函数
 
-/* const loadInformationData =async () => {   //查看个人信息
+const loadInformationData = async () => {   //查看个人信息
+  showLoading();
   service.post('/api/user/myInfo', { token: localStorage.getItem("token") }).then(res => {
     if (res.data.success) {
       const data = res.data;
-      let arr = data.content; //拿到了返回的数组
-      backData = arr
-      localStorage.setItem('token', data.token)
+      let content = data.content;
+      information.name = content.name;       //身份证都传了,要不都返回来
+      information.eMail = content.eMail;
+      information.phone = content.phone,
+        information.location = content.location,
+        information.gender = content.gender,
+        information.ethnic = content.ethnic,
+        information.politicalAffiliation = content.politicalAffiliation,
+        information.userNumber = content.userNumber,
+        information.password = content.password,
+        information.studentClass = content.studentClass,
+        information.idcardNumber = content.idcardNumber,
+        information.photoURL = content.photoURL,
+        information.id = content.id,
+        localStorage.setItem('token', data.token)
+      hideLoading()
     } else {
+      hideLoading()
       messageWarning(res.data.message)
     }
   })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
 }
 loadInformationData();//进入时自动执行调用 */
 
-const getInf = () => {
-  service.post('/api/user/myInfo', { token: localStorage.getItem('token') }).then(res => {
-    let data = res.data;
-    if (data.success) {
-      localStorage.setItem('token', data.token);
-      information = data.content;
-    } else {
-      messageError(data.message);
-    }
-  })
-}
-
 const checkInf = () => {
   centerDialogVisibleInfCheck.value = true;
-
 }
+let editForm = reactive({  //家庭成员这个感觉可以不弄了，显示的时候不太好显示
+  name: information.name,       //身份证都传了,要不都返回来
+  eMail: information.eMail,
+  phone: information.phone,
+  location: information.location,
+  gender: information.gender,
+  ethnic: information.ethnic,
+  politicalAffiliation: information.politicalAffiliation,
+  userNumber: information.userNumber,
+  password: information.password,
+  studentClass: information.studentClass,
+  idcardNumber: information.idcardNumber,
+  photoURL: information.photoURL,
+  id: information.id,
+});
 const editInf = () => {
-  getInf(); //编辑的时候先调用获取数据的
-  editForm = information; //把information的信息给editForm
   centerDialogVisibleInf.value = true;
 }
 const closeDialog = () => {
@@ -228,9 +245,10 @@ const closeDialog = () => {
   centerDialogVisibleInf.value = false;
 }
 
-const sumbitEditRow = () => {
-  formData.value.validate((valid) => {
+const sumbitEditRow = async () => {
+  await formData.value.validate((valid) => {
     if (valid) {
+      showLoading();
       service.post('/api/user/editInfo', {
         token: localStorage.getItem("token"), //这个修改信息，绑定的值
         //是editForm绑定还是用formData绑定？
@@ -241,14 +259,30 @@ const sumbitEditRow = () => {
       }).then(res => {
         if (res.data.success) {
           const data = res.data;
-          information = data.content;
-          localStorage.setItem('token', data.token)
+          let content = data.content;
+          information.name = content.name;       //身份证都传了,要不都返回来
+          information.eMail = content.eMail;
+          information.phone = content.phone,
+            information.location = content.location,
+            information.gender = content.gender,
+            information.ethnic = content.ethnic,
+            information.politicalAffiliation = content.politicalAffiliation,
+            information.userNumber = content.userNumber,
+            information.password = content.password,
+            information.studentClass = content.studentClass,
+            information.idcardNumber = content.idcardNumber,
+            information.photoURL = content.photoURL,
+            information.id = content.id,
+            localStorage.setItem('token', data.token)
+          hideLoading();
           messageSuccess("提交成功！")
         } else {
           messageWarning(res.data.message)
         }
       })
         .catch(function (error) {
+          messageError("服务器开小差了呢")
+          hideLoading();
           console.log(error)
         })
     } else {
@@ -257,8 +291,24 @@ const sumbitEditRow = () => {
   })
 }
 
-
-
+const tableData = reactive([
+  {
+    title: "姓名",
+    value: information.name,
+  },
+  {
+    title: '邮箱',
+    value: information.eMail,
+  },
+  {
+    title: '电话',
+    value: information.phone,
+  },
+  {
+    title: '地址',
+    value: information.location,
+  },
+])
 </script>
 <style lang="scss" scoped>
 .content {
@@ -355,5 +405,34 @@ const sumbitEditRow = () => {
 .dialogButton {
   padding-left: 5px;
   padding-right: 5px;
+}
+
+
+.avatar-uploader .avatar {
+  width: 146px;
+  height: 146px;
+  display: block;
+}
+</style>
+<style>
+.avatar-uploader .el-upload {
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: var(--el-transition-duration-fast);
+}
+
+.avatar-uploader .el-upload:hover {
+  border-color: var(--el-color-primary);
+}
+
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 146px;
+  height: 146px;
+  text-align: center;
 }
 </style>

@@ -1,6 +1,3 @@
-
-  <!--  查看个人成绩，班级和专业内排名，点击查看排名？
-  放到一张大表里，学生只能查看分数 -->
 <template>
   <div class="mainArea">
     <div class="leftWindow">
@@ -22,18 +19,16 @@
           </div>
         </div>
         <div class="tablePage">
-          <el-table :data="tableData" stripe size="large"
-        class="scoreTable"
-        :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '15px', 'font-size': '16px', 'text-align': 'center', 'font-weight': '450' }">
-        <!-- 显示斑马纹和边框 -->
-        <el-table-column label="课程名" prop="courseName" width="250" show-overflow-tooltip />
-        <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
-        <el-table-column label="平时分数占总分权重" prop="weight" width="200" show-overflow-tooltip />
-        <el-table-column label="总得分" prop="endScore" width="160" show-overflow-tooltip />
-        <el-table-column label="排名" prop="rank" width="150" show-overflow-tooltip />
-        <!--         <el-table-column label="成果" prop="result" width="200"></el-table-column> -->
-      </el-table>
+          <el-table :data="tableData" stripe size="large" class="scoreTable"
+            :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
+            :cell-style="{ 'height': '15px', 'font-size': '16px', 'text-align': 'center', 'font-weight': '450' }">
+            <!-- 显示斑马纹和边框 -->
+            <el-table-column label="课程名" prop="courseName" width="250" show-overflow-tooltip />
+            <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
+            <el-table-column label="平时分数占总分权重" prop="weight" width="200" show-overflow-tooltip />
+            <el-table-column label="总得分" prop="endScore" width="160" show-overflow-tooltip />
+            <el-table-column label="排名" prop="rank" width="150" show-overflow-tooltip />
+          </el-table>
         </div>
       </div>
     </div>
@@ -42,11 +37,13 @@
 
 <script lang="ts" setup>
 import service from '@/request';
-import { messageError } from '@/utils/message';
+import { messageError, messageSuccess } from '@/utils/message';
 import { reactive } from '@vue/reactivity';
 import { ref } from 'vue'
-const yearsValue = ref('');
-const semesterValue = ref('');
+import { showLoading, hideLoading } from '@/utils/loading';
+let yearsValue = ref();
+let semesterValue = ref();
+let tableData = reactive([]);
 const years = [
   {
     value: 2020,
@@ -71,103 +68,27 @@ const semester = [
     label: '秋季学期',
   },
 ]
-let tableData = reactive([
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的计算机组成原理",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的形式与政策",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-  {
-    courseName:"波波的数据结构",
-    dailyScore:10,
-    endScore:61,
-    weight:"30%",
-    rank:6,
-  },
-]);
-const check = async() =>{
-  await service.post('/api/score/studentFind',{token:localStorage.getItem('token'),year:yearsValue,semester:semesterValue})
-  .then(res=>{
-    let data = res.data;
-    if(data.success){
-      localStorage.setItem('token',data.token);
-      tableData = data.content;
-    }else{
-      messageError(data.message);
-    }
-  })
+
+const check = async () => {
+  showLoading();
+  await service.post('/api/score/studentFind', { token: localStorage.getItem('token'), year: yearsValue.value, semester: semesterValue.value })
+    .then(res => {
+      let data = res.data;
+      if (data.success) {
+        localStorage.setItem('token', data.token);
+        tableData = data.content;
+        messageSuccess("查询成功！")
+        hideLoading();
+      } else {
+        hideLoading();
+        messageError(data.message);
+      }
+    })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
 }
 </script>
 
@@ -175,29 +96,20 @@ const check = async() =>{
 .mainArea {
   display: flex;
   flex-direction: row;
-  /* flex-direction: row; */
   width: 100%;
   height: 100vh;
 
   .leftWindow {
     display: flex;
     width: 5vw;
-
- /*    .panel {
-      display: flex;
-      width: 10vw;
-      height: 80%;
-    } */
   }
 
   .rightWindow {
-    /*     width: 80vw; */
     padding-left: 2vw;
     padding-top: 1vh;
     display: flex;
 
     .mainCard {
-      //HomePage中是逆序排列
       display: flex;
       flex-direction: column;
       background-color: #FFFFFF;
@@ -225,31 +137,30 @@ const check = async() =>{
           margin-top: 30px;
           display: flex;
           flex-direction: row;
-          
+
           .selectLabel {
             font-size: 18px;
             padding-right: 10px;
             padding-left: 30px;
           }
 
-          .select {
-            /*  height: 6px; */
-          }
-          .checkButton{
+          .checkButton {
             margin-left: 30px;
             font-size: 16px;
           }
         }
 
       }
-      .tablePage{
+
+      .tablePage {
         display: flex;
         flex-direction: column;
         padding-left: 3vw;
         margin-top: 10px;
         height: 60vh;
         width: 70vw;
-        .scoreTable{
+
+        .scoreTable {
           border-top: 0.5px solid;
           border-bottom: 0.5px solid;
         }

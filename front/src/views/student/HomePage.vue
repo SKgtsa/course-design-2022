@@ -7,10 +7,6 @@
           <img src="../../assets/images/logo.png" @click="checkCopyright" alt="logo未加载">
           <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
-          <!--          <el-sub-menu index="1">-->
-          <!--            <template #title>{{userName}}</template>-->
-          <!--            <el-menu-item route="/SelfInformation" index="1-1">个人信息</el-menu-item>-->
-          <!--          </el-sub-menu>-->
           <div class="nick">
             <el-dropdown trigger="click">
               <el-button class="avatar">
@@ -32,20 +28,19 @@
         </el-menu>
 
         <el-dialog v-model="dialogCopyright">
-          <!--  上传头像没有用action的写法，用到是http-request的 -->
           <h3>版权说明</h3>
           <p3>该网站归属某组所有，任何侵权行为均要付相应的法律责任!(确信)</p3>
         </el-dialog>
         <!-- 修改头像弹出框 -->
-        <el-dialog v-model="dialogVisibleImg">
-          <!--  上传头像没有用action的写法，用到是http-request的 -->
+        <el-dialog v-model="dialogVisibleImg" style=" width: 400px!important;height: 300px!important;">
           <section>
-            <el-upload class="img-btn" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
+            <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
               :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
-              <!--  :action="base_url+target""，这个没有写  --><!-- :on-change="onchangeUpload" -->
-              <img class="dialogImg" :src="getAvatarURL()" />
+              <img v-if="getAvatarURL()" class="avatar" :src="getAvatarURL()" />
+              <el-icon v-else class="avatar-uploader-icon">
+                <Plus />
+              </el-icon>
               <div class="head-img">
-                <!--  <el-progress type="circle" :percentage="progressPercent"></el-progress> -->
               </div>
             </el-upload>
           </section>
@@ -172,54 +167,34 @@ import service from '@/request';
 import axios from 'axios';
 import { dataType } from 'element-plus/es/components/table-v2/src/common';
 import serviceFile from "@/request/indexFile";
+import { hideLoading, showLoading } from '@/utils/loading';
 
 //查看版权说明
 let dialogCopyright = ref(false);
-const checkCopyright = () =>{
+const checkCopyright = () => {
   dialogCopyright.value = true;
 };
 
-let progressFlag = ref(false);
-/* let actionURL = ref('http://localhost:5174/api/user/changeAvatar'); */
-let base_url = 'http://localhost:5174';
-let target = '/api/user/changeAvatar';
-let progressPercent = ref();
-//最后参考的那篇文章
-  //https://blog.csdn.net/qq_40663357/article/details/100049258
-  //https://blog.csdn.net/Tai4lin/article/details/96974619?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522167176624816800188526592%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fall.%2522%257D&request_id=167176624816800188526592&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~first_rank_ecpm_v1~rank_v31_ecpm-1-96974619-null-null.142^v68^pc_rank_34_queryrelevant25,201^v4^add_ask,213^v2^t3_control1&utm_term=el-upload%E4%B8%8A%E4%BC%A0%E5%A4%B4%E5%83%8F
-  /*   axios({ //别人写的
-              url: baseURL + '/image',
-              method: 'post',
-              data: formdata,
-              headers: {'Content-Type': 'multipart/form-data'},
-              onUploadProgress: progressEvent => {
-                  // progressEvent.loaded:已上传文件大小
-                  // progressEvent.total:被上传文件的总大小
-                  this.progressPercent = (progressEvent.loaded / progressEvent.total * 100)
-              }
-          }) */
-  /*   let onUploadProgress =(progressEvent)=> {  //我改的....但是感觉不对？是不是在axios里面创建这个，
-    //主要是传图片有个进度条，没有要
-                  // progressEvent.loaded:已上传文件大小
-                  // progressEvent.total:被上传文件的总大小
-                  progressPercent.value = (progressEvent.loaded / progressEvent.total * 100)
-              } */
-//有个博客说写成baseURL+接口的形式就可以，直接写完整就不行，不知道为什么,我按照他这个写的,
-//然后uploadImg方法是更改头像，好像是action和http-request是一样的，但是他要求action又必须写
-//一个是action随便写一个，然后执行http-request,就是目前这种写法
-//另一种是 :action="base_url+target",然后把http-request去了
-let uploadImg = (f) => {
-  serviceFile.post('/api/user/changeAvatar', { avatar:f.file, token: localStorage.getItem('token') }).then(res => {
+let uploadImg = async (f) => {
+  showLoading();
+  await serviceFile.post('/api/user/changeAvatar', { avatar: f.file, token: localStorage.getItem('token') }).then(res => {
     let data = res.data;
     console.log(res)
     if (data.success) {
+      hideLoading();
       localStorage.setItem('token', data.token);
       setAvatarURL(data.content);
       messageSuccess("更换成功！")
     } else {
+      hideLoading();
       messageError(data.message)
     }
   })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
 }
 // 上传图片前的过滤
 let beforeAvatarUpload = (file) => {
@@ -229,15 +204,6 @@ let beforeAvatarUpload = (file) => {
   }
   return isLt2M
 }
-/* const onchangeUpload = (file) => {
-  // 预保存上传的图片
-  file.previewImgURL = URL.createObjectURL(file.raw)
-  file.confirmProfile = true // 预览图片
-} */
-/* const store = useStore()  // 该方法用于返回store 实例
-console.log(store)  // store 实例对象
-let avatarURL = store.getters.avatarURL; */
-let url = getAvatarURL();
 let nick = getNickName();
 let dialogVisibleImg = ref(false)
 let dialogVisibleName = ref(false)
@@ -307,19 +273,27 @@ const pwdEditRules = reactive({
   newPwdCheck: [{ validator: validatepassword, trigger: 'blur' }],
 })
 
-const submitNickName = () => {
-  nickData.value.validate((valid) => {
+const submitNickName = async () => {
+  await nickData.value.validate((valid) => {
     if (valid) {
+      showLoading();
       service.post('/api/user/editBlogInfo', { token: localStorage.getItem('token'), nickName: nickNameData.nickName }).then((res) => {
         let data = res.data;
         if (data.success) {
+          hideLoading();
           localStorage.setItem('token', data.token);
           setNickName(nickNameData.nickName);
           messageSuccess("修改成功！");
         } else {
+          hideLoading();
           messageError(data.message);
         }
       })
+        .catch(function (error) {
+          hideLoading();
+          messageError("服务器开小差了呢");
+          console.log(error)
+        })
     } else {
       messageError("请填写正确！")
     }
@@ -494,15 +468,25 @@ img {
   position: bottom;
   font-size: 14px;
 }
-.copyright{
-  padding-top:5px;
+
+.copyright {
+  padding-top: 5px;
   padding-right: 5px;
-  font-family: 华文楷体;
+  font-size: 14px;
   cursor: pointer;
 
 }
+
 .dialogImg {
-  width: 60%;
-  padding-left: 20%;
+  /* padding-left: 20%; */
+  justify-content: center;
+}
+
+.avatar-uploader .avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
+
 }
 </style>
+

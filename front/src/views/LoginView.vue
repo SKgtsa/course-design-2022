@@ -78,7 +78,8 @@ import axios from "axios";
 import service from "@/request";
 import { Lock, User, Message, Phone } from '@element-plus/icons-vue';
 import { messageError, messageSuccess } from "@/utils/message";
-import { getNickName,setNickName,getAvatarURL,setAvatarURL  } from '../global/global'
+import { getNickName, setNickName, getAvatarURL, setAvatarURL } from '../global/global'
+import { hideLoading, showLoading } from "@/utils/loading";
 const login_data = reactive({
   userNumber: '',
   password: '',
@@ -94,9 +95,11 @@ const login_data_phone = reactive({
 })
 
 const sendCode = async () => {
+  showLoading();
   await service.post('/api/user/loginPhone', { phone: login_data_phone.userPhone }).then(res => {
     const data = res.data;
     if (data.success) {
+      hideLoading();
       show.value = false;
       messageSuccess('发送成功！')  //这个还得把发送验证码那个按钮给他禁用了，不然一直发
       const TIME_COUNT = 60; //更改倒计时时间
@@ -114,19 +117,27 @@ const sendCode = async () => {
         }, 1000);
       }
     } else {
+      hideLoading();
       messageError(data.message)
     }
   })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
 }
 
-const submitPwd = (formEl: FormInstance | undefined) => {
+const submitPwd = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  loginFormPwd.value.validate((valid) => {
+  await loginFormPwd.value.validate((valid) => {
     if (valid) {
+      showLoading();
       service.post('/api/user/login', login_data).then(res => {
         console.log(res)
         const data = res.data;
         if (data.success) {
+          hideLoading();
           console.log('data.success')
           localStorage.setItem("token", data.token)
           setNickName(data.nickName);
@@ -141,6 +152,7 @@ const submitPwd = (formEl: FormInstance | undefined) => {
             router.push('/Main'); //管理员界面，最后再改
           }
         } else {
+          hideLoading();
           console.log('!data.success')
           messageError(data.message)
         }
@@ -156,6 +168,7 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
   console.log(login_data_phone.userPhone)
   loginFormPhone.value.validate((valid) => {
     if (valid) {
+      showLoading();
       service.post('/api/user/loginCode', { code: login_data_phone.captcha, phone: login_data_phone.userPhone }).then(res => {
         console.log(res)
         const data = res.data;
@@ -173,6 +186,7 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
           }
           router.push('/Main')
         } else {
+          hideLoading();
           messageError(data.message)
         }
       })
@@ -210,11 +224,11 @@ const validatePhone = (rule, value, callback) => {
   }
 }
 const rulesPwd = reactive({   /* 定义校验规则 */
-  userNumber: [{ required: true, message: '请输入用户名！', trigger: 'blur' },{
-    max:16,message:'学号没有超过16位!',trigger:'blur'
+  userNumber: [{ required: true, message: '请输入学工号！', trigger: 'blur' }, {
+    max: 16, message: '学号没有超过16位!', trigger: 'blur'
   }],
   password: [{ required: true, message: '请输入密码！', trigger: 'blur' },
-  { min: 6, max: 16, message: '长度需要在8到16位之间!', trigger: 'blur' }
+  { min: 8, max: 20, message: '长度需要在8到16位之间!', trigger: 'blur' }
   ]
 })
 
@@ -222,6 +236,9 @@ const rulesCaptcha = reactive({
   userPhone: [{ validator: validatePhone, trigger: 'blur' }
   ],
   captcha: [{ required: true, message: '请输入验证码！', trigger: 'blur' },
+  {
+    max: 6, message: '验证码没有超过6位!', trigger: 'blur'
+  }
   ]
 })
 

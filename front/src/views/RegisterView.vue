@@ -1,3 +1,71 @@
+
+<template>
+  <div class="pageBackground">
+    <div class="registerForm">
+      <div class="registerFormContent">
+        <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
+          status-icon>
+          <el-form-item label="学号:" prop="userNumber">
+            <el-input v-model="formData.userNumber" />
+          </el-form-item>
+          <el-form-item label="姓名:" prop="name">
+            <el-input v-model="formData.name" />
+          </el-form-item>
+          <el-form-item label="身份:" prop="identity">
+            <el-select v-model="formData.identity" placeholder="选择身份">
+              <el-option label="老师" value=1 />
+              <el-option label="管理员" value=2 />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="身份证号:" prop="idCardNumber">
+            <el-input v-model="formData.idCardNumber" />
+          </el-form-item>
+          <el-form-item label="性别:" prop="gender">
+            <el-radio-group v-model="formData.gender">
+              <el-radio :label="false">男</el-radio> <!-- 不确定是不是这么绑定，传false和true -->
+              <el-radio :label="true">女</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="政治面貌:" prop="politicalAffiliation">
+            <el-select v-model="formData.politicalAffiliation" placeholder="选择政治面貌">
+              <el-option label="群众" value="people" />
+              <el-option label="共青团员" value="leagueMember" />
+              <el-option label="共产党员" value="partyMember" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="民族:" prop="ethnic">
+            <el-input v-model="formData.ethnic" />
+          </el-form-item>
+          <el-form-item label="邮箱:" prop="eMail">
+            <el-input v-model="formData.eMail" />
+          </el-form-item>
+          <el-form-item label="手机号:" prop="phone">
+            <el-input v-model="formData.phone" placeholder="请输入手机号" />
+          </el-form-item>
+          <el-form-item class="loginPageFormText" label="验证码:" prop="code">
+            <el-row>
+              <el-col :span="16">
+                <el-input v-model="formData.code" class="captchaInput" id="code" placeholder="请输入验证码" />
+              </el-col>
+              <el-col :span="8">
+                <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
+                  <span v-show="show">获取验证码</span>
+                  <span v-show="!show" class="count">{{ count }} s</span>
+                </el-button>
+              </el-col>
+            </el-row>
+          </el-form-item>
+          <el-form-item label="密码:" prop="password">
+            <el-input v-model="formData.password" type="password" show-password />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" class="registerPageEl-botton" @click="register">注册</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </div>
+  </div>
+</template>
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 import { reactive, ref } from 'vue'
@@ -5,6 +73,7 @@ import service from "@/request";
 import { messageError, messageSuccess } from "@/utils/message";
 import router from '@/router';
 import { Refresh } from '@element-plus/icons-vue';
+import { hideLoading, showLoading } from '@/utils/loading';
 
 let $router = useRouter()
 const registerForm = ref()
@@ -28,9 +97,11 @@ const formData = reactive({   /* 学号，电话，姓名，身份证号，密�
   code: '', //验证码
 })
 const sendCode = async () => {
+  showLoading();
   await service.post('/api/user/registerPhone', { phone: formData.phone }).then(res => {
-    const data = res.data;
+    let data = res.data;
     if (data.success) {
+      hideLoading();
       show.value = false;
       localStorage.setItem('token', data.token);
       messageSuccess('发送成功！')  //这个还得把发送验证码那个按钮给他禁用了，不然一直发
@@ -49,9 +120,15 @@ const sendCode = async () => {
         }, 1000);
       }
     } else {
+      hideLoading();
       messageError(data.message)
     }
   })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
 }
 
 /* 定义校验规则 */
@@ -114,9 +191,10 @@ validator: validateEMail
 validator: validatePhone
 validator: validateIdCardNumber
 */
-const rules = {
+const rules = reactive({
   name: [{ validator: validateName, trigger: 'blur' }],
   userNumber: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+  identity: [{ required: true, message: '请选择您的身份', triggwe: 'blur' }],
   gender: [{ required: true, message: '请选择性别', trigger: 'blur' }],
   idCardNumber: [{ validator: validateIdCardNumber, trigger: 'blur' }],
   eMail: [{ validator: validateEMail, trigger: 'blur' }],
@@ -125,95 +203,43 @@ const rules = {
   phone: [{ validator: validatePhone, trigger: 'blur' }],
   password: [{ validator: validatepassword, trigger: 'blur' }],
   code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
-}
-/* phone:formData.phone,userNumber:formData.userNumber,
-        password:formData.password,name:formData.name,idCardNumber:formData.idCardNumber,
-        gender:formData.gender,ethnic:formData.ethnic,politicalAffiliation:formData.politicalAffiliation,
-        eMail:formData.eMail,code:formData.code */
+})
+
 const register = async () => {
-  console.log(formData),     //这个下面这么写不知道对不对，提交表单的时候,出现的问题是直接往后端传的时候发现表单为
-    //空的时候也能传过去，所以又写了个整个表单的校验
-    await registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
-      if (valid) {
-        service.post('/api/user/register', { formData }).then(res => {
-          const data = res.data;
-          console.log(data);
-          if (data.success) {
-            messageSuccess('注册成功！')
-            localStorage.setItem('token', data.token);
-            router.push('/Login')
-          } else {
-            messageError(data.message)
-          }
-        })
-      } else {
-        messageError('注册失败，请完善您的信息！')
-      }
+  console.log(formData)
+  await registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
+    if (valid) {
+      showLoading();
+      service.post('/api/user/register', {
+        phone: formData.phone, userNumber: formData.userNumber,
+        password: formData.password, name: formData.name, idCardNumber: formData.idCardNumber,identify:formData.identity,
+        gender: formData.gender, ethnic: formData.ethnic, politicalAffiliation: formData.politicalAffiliation,
+        eMail: formData.eMail, code: formData.code
+      }).then(res => {
+        const data = res.data;
+        console.log(data);
+        if (data.success) {
+          hideLoading();
+          messageSuccess('注册成功！')
+          localStorage.setItem('token', data.token);
+          router.push('/Login')
+        } else {
+          hideLoading();
+          messageError(data.message)
+        }
+      })
+    } else {
+      messageError('注册失败，请完善您的信息！')
+    }
+  })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
     })
 
 }
 </script>
-<template>
-  <div class="pageBackground">
-    <div class="registerForm">
-      <div class="registerFormContent">
-        <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
-          status-icon>
-          <el-form-item label="学号:" prop="userNumber">
-            <el-input v-model="formData.userNumber" />
-          </el-form-item>
-          <el-form-item label="姓名:" prop="name">
-            <el-input v-model="formData.name" />
-          </el-form-item>
-          <el-form-item label="身份证号:" prop="idCardNumber">
-            <el-input v-model="formData.idCardNumber" />
-          </el-form-item>
-          <el-form-item label="性别:" prop="gender">
-            <el-radio-group v-model="formData.gender">
-              <el-radio :label="false">男</el-radio> <!-- 不确定是不是这么绑定，传false和true -->
-              <el-radio :label="true">女</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="政治面貌:" prop="politicalAffiliation">
-            <el-select v-model="formData.politicalAffiliation">
-              <el-option label="群众" value="people" />
-              <el-option label="共青团员" value="leagueMember" />
-              <el-option label="共产党员" value="partyMember" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="民族:" prop="ethnic">
-            <el-input v-model="formData.ethnic" />
-          </el-form-item>
-          <el-form-item label="邮箱:" prop="eMail">
-            <el-input v-model="formData.eMail" />
-          </el-form-item>
-          <el-form-item label="手机号:" prop="phone">
-            <el-input v-model="formData.phone" placeholder="请输入手机号" />
-          </el-form-item>
-          <el-form-item class="loginPageFormText" label="" prop="code">
-            <el-row>
-              <el-col :span="16">
-                <el-input v-model="formData.code" class="captchaInput" id="code" placeholder="请输入验证码" />
-              </el-col>
-              <el-col :span="8">
-                <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
-                  <span v-show="show">获取验证码</span>
-                  <span v-show="!show" class="count">{{ count }} s</span>
-                </el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="密码:" prop="password">
-            <el-input v-model="formData.password" type="password" show-password />
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" class="registerPageEl-botton" @click="register">注册</el-button>
-          </el-form-item>
-        </el-form>
-      </div>
-    </div>
-  </div>
-</template>
 <style scoped>
 .pageBackground {
   position: fixed;
@@ -238,15 +264,14 @@ const register = async () => {
   height: 85%;
   align-items: center;
   position: absolute;
-  top: 10%;
-
+  top: 5%;
   background: #c9c4ce96;
   bottom: 20%;
 }
 
 .registerFormContent {
   width: 80%;
-  margin-left: 10%;
+  margin-left: 5%;
   margin-right: 10%;
   margin-top: 8%;
   align-items: center;

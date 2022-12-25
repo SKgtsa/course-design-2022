@@ -3,11 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'main',
-    //   component: () => import('../views/TeacherMainView.vue')
-    // },
+     {
+       path: '/',
+       name: 'origin',
+       component: () => import('../views/originPage.vue')
+     },
     {
       path: '/Login',
       name: 'Login',
@@ -38,39 +38,6 @@ const router = createRouter({
       name: 'main',
       component: () => import('../views/student/MainView.vue')
     },
-    /* {
-      path: '/AcademicManagement',
-      name: 'AcademicManagement',
-      component: () => import('../views/student/AcademicManagement.vue'),
-      children: [
-        {
-          path:'/AcademicManagement/AMHome',
-          name:'AMHome',
-          component:()=>import('../views/student/AMHome.vue')
-        },
-        {
-          path: '/AcademicManagement/StudentEvaluate',
-          name: 'StudentEvaluate',
-          component: () => import('../views/student/StudentEvaluate.vue')
-        },
-        {
-          path: '/AcademicManagement/Practice',
-          name: 'Practice',
-          component: () => import('../views/student/PracticeView.vue')
-        },
-        {
-          path: '/AcademicManagement/Activity',
-          name: 'Activity',
-          component: () => import('../views/student/ActivityView.vue')
-        },
-
-        {
-          path: '/AcademicManagement/Reward',
-          name: 'Reward',
-          component: () => import('../views/student/RewardView.vue')
-        },
-      ]
-    }, */
     {
       path: '/HomePage',
       name: 'HomePage',
@@ -79,11 +46,6 @@ const router = createRouter({
         keepAlive: true // 需要缓存
       },
       children: [
-        {
-          path: '/CourseEvaluate',
-          name: 'CourseEvaluate',
-          component: () => import('../views/student/CourseEvaluate.vue')
-        },
         {
           path: '/CourseSelect',
           name: 'CourseSelect',
@@ -104,7 +66,6 @@ const router = createRouter({
           name: 'main',
           component: () => import('../views/student/MainView.vue')
         },
-
         {
           path: '/AcademicManagement',
           name: 'AcademicManagement',

@@ -59,7 +59,7 @@
 </template>
 <script lang="ts" setup>
 import router from "@/router";
-import AvatarUploadTestViewVue from '@/components/AvatarUploadTestView.vue';
+import AvatarUploadTestViewVue from '@/components/photoUploadView.vue';
 import service from '@/request';
 import { messageWarning, messageError, messageInfo, messageSuccess } from '@/utils/message';
 import { reactive, ref } from "vue";
