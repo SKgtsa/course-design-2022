@@ -23,6 +23,8 @@ public class PostResponseTarget {
     private String nickName;
     //头像url
     private String avatarURL;
+
+    private Long userId;
     //发帖时间
     private Date time;
 
@@ -35,6 +37,7 @@ public class PostResponseTarget {
         heading = post.getHeading();
         nickName = post.getNickName();
         avatarURL = post.getAvatarURL();
+        userId = post.getUserId();
         time = post.getTime();
         likeNum = post.getLikeS().size() + post.getLikeT().size();
         like = post.getLikeS().contains(user) || post.getLikeT().contains(user);

@@ -1,5 +1,6 @@
 package com.clankalliance.backbeta.controller;
 
+import com.clankalliance.backbeta.request.blog.BlogSubmitRequest;
 import com.clankalliance.backbeta.request.blog.CommonBlogRequest;
 import com.clankalliance.backbeta.request.blog.MainRequest;
 import com.clankalliance.backbeta.request.score.ScoreEditRequest;
@@ -16,6 +17,11 @@ public class BlogController {
 
     @Resource
     private BlogService blogService;
+
+    @PostMapping("/submit")
+    public CommonResponse submit(@RequestBody BlogSubmitRequest request){
+        return blogService.handleSubmit(request.getToken(), request.getHeading(), request.getContent());
+    }
 
     @PostMapping("/getMine")
     public CommonResponse getMine(@RequestBody MainRequest request){

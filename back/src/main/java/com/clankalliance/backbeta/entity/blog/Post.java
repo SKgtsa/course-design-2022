@@ -29,6 +29,8 @@ public class Post {
     private String nickName;
     //头像url
     private String avatarURL;
+
+    private Long userId;
     //发帖时间
     private Date time;
     //评论

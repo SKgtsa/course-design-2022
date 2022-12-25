@@ -4,6 +4,8 @@ import com.clankalliance.backbeta.response.CommonResponse;
 
 public interface BlogService {
 
+    //发帖
+    CommonResponse handleSubmit(String token, String heading, String content);
     CommonResponse handleMine(String token, int length, int startIndex);
     //获取首页信息 好友帖子 按时间顺序分页
     CommonResponse handleMainPage(String token, int length, int startIndex);

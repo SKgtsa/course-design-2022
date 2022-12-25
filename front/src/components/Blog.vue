@@ -31,11 +31,30 @@
       </div>
     </div>
     <div class="rightWindow">
-      <el-container class="operationCard">
-        <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto">
-          <li v-for="i in postList" :key="i" class="infinite-list-item">{{ i }}</li>
+      <div class="operationCard">
+        <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto;height: 70vh;padding-top: 2vh">
+          <li v-for="i in postList" :key="i" class="infinite-list-item" style="padding-top: 3vh">
+            <div class="postBox">
+              <a style="font-size: 4vh">{{i.heading}}</a>
+              <div class="postBoxBottom">
+                <div class="bottomLeft">
+                  <a>{{i.time}}</a>
+                </div>
+                <div class="bottomRight">
+                  <div class="bottomTop">
+                    <el-image :src="i.avatarURL" class="avatar"/>
+                    <a>{{i.nickName}}</a>
+                  </div>
+                  <div class="bottomBottom">
+                    <el-button>点赞</el-button>
+                    <a>{{i.likeNum}}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
         </ul>
-      </el-container>
+      </div>
     </div>
   </div>
   <!--弹出框 写博客-->
@@ -47,11 +66,13 @@
       :size="'90%'"
   >
     <div class="writeBox">
+      <el-input v-model="heading" placeholder="请在此输入标题"/>
       <editor v-model="postContent"
               :init="init"
               :disabled="disabled"
               :id="tinymceId">
       </editor>
+      <el-button @click="submit">提交</el-button>
     </div>
   </el-drawer>
 
@@ -76,6 +97,7 @@ import { onMounted, defineEmits, watch } from "@vue/runtime-core"
 import { reactive, ref } from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
 import service from "@/request";
+import serviceFile from "@/request/indexFile";
 const blog = ref('')
 const testURL = 'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp';
 const imageList = [
@@ -87,6 +109,8 @@ const startIndex = ref(0);
 const length = 5;
 //抽屉是否打开（呈现）
 const drawerOpen = ref(false);
+//博客标题
+const heading = ref('');
 
 const postList = ref([
   {
@@ -101,6 +125,38 @@ const postList = ref([
     id: 12345,
     heading: '文章B',
     nickName: '作者B',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  },{
+    id: 12345,
+    heading: '文章C',
+    nickName: '作者C',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  },{
+    id: 12345,
+    heading: '文章C',
+    nickName: '作者C',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  },{
+    id: 12345,
+    heading: '文章C',
+    nickName: '作者C',
+    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
+    time: 'aaaa',
+    likeNum: '30',
+    like: true,
+  },{
+    id: 12345,
+    heading: '文章C',
+    nickName: '作者C',
     avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
     time: 'aaaa',
     likeNum: '30',
@@ -229,16 +285,19 @@ const init = reactive({
 watch(
     () => props.value,
     () => {
-      myValue.value = props.value
-      emits("getContent", myValue.value)
+      postContent.value = props.value
+      emits("getContent", postContent.value)
+      console.log("外部传来" + postContent.value)
     }
 )
 //监听富文本中的数据变化
 watch(
-    () => myValue.value,
+    () => postContent.value,
     () => {
-      emits("getContent", myValue.value)
-    }
+      emits("getContent", postContent.value)
+      console.log("文本变化" + postContent.value)
+    },
+
 )
 //在onMounted中初始化编辑器
 onMounted(() => {
@@ -258,11 +317,15 @@ const writeBlog = () => {
 }
 
 const refresh = () => {
+  localStorage.setItem('token', "aaaaaaaaaaa")
+
   //在此处添加加载开始
 
   //刷新列表方法 自动延长列表，无限滚动每次触底触发该方法
-  service.post('blog/getMain',{token: localStorage.getItem("token"), length: length, startIndex: startIndex}).then(res => {
+  service.post('api/blog/getMain',{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value}).then(res => {
     const data = res.data;
+    console.log('开始refresh')
+    console.log(res)
     if (data.success) {
       blog.value = '';
       postList.value.push(data.content);
@@ -279,12 +342,10 @@ const refresh = () => {
   })
 }
 
-//页面刷新时就进行列表刷新方法
-refresh();
 
 
-const bolgButton = () => {
-  service.post('blog/submit', { token: localStorage.getItem("token"), content: blog.value }).then(res => {
+const submit = () => {
+  service.post('api/blog/submit', { token: localStorage.getItem("token"), heading: heading.value, content: blog.value }).then(res => {
     const data = res.data;
     if (data.success) {
       blog.value = '';
@@ -295,13 +356,13 @@ const bolgButton = () => {
       localStorage.setItem('token', data.token)
       //用新token向后端要新的blog列表并更新显示
     } else {
-
       ElMessage({
         message: data.message,
         type: 'error'
       })
     }
   })
+  console.log(postContent.value);
 }
 const formState = reactive({ contents: '' })
 const getContent = (v: string) => {
@@ -311,6 +372,41 @@ const getContent = (v: string) => {
 
 <style scoped lang="scss">
 .writeBox{
+}
+.avatar{
+  width: 4vw;
+  border-radius: 2vw;
+}
+.postBox{
+  padding: 1vw;
+  width: 60vw;
+  background-color: #D0D0D0;
+  border-radius: 2vw;
+  flex-direction: column;
+  display: flex;
+}
+.postBoxBottom{
+  flex-direction: row;
+  display: flex;
+  width: 58vw;
+}
+.bottomLeft{
+
+}
+.bottomRight{
+  margin: 0 45%;
+
+
+}
+.bottomTop{
+  width: 30vw;
+  flex-direction: row-reverse;
+  display: flex;
+}
+.bottomBottom{
+  width: 30vw;
+  flex-direction: row-reverse;
+  display: flex;
 }
 .main {
   display: flex;
@@ -433,6 +529,7 @@ const getContent = (v: string) => {
     padding: 5vh 1vw 2vh 2vw;
 
     .operationCard {
+      padding-top: 2vh;
       background-color: #FFFFFF;
       width: 70vw;
       height: 80vh;

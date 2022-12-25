@@ -11,6 +11,7 @@ import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.response.PostResponseTarget;
 import com.clankalliance.backbeta.service.BlogService;
 import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 public class BlogServiceImpl implements BlogService {
 
     @Resource
+    private SnowFlake snowFlake;
+    @Resource
     private TokenUtil tokenUtil;
 
     @Resource
@@ -32,6 +35,25 @@ public class BlogServiceImpl implements BlogService {
 
     @Resource
     private CommentRepository commentRepository;
+
+
+    @Override
+    public CommonResponse handleSubmit(String token, String heading, String content){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), new Date(), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
+        try{
+            postRepository.save(post);
+        }catch (Exception e){
+            response.setMessage("保存失败");
+            response.setSuccess(false);
+            return response;
+        }
+        response.setMessage("保存成功");
+        return response;
+    }
 
     @Override
     public CommonResponse handleMine(String token, int length, int startIndex){
