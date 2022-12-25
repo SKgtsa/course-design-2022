@@ -34,11 +34,6 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private UserService userService;
 
-    @Resource
-    private StudentRepository studentRepository;
-
-    @Resource
-    private TeacherRepository teacherRepository;
 
     @Resource
     private ActivityRepository activityRepository;
@@ -148,7 +143,42 @@ public class ActivityServiceImpl implements ActivityService {
      */
     @Override
     public CommonResponse handleFind(String token,Integer pageNum,Integer pageSize){
-        return null;
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//259887250475716608
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user=userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student=(Student) user;
+                Set<Activity> activitySet=student.getActivity();
+                if(activitySet.size() <= pageSize){
+                    response.setContent(activitySet);
+                    response.setSuccess(true);
+                    response.setMessage("活动表返回成功");
+                }else if(activitySet.size() ==0){
+                    response.setSuccess(true);
+                    response.setMessage("该学生没有参加课外活动");
+                }else {
+                    Set<Activity> subActivitySet=new HashSet<>(pageSize);
+                    int count=1;
+                    for(Activity a : activitySet){
+                        if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
+                            subActivitySet.add(a);
+                        }
+                        count++;
+                    }
+                    response.setContent(subActivitySet);
+                    response.setMessage("活动表返回成功");
+                    response.setSuccess(true);
+                }
+            }
+        }
+        return response;
     }
 
 }

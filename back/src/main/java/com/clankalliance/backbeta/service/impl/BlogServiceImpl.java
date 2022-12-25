@@ -33,6 +33,32 @@ public class BlogServiceImpl implements BlogService {
     @Resource
     private CommentRepository commentRepository;
 
+    @Override
+    public CommonResponse handleMine(String token, int length, int startIndex){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        List<Post> totalPost = new ArrayList<>();
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            totalPost = teacher.getPostList();
+        }else if(user instanceof Student){
+            Student student = (Student) user;
+            totalPost = student.getPostList();
+        }
+        Collections.reverse(totalPost);
+        response.setMessage("查找成功");
+        List<PostResponseTarget> resultList = new ArrayList<>();
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() - 1 : startIndex + length);
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setContent(tempList);
+        response.setStartIndex(tempList.size() + startIndex);
+        return response;
+    }
+
     //获取首页信息 好友帖子 按时间顺序分页
     @Override
     public CommonResponse handleMainPage(String token, int length, int startIndex){
@@ -59,6 +85,7 @@ public class BlogServiceImpl implements BlogService {
             totalPost.addAll(t.getPostList());
         }
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+        Collections.reverse(totalPost);
         response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
         List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() - 1 : startIndex + length);
@@ -66,6 +93,7 @@ public class BlogServiceImpl implements BlogService {
             resultList.add(new PostResponseTarget(user,p));
         }
         response.setContent(tempList);
+        response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
     //查看详细文章 前端传来token和文章id 获取全文

@@ -22,4 +22,8 @@ public class CommonResponse<T1,T2> {
 
     private Integer character;
 
+    private Integer startIndex;
+
+    private Integer totalPage;
+
 }

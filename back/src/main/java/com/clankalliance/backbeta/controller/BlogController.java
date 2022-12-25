@@ -17,6 +17,11 @@ public class BlogController {
     @Resource
     private BlogService blogService;
 
+    @PostMapping("/getMine")
+    public CommonResponse getMine(@RequestBody MainRequest request){
+        return blogService.handleMine(request.getToken(), request.getLength(), request.getStartIndex());
+    }
+
     @PostMapping("/getMain")
     public CommonResponse getMain(@RequestBody MainRequest request){
         return blogService.handleMainPage(request.getToken(), request.getLength(), request.getStartIndex());
