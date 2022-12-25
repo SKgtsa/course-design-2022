@@ -9,4 +9,6 @@ public interface AvatarService {
 
     CommonResponse handleSave(MultipartFile file, String token);
 
+    CommonResponse handleSavePhoto(MultipartFile file, String token);
+
 }

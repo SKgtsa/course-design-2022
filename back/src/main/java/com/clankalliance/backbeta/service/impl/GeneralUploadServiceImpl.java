@@ -1,7 +1,10 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.GeneralUploadService;
+import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -75,14 +78,5 @@ public class GeneralUploadServiceImpl implements GeneralUploadService {
         return response;
     }
 
-    @Override
-    public CommonResponse handleSaveAvatar(MultipartFile avatar,String token){
-        return null;
-    }
-
-    @Override
-    public CommonResponse handleSavePhoto(MultipartFile photo, String token){
-        return null;
-    }
 
 }

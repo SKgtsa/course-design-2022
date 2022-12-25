@@ -2,6 +2,7 @@ package com.clankalliance.backbeta.controller;
 
 import com.clankalliance.backbeta.request.user.*;
 import com.clankalliance.backbeta.response.CommonResponse;
+import com.clankalliance.backbeta.service.AvatarService;
 import com.clankalliance.backbeta.service.ExcelService;
 import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
@@ -26,6 +27,9 @@ public class UserController {
 
     @Resource
     private GeneralUploadService generalUploadService;
+
+    @Resource
+    private AvatarService avatarService;
 
     @Resource
     private ExcelService excelService;
@@ -84,14 +88,14 @@ public class UserController {
     public CommonResponse handleChangeAvatar(HttpSession session,
                                              // 路径变量 解决前后端不一致
                                              @RequestParam("avatar") MultipartFile avatar, @RequestParam("token") String token){
-        return generalUploadService.handleSaveAvatar(avatar,token);
+        return avatarService.handleSave(avatar,token);
     }
 
     @PostMapping("/changePhoto")
     public CommonResponse handleChangePhoto(HttpSession session,
                                              // 路径变量 解决前后端不一致
                                              @RequestParam("photo") MultipartFile photo, @RequestParam("token") String token){
-        return generalUploadService.handleSavePhoto(photo,token);
+        return avatarService.handleSavePhoto(photo,token);
     }
 
     //批量注册

@@ -30,7 +30,7 @@
           </div>
           <a @click="checkCopyright" class="copyright">@版权</a>
         </el-menu>
-       
+
         <el-dialog v-model="dialogCopyright">
           <!--  上传头像没有用action的写法，用到是http-request的 -->
           <h3>版权说明</h3>
@@ -164,13 +164,14 @@ import {
 } from '@element-plus/icons-vue'
 import router from "@/router";
 import { useStore } from 'vuex' // 引入useStore 方法
-import { getAvatarURL, getNickName, setAvatarURL, setNickName } from '../../global/globalStudent';
+import { getAvatarURL, getNickName, setAvatarURL, setNickName } from '../../global/global';
 import { RouterView } from 'vue-router';
 import type { UploadFile } from 'element-plus'
 import { messageError, messageSuccess } from '@/utils/message';
 import service from '@/request';
 import axios from 'axios';
 import { dataType } from 'element-plus/es/components/table-v2/src/common';
+import serviceFile from "@/request/indexFile";
 
 //查看版权说明
 let dialogCopyright = ref(false);
@@ -208,8 +209,9 @@ let progressPercent = ref();
 //一个是action随便写一个，然后执行http-request,就是目前这种写法
 //另一种是 :action="base_url+target",然后把http-request去了
 let uploadImg = (f) => {
-  service.post('/api/user/changeAvatar', { avatar:f.file, token: localStorage.getItem('token') }).then(res => {
+  serviceFile.post('/api/user/changeAvatar', { avatar:f.file, token: localStorage.getItem('token') }).then(res => {
     let data = res.data;
+    console.log(res)
     if (data.success) {
       localStorage.setItem('token', data.token);
       setAvatarURL(data.content);
@@ -332,9 +334,9 @@ const submitOriginPwd = () => {
   /*   originPwdData.value.validdate((valid)=>{
       if(valid){
         if(){
-  
+
         }else{
-  
+
         }
       }else{
         messageError("请填写旧密码！")
