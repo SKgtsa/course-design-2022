@@ -2,7 +2,7 @@ import axios from 'axios'
 
 //新创建用来传输文件的实例
 const serviceFile = axios.create({
-    baseURL: 'http://localhost:5174',
+    baseURL: 'http://courseback.clankalliance.cn',
     timeout: 60000,
     headers: {'Content-Type' : 'multipart/form-data'},
 })

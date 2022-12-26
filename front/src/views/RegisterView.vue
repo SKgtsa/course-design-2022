@@ -5,7 +5,7 @@
       <div class="registerFormContent">
         <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
           status-icon>
-          <el-form-item label="学号:" prop="userNumber">
+          <el-form-item label="学工号:" prop="userNumber">
             <el-input v-model="formData.userNumber" />
           </el-form-item>
           <el-form-item label="姓名:" prop="name">
@@ -16,8 +16,8 @@
           </el-form-item>
           <el-form-item label="身份:" prop="identity">
             <el-select v-model="formData.identity" placeholder="选择身份">
-              <el-option label="老师" value=1 />
-              <el-option label="管理员" value=2 />
+              <el-option label="老师" value="1" />
+              <el-option label="管理员" value="2" />
             </el-select>
           </el-form-item>
           <el-form-item label="身份证号:" prop="idCardNumber">
@@ -75,8 +75,9 @@ import { reactive, ref } from 'vue'
 import service from "@/request";
 import { messageError, messageSuccess } from "@/utils/message";
 import router from '@/router';
-import { Refresh } from '@element-plus/icons-vue';
+import { Phone, Refresh } from '@element-plus/icons-vue';
 import { hideLoading, showLoading } from '@/utils/loading';
+/* import qs from 'qs'; */
 
 let $router = useRouter()
 const registerForm = ref()
@@ -95,18 +96,16 @@ const formData = reactive({   /* 学号，电话，姓名，身份证号，密�
   politicalAffiliation: '', //政治面貌
   eMail: '', //邮箱
   nickName: '', //用户名
-  studentClass: '', //学生班级
   identity: '', //身份
   code: '', //验证码
 })
 const sendCode = async () => {
   showLoading();
-  await service.post('/api/user/registerPhone', { phone: formData.phone }).then(res => {
+  await service.post('/api/user/registerPhone',{ phone: formData.phone }).then(res => {
     let data = res.data;
     if (data.success) {
       hideLoading();
       show.value = false;
-      localStorage.setItem('token', data.token);
       messageSuccess('发送成功！')  //这个还得把发送验证码那个按钮给他禁用了，不然一直发
       const TIME_COUNT = 60; //更改倒计时时间
       if (!timer) {
@@ -142,16 +141,20 @@ const validateName = (rule, value, callback) => {  //校验姓名，考虑少数
   } else {
     if ((!reg.test(value)) && value != '') {
       callback(new Error('请输入正确的姓名！'));
+    } else {
+      callback();
     }
   }
 }
 const validatepassword = (rule, value, callback) => {   //校验密码复杂度
-  const reg = /^(?!([A-Z]*|[a-z]*|[0-9]*|[!-/:-@\[-`{-~]*|[A-Za-z]*|[A-Z0-9]*|[A-Z!-/:-@\[-`{-~]*|[a-z0-9]*|[a-z!-/:-@\[-`{-~]*|[0-9!-/:-@\[-`{-~]*)$)[A-Za-z0-9!-/:-@\[-`{-~]{8,20}$/;
+  const reg = /^(?!([A-Z]*|[a-z]*|[0-9]*|[!-/:-@\[-`{-~]*|[A-Za-z]*|[A-Z0-9]*|[A-Z!-/:-@\[-`{-~]*|[a-z0-9]*|[a-z!-/:-@\[-`{-~]*|[0-9!-/:-@\[-`{-~]*)$)[A-Za-z0-9!-/:-@\[-`{-~]{6,16}$/;
   if (value == '' || value == undefined || value == null) {
     callback(new Error('请设置您的密码！'));
   } else {
     if ((!reg.test(value)) && value != '') {
-      callback(new Error('密码中必须包含字母、数字、特殊字符,长度在8-20位之间'));
+      callback(new Error('密码中必须包含字母、数字、特殊字符,长度在6-16位之间'));
+    } else {
+      callback();
     }
   }
 }
@@ -175,6 +178,8 @@ const validateEMail = (rule, value, callback) => {  //检验邮箱
   } else {
     if (!reg.test(value)) {
       callback(new Error('请输入正确的邮箱'));
+    } else {
+      callback();
     }
   }
 }
@@ -185,6 +190,8 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
   } else {
     if ((!reg.test(value)) && value != '') {
       callback(new Error('请输入正确的电话号码'));
+    } else {
+      callback();
     }
   }
 }
@@ -195,31 +202,41 @@ validator: validatePhone
 validator: validateIdCardNumber
 */
 const rules = reactive({
-  name: [{ validator: validateName, trigger: 'blur' }],
+  name: [{ validator: validateName, trigger: 'blur' },
+  { max: 10, message: '姓名没有超过10位', trigger: 'blur' }],
   userNumber: [{ required: true, message: '请输入学号', trigger: 'blur' }],
   identity: [{ required: true, message: '请选择您的身份', triggwe: 'blur' }],
   gender: [{ required: true, message: '请选择性别', trigger: 'blur' }],
   idCardNumber: [{ validator: validateIdCardNumber, trigger: 'blur' }],
-  eMail: [{ validator: validateEMail, trigger: 'blur' }],
+  eMail: [{validator: validateEMail, trigger: 'blur' }],
   ethnic: [{ required: true, message: '请填写您的民族', triggwe: 'blur' }],
   politicalAffiliation: [{ required: true, message: '请选择您的政治面貌', triggwe: 'blur' }],
   phone: [{ validator: validatePhone, trigger: 'blur' }],
   password: [{ validator: validatepassword, trigger: 'blur' }],
-  code: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
-  nickName:[{ required: true, message: '请输入验证码', trigger: 'blur' },
+  code: [{ required: true, message: '请输入验证码', trigger: 'blur' },{
+    max:5,message:'验证码长度为5位',trigger:'blur'
+  }],
+  nickName: [{ required: true, message: '请输入用户名', trigger: 'blur' },
   { max: 8, message: '长度请不要超过8位', trigger: 'blur' }]
 })
 
+
+/* phone: formData.value.phone, userNumber: formData.value.userNumber,
+  password: formData.value.password, name: formData.value.name, idCardNumber: formData.value.idCardNumber,
+    gender: formData.value.gender, ethnic: formData.value.ethnic, politicalAffiliation: formData.value.politicalAffiliation,
+      eMail: formData.value.eMail, nickName: formData.value.nickName, indentity: formData.value.identity, code: formData.value.code  */
 const register = async () => {
   console.log(formData)
   await registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
     if (valid) {
       showLoading();
+      console.log(formData.identity);
+      console.log(formData.eMail);
       service.post('/api/user/register', {
         phone: formData.phone, userNumber: formData.userNumber,
-        password: formData.password, name: formData.name, idCardNumber: formData.idCardNumber,identify:formData.identity,
+        password: formData.password, name: formData.name, idCardNumber: formData.idCardNumber,
         gender: formData.gender, ethnic: formData.ethnic, politicalAffiliation: formData.politicalAffiliation,
-        eMail: formData.eMail, code: formData.code,nickName:formData.nickName
+        eMail: formData.eMail, nickName: formData.nickName, identity: formData.identity, code: formData.code
       }).then(res => {
         const data = res.data;
         console.log(data);
@@ -233,15 +250,16 @@ const register = async () => {
           messageError(data.message)
         }
       })
+        .catch(function (error) {
+          hideLoading();
+          messageError("服务器开小差了呢");
+          console.log(error)
+        })
     } else {
       messageError('注册失败，请完善您的信息！')
     }
   })
-    .catch(function (error) {
-      hideLoading();
-      messageError("服务器开小差了呢");
-      console.log(error)
-    })
+
 
 }
 </script>
@@ -266,7 +284,7 @@ const register = async () => {
 
 .registerForm {
   width: 30%;
-  height: 90%;
+  height: 95%;
   align-items: center;
   position: absolute;
   top: 3%;

@@ -183,7 +183,10 @@ let uploadImg = async (f) => {
     if (data.success) {
       hideLoading();
       localStorage.setItem('token', data.token);
-      setAvatarURL(data.content);
+      let url = 'http://courseback.clankalliance.cn'+data.content;
+      console.log(url);
+      setAvatarURL(url);
+
       messageSuccess("更换成功！")
     } else {
       hideLoading();

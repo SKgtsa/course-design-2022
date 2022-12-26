@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class="tablePage">
-          <el-table :data="tableData" stripe size="large" class="scoreTable"
+          <el-table :data="tableData.arr" stripe size="large" class="scoreTable"
             :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
             :cell-style="{ 'height': '15px', 'font-size': '16px', 'text-align': 'center', 'font-weight': '450' }">
             <!-- 显示斑马纹和边框 -->
@@ -43,7 +43,9 @@ import { ref } from 'vue'
 import { showLoading, hideLoading } from '@/utils/loading';
 let yearsValue = ref();
 let semesterValue = ref();
-let tableData = reactive([]);
+let tableData = reactive({
+  arr:[],
+});
 const years = [
   {
     value: 2020,
@@ -76,8 +78,9 @@ const check = async () => {
       let data = res.data;
       if (data.success) {
         localStorage.setItem('token', data.token);
-        tableData = data.content;
+        tableData.arr = data.content;
         messageSuccess("查询成功！")
+        console.log(res)
         hideLoading();
       } else {
         hideLoading();

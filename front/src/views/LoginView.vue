@@ -138,18 +138,20 @@ const submitPwd = async (formEl: FormInstance | undefined) => {
         const data = res.data;
         if (data.success) {
           hideLoading();
-          console.log('data.success')
-          localStorage.setItem("token", data.token)
-          setNickName(data.nickName);
-          setAvatarURL(data.avatarURL);
+          console.log(login_data.password,login_data.userNumber)
+          localStorage.setItem("token",data.token)
+          let url =  "http://courseback.clankalliance.cn" +data.user.avatarURL;
+          console.log(localStorage.getItem('token'))
+          setNickName(data.user.nickName);
+          setAvatarURL(url);
           /*       localStorage.setItem("userName", data.user.name) */
-          messageSuccess("登陆成功！")
+          messageSuccess(data.message)
           if (data.character == 0) {
-            router.push('/Main') //学生页面
+            router.push('/ScoreManage') //学生页面
           } else if (data.character == 1) {
-            router.push('/Main'); //教师界面
+            router.push('/ScoreManage'); //教师界面
           } else if (data.character == 2) {
-            router.push('/Main'); //管理员界面，最后再改
+            router.push('/ScoreManage'); //管理员界面，最后再改
           }
         } else {
           hideLoading();
@@ -174,8 +176,9 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
         const data = res.data;
         if (data.success) {
           localStorage.setItem("token", data.token)
-          setNickName(data.nickName);
-          setAvatarURL(data.avatarURL);
+          let url = "http://courseback.clankalliance.cn" + data.user.avatarURL
+          setNickName(data.user.nickName);
+          setAvatarURL(url);
           messageSuccess("登录成功!")
           if (data.character == 0) {  //这个还没写
 
@@ -184,7 +187,7 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
           } else if (data.character == 2) {
 
           }
-          router.push('/Main')
+          router.push('/SelfInformation')
         } else {
           hideLoading();
           messageError(data.message)
@@ -228,7 +231,7 @@ const rulesPwd = reactive({   /* 定义校验规则 */
     max: 16, message: '学号没有超过16位!', trigger: 'blur'
   }],
   password: [{ required: true, message: '请输入密码！', trigger: 'blur' },
-  { min: 8, max: 20, message: '长度需要在8到16位之间!', trigger: 'blur' }
+  { min: 6, max: 16, message: '长度需要在6到16位之间!', trigger: 'blur' }
   ]
 })
 

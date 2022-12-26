@@ -11,9 +11,11 @@ let checkInf = async () => {
         let data = res.data;
         if (data.success) {
             if(data.character==0){
-                router.push('Main')
+                hideLoading();
+                router.push('/Main')
             }
         } else {
+            hideLoading();
             router.push('/Login')
         }
     })

@@ -41,11 +41,13 @@
                         <a class="courseSelectPageTitle">进入选课</a>
                         <el-checkbox v-model="filter" label="" size="large" class="checkBox">
                             <a>过滤掉冲突课程</a>
+                            <el-button type="primary" @click="getCourseInformation" style="margin-left: 50px;margin-bottom:5px ;">
+                                <a>查询</a>
+                            </el-button>
                         </el-checkbox>
                     </span>
                     <div class="selectTable">
-                        <el-table :data="courseInfo"
-                            height="550" :header-cell-style="{ 'text-align': 'center' }"
+                        <el-table :data="courseInfo" height="550" :header-cell-style="{ 'text-align': 'center' }"
                             :cell-style="{ padding: '20px 0' }" style="font-size: 16px" border>
                             <el-table-column prop="name" label="课程名称" align="center" width="150" />
                             <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
@@ -72,8 +74,8 @@
                         </el-table>
                         <div class="pagination">
                             <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
-                                @current-change="handleCurrentChange"  :current-page="currentPage"
-                                :page-size="pageSize" style="text-align: center">
+                                @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize"
+                                style="text-align: center">
                             </el-pagination>
                         </div>
                     </div>
@@ -275,6 +277,7 @@ const courseSelected = async () => {
             hideLoading();
         } else {
             hideLoading();
+            localStorage.setItem('token', data.token);
             messageError(data.message);
         }
     })
@@ -285,7 +288,7 @@ const courseSelected = async () => {
         })
 }
 
-courseSelected(); //进入页面先执行一次
+/* courseSelected(); //进入页面先执行一次 */
 
 
 //得到可以选的课的课程信息
@@ -296,6 +299,7 @@ const getCourseInformation = async () => {//下午说这个传参加了一个siz
     await service.post('/api/course/findAllCourse', { token: localStorage.getItem('token'), filterOpern: filter.value, pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
         let data = res.data;
         if (data.success) {
+            console.log(res)
             localStorage.setItem('token', data.token);
             courseInfo = data.content;
             pageCount.value = data.totalPage;

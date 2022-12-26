@@ -2,16 +2,16 @@
   <div class="content">
     <div class="pageContent">
       <div class="title">
-        课外活动
+        社会实践
         <el-button class="addButton" @click="add">添加</el-button>
       </div>
       <!-- 表格数据显示 -->
-      <el-table :data="tableData" stripe size="large"
-        class="activityTable"
+      <el-table :data="tableData.arr" stripe size="large" class="practiceTable"
         :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
-        <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip />
-        <el-table-column label="标题" prop="activityName" width="400" show-overflow-tooltip />
+        <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
+        <el-table-column label="标题" prop="name" width="400" show-overflow-tooltip />
+        <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
         <el-table-column width="300" label="操作">
           <template #default="scope">
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
@@ -35,15 +35,15 @@
           </el-input>
           <el-input v-if="typeOperation === 'add'" v-model="editForm.date"></el-input>
         </el-form-item>
-        <el-form-item label="标题" prop="activityName">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.activityName">{{ editForm.activityName }}
+        <el-form-item label="标题" prop="practiceName">
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}
           </el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.activityName"></el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName"></el-input>
         </el-form-item>
-        <el-form-item label="内容" prop="activityDescription">
-          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.activityDescription">
-            {{ editForm.activityDescription }}</el-input>
-          <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.activityDescription">
+        <el-form-item label="内容" prop="practiceDescription">
+          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.practiceDescription">
+            {{ editForm.practiceDescription }}</el-input>
+          <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.practiceDescription">
           </el-input>
         </el-form-item>
         <el-form-item label="成果" prop="result">
@@ -64,11 +64,11 @@
         <el-form-item label="日期" prop="date">
           <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>
         </el-form-item>
-        <el-form-item label="标题" prop="activityName">
-          <span v-if="typeOperation === 'check'">{{ editForm.activityName }}</span>
+        <el-form-item label="标题" prop="practiceName">
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span>
         </el-form-item>
-        <el-form-item label="内容" prop="activityDescription">
-          <span v-if="typeOperation === 'check'">{{ editForm.activityDescription }}</span>
+        <el-form-item label="内容" prop="practiceDescription">
+          <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span>
         </el-form-item>
         <el-form-item label="成果" prop="result">
           <span v-if="typeOperation === 'check'">{{ editForm.result }}</span>
@@ -84,20 +84,23 @@ import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-let tableData = reactive([]);   //table中的所有数据，数组中应该是很多个对象的集合
+let tableData = reactive({
+  arr: [],
+});   //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false); //控制改增弹出框
 let currentPage = ref(1);
 let pageSize = ref(7);
 let formData = ref();//改增校验绑定的空form
-let pageCount= ref();
+let pageCount = ref();
 let centerDialogVisibleCheck = ref(false);//查的弹出框
+
 /* 定义校验规则 */
 const rulesEditForm = reactive({
-  activityName: [{ required: true, message: '请输入课外活动的标题！', trigger: 'blur' },
+  practiceName: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
   { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
   ],
-  activityDescription: [{ required: true, message: '请输入课外活动的内容！', trigger: 'blur' }],
+  practiceDescription: [{ required: true, message: '请输入社会实践的内容！', trigger: 'blur' }],
   date: [{ required: true, message: '请输入日期', trigger: 'blur' },
   { max: 20, message: '请输入正确的日期!不要超过20位!', trigger: 'blur' }],
   result: [{ required: true, message: '请输入您的成果', trigger: 'blur' },
@@ -107,25 +110,29 @@ const rulesEditForm = reactive({
 
 //改查绑定的form数据
 let editForm = reactive({
-  activityName: '',
-  activityDescription: '',
+  practiceName: '',
+  practiceDescription: '',
   date: '',
   result: '',
   id: '',
 });
 
 //查找所有的数据
-const loadactivityTable = async (currentPage,pageSize) => {
+const loadpracticeTable = async () => {
   showLoading();
-  await service.post('/api/activity/find', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
+  await service.post('/api/practice/find', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
+    console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
+      console.log('初始化返回的res')
+      console.log(res);
       let data = res.data;
-      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
-      pageCount.value = data.totalPage;
-      tableData = arr
       localStorage.setItem('token', data.token)
-
+      console.log(localStorage.getItem('token'))
+      let array = data.content
+      pageCount.value = data.totalPage;
+      tableData.arr = array
+      console.log(tableData)
     } else {
       hideLoading();
       messageWarning(res.data.message)
@@ -137,13 +144,13 @@ const loadactivityTable = async (currentPage,pageSize) => {
       console.log(error)
     })
 }
-loadactivityTable(1,pageSize.value) //进入默认执行
+loadpracticeTable() //进入默认执行
 
 const add = () => {
   centerDialogVisible.value = true;
   typeOperation.value = 'add';
-  editForm.activityName = '';
-  editForm.activityDescription = '';
+  editForm.practiceName = '';
+  editForm.practiceDescription = '';
   editForm.id = '';
   editForm.date = '';
   editForm.result = '';
@@ -151,27 +158,29 @@ const add = () => {
 
 const handleCheck = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   centerDialogVisibleCheck.value = true;
-  editForm.activityDescription = row.activityDescription;
-  editForm.activityName = row.activityName;
+  editForm.practiceDescription = row.practiceDescription;
+  editForm.practiceName = row.practiceName;
   editForm.date = row.date;
   editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'check';
 }
 
-const handleEdit = (row) => {  //改
+const handleEdit = (row) => {  //改  两边属性名字不匹配
+  console.log(row)
   centerDialogVisible.value = true;
-  editForm.activityDescription = row.activityDescription;
-  editForm.activityName = row.activityName;
+  editForm.practiceDescription = row.practiceDescription;
+  editForm.practiceName = row.practiceName;
   editForm.date = row.date;
   editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'edit';
+  console.log(editForm)
 }
 
 const handleDelete = async (row) => {  //删  //异步不确定是否有问题
   await ElMessageBox.confirm(
-    '确认删除该条课外活动吗?',
+    '确认删除该条社会实践吗?',
     'Warning',
     {
       confirmButtonText: '确定',
@@ -181,13 +190,12 @@ const handleDelete = async (row) => {  //删  //异步不确定是否有问题
   )
     .then(() => {
       showLoading();
-      service.post('/api/activity/delete', { token: localStorage.getItem("token"), activityId: row.id }).then(res => {
+      service.post('/api/practice/delete', { token: localStorage.getItem("token"), practiceId: row.id }).then(res => {
         if (res.data.success) {
           hideLoading()
           messageSuccess('删除成功!')
-          loadactivityTable(currentPage.value,pageSize.value) //重新加载现在表单中的数据
           localStorage.setItem("token", res.data.token)
-
+          loadpracticeTable() //重新加载现在表单中的数据
         } else {
           hideLoading();
           messageWarning(res.data.message)
@@ -207,19 +215,18 @@ const sumbitEditRow = async () => {
       if (typeOperation.value === 'edit') {
         /* handleEdit() */
         showLoading();
-        service.post('/api/activity/save',
+        service.post('/api/practice/save',
           {
-            token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
+            token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
             date: editForm.date, result: editForm.result, id: editForm.id
           })
           .then(res => {  //直接把这一行的数据给出去可以吗
             if (res.data.success) {
               hideLoading();
+              localStorage.setItem("token", res.data.token)
               messageSuccess("编辑成功！")
               typeOperation.value = '';
-              loadactivityTable(currentPage.value,pageSize.value)
-              localStorage.setItem("token", res.data.token)
-
+              loadpracticeTable()
             } else {
               hideLoading();
               messageError(res.data.message)
@@ -232,18 +239,25 @@ const sumbitEditRow = async () => {
           })
       } else if (typeOperation.value === 'add') {
         showLoading()
-        service.post('/api/activity/save',
+        console.log('未执行添加前的描述，名字，日期，成果')
+        console.log(editForm.practiceDescription, editForm.practiceName, editForm.date, editForm.result)
+        service.post('/api/practice/save',
           {
-            token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
+            token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
             date: editForm.date, result: editForm.result
           })
           .then(res => {
             if (res.data.success) {
+              ('添加成功后editForm数据')
+              console.log(res)
               hideLoading()
+              localStorage.setItem("token", res.data.token)
+              console.log(localStorage.getItem('token'))
               messageSuccess("添加成功！")
               typeOperation.value = '';
-              loadactivityTable(currentPage.value,pageSize.value)
-              localStorage.setItem("token", res.data.token)
+              console.log('我执行了')
+              loadpracticeTable()
+
             } else {
               hideLoading()
               messageError(res.data.message)
@@ -263,8 +277,8 @@ const sumbitEditRow = async () => {
     }
   }))
 
-  editForm.activityName = '',
-    editForm.activityDescription = '',
+  editForm.practiceName = '',
+    editForm.practiceDescription = '',
     editForm.id = '',
     editForm.date = '',
     editForm.result = '',
@@ -290,7 +304,7 @@ const closeDialog = () => {
 }
 const handleCurrentChange = (current) => {
   currentPage.value = current;
-  loadactivityTable(currentPage.value,pageSize.value) //再执行一次索要数据方法
+  loadpracticeTable() //再执行一次索要数据方法
   console.log(currentPage)
 }
 
@@ -359,7 +373,7 @@ const handleCurrentChange = (current) => {
       background: #40b3dc !important;
     }
 
-    .activityTable {
+    .practiceTable {
       border: 2px solid;
       width: 63vw;
 
@@ -373,7 +387,7 @@ const handleCurrentChange = (current) => {
 
 
 
-.activityDialog {
+.practiceDialog {
   width: 300px !important;
   height: 600px !important;
 }

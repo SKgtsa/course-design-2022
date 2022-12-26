@@ -6,12 +6,12 @@
         <el-button class="addButton" @click="add">添加</el-button>
       </div>
       <!-- 表格数据显示 -->
-      <el-table :data="tableData" stripe size="large"
-        class="practiceTable"
+      <el-table :data="tableData.arr" stripe size="large" class="practiceTable"
         :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
-        <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip />
-        <el-table-column label="标题" prop="practiceName" width="400" show-overflow-tooltip />
+        <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
+        <el-table-column label="标题" prop="name" width="400" show-overflow-tooltip />
+        <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
         <el-table-column width="300" label="操作">
           <template #default="scope">
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
@@ -84,13 +84,15 @@ import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-let tableData = reactive([]);   //table中的所有数据，数组中应该是很多个对象的集合
+let tableData = reactive({
+  arr: [],
+});   //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false); //控制改增弹出框
 let currentPage = ref(1);
 let pageSize = ref(7);
 let formData = ref();//改增校验绑定的空form
-let pageCount= ref();
+let pageCount = ref();
 let centerDialogVisibleCheck = ref(false);//查的弹出框
 
 /* 定义校验规则 */
@@ -118,15 +120,19 @@ let editForm = reactive({
 //查找所有的数据
 const loadpracticeTable = async () => {
   showLoading();
-  await service.post('/api/practice/find', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value}).then(res => {
+  await service.post('/api/practice/find', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
+    console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
+      console.log('初始化返回的res')
+      console.log(res);
       let data = res.data;
-      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
-      pageCount.value = data.totalPage;
-      tableData = arr
       localStorage.setItem('token', data.token)
-
+      console.log(localStorage.getItem('token'))
+      let array = data.content
+      pageCount.value = data.totalPage;
+      tableData.arr = array
+      console.log(tableData)
     } else {
       hideLoading();
       messageWarning(res.data.message)
@@ -160,7 +166,8 @@ const handleCheck = (row) => {   //查看单个的数据 一条一条赋值，�
   typeOperation.value = 'check';
 }
 
-const handleEdit = (row) => {  //改
+const handleEdit = (row) => {  //改  两边属性名字不匹配
+  console.log(row)
   centerDialogVisible.value = true;
   editForm.practiceDescription = row.practiceDescription;
   editForm.practiceName = row.practiceName;
@@ -168,6 +175,7 @@ const handleEdit = (row) => {  //改
   editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'edit';
+  console.log(editForm)
 }
 
 const handleDelete = async (row) => {  //删  //异步不确定是否有问题
@@ -186,9 +194,8 @@ const handleDelete = async (row) => {  //删  //异步不确定是否有问题
         if (res.data.success) {
           hideLoading()
           messageSuccess('删除成功!')
-          loadpracticeTable() //重新加载现在表单中的数据
           localStorage.setItem("token", res.data.token)
-
+          loadpracticeTable() //重新加载现在表单中的数据
         } else {
           hideLoading();
           messageWarning(res.data.message)
@@ -216,11 +223,10 @@ const sumbitEditRow = async () => {
           .then(res => {  //直接把这一行的数据给出去可以吗
             if (res.data.success) {
               hideLoading();
+              localStorage.setItem("token", res.data.token)
               messageSuccess("编辑成功！")
               typeOperation.value = '';
               loadpracticeTable()
-              localStorage.setItem("token", res.data.token)
-
             } else {
               hideLoading();
               messageError(res.data.message)
@@ -233,6 +239,8 @@ const sumbitEditRow = async () => {
           })
       } else if (typeOperation.value === 'add') {
         showLoading()
+        console.log('未执行添加前的描述，名字，日期，成果')
+        console.log(editForm.practiceDescription, editForm.practiceName, editForm.date, editForm.result)
         service.post('/api/practice/save',
           {
             token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
@@ -240,11 +248,16 @@ const sumbitEditRow = async () => {
           })
           .then(res => {
             if (res.data.success) {
+              ('添加成功后editForm数据')
+              console.log(res)
               hideLoading()
+              localStorage.setItem("token", res.data.token)
+              console.log(localStorage.getItem('token'))
               messageSuccess("添加成功！")
               typeOperation.value = '';
+              console.log('我执行了')
               loadpracticeTable()
-              localStorage.setItem("token", res.data.token)
+
             } else {
               hideLoading()
               messageError(res.data.message)

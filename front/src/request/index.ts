@@ -3,7 +3,7 @@ import axios from 'axios'
 //已创建的axios实例
 const service = axios.create({
     //这里本来的baseURL填错了
-    baseURL: 'http://localhost:5174',
+    baseURL: 'http://courseback.clankalliance.cn',
     timeout: 60000,
 })
 export let get =async (url,params) =>{
