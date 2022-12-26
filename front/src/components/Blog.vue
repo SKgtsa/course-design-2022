@@ -3,22 +3,20 @@
     <div class="leftWindow">
       <div class="panel">
         <div class="panelCard">
-          <el-button class="writeButton" @click="writeBlog">
-            <el-image />
-            <a>写博客</a>
-          </el-button>
-          <div style="height: 2vh;padding-top: 1vh">
-            <div style="width: 85%;height: 2px;margin: auto;background-color: #29426d" />
-          </div>
           <div class="buttonBox">
-            <el-button class="opButton">
-              <a>广场</a>
+            <el-button class="writeButton" @click="writeBlog">
+              <el-image />
+              <a>写博客</a>
             </el-button>
-            <el-divider class="divider" />
-            <el-button class="opButton">
-              <a>我的博客</a>
-            </el-button>
-            <el-divider class="divider" />
+            <el-menu
+              default-active="1"
+              class="leftMenu"
+              @open="handleMenuOpen"
+              >
+              <el-menu-item index="1">广场</el-menu-item>
+              <el-menu-item index="2">我的关注</el-menu-item>
+              <el-menu-item index="3">我的博客</el-menu-item>
+            </el-menu>
           </div>
         </div>
       </div>
@@ -33,21 +31,21 @@
     <div class="rightWindow">
       <div class="operationCard">
         <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <li v-for="i in postList" :key="i" class="infinite-list-item" style="padding-top: 3vh">
+          <li v-for="item in postList" :ref="postListRef" :key="item" class="infinite-list-item" style="padding-top: 3vh">
             <div class="postBox">
-              <a style="font-size: 4vh">{{i.heading}}</a>
+              <a style="font-size: 4vh">{{item.heading}}</a>
               <div class="postBoxBottom">
                 <div class="bottomLeft">
-                  <a>{{i.time}}</a>
+                  <a>{{item.time}}</a>
                 </div>
                 <div class="bottomRight">
                   <div class="bottomTop">
-                    <el-image :src="i.avatarURL" class="avatar"/>
-                    <a>{{i.nickName}}</a>
+                    <el-image :src="'http://localhost:5174' + item.avatarURL" class="avatar"/>
+                    <a>{{item.nickName}}</a>
                   </div>
                   <div class="bottomBottom">
-                    <el-button>点赞</el-button>
-                    <a>{{i.likeNum}}</a>
+                    <el-button @click="likeThis(item)">点赞</el-button>
+                    <a>{{item.likeNum}}</a>
                   </div>
                 </div>
               </div>
@@ -66,13 +64,14 @@
       :size="'90%'"
   >
     <el-upload
-        action="http://courseback.clankalliance.cn/api/blog/submit"
+        action=""
         list-type="picture-card"
         multiple="false"
-        :auto-upload="false"
+        :http-request="getFile"
         :limit="1"
-
-        data=""
+        name="file"
+        headers="{ 'content-type': 'multipart/form-data' }"
+        data="{token: localstorage.getItem('token')}"
         ref="uploadRef"
         :on-change="handleChange"
     >
@@ -127,6 +126,7 @@ import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
 import type { UploadFile } from 'element-plus'
 import service from "@/request";
 import serviceFile from "@/request/indexFile";
+import {hideLoading, showLoading} from "@/utils/loading";
 const blog = ref('')
 const testURL = 'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp';
 const imageList = [
@@ -143,68 +143,68 @@ const drawerOpen = ref(false);
 const heading = ref('');
 //封面图片
 let topImage;
+//切换refresh方法的url
+const targetURL = ref('api/blog/getMain')
+//若为true,代表已经到底
+const loadOver = ref(false);
 
-const postList = ref([
-  {
-    id: 12345,
-    heading: '文章A',
-    nickName: '作者A',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  },{
-    id: 12345,
-    heading: '文章B',
-    nickName: '作者B',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  },{
-    id: 12345,
-    heading: '文章C',
-    nickName: '作者C',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  },{
-    id: 12345,
-    heading: '文章C',
-    nickName: '作者C',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  },{
-    id: 12345,
-    heading: '文章C',
-    nickName: '作者C',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  },{
-    id: 12345,
-    heading: '文章C',
-    nickName: '作者C',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  },{
-    id: 12345,
-    heading: '文章C',
-    nickName: '作者C',
-    avatarURL: 'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-    time: 'aaaa',
-    likeNum: '30',
-    like: true,
-  }
+const postList = reactive([
+
 ]);
 const disabled = ref(false)
 const uploadRef = ref();
+
+const postListRef = (el) => {
+  // el为每一个ref
+  console.log(el);
+
+}
+
+const likeThis = (key: number) => {
+  if(postList[key].like){
+    ElMessage({
+      message: "您已点过赞",
+      type: 'error'
+    })
+  }else{
+    showLoading();
+    service.post('api/blog/like',{token: localStorage.getItem("token"), blogId: postList[key].id}).then(res => {
+      const data = res.data;
+      console.log('点赞成功收到回调')
+      console.log(res)
+      if (data.success) {
+        postList[key].like = true;
+        localStorage.setItem('token', data.token)
+      } else {
+        ElMessage({
+          message: data.message,
+          type: 'error'
+        })
+      }
+      hideLoading();
+    })
+  }
+}
+
+const handleMenuOpen = (key: string, keyPath: string[]) => {
+  switch (key){
+    case '1':
+      targetURL.value = 'api/blog/getMain';
+      break;
+    case '2':
+      targetURL.value = 'api/blog/getLike';
+      break;
+    case '3':
+      targetURL.value = 'api/blog/getMine';
+      break;
+  }
+}
+
+const getFile = (item) => {
+  console.log("进入getFile")
+  console.log(item)
+  topImage = item.file;
+}
 
 const handleChange = (file: UploadFile) => {
   console.log(file)
@@ -361,36 +361,42 @@ const writeBlog = () => {
 }
 
 const refresh = () => {
-  localStorage.setItem('token', "aaaaaaaaaaa")
-
-  //在此处添加加载开始
-
-  //刷新列表方法 自动延长列表，无限滚动每次触底触发该方法
-  service.post('api/blog/getMain',{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value}).then(res => {
-    const data = res.data;
-    console.log('开始refresh')
-    console.log(res)
-    if (data.success) {
-      blog.value = '';
-      postList.value.push(data.content);
-      startIndex.value = data.startIndex;
-      localStorage.setItem('token', data.token)
-    } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
-    }
-    //在此处添加加载结束
-
-  })
+  if(loadOver.value){
+    ElMessage({
+      message: "已经到底了",
+      type: 'error'
+    })
+  }else{
+    showLoading();
+    service.post(targetURL.value,{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value}).then(res => {
+      const data = res.data;
+      console.log('开始refresh')
+      console.log(res)
+      if (data.success) {
+        blog.value = '';
+        postList.push(data.content);
+        console.log(postList)
+        startIndex.value = data.startIndex;
+        loadOver.value = true;
+        localStorage.setItem('token', data.token)
+      } else {
+        loadOver.value = true;
+        ElMessage({
+          message: data.message,
+          type: 'error'
+        })
+      }
+      hideLoading();
+    })
+  }
 }
 
 
-
 const submit = () => {
-  service.post('api/blog/submit', { token: localStorage.getItem("token"), heading: heading.value, content: blog.value }).then(res => {
+  showLoading();
+  serviceFile.post('api/blog/submit', { token: localStorage.getItem("token"), heading: heading.value, content: postContent.value,topImage: topImage }).then(res => {
     const data = res.data;
+    console.log(res)
     if (data.success) {
       blog.value = '';
       ElMessage({
@@ -398,12 +404,17 @@ const submit = () => {
         type: 'success'
       })
       localStorage.setItem('token', data.token)
+      drawerOpen.value = false;
+      hideLoading();
+      refresh();
       //用新token向后端要新的blog列表并更新显示
     } else {
+      console.log(res)
       ElMessage({
         message: data.message,
         type: 'error'
       })
+      hideLoading();
     }
   })
   console.log(postContent.value);

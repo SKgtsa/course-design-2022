@@ -108,7 +108,7 @@ public class AvatarServiceImpl implements AvatarService {
 
 
         // 返回头像的路径/upload/test.png
-        String avatar = "/static/avatar" + filename;
+        String avatar = "/static/avatar/" + filename;
 
         User user = userService.findById(Long.valueOf(response.getMessage()));
         user.setAvatarURL(avatar);
@@ -174,7 +174,7 @@ public class AvatarServiceImpl implements AvatarService {
 
 
         // 返回头像的路径/upload/test.png
-        String avatar = "/static/photo" + filename;
+        String avatar = "/static/photo/" + filename;
 
         User user = userService.findById(Long.valueOf(response.getMessage()));
         user.setPhotoURL(avatar);

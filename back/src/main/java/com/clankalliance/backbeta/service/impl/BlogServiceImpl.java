@@ -102,11 +102,11 @@ public class BlogServiceImpl implements BlogService {
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
-        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() - 1 : startIndex + length);
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
-        response.setContent(tempList);
+        response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }

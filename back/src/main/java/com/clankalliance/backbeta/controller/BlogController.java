@@ -7,6 +7,7 @@ import com.clankalliance.backbeta.request.score.ScoreEditRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.BlogService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -19,8 +20,8 @@ public class BlogController {
     private BlogService blogService;
 
     @PostMapping("/submit")
-    public CommonResponse submit(@RequestBody BlogSubmitRequest request){
-        return blogService.handleSubmit(request.getToken(), request.getHeading(), request.getContent(), request.getTopImage());
+    public CommonResponse submit(@RequestParam("topImage") MultipartFile topImage,@RequestParam("token") String token, @RequestParam("heading") String heading, @RequestParam("content") String content){
+        return blogService.handleSubmit(token, heading, content, topImage);
     }
 
     @PostMapping("/getMine")
@@ -31,6 +32,11 @@ public class BlogController {
     @PostMapping("/getMain")
     public CommonResponse getMain(@RequestBody MainRequest request){
         return blogService.handleMainPage(request.getToken(), request.getLength(), request.getStartIndex());
+    }
+
+    @PostMapping("/getLike")
+    public CommonResponse getLike(@RequestBody MainRequest request){
+        return blogService.handleLikePost(request.getToken(), request.getLength(), request.getStartIndex());
     }
 
     @PostMapping("/getDetail")
