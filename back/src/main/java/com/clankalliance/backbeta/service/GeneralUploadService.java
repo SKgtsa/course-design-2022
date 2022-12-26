@@ -8,4 +8,5 @@ public interface GeneralUploadService {
 
     CommonResponse handleSave(MultipartFile file, String token);
 
+    String upload(MultipartFile file);
 }

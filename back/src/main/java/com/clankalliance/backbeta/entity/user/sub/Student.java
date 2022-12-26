@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.entity.user.sub;
 
 import com.clankalliance.backbeta.entity.Activity;
+import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Score;
@@ -73,11 +74,11 @@ public class Student extends User {
                 this.practiceSet = practiceSet;
         }
 
-        public Set<Practice> getRewardSet() {
+        public Set<Reward> getRewardSet() {
                 return rewardSet;
         }
 
-        public void setRewardSet(Set<Practice> rewardSet) {
+        public void setRewardSet(Set<Reward> rewardSet) {
                 this.rewardSet = rewardSet;
         }
 
@@ -123,7 +124,7 @@ public class Student extends User {
 
         @JsonIgnore
         @ManyToMany(cascade = CascadeType.PERSIST)
-        private Set<Practice> rewardSet;
+        private Set<Reward> rewardSet;
 
         //学生好友
         @JsonIgnore

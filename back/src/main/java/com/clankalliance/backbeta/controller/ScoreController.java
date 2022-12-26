@@ -41,14 +41,4 @@ public class ScoreController {
         return scoreService.handleFindDetail(request.getToken(),request.getCourseId());
     }
 
-/*
-    @PostMapping("/test")
-    public CommonResponse test(@RequestBody Map<String,String> request){
-        String stringDataA = request.get("stringDataA");
-        System.out.println("stringDataA: " + stringDataA);
-        Integer intDataA = Integer.parseInt(request.get("intDataA"));
-        System.out.println("intDataA: " + intDataA);
-        return null;
-    }
-*/
 }

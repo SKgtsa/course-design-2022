@@ -1,7 +1,6 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Activity;
-import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
@@ -17,11 +16,7 @@ import org.springframework.stereotype.Service;
 import com.clankalliance.backbeta.utils.SnowFlake;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.Null;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ActivityServiceImpl implements ActivityService {
@@ -34,6 +29,11 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private UserService userService;
 
+    @Resource
+    private StudentRepository studentRepository;
+
+    @Resource
+    private TeacherRepository teacherRepository;
 
     @Resource
     private ActivityRepository activityRepository;
@@ -73,11 +73,12 @@ public class ActivityServiceImpl implements ActivityService {
                     id=snowFlake.nextId();
                 }
                 Activity activity=new Activity(id,name,description,date,result,student);
+                activityRepository.save(activity);
                 //将activity加入进学生的活动表中
                 Set<Activity> activitySet=student.getActivity();
                 activitySet.add(activity);
                 student.setActivity(activitySet);
-                activityRepository.save(activity);
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("课外活动创建成功");
@@ -160,21 +161,29 @@ public class ActivityServiceImpl implements ActivityService {
                     response.setContent(activitySet);
                     response.setSuccess(true);
                     response.setMessage("活动表返回成功");
+                    response.setTotalPage(1);
                 }else if(activitySet.size() ==0){
                     response.setSuccess(true);
                     response.setMessage("该学生没有参加课外活动");
                 }else {
-                    Set<Activity> subActivitySet=new HashSet<>(pageSize);
+                    List<Activity> subActivityList=new ArrayList<>(pageSize);
                     int count=1;
                     for(Activity a : activitySet){
                         if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
-                            subActivitySet.add(a);
+                            subActivityList.add(a);
                         }
                         count++;
                     }
-                    response.setContent(subActivitySet);
+                    int size=activitySet.size();
+                    //计算总页数
+                    Integer totalPage = size / pageSize;
+                    if(size - totalPage*pageSize != 0){
+                        totalPage++;
+                    }
+                    response.setContent(subActivityList);
                     response.setMessage("活动表返回成功");
                     response.setSuccess(true);
+                    response.setTotalPage(totalPage);
                 }
             }
         }

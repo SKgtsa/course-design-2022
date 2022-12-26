@@ -1,6 +1,6 @@
 package com.clankalliance.backbeta.repository;
 
-import com.clankalliance.backbeta.entity.Activity;
+import com.clankalliance.backbeta.entity.Reward;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ActivityRepository extends JpaRepository<Activity,Integer> {
-    @Query("from Activity a where a.id=?1")
-    Optional<Activity> findById(long id);
+public interface RewardRepository extends JpaRepository<Reward,Integer> {
+    @Query("from Reward r where r.id=?1")
+    Optional<Reward> findById(long id);
 }

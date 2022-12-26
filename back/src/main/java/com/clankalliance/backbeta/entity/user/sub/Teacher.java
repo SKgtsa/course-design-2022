@@ -69,7 +69,7 @@ public class Teacher extends User {
         @OneToMany
         private Set<Course> courseSet;
 
-        //学生好友
+        //关注学生
         @JsonIgnore
         @ManyToMany
         private Set<Student> friendS;

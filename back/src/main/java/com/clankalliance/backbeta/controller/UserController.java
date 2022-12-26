@@ -4,7 +4,6 @@ import com.clankalliance.backbeta.request.user.*;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.AvatarService;
 import com.clankalliance.backbeta.service.ExcelService;
-import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 
 @CrossOrigin
@@ -25,8 +25,6 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private GeneralUploadService generalUploadService;
 
     @Resource
     private AvatarService avatarService;

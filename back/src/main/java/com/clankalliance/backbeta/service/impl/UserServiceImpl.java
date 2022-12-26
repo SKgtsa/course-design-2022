@@ -24,9 +24,9 @@ import java.util.Optional;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final String DEFAULT_AVATAR_URL = "default";
+    private final String DEFAULT_AVATAR_URL = "/static/inbuild/default.png";
 
-    private final String DEFAULT_PHOTO_URL = "default";
+    private final String DEFAULT_PHOTO_URL = "/static/inbuild/default.png";
 
 
     @Resource
@@ -117,9 +117,8 @@ public class UserServiceImpl implements UserService {
         password = DigestUtils.sha1Hex(password);
         User user = findByUserNumber(userNumber);
         if(user == null){
-            //该用户已存在 进行判定是统一注册的空号还是用户重复注册
             response.setSuccess(false);
-            response.setMessage("账户已存在");
+            response.setMessage("账户不存在");
             return response;
         }
         if(!password.equals(user.getPassword())){
