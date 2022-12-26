@@ -33,6 +33,8 @@ public class Post {
     private Long userId;
     //发帖时间
     private Date time;
+    //封面图
+    private String topImageUrl;
     //评论
     @JsonIgnore
     @OneToMany

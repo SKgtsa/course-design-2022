@@ -75,11 +75,13 @@ public class RewardServiceImpl implements RewardService {
                 }
                 studentSet.add(student);
                 Reward reward=new Reward(id,name,description,studentSet);
+                rewardRepository.save(reward);
+
                 //将reward加入进学生的活动表中
                 Set<Reward> rewardSet=student.getRewardSet();
                 rewardSet.add(reward);
                 student.setRewardSet(rewardSet);
-                rewardRepository.save(reward);
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("成果奖励创建成功");

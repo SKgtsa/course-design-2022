@@ -20,7 +20,7 @@ public class BlogController {
 
     @PostMapping("/submit")
     public CommonResponse submit(@RequestBody BlogSubmitRequest request){
-        return blogService.handleSubmit(request.getToken(), request.getHeading(), request.getContent());
+        return blogService.handleSubmit(request.getToken(), request.getHeading(), request.getContent(), request.getTopImage());
     }
 
     @PostMapping("/getMine")

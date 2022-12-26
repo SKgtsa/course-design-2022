@@ -5,6 +5,7 @@ import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.repository.PracticeRepository;
+import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
@@ -29,13 +30,10 @@ public class PracticeServiceImpl implements PracticeService {
     private UserService userService;
 
     @Resource
-    private StudentRepository studentRepository;
-
-    @Resource
-    private TeacherRepository teacherRepository;
-
-    @Resource
     private PracticeRepository practiceRepository;
+
+    @Resource
+    private StudentRepository studentRepository;
 
     /**
      * 保存课外活动
@@ -52,7 +50,7 @@ public class PracticeServiceImpl implements PracticeService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
+            response.setMessage("262555784829865984");//259887250475716608
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -77,11 +75,13 @@ public class PracticeServiceImpl implements PracticeService {
                 }
                 studentSet.add(student);
                 Practice practice=new Practice(id,name,description,studentSet);
+                practiceRepository.save(practice);
+
                 //将practice加入进学生的活动表中
                 Set<Practice> practiceSet=student.getPracticeSet();
                 practiceSet.add(practice);
                 student.setPracticeSet(practiceSet);
-                practiceRepository.save(practice);
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("社会实践创建成功");
@@ -90,6 +90,7 @@ public class PracticeServiceImpl implements PracticeService {
                 Practice practiceOld = practiceRepository.findById(id).get();
                 Set<Student> studentSet=practiceOld.getStudentSet();
                 Practice practice=new Practice(id,name,description,studentSet);
+
                 practiceRepository.save(practice);
 
                 response.setSuccess(true);

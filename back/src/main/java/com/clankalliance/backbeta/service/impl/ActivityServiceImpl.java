@@ -73,11 +73,12 @@ public class ActivityServiceImpl implements ActivityService {
                     id=snowFlake.nextId();
                 }
                 Activity activity=new Activity(id,name,description,date,result,student);
+                activityRepository.save(activity);
                 //将activity加入进学生的活动表中
                 Set<Activity> activitySet=student.getActivity();
                 activitySet.add(activity);
                 student.setActivity(activitySet);
-                activityRepository.save(activity);
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("课外活动创建成功");

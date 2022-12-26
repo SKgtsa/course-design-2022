@@ -4,7 +4,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.util.random.RandomGenerator;
 
 @Data
 @NoArgsConstructor
@@ -31,7 +30,7 @@ public class StatusNode {
         this.updateTime = System.currentTimeMillis();
         this.token = DigestUtils.sha1Hex("" + this.userId + this.updateTime);
         //五位验证码
-        String randomNum = "000000" + RandomGenerator.getDefault().nextInt(999999);
-        this.verifyCode = randomNum.substring(randomNum.length() - 6, randomNum.length());
+        int random = (int) ((99999-10000+1)*Math.random()+10000);
+        this.verifyCode = "" + random;
     }
 }

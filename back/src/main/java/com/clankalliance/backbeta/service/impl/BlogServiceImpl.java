@@ -7,13 +7,16 @@ import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.PostRepository;
 import com.clankalliance.backbeta.repository.userRepository.CommentRepository;
+import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
+import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.response.PostResponseTarget;
 import com.clankalliance.backbeta.service.BlogService;
+import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
-import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -22,8 +25,6 @@ import java.util.stream.Collectors;
 @Service
 public class BlogServiceImpl implements BlogService {
 
-    @Resource
-    private SnowFlake snowFlake;
     @Resource
     private TokenUtil tokenUtil;
 
@@ -36,14 +37,22 @@ public class BlogServiceImpl implements BlogService {
     @Resource
     private CommentRepository commentRepository;
 
+    @Resource
+    private GeneralUploadService generalUploadService;
+
+    @Resource
+    private StudentRepository studentRepository;
+
+    @Resource
+    private TeacherRepository teacherRepository;
 
     @Override
-    public CommonResponse handleSubmit(String token, String heading, String content){
+    public CommonResponse handleSubmit(String token, String heading, String content, MultipartFile topImage){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
         User user = userService.findById(Long.parseLong(response.getMessage()));
-        Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), new Date(), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
+        Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), new Date(), generalUploadService.upload(topImage), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
         try{
             postRepository.save(post);
         }catch (Exception e){
@@ -81,9 +90,30 @@ public class BlogServiceImpl implements BlogService {
         return response;
     }
 
-    //获取首页信息 好友帖子 按时间顺序分页
+    //获取首页信息 所有人的帖子
     @Override
     public CommonResponse handleMainPage(String token, int length, int startIndex){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        List<Post> totalPost = postRepository.findAll();
+        totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+        Collections.reverse(totalPost);
+        response.setMessage("查找成功");
+        List<PostResponseTarget> resultList = new ArrayList<>();
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() - 1 : startIndex + length);
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setContent(tempList);
+        response.setStartIndex(tempList.size() + startIndex);
+        return response;
+    }
+
+    //关注者的帖子 按时间顺序分页
+    @Override
+    public CommonResponse handleLikePost(String token, int length, int startIndex){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -193,6 +223,46 @@ public class BlogServiceImpl implements BlogService {
             response.setMessage("评论成功");
             return response;
         }
+    }
+
+    @Override
+    public CommonResponse handleSubscribe(String token, Long userId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        User target = userService.findById(userId);
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            if(target instanceof Teacher){
+                Teacher t = (Teacher) target;
+                Set<Teacher> set = teacher.getFriendT();
+                set.add(t);
+                teacher.setFriendT(set);
+            }else if(target instanceof Student){
+                Student s = (Student) target;
+                Set<Student> set = teacher.getFriendS();
+                set.add(s);
+                teacher.setFriendS(set);
+            }
+            teacherRepository.save(teacher);
+        }else if(user instanceof  Student){
+            Student student = (Student) user;
+            if(target instanceof Teacher){
+                Teacher t = (Teacher) target;
+                Set<Teacher> set = student.getFriendT();
+                set.add(t);
+                student.setFriendT(set);
+            }else if(target instanceof Student){
+                Student s = (Student) target;
+                Set<Student> set = student.getFriendS();
+                set.add(s);
+                student.setFriendS(set);
+            }
+            studentRepository.save(student);
+        }
+        response.setMessage("保存成功");
+        return response;
     }
 
 }

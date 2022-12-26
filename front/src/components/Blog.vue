@@ -65,6 +65,33 @@
       :before-close="handleClose"
       :size="'90%'"
   >
+    <el-upload
+        action="http://courseback.clankalliance.cn/api/blog/submit"
+        list-type="picture-card"
+        multiple="false"
+        :auto-upload="false"
+        :limit="1"
+
+        data=""
+        ref="uploadRef"
+        :on-change="handleChange"
+    >
+      <el-icon><Plus /></el-icon>
+      <template #file="{ file }">
+        <div>
+          <img class="el-upload-list__item-thumbnail" :src="file.url" alt="" />
+          <span class="el-upload-list__item-actions">
+          <span
+              v-if="!disabled"
+              class="el-upload-list__item-delete"
+              @click="handleRemove(file)"
+          >
+            <el-icon><Delete /></el-icon>
+          </span>
+        </span>
+        </div>
+      </template>
+    </el-upload>
     <div class="writeBox">
       <el-input v-model="heading" placeholder="请在此输入标题"/>
       <editor v-model="postContent"
@@ -96,6 +123,8 @@ import { onMounted, defineEmits, watch } from "@vue/runtime-core"
 
 import { reactive, ref } from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
+import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
+import type { UploadFile } from 'element-plus'
 import service from "@/request";
 import serviceFile from "@/request/indexFile";
 const blog = ref('')
@@ -104,6 +133,7 @@ const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
   'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
 ]
+const showUpload = ref(true);
 //博客列表陈列分页用
 const startIndex = ref(0);
 const length = 5;
@@ -111,6 +141,8 @@ const length = 5;
 const drawerOpen = ref(false);
 //博客标题
 const heading = ref('');
+//封面图片
+let topImage;
 
 const postList = ref([
   {
@@ -171,7 +203,19 @@ const postList = ref([
     like: true,
   }
 ]);
+const disabled = ref(false)
+const uploadRef = ref();
 
+const handleChange = (file: UploadFile) => {
+  console.log(file)
+  topImage = file;
+  showUpload.value = !showUpload.value;
+}
+
+const handleRemove = (file: UploadFile) => {
+  console.log(file)
+  uploadRef.value.clearFiles()
+}
 
 const emits = defineEmits(["getContent"])
 //这里我选择将数据定义在props里面，方便在不同的页面也可以配置出不同的编辑器，当然也可以直接在组件中直接定义

@@ -30,6 +30,8 @@ public class PostResponseTarget {
 
     private Integer likeNum;
 
+    private String topImageURL;
+
     private boolean like;
 
     public PostResponseTarget(User user, Post post){
@@ -40,6 +42,7 @@ public class PostResponseTarget {
         userId = post.getUserId();
         time = post.getTime();
         likeNum = post.getLikeS().size() + post.getLikeT().size();
+        topImageURL = post.getTopImageUrl();
         like = post.getLikeS().contains(user) || post.getLikeT().contains(user);
     }
 

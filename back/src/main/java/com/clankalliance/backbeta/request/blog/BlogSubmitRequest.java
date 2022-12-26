@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.request.blog;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @NoArgsConstructor
@@ -14,5 +15,7 @@ public class BlogSubmitRequest {
     private String heading;
 
     private String content;
+
+    private MultipartFile topImage;
 
 }
