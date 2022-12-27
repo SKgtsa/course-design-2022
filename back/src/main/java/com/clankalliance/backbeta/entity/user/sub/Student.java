@@ -38,10 +38,25 @@ public class Student extends User {
                 activity = new ArrayList<>();
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
+                section = null;
         }
 
-        public Student(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
+        public Student(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL,String section){
                 super(id,userNumber,nickName,name,password,phone,gradeClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
+                courseSet = new HashSet<>();
+                scoreSet = new HashSet<>();
+                activity = new ArrayList<>();
+                practiceSet = new ArrayList<>();
+                rewardSet = new ArrayList<>();
+                this.section = section;
+        }
+
+        public String getSection() {
+                return section;
+        }
+
+        public void setSection(String section) {
+                this.section = section;
         }
 
         public Set<Course> getCourseSet() {
@@ -107,6 +122,9 @@ public class Student extends User {
         public void setPostList(List<Post> postList) {
                 this.postList = postList;
         }
+
+        //学生届次
+        private String section;
 
         @JsonIgnore
         @OneToMany

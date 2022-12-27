@@ -41,5 +41,8 @@ public class RegisterData {
     @ExcelProperty(value = "电子邮箱",index = 9)
     private String eMail = "";
 
+    @ExcelProperty(value = "学生届次",index = 10)
+    private String section = "";
+
 
 }

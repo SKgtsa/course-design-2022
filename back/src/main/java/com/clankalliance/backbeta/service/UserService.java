@@ -32,7 +32,7 @@ public interface UserService {
 
     CommonResponse handleSaveBlogInfo(String token,String nickName);
 
-    boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName);
+    boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName, String section);
 
     CommonResponse handleChangePassword(String token,String password);
 

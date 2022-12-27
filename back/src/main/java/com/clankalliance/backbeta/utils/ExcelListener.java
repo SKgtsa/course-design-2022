@@ -30,7 +30,7 @@ public class ExcelListener extends AnalysisEventListener<RegisterData> {
     public void invoke(RegisterData data, AnalysisContext context) {
         System.out.println("解析到数据: " + data);
         //根据读取的数据来创建账户并保存
-        listener.userService.handleBatchRegisterStudent(Long.parseLong(data.getUserNumber()), data.getName(), data.getPassword(), Long.parseLong(data.getPhone()), data.getStudentClass(), data.getIdCardNumber(), data.getGender().equals("男")? false:true, data.getEthnic(), data.getPoliticalAffiliation(), data.getEMail(), "默认昵称");
+        listener.userService.handleBatchRegisterStudent(Long.parseLong(data.getUserNumber()), data.getName(), data.getPassword(), Long.parseLong(data.getPhone()), data.getStudentClass(), data.getIdCardNumber(), data.getGender().equals("男")? false:true, data.getEthnic(), data.getPoliticalAffiliation(), data.getEMail(), "默认昵称",data.getSection());
     }
     @Override
     public void invokeHeadMap(Map<Integer, String> headMap, AnalysisContext context) {

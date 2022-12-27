@@ -169,9 +169,10 @@ public class UserServiceImpl implements UserService {
         }
         long id = snowFlake.nextId();
         switch (identity){
-            case 0:
-                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
-                break;
+            //取消了学生注册的功能
+//            case 0:
+//                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
+//                break;
             case 1:
                 user = new Teacher(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
@@ -306,10 +307,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName){
+    public boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName, String section){
         password = DigestUtils.sha1Hex(password.getBytes());
         try{
-            Student student = new Student(snowFlake.nextId(), userNumber, name, password, phone, studentClass, idCardNumber, gender, ethnic, politicalAffiliation, eMail, DEFAULT_AVATAR_URL, nickName, DEFAULT_PHOTO_URL);
+            Student student = new Student(snowFlake.nextId(), userNumber, name, password, phone, studentClass, idCardNumber, gender, ethnic, politicalAffiliation, eMail, DEFAULT_AVATAR_URL, nickName, DEFAULT_PHOTO_URL, section);
             studentRepository.save(student);
         }catch (Exception e){
             return false;
