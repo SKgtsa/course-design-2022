@@ -6,13 +6,13 @@
         <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
           status-icon>
           <el-form-item label="学工号:" prop="userNumber">
-            <el-input v-model="formData.userNumber" />
+            <el-input v-model="formData.userNumber" maxlength="15" />
           </el-form-item>
           <el-form-item label="姓名:" prop="name">
-            <el-input v-model="formData.name" />
+            <el-input v-model="formData.name"  maxlength="10"/>
           </el-form-item>
           <el-form-item label="用户名:" prop="nickName">
-            <el-input v-model="formData.nickName" />
+            <el-input v-model="formData.nickName"  maxlength="8"/>
           </el-form-item>
           <el-form-item label="身份:" prop="identity">
             <el-select v-model="formData.identity" placeholder="选择身份">
@@ -21,7 +21,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="身份证号:" prop="idCardNumber">
-            <el-input v-model="formData.idCardNumber" />
+            <el-input v-model="formData.idCardNumber"  maxlength="18"/>
           </el-form-item>
           <el-form-item label="性别:" prop="gender">
             <el-radio-group v-model="formData.gender">
@@ -31,24 +31,24 @@
           </el-form-item>
           <el-form-item label="政治面貌:" prop="politicalAffiliation">
             <el-select v-model="formData.politicalAffiliation" placeholder="选择政治面貌">
-              <el-option label="群众" value="people" />
-              <el-option label="共青团员" value="leagueMember" />
-              <el-option label="共产党员" value="partyMember" />
+              <el-option label="群众" value="群众" />
+              <el-option label="共青团员" value="共青团员" />
+              <el-option label="共产党员" value="共产党员" />
             </el-select>
           </el-form-item>
           <el-form-item label="民族:" prop="ethnic">
-            <el-input v-model="formData.ethnic" />
+            <el-input v-model="formData.ethnic"  maxlength="8"/>
           </el-form-item>
           <el-form-item label="邮箱:" prop="eMail">
-            <el-input v-model="formData.eMail" />
+            <el-input v-model="formData.eMail"  maxlength="20"/>
           </el-form-item>
           <el-form-item label="手机号:" prop="phone">
-            <el-input v-model="formData.phone" placeholder="请输入手机号" />
+            <el-input v-model="formData.phone" placeholder="请输入手机号" maxlength="11" formatter="number"/>
           </el-form-item>
           <el-form-item class="loginPageFormText" label="验证码:" prop="code">
             <el-row>
               <el-col :span="16">
-                <el-input v-model="formData.code" class="captchaInput" id="code" placeholder="请输入验证码" />
+                <el-input v-model="formData.code" class="captchaInput" id="code" placeholder="请输入验证码" maxlength="5"/>
               </el-col>
               <el-col :span="8">
                 <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
@@ -59,7 +59,7 @@
             </el-row>
           </el-form-item>
           <el-form-item label="密码:" prop="password">
-            <el-input v-model="formData.password" type="password" show-password />
+            <el-input v-model="formData.password" type="password" show-password  maxlength="16"/>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" class="registerPageEl-botton" @click="register">注册</el-button>

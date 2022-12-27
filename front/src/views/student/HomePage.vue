@@ -49,7 +49,7 @@
         <el-dialog v-model="dialogVisibleName" width="20vw">
           <el-form :model="nickNameData" :rules="nickNameRules" ref="nickData">
             <el-form-item label="昵称" prop="nickName">
-              <el-input v-model="nickNameData.nickName">{{ getNickName() }}</el-input>
+              <el-input v-model="nickNameData.nickName" maxlength="8">{{ getNickName() }}</el-input>
             </el-form-item>
           </el-form>
           <div style="width:60%;padding-left:20%">
@@ -64,29 +64,13 @@
         <!-- 修改密码弹出框 -->
         <el-dialog v-model="dialogVisiblePwd" width="25vw">
           <!-- 没有校验的时候显示，就是密码不正确或者没有执行找回密码操作的时候 -->
-          <div v-if="!isPass">
-            <el-form :model="originFormPwd" :rules="OriginPwdRules" ref="originPwdData">
-              <el-form-item label="之前密码:" prop="originPwd">
-                <el-input v-model="originFormPwd.originPwd"></el-input>
-              </el-form-item>
-            </el-form>
-            <div style="width:60%;padding-left:20%">
-              <el-button @click="submitOriginPwd">
-                <a>确定</a>
-              </el-button>
-              <el-button @click="closePwd">
-                <a>取消</a>
-              </el-button>
-            </div>
-          </div>
-
-          <div v-if="isPass">
+          <div>
             <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData">
-              <el-form-item label="新的密码:" prop="newPwd">
-                <el-input v-model="formEditPwd.newPwd"></el-input>
+              <el-form-item label="旧密码:" prop="oldPwd">
+                <el-input v-model="formEditPwd.oldPwd"></el-input>
               </el-form-item>
-              <el-form-item label="再次输入:" prop="newPwdCheck">
-                <el-input v-model="formEditPwd.newPwdCheck"></el-input>
+              <el-form-item label="新密码:" prop="newPwd">
+                <el-input v-model="formEditPwd.newPwd"></el-input>
               </el-form-item>
             </el-form>
             <div style="width:60%;padding-left:20%">
@@ -183,7 +167,7 @@ let uploadImg = async (f) => {
     if (data.success) {
       hideLoading();
       localStorage.setItem('token', data.token);
-      let url = 'http://courseback.clankalliance.cn'+data.content;
+      let url = 'http://courseback.clankalliance.cn' + data.content;
       console.log(url);
       setAvatarURL(url);
 
@@ -224,8 +208,8 @@ let originPwdData = ref();
 
 //更改新密码
 let formEditPwd = reactive({
+  oldPwd: '',
   newPwd: '',
-  newPwdCheck: '',
 })
 let pwdEditData = ref();
 
@@ -256,23 +240,23 @@ const nickNameRules = reactive({
 });
 
 const validatepassword = (rule, value, callback) => {   //校验密码复杂度
-  const reg = /^(?!([A-Z]*|[a-z]*|[0-9]*|[!-/:-@\[-`{-~]*|[A-Za-z]*|[A-Z0-9]*|[A-Z!-/:-@\[-`{-~]*|[a-z0-9]*|[a-z!-/:-@\[-`{-~]*|[0-9!-/:-@\[-`{-~]*)$)[A-Za-z0-9!-/:-@\[-`{-~]{8,20}$/;
+  const reg = /^(?!([A-Z]*|[a-z]*|[0-9]*|[!-/:-@\[-`{-~]*|[A-Za-z]*|[A-Z0-9]*|[A-Z!-/:-@\[-`{-~]*|[a-z0-9]*|[a-z!-/:-@\[-`{-~]*|[0-9!-/:-@\[-`{-~]*)$)[A-Za-z0-9!-/:-@\[-`{-~]{6,16}$/;
   if (value == '' || value == undefined || value == null) {
     callback(new Error('请设置您的密码！'));
   } else {
     if ((!reg.test(value)) && value != '') {
-      callback(new Error('密码中必须包含字母、数字、特殊字符,长度在8-20位之间'));
+      callback(new Error('密码中必须包含字母、数字、特殊字符,长度在6-16位之间'));
+    } else {
+      callback();
     }
   }
 }
 
 
-const OriginPwdRules = reactive({
-  originPwd: [{ validator: validatepassword, trigger: 'blur' }],
-});
+
 const pwdEditRules = reactive({
+  oldPwd: [{ validator: validatepassword, trigger: 'blur' }],
   newPwd: [{ validator: validatepassword, trigger: 'blur' }],
-  newPwdCheck: [{ validator: validatepassword, trigger: 'blur' }],
 })
 
 const submitNickName = async () => {
@@ -305,32 +289,35 @@ const closeNickNameDialog = () => {
   dialogVisibleName.value = false;
 }
 
-const submitOriginPwd = () => {
-  /* dialogVisiblePwd.value = false; */
-  /*   originPwdData.value.validdate((valid)=>{
-      if(valid){
-        if(){
-
-        }else{
-
+const submitNewPwd = async () => {
+  await pwdEditData.value.validate((valid) => {
+    if (valid) {
+      showLoading();
+      service.post('//api/user/changePassword', {
+        token: localStorage.getItem('token'),
+        oldPassward: formEditPwd.oldPwd, newPassward: formEditPwd.newPwd
+      }).then(res => {
+        let data = res.data;
+        if (data.success == true) {
+          hideLoading();
+          localStorage.setItem('token', data.token); //返回token吗
+          messageSuccess(data.message)
+        } else {
+          hideLoading();
+          messageError(data.message)
         }
-      }else{
-        messageError("请填写旧密码！")
-      }
-    }) */
-
-  isPass.value = true;
-}
-const closePwd = () => {
-  dialogVisiblePwd.value = false;
-  isPass.value = false;
-}
-
-const submitNewPwd = () => {
-
+      })
+        .catch(function (error) {
+          hideLoading();
+          messageError("服务器开小差了呢");
+          console.log(error)
+        })
+    } else {
+      messageError("请正确填写！")
+    }
+  })
 }
 const closeNewPwdDialog = () => {
-  isPass.value = false;
   dialogVisiblePwd.value = false;
 }
 const handleOpen = (key: string, keyPath: string[]) => {

@@ -72,11 +72,11 @@
   <el-dialog v-model="centerDialogVisibleInf" width="30%">
     <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
       <el-form-item label="邮箱:" prop="email">
-        <el-input v-model="editForm.email">
+        <el-input v-model="editForm.email" maxlength="20">
           {{ editForm.email }}</el-input>
       </el-form-item>
       <el-form-item label="电话:" prop="phone">
-        <el-input v-model="editForm.phone">{{ editForm.phone }}</el-input>
+        <el-input v-model="editForm.phone" maxlength="11">{{ editForm.phone }}</el-input>
       </el-form-item>
     </el-form>
     <div class="dialogButtonPage">
