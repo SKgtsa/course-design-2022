@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import java.util.Date;
 import java.util.List;
 //帖子
@@ -20,6 +21,7 @@ public class Post {
     @Id
     private String id;
 
+    @Max(value = 50)
     //标题
     private String heading;
     //内容
