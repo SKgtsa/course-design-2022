@@ -48,7 +48,7 @@ public class RewardServiceImpl implements RewardService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
+            response.setMessage("262555784829865984");//学生
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -111,7 +111,7 @@ public class RewardServiceImpl implements RewardService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");
+            response.setMessage("262555784829865984");
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -128,6 +128,7 @@ public class RewardServiceImpl implements RewardService {
                     List<Reward> rewardList=s.getRewardSet();
                     rewardList.remove(reward);
                     s.setRewardSet(rewardList);
+                    studentRepository.save(s);
                 }
                 rewardRepository.delete(reward);
 
@@ -149,12 +150,13 @@ public class RewardServiceImpl implements RewardService {
                 student.setRewardSet(rewardList);
                 //在成果的学生表中删除学生
                 Set<Student> studentSet=reward.getStudentSet();
-                studentSet.remove(reward);
+                studentSet.remove(student);
                 reward.setStudentSet(studentSet);
                 //个人奖项则完全删除
                 if(studentSet.size() == 0){
                     rewardRepository.delete(reward);
                 }
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("学生成果奖励移除成功");
@@ -178,7 +180,7 @@ public class RewardServiceImpl implements RewardService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
+            response.setMessage("262555784829865984");//259887250475716608
         }else{
             response = tokenUtil.tokenCheck(token);
         }

@@ -37,7 +37,7 @@ public class PracticeServiceImpl implements PracticeService {
     private StudentRepository studentRepository;
 
     /**
-     * 保存课外活动
+     * 保存社会实践
      * 验证token,若id为空(null)则创建，绑定到该token对应用户，否则覆盖原数据
      * @param token 用户令牌
      * @param id 课外活动id(可为空)
@@ -51,7 +51,7 @@ public class PracticeServiceImpl implements PracticeService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("262555784829865984");//259887250475716608
+            response.setMessage("262555784829865984");//学生
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -115,7 +115,7 @@ public class PracticeServiceImpl implements PracticeService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");
+            response.setMessage("262555784829865984");
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -132,6 +132,7 @@ public class PracticeServiceImpl implements PracticeService {
                     List<Practice> practiceList=s.getPracticeSet();
                     practiceList.remove(practice);
                     s.setPracticeSet(practiceList);
+                    studentRepository.save(s);
                 }
                 practiceRepository.delete(practice);
 
@@ -153,12 +154,13 @@ public class PracticeServiceImpl implements PracticeService {
                 student.setPracticeSet(practiceList);
                 //在实践的学生表中删除学生
                 Set<Student> studentSet=practice.getStudentSet();
-                studentSet.remove(practice);
+                studentSet.remove(student);
                 practice.setStudentSet(studentSet);
                 //个人立项则完全删除
                 if(studentSet.size() == 0){
                     practiceRepository.delete(practice);
                 }
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("学生社会实践移除成功");
@@ -182,7 +184,7 @@ public class PracticeServiceImpl implements PracticeService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
+            response.setMessage("262555784829865984");//学生
         }else{
             response = tokenUtil.tokenCheck(token);
         }

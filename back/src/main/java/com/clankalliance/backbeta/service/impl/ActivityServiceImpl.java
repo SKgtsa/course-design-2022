@@ -6,6 +6,7 @@ import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.ActivityRepository;
+import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
@@ -28,6 +29,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private UserRepository userRepository;
 
     @Resource
     private StudentRepository studentRepository;
@@ -53,7 +57,7 @@ public class ActivityServiceImpl implements ActivityService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
+            response.setMessage("262555784829865984");//学生身份
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -64,7 +68,7 @@ public class ActivityServiceImpl implements ActivityService {
                 if(0!=id){
                     Optional<Activity> activityOp= activityRepository.findById(id);
                     if(activityOp.isEmpty()){
-                        //课程不存在，则为课程的创建
+                        //活动不存在，则为课程的创建
                         id=snowFlake.nextId();
                     }
                 }else{
@@ -114,7 +118,7 @@ public class ActivityServiceImpl implements ActivityService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
+            response.setMessage("262555784829865984");//学生身份
         }else{
             response = tokenUtil.tokenCheck(token);
         }
@@ -134,6 +138,8 @@ public class ActivityServiceImpl implements ActivityService {
                 activityList.remove(activity);
                 student.setActivity(activityList);
                 activityRepository.delete(activity);
+                // activityRepository.save(activity);
+                userRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("课程删除成功");
