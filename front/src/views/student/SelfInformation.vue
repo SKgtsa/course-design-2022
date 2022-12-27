@@ -16,8 +16,8 @@
           <el-table :data="tableData.arr" size="mini" class="tableStyle">
             <el-table-column prop="title" label="" width="120">
             </el-table-column>
-            <!--   <el-table-column prop="value" label="" width="120">
-            </el-table-column> -->
+            <el-table-column v-show="isLoad" prop="value" label="" width="120">
+            </el-table-column>
           </el-table>
           <el-button type="default" class="changeButton" @click="checkInf" plain>
             <a>查看个人信息</a>
@@ -29,7 +29,7 @@
       </el-aside>
       <el-main class="main">
         <h1>个人简介</h1>
-        <TEditor ref="editor" v-model="editorData" @click="onClick" />
+        <!--      <TEditor ref="editor" v-model="editorData" @click="onClick" /> -->
       </el-main>
     </el-container>
   </div>
@@ -70,13 +70,13 @@
 
   <!-- 修改个人信息 -->
   <el-dialog v-model="centerDialogVisibleInf" width="30%">
-    <el-form :model="showForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
+    <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
       <el-form-item label="邮箱:" prop="email">
-        <el-input v-model="showForm.email">
-          {{ showForm.email }}</el-input>
+        <el-input v-model="editForm.email">
+          {{ editForm.email }}</el-input>
       </el-form-item>
       <el-form-item label="电话:" prop="phone">
-        <el-input v-model="showForm.phone">{{ showForm.phone }}</el-input>
+        <el-input v-model="editForm.phone">{{ editForm.phone }}</el-input>
       </el-form-item>
     </el-form>
     <div class="dialogButtonPage">
@@ -100,18 +100,18 @@ import serviceFile from '@/request/indexFile';
 //控制查看，更改信息弹出框
 let centerDialogVisibleInf = ref(false);
 let centerDialogVisibleInfCheck = ref(false);
-
+let isLoad = ref(false);
 let information = reactive({
   name: '',       //身份证都传了,要不都返回来
   email: null,
   phone: null,
   gender: '男',
   ethnic: '',
-  politicalAffiliation:null,
+  politicalAffiliation: null,
   userNumber: '',
   password: '',
   studentClass: '',
-  idCardNumber:null,
+  idCardNumber: null,
   photoURL: '',
   id: '',
 });
@@ -123,6 +123,10 @@ let tableData = reactive(
         value: '',
       },
       {
+        title: '性别',
+        value: '',
+      },
+      {
         title: '邮箱',
         value: '',
       },
@@ -130,16 +134,9 @@ let tableData = reactive(
         title: '电话',
         value: '',
       },
-      {
-        title: '性别',
-        value: '',
-      },
     ]
   })
-let editorData = ref();
-const onClick = () => {
 
-}
 let uploadImg = async (f) => {
   showLoading();
   await serviceFile.post('/api/user/changePhoto', { photo: f.file, token: localStorage.getItem('token') }).then(res => {
@@ -170,13 +167,15 @@ let beforeAvatarUpload = (file) => {
 }
 
 let formData = ref();
-const validateemail = (rule, value, callback) => {  //检验邮箱
+const validateEMail = (rule, value, callback) => {  //检验邮箱
   const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
   if (value == '' || value == undefined || value == null) {
     callback(new Error('请输入邮箱！'));
   } else {
     if (!reg.test(value)) {
       callback(new Error('请输入正确的邮箱'));
+    } else {
+      callback();
     }
   }
 }
@@ -187,12 +186,14 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
   } else {
     if ((!reg.test(value)) && value != '') {
       callback(new Error('请输入正确的电话号码'));
+    } else {
+      callback();
     }
   }
 }
 
 let rulesEditForm = reactive({
-  email: [{ validator: validateemail, trigger: 'blur' },],
+  email: [{ validator: validateEMail, trigger: 'blur' },],
   phone: [{ validator: validatePhone, trigger: 'blur' },],
 })
 /* let backData = ref(); */
@@ -222,9 +223,12 @@ const loadInformationData = async () => {   //查看个人信息
         information.id = content.id,
         localStorage.setItem('token', data.token)
       tableData.arr[0].value = information.name;
-      tableData.arr[1].value = information.email;
-      tableData.arr[2].value = information.phone;
-      tableData.arr[3].value = information.gender;
+      tableData.arr[1].value = information.gender;
+      tableData.arr[2].value = information.email;
+      tableData.arr[3].value = information.phone;
+
+      isLoad.value = true;
+      console.log(tableData)
       hideLoading()
     } else {
       hideLoading()
@@ -247,36 +251,31 @@ let editForm = reactive({
   name: '',       //身份证都传了,要不都返回来
   email: '',
   phone: '',
-  gender: '男',
+  gender: '',
   ethnic: '',
-  politicalAffiliation:'',
+  politicalAffiliation: '',
   userNumber: '',
   password: '',
   studentClass: '',
-  idCardNumber:'',
+  idCardNumber: '',
   photoURL: '',
   id: '',
 });
-let showForm = reactive({
-  email:'',
-  phone:'',
-})
+
 const editInf = () => {
-  editForm.name=information.name,       //身份证都传了,要不都返回来
-  editForm.email= information.email,
-  editForm.phone= information.phone,
-  editForm.gender= information.gender,
-  editForm.ethnic= information.ethnic,
-  editForm.politicalAffiliation=information.politicalAffiliation,
-  editForm.userNumber= information.userNumber,
-  editForm.password= information.password,
-  editForm.studentClass=information.studentClass,
-  editForm.idCardNumber= information.idCardNumber,
-  editForm.photoURL= information.photoURL,
-  editForm.id=information.id,
-  showForm.email = information.email;
-  showForm.phone = information.phone;
-  centerDialogVisibleInf.value = true;
+  editForm.name = information.name,       //身份证都传了,要不都返回来
+    editForm.email = information.email,
+    editForm.phone = information.phone,
+    editForm.gender = information.gender,
+    editForm.ethnic = information.ethnic,
+    editForm.politicalAffiliation = information.politicalAffiliation,
+    editForm.userNumber = information.userNumber,
+    editForm.password = information.password,
+    editForm.studentClass = information.studentClass,
+    editForm.idCardNumber = information.idCardNumber,
+    editForm.photoURL = information.photoURL,
+    editForm.id = information.id,
+    centerDialogVisibleInf.value = true;
 }
 const closeDialog = () => {
   messageInfo("取消编辑")
@@ -284,40 +283,31 @@ const closeDialog = () => {
 }
 
 const sumbitEditRow = async () => {
+  console.log('进入提交方法')
   await formData.value.validate((valid) => {
+    console.log('校验方法')
     if (valid) {
+      console.log('校验通过')
+      isLoad.value = false;
       showLoading();
+      console.log(editForm)
       service.post('/api/user/editInfo', {
         token: localStorage.getItem("token"), //这个修改信息，绑定的值
         //是editForm绑定还是用formData绑定？
-        id: editForm.id, phone: showForm.phone, email: showForm.email,
-        gender: editForm.gender, ethnic: editForm.ethnic, politicalAffiliation: editForm.politicalAffiliation,
+        id: editForm.id, phone: editForm.phone, email: editForm.email,
+        gender: ((editForm.gender == '女') ? true : false), ethnic: editForm.ethnic, politicalAffiliation: editForm.politicalAffiliation,
         userNumber: editForm.userNumber, name: editForm.name, studentClass: editForm.studentClass,
         idCardNumber: editForm.idCardNumber, photoURL: editForm.photoURL
       }).then(res => {
+        console.log('返回了数据')
+        console.log(res)
         if (res.data.success) {
-          const data = res.data;
-          let content = data.user;
-          console.log(data.user)
-          information.name = content.name;       //身份证都传了,要不都返回来
-          information.email = content.email;
-          information.phone = content.phone,
-            information.gender = content.gender,
-            information.ethnic = content.ethnic,
-            information.politicalAffiliation = content.politicalAffiliation,
-            information.userNumber = content.userNumber,
-            information.password = content.password,
-            information.studentClass = content.studentClass,
-            information.idCardNumber = content.idCardNumber,
-            information.photoURL = content.photoURL,
-            information.id = content.id,
-            localStorage.setItem('token', data.token)
-          tableData.arr[0].value = information.name;
-          tableData.arr[1].value = information.email;
-          tableData.arr[2].value = information.phone;
-          tableData.arr[3].value = information.gender;
+          let data = res.data;
+          localStorage.setItem('token', data.token)
           hideLoading();
-          messageSuccess("提交成功！")
+          loadInformationData()
+          isLoad.value = true;
+          messageSuccess(data.message)
         } else {
           messageWarning(res.data.message)
         }

@@ -277,7 +277,6 @@ const courseSelected = async () => {
             hideLoading();
         } else {
             hideLoading();
-            localStorage.setItem('token', data.token);
             messageError(data.message);
         }
     })

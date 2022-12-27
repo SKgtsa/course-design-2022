@@ -22,7 +22,7 @@
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-            <a class="nickName">{{ nick }}</a>
+            <a class="nickName">{{ getNickName() }}</a>
           </div>
           <a @click="checkCopyright" class="copyright">@版权</a>
         </el-menu>
@@ -207,7 +207,6 @@ let beforeAvatarUpload = (file) => {
   }
   return isLt2M
 }
-let nick = getNickName();
 let dialogVisibleImg = ref(false)
 let dialogVisibleName = ref(false)
 let dialogVisiblePwd = ref(false)
