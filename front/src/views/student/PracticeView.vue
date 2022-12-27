@@ -31,26 +31,26 @@
     <el-dialog v-model="centerDialogVisible" width="45%" draggable="true">
       <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
         <el-form-item label="日期" prop="date">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date">{{ editForm.date }}
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date" maxlength="20">{{ editForm.date }}
           </el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.date"></el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.date" maxlength="20"></el-input>
         </el-form-item>
-        <el-form-item label="标题" prop="practiceName">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName">{{ editForm.practiceName }}
+        <el-form-item label="标题" prop="practiceName" >
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName" maxlength="30">{{ editForm.practiceName }}
           </el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName"></el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.practiceName" maxlength="30"></el-input>
         </el-form-item>
         <el-form-item label="内容" prop="practiceDescription">
-          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.practiceDescription">
+          <el-input v-if="typeOperation === 'edit'" type="textarea" maxlength="5000" rows="15" v-model="editForm.practiceDescription">
             {{ editForm.practiceDescription }}</el-input>
-          <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.practiceDescription">
+          <el-input v-if="typeOperation === 'add'" type="textarea"  maxlength="5000" rows="15" v-model="editForm.practiceDescription">
           </el-input>
         </el-form-item>
         <el-form-item label="成果" prop="result">
-          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="6" v-model="editForm.result">{{
+          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="6" maxlength="30" v-model="editForm.result">{{
               editForm.result
           }}</el-input>
-          <el-input v-if="typeOperation === 'add'" type="textarea" rows="6" v-model="editForm.result"></el-input>
+          <el-input v-if="typeOperation === 'add'" type="textarea" rows="6" maxlength="30" v-model="editForm.result"></el-input>
         </el-form-item>
       </el-form>
       <div class="dialogButtonPage">

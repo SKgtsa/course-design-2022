@@ -125,6 +125,11 @@ const router = createRouter({
           component: () => import('../views/teacher/TeacherScoreManage.vue')
         },
         {
+          path:'/TeacherGetScore',
+          name:'TeacherGetScore',
+          component: ()=> import('../views/teacher/TeacherGetScore.vue')
+        },
+        {
           path: '/TeacherSelfInformation',
           name: 'TeacherSelfInformation',
           component: () => import('../views/teacher/TeacherSelfInformation.vue')

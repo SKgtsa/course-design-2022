@@ -11,7 +11,7 @@
             <el-menu
               default-active="1"
               class="leftMenu"
-              @open="handleMenuOpen"
+              @select="handleMenuOpen"
               >
               <el-menu-item index="1">广场</el-menu-item>
               <el-menu-item index="2">我的关注</el-menu-item>
@@ -30,39 +30,45 @@
     </div>
     <div class="rightWindow">
       <div class="operationCard">
-        <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <li v-for="(item,index) in postList.arr"  :key="index" :type="Post"  class="infinite-list-item" style="padding-top: 3vh">
-            <div class="postBox" >
-              <a style="font-size: 4vh">{{item.heading}}</a>
-              <div class="postBoxBottom">
-                <div class="bottomLeft">
-                  <a>{{item.time}}</a>
-                </div>
-                <div class="bottomRight">
-                  <div class="bottomTop">
-                    <el-image :src="'http://localhost:5174' + item.avatarURL" class="avatar"/>
-                    <a>{{item.nickName}}</a>
-                  </div>
-                  <div class="bottomBottom">
-                    <el-button @click="likeThis(item)">点赞</el-button>
-                    <a>{{item.likeNum}}</a>
+        <ul v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
+          <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 3vh">
+            <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
+              <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
+                <div class="cardContent" >
+                  <a style="font-size: 4vh">{{item.heading}}</a>
+                  <div class="postBoxBottom">
+                    <div class="bottomLeft">
+                      <a>{{item.time}}</a>
+                    </div>
+                    <div class="bottomRight">
+                      <div class="bottomTop">
+                        <el-image :src="item.avatarURL" @click="jumpToPersonal(item)" class="avatar"/>
+                        <a class="nickName" @click="jumpToPersonal(item)">{{item.nickName}}</a>
+                      </div>
+                      <div class="bottomBottom">
+                        <el-button @click="likeThis(item)">点赞</el-button>
+                        <a class="likeNum">{{item.likeNum}}</a>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </li>
+          </div>
         </ul>
       </div>
     </div>
   </div>
   <!--弹出框 写博客-->
   <el-drawer
+      with-header="false"
       v-model="drawerOpen"
-      title="撰写博客"
       :direction="'rtl'"
       :before-close="handleClose"
       :size="'90%'"
+      z-index="50"
   >
+    <a style="font-size: 4vh">撰写博客</a>
     <el-upload
         action=""
         list-type="picture-card"
@@ -92,7 +98,9 @@
       </template>
     </el-upload>
     <div class="writeBox">
-      <el-input v-model="heading" placeholder="请在此输入标题"/>
+      <div class="headingInputWrapper">
+        <el-input v-model="heading" placeholder="请在此输入标题" class="headingInput"/>
+      </div>
       <editor v-model="postContent"
               :init="init"
               :disabled="disabled"
@@ -101,7 +109,18 @@
       <el-button @click="submit">提交</el-button>
     </div>
   </el-drawer>
-
+  <!--弹出框 显示博客详细正文-->
+  <el-dialog v-model="showDetail" width="80%">
+    <div :style="{ 'background-image': `url(${pageData.target.topImageURL})` }" class="detailTopImage"/>
+    <a class="detailHeading">{{pageData.target.heading}}</a>
+    <div class="userInfoArea">
+      <el-image :src="pageData.target.avatarURL" @click="jumpToPersonal(pageData.target)" class="avatar"/>
+      <a class="nickName" @click="jumpToPersonal(pageData.target)">{{pageData.target.nickName}}</a>
+    </div>
+    <div class="postContent">
+      <div v-html="pageData.targetContent.content"/>
+    </div>
+  </el-dialog>
 
 </template>
 
@@ -136,19 +155,37 @@ const imageList = [
 const showUpload = ref(true);
 //博客列表陈列分页用
 const startIndex = ref(0);
-const length = 5;
+const length = 6;
 //抽屉是否打开（呈现）
 const drawerOpen = ref(false);
 //博客标题
 const heading = ref('');
+//为true代表正在请求 避免重复
+const requesting = ref(false);
 //封面图片
-let topImage;
+let topImage = null;
 //切换refresh方法的url
 const targetURL = ref('api/blog/getMain')
 //若为true,代表已经到底
 const loadOver = ref(false);
+//若为true,展示博客正文
+const showDetail = ref(false);
 
-const postList  = reactive({arr:[]})
+const pageData  = reactive({
+  postList:[],
+  target: {
+    id: '',
+    heading: '',
+    nickName: '',
+    time: '',
+    topImageURL: '',
+    avatarURL: '',
+    userId: 0,
+    likeNum: 0,
+    like: false
+  },
+  targetContent: {content: ''},
+})
 const disabled = ref(false)
 const uploadRef = ref();
 
@@ -171,33 +208,62 @@ const postListRef = (el) => {
 }
 
 const likeThis = (target: Post) => {
-  if(target.like){
-    ElMessage({
-      message: "您已点过赞",
-      type: 'error'
-    })
-  }else{
-    showLoading();
-    service.post('api/blog/like',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
-      const data = res.data;
-      console.log('点赞成功收到回调')
-      console.log(res)
-      if (data.success) {
-        //这里有问题
-        target.like = true;
-        localStorage.setItem('token', data.token)
-      } else {
-        ElMessage({
-          message: data.message,
-          type: 'error'
-        })
-      }
-      hideLoading();
-    })
-  }
+  console.log('likeThis()')
+  console.log(target)
+  showLoading();
+  service.post('api/blog/like',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
+    const data = res.data;
+    console.log('点赞成功收到回调')
+    console.log(res)
+    if (data.success) {
+      //这里有问题
+      target.like = !target.like;
+      localStorage.setItem('token', data.token)
+    } else {
+      ElMessage({
+        message: data.message,
+        type: 'error'
+      })
+    }
+    hideLoading();
+  })
+}
+
+const jumpToDetail = (target: Post) => {
+  console.log('jumpToDetail()')
+  console.log(target)
+  pageData.target = target;
+  showLoading();
+  service.post('api/blog/getDetail',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
+    const data = res.data;
+    console.log('获取正文成功')
+    console.log(res)
+    if (data.success) {
+      let content = data.content;
+      console.log(content)
+      content.content = content.content.toString().replace('<img',"<img style='max-width:100%;height:auto;'")
+      console.log(content)
+
+      pageData.targetContent = content;
+      localStorage.setItem('token', data.token)
+    } else {
+      ElMessage({
+        message: data.message,
+        type: 'error'
+      })
+    }
+    hideLoading();
+    showDetail.value = true;
+  })
+}
+
+const jumpToPersonal = (target: Post) => {
+  console.log('jumpToPersonal()')
+  console.log(target)
 }
 
 const handleMenuOpen = (key: string, keyPath: string[]) => {
+  console.log("打开" + key)
   switch (key){
     case '1':
       targetURL.value = 'api/blog/getMain';
@@ -209,6 +275,10 @@ const handleMenuOpen = (key: string, keyPath: string[]) => {
       targetURL.value = 'api/blog/getMine';
       break;
   }
+  startIndex.value = 0;
+  loadOver.value = false;
+  pageData.postList = [];
+  refresh();
 }
 
 const getFile = (item) => {
@@ -264,11 +334,12 @@ const init = reactive({
   language_url: "/tinymce/langs/zh_CN.js", // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
   language: "zh_CN", //语言
   skin_url: "/tinymce/skins/ui/oxide", // skin路径，具体路径看自己的项目
-  placeholder: '分享你的学习生活',
-  height: 200, //编辑器高度
+  placeholder: '请在此处编辑正文',
+  height: 300, //编辑器高度
+  max_height: 800,
   branding: false, //是否禁用“Powered by TinyMCE”
   menubar: false, //顶部菜单栏显示
-  image_dimensions: false, //去除宽高属性
+  image_dimensions: true, //去除宽高属性
   plugins: props.plugins,  //这里的数据是在props里面就定义好了的
   toolbar: props.toolbar, //这里的数据是在props里面就定义好了的
   font_family_formats: '微软雅黑=Microsoft Yahei; Arial=arial,helvetica,sans-serif; 宋体=SimSun;  Impact=impact,chicago;', //字体
@@ -280,7 +351,7 @@ const init = reactive({
   // resize: false,
   file_picker_types: 'file',
   images_upload_url: '/api/upload/generalUpload',
-  images_upload_base_path: 'http://localhost:5174',
+  images_upload_base_path: 'http://courseback.clankalliance.cn',
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
 
@@ -303,7 +374,7 @@ const init = reactive({
       service.post('api/upload/generalUpload', params, config).then(res => {
         console.log(res);
         if (res.data.success) {
-          resolve(ph + res.data.msg)  //上传成功，在成功函数里填入图片路径
+          resolve('http://courseback.clankalliance.cn' + res.data.content)  //上传成功，在成功函数里填入图片路径
           localStorage.setItem('token',res.data.token)
           init.images_upload_url = res.data.content;
         } else {
@@ -372,62 +443,93 @@ const writeBlog = () => {
 }
 
 const refresh = () => {
-  if(loadOver.value){
-    ElMessage({
-      message: "已经到底了",
-      type: 'error'
-    })
-  }else{
-    showLoading();
-    service.post(targetURL.value,{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value}).then(res => {
-      const data = res.data;
-      console.log('开始refresh')
-      console.log(res)
-      if (data.success) {
-        blog.value = '';
-        postList.arr.push(data.content);
-        console.log(postList.arr)
-        startIndex.value = data.startIndex;
-        loadOver.value = true;
-        localStorage.setItem('token', data.token)
-      } else {
-        loadOver.value = true;
-        ElMessage({
-          message: data.message,
-          type: 'error'
-        })
-      }
-      hideLoading();
-    })
+  if(!requesting.value){
+    if(loadOver.value){
+      ElMessage({
+        message: "已经到底了",
+        type: 'error'
+      })
+    }else{
+      showLoading();
+      requesting.value = true;
+      service.post(targetURL.value,{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value}).then(res => {
+        const data = res.data;
+        console.log('开始refresh')
+        console.log(res)
+        if (data.success) {
+          blog.value = '';
+          let tempList = pageData.postList;
+          for(let i = 0;i < data.content.length;i ++ ){
+            data.content[i].avatarURL = 'http://courseback.clankalliance.cn' + data.content[i].avatarURL;
+            data.content[i].topImageURL = 'http://courseback.clankalliance.cn' + data.content[i].topImageURL;
+            tempList.push(data.content[i]);
+          }
+          pageData.postList = tempList;
+          console.log(pageData.postList)
+          startIndex.value = data.startIndex;
+          if(data.content.length < length){
+            loadOver.value = true;
+          }
+          localStorage.setItem('token', data.token)
+        } else {
+          loadOver.value = true;
+          ElMessage({
+            message: data.message,
+            type: 'error'
+          })
+        }
+        requesting.value = false;
+        hideLoading();
+      })
+    }
   }
 }
 
 
 const submit = () => {
   showLoading();
-  serviceFile.post('api/blog/submit', { token: localStorage.getItem("token"), heading: heading.value, content: postContent.value,topImage: topImage }).then(res => {
-    const data = res.data;
-    console.log(res)
-    if (data.success) {
-      blog.value = '';
-      ElMessage({
-        message: '发送成功',
-        type: 'success'
-      })
-      localStorage.setItem('token', data.token)
-      drawerOpen.value = false;
-      hideLoading();
-      refresh();
-      //用新token向后端要新的blog列表并更新显示
-    } else {
+  if(topImage == null){
+    ElMessage({
+      message: '请选择封面图片',
+      type: 'error'
+    })
+  }else if(heading.value.length > 50){
+    ElMessage({
+      message: '标题应不长于50字',
+      type: 'error'
+    })
+  }else if(heading.value.length == 0 || postContent.value.length == 0){
+    ElMessage({
+      message: '请填写完整',
+      type: 'error'
+    })
+  }else{
+    serviceFile.post('api/blog/submit', { token: localStorage.getItem("token"), heading: heading.value, content: postContent.value,topImage: topImage }).then(res => {
+      const data = res.data;
       console.log(res)
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
-      hideLoading();
-    }
-  })
+      if (data.success) {
+        blog.value = '';
+        ElMessage({
+          message: '发送成功',
+          type: 'success'
+        })
+        localStorage.setItem('token', data.token)
+        drawerOpen.value = false;
+        hideLoading();
+        loadOver.value = false;
+        pageData.postList = [];
+        refresh();
+        //用新token向后端要新的blog列表并更新显示
+      } else {
+        console.log(res)
+        ElMessage({
+          message: data.message,
+          type: 'error'
+        })
+        hideLoading();
+      }
+    })
+  }
   console.log(postContent.value);
 }
 const formState = reactive({ contents: '' })
@@ -437,17 +539,71 @@ const getContent = (v: string) => {
 </script>
 
 <style scoped lang="scss">
+.detailHeading{
+  font-size: 5vh;
+}
+.userInfoArea{
+  display: flex;
+  flex-direction: row-reverse;
+}
+.detailTopImage{
+  margin: 0;
+  width: 75vw;
+  height: 40vh;
+  background-position: top;
+  background-attachment: fixed;
+  background-size: cover;
+}
+
+
 .writeBox{
 }
+.headingInputWrapper{
+  padding-top: 1.5vh;
+  padding-bottom: 2vh;
+}
+.headingInput{
+  font-size: 3vh;
+  height: 4vh;
+}
 .avatar{
-  width: 4vw;
-  border-radius: 2vw;
+  width: 5vw;
+  height: 5vw;
+  border-radius: 2.5vw;
+  position: center;
+  size: auto;
+}
+.nickName{
+  line-height: 4vw;
+  font-weight: bold;
+  font-size: 3vw;
+}
+.likeNum{
+  font-weight: bold;
+  font-size: 2vw;
+}
+.cardBackground{
+  z-index: 1;
+
+}
+.listArea{
+
 }
 .postBox{
-  padding: 1vw;
-  width: 60vw;
-  background-color: #D0D0D0;
+  z-index: 5;
   border-radius: 2vw;
+  width: 62vw;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
+  color: #FFF;
+  position: relative;
+}
+.boxContainer{
+  border-radius: 2vw;
+  padding: 1vw;
+}
+.cardContent{
   flex-direction: column;
   display: flex;
 }
@@ -457,12 +613,11 @@ const getContent = (v: string) => {
   width: 58vw;
 }
 .bottomLeft{
-
+  width: 29vw;
 }
 .bottomRight{
-  margin: 0 45%;
-
-
+  width: 29vw;
+  margin: 0 0;
 }
 .bottomTop{
   width: 30vw;
@@ -592,7 +747,7 @@ const getContent = (v: string) => {
   }
 
   .rightWindow {
-    padding: 5vh 1vw 2vh 2vw;
+    padding: 5vh 1vw 2vh 0;
 
     .operationCard {
       padding-top: 2vh;

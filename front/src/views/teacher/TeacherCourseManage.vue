@@ -26,7 +26,7 @@
           </template>
           <template #default="scope">
             <!-- 默认行和列 -->
-            <el-button size="small" @click="handleCheck(scope.row)" class="button" type="primary">选课学生</el-button>
+            <el-button size="small" @click="checkStudent(scope.row)" class="button" type="primary">选课学生</el-button>
             <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑课程</el-button>
             <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
           </template>
@@ -204,14 +204,18 @@
     <el-dialog v-model="studentDialogVisible" width="70%">
       <div class="studentTitle">
         选课学生
+        <el-input class="studentNumberInput" v-model="input" placeholder="请输入学生学号" />
         <el-button class="addButton" @click="addStudent">添加学生</el-button>
       </div>
-      <el-table :data="studentData.slice((currentStudentPage - 1) * studentPageSize, currentStudentPage * studentPageSize)" style="width: 80%" border
-                stripe size="large" class="courseTable">
-        <el-table-column label="姓名" prop="name" width="350" show-overflow-tooltip/>
-        <el-table-column label="学号" type="index" width="80"/>
+      <el-table :data="studentData" style="width: 80%" border
+                stripe size="small" class="courseTable" max-height="400">
+        <el-table-column label="序号" type="index" width="80"/>
+         <el-table-column label="姓名" prop="name" width="120"  show-overflow-tooltip  />
+        <el-table-column label="学号" prop="studentNumber" width="350" show-overflow-tooltip/>
         <el-table-column>
           <template #header>
+          </template>
+          <template #default="scope">
             <el-button size="small" type="danger" class="button" @click="deleteStudent(scope.row)">删除学生</el-button>
           </template>
         </el-table-column>
@@ -303,10 +307,10 @@ const yearOptions = [
 ]
 const semesterOptions = [
   {
-    value: 1,
+    value: '春季学期',
     label: '春季学期',
   }, {
-    value: 2,
+    value: '秋季学期',
     label: '秋季学期',
   },
 ]
@@ -340,27 +344,38 @@ const studentSectionOptions = [
 let tableData = reactive([
   {
     name: 'web',
+    description: 'web课设',
 
 
   },
-
 ])
 let studentData = reactive([
   {
-    studentNumber:'123',
-
-
+    name:'xiaoming',
+    studentNumber:'123456',
   },
-
+  {
+    name:'xiaoming',
+    studentNumber:'123456',
+  },
+  {
+    name:'xiaoming',
+    studentNumber:'123456',
+  },
+  {
+    name:'xiaoming',
+    studentNumber:'123456',
+  },
 ])
 /* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false); //控制改增弹出框
 let studentDialogVisible = ref(false); //控制改增弹出框
 let currentPage = ref(1);
-let currentStudentPage = ref(1);
+// let currentStudentPage = ref(1);
+// let studentPageSize = ref(20);
 let pageSize = ref(7);
-let studentPageSize = ref(20);
+let input=ref();
 let formData = ref();//改增校验绑定的空form
 let pageCount = ref();
 let centerDialogVisibleCheck = ref(false);//查的弹出框
@@ -451,6 +466,28 @@ const loadCourseTable = async () => {
 }
 loadCourseTable() //进入默认执行
 
+const loadStudentTable = async (row) => {
+  showLoading();
+  await service.post('/api/course/findCourseList', { token: localStorage.getItem("token"),courseId:row.courseId}).then(res => {
+    if (res.data.success) {
+      hideLoading();
+      let data = res.data;
+      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
+      // pageCount.value = data.totalPage;
+      studentData = arr
+      localStorage.setItem('token', data.token)
+
+    } else {
+      hideLoading();
+      messageWarning(res.data.message)
+    }
+  })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
+}
 const add = () => {
   centerDialogVisible.value = true;
   typeOperation.value = 'add';
@@ -468,17 +505,25 @@ const add = () => {
   editForm.semester = '';
   editForm.credit = '';
 }
+// const addStudent = () => {
+//   typeOperation.value = 'addStudent';
+//   studentForm.studentNumber='';
+//   studentForm.name='';
+//
+// }
 
 
 
-const handleCheck = (row) => {   //查看单个的数据 //一条一条赋值吧，一起赋值出bug了
+const checkStudent = (row) => {   //查看单个的数据 //一条一条赋值吧，一起赋值出bug了
   studentDialogVisible.value = true;
-
-  typeOperation.value = 'check'; //查看完就完事儿
+  studentForm.name=row.name;
+  studentForm.id=row.id;
+  typeOperation.value = 'checkStudent'; //查看完就完事儿
 }
 
 
 const handleEdit = (row) => {  //改
+  console.log(row)
   centerDialogVisible.value = true;
   editForm.name = row.name;
   editForm.weekStart = row.weekStart;
@@ -495,8 +540,8 @@ const handleEdit = (row) => {  //改
   editForm.credit = row.credit;
   editForm.courseId = row.courseId;
   // editForm = Object.assign({}, row);//先弹对话框，然后提交，提交之后再传参数吧
-
   typeOperation.value = 'edit';
+  console.log(editForm)
 }
 
 const handleDelete = (row) => {  //删  //异步可能有问题
@@ -528,7 +573,74 @@ const handleDelete = (row) => {  //删  //异步可能有问题
         console.log(error)
       })
 }
-
+const deleteStudent = (row) => {  //删  //异步可能有问题
+  ElMessageBox.confirm(
+      '确认删除该学生吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        service.post('/api/course/removeStudent', {token: localStorage.getItem("token"), courseId: row.courseId,studentNumber:row.studentNumber}).then(res => {
+          if (res.data.success) {
+            hideLoading()
+            messageSuccess('删除成功!')
+            loadStudentTable(row) //重新加载现在表单中的数据
+            localStorage.setItem("token", res.data.token)
+          } else {
+            hideLoading();
+            messageWarning(res.data.message)
+          }
+        })
+      })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
+}
+const addStudent = async (row) => {
+  await formData.value.validate(((valid) => {
+    if (valid) {
+      if (typeOperation.value === 'addStudent') {
+        showLoading()
+        service.post('/api/course/addStudent',
+            {
+              token: localStorage.getItem("token"),
+              studentNumber:input.value,
+              courseId:row.courseId,
+            })
+            .then(res => {
+                  if (res.data.success) {
+                    hideLoading()
+                    messageSuccess("添加成功！")
+                    typeOperation.value = '';
+                    loadStudentTable(row);
+                    localStorage.setItem("token", res.data.token)
+                  } else {
+                    hideLoading()
+                    messageError(res.data.message)
+                  }
+                }
+            )
+            .catch(function (error) {
+              hideLoading();
+              messageError("服务器开小差了呢");
+              console.log(error)
+            })
+      } else {
+        messageError('出错了！')
+      }
+    } else {
+      messageWarning("请填写完整!")
+    }
+  }))
+  typeOperation.value = '';
+  formData.value = null;
+};
 const sumbitEditRow = async () => {
   await formData.value.validate(((valid) => {
     if (valid) {
@@ -674,7 +786,9 @@ const handleCurrentChange = (currentPage) => {
   font-weight: 500;
   line-height: 1vh;
   color: #0273f1;
-}
+}.studentNumberInput{
+  width: 40%;
+ }
 
 
 .content {

@@ -26,7 +26,7 @@ public class PostResponseTarget {
 
     private Long userId;
     //发帖时间
-    private Date time;
+    private String time;
 
     private Integer likeNum;
 

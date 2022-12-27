@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post,Integer>  {
 
     @Query("from Post p where p.id=?1")
-    Optional<Post> findById(long id);
+    Optional<Post> findById(String id);
 
 }

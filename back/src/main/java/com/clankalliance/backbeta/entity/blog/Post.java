@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Max;
 import java.util.Date;
 import java.util.List;
 //帖子
@@ -32,7 +33,7 @@ public class Post {
 
     private Long userId;
     //发帖时间
-    private Date time;
+    private String time;
     //封面图
     private String topImageUrl;
     //评论
