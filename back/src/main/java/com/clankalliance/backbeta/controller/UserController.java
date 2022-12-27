@@ -104,4 +104,9 @@ public class UserController {
         return excelService.handleBatchRegister(file,token);
     }
 
+    @PostMapping("/changePassword")
+    public CommonResponse handleChangePassword(@RequestBody PasswordChangeRequest request){
+        return userService.handleChangePassword(request.getToken(),request.getPassword());
+    }
+
 }

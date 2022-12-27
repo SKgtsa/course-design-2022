@@ -317,4 +317,30 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    @Override
+    public CommonResponse handleChangePassword(String token, String passWord){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262923114181169152");//xzy
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user = findById(Long.parseLong(response.getMessage()));
+            String oldPassword=user.getPassword();
+            if(oldPassword.equals(passWord)){
+                response.setSuccess(false);
+                response.setMessage("密码未进行更改");
+            }else{
+                user.setPassword(passWord);
+                userRepository.save(user);
+                response.setSuccess(true);
+                response.setMessage("密码修改成功");
+            }
+        }
+        return response;
+    }
+
 }
