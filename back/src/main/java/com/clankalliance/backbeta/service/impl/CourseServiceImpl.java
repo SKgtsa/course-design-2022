@@ -416,28 +416,24 @@ public class CourseServiceImpl implements CourseService {
         }
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Student || user instanceof Manager){
+            if(user instanceof Student){
                 Set<Course> courseSetOp = ((Student) user).getCourseSet();
-                if(!courseSetOp.isEmpty()){
-                    response.setSuccess(true);
-                    response.setMessage("该学生所选课程如下");
-                    response.setContent(courseSetOp);
-                }else{
-                    response.setSuccess(false);
-                    response.setMessage("该学生未选择任何课程");
-                }
+                response.setSuccess(true);
+                response.setMessage("查询成功");
+                response.setContent(courseSetOp);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("权限错误");
             }
         }
         return response;
     }
 
-    //***************存在问题：分页*********************************************
 
     /**
      * 选课时用来返回所有课程
      * 验证token,若filterOpen为true则需过滤时间冲突的及已选的课
      * 若filterOpen为false则只需过滤已选的课
-     * 该方法分页问题未解决，暂不实现
      * @param token
      * @param filterOpen
      * @return
