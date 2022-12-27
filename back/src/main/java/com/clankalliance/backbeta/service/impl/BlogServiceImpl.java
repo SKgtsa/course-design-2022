@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.service.impl;
 import com.clankalliance.backbeta.entity.blog.Comment;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.PostRepository;
@@ -53,12 +54,31 @@ public class BlogServiceImpl implements BlogService {
             return response;
         User user = userService.findById(Long.parseLong(response.getMessage()));
         Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), new Date(), generalUploadService.upload(topImage), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
-        try{
-            postRepository.save(post);
-        }catch (Exception e){
-            response.setMessage("保存失败");
+        if(! (user instanceof Manager)){
+            try{
+                postRepository.save(post);
+            }catch (Exception e){
+                response.setMessage("保存失败");
+                response.setSuccess(false);
+                return response;
+            }
+        }else{
             response.setSuccess(false);
+            response.setMessage("权限错误");
             return response;
+        }
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            List<Post> postList = teacher.getPostList();
+            postList.add(post);
+            teacher.setPostList(postList);
+            teacherRepository.save(teacher);
+        }else if(user instanceof Student){
+            Student student = (Student) user;
+            List<Post> postList = student.getPostList();
+            postList.add(post);
+            student.setPostList(postList);
+            studentRepository.save(student);
         }
         response.setMessage("保存成功");
         return response;
@@ -81,7 +101,7 @@ public class BlogServiceImpl implements BlogService {
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
-        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() - 1 : startIndex + length);
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
@@ -140,7 +160,7 @@ public class BlogServiceImpl implements BlogService {
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
-        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() - 1 : startIndex + length);
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
@@ -150,7 +170,7 @@ public class BlogServiceImpl implements BlogService {
     }
     //查看详细文章 前端传来token和文章id 获取全文
     @Override
-    public CommonResponse handleDetailPage(String token,int blogId){
+    public CommonResponse handleDetailPage(String token,String blogId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -168,9 +188,9 @@ public class BlogServiceImpl implements BlogService {
             return response;
         }
     }
-    //点赞
+    //点赞 若已点赞就取消
     @Override
-    public CommonResponse handleLike(String token, int blogId){
+    public CommonResponse handleLike(String token, String blogId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -183,12 +203,22 @@ public class BlogServiceImpl implements BlogService {
         }else{
             Post post = pop.get();
             if(user instanceof Student){
+                Student student = (Student) user;
                 List<Student> studentList = post.getLikeS();
-                studentList.add((Student) user);
+                if(studentList.contains(student)){
+                    studentList.remove(student);
+                }else{
+                    studentList.add((Student) user);
+                }
                 post.setLikeS(studentList);
             }else if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
                 List<Teacher> teacherList = post.getLikeT();
-                teacherList.add((Teacher) user);
+                if(teacherList.contains(teacher)){
+                    teacherList.remove(teacher);
+                }else{
+                    teacherList.add((Teacher) user);
+                }
                 post.setLikeT(teacherList);
             }else{
                 response.setMessage("权限错误");
@@ -202,7 +232,7 @@ public class BlogServiceImpl implements BlogService {
     }
     //评论
     @Override
-    public CommonResponse handleComment(String token, int blogId, String content){
+    public CommonResponse handleComment(String token, String blogId, String content){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;

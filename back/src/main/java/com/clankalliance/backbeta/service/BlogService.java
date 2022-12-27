@@ -13,11 +13,11 @@ public interface BlogService {
     //获取关注着的帖子 按时间顺序分页
     CommonResponse handleLikePost(String token, int length, int startIndex);
     //查看详细文章 前端传来token和文章id 获取全文
-    CommonResponse handleDetailPage(String token,int blogId);
+    CommonResponse handleDetailPage(String token,String blogId);
     //点赞
-    CommonResponse handleLike(String token, int blogId);
+    CommonResponse handleLike(String token, String blogId);
     //评论
-    CommonResponse handleComment(String token, int blogId, String content);
+    CommonResponse handleComment(String token, String blogId, String content);
     //关注
     CommonResponse handleSubscribe(String token, Long userId);
 }

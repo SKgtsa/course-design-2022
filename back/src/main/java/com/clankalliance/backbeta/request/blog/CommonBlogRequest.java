@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class CommonBlogRequest {
 
     private String token;
-    private int blogId;
+    private String blogId;
     private String content;
 }
