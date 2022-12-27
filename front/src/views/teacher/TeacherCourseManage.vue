@@ -15,9 +15,9 @@
       <el-table :data="tableData.slice((currentPage - 1) * pageSize, currentPage * pageSize)" style="width: 80%" border
                 stripe size="large" class="courseTable">
         <!-- 显示斑马纹和边框 -->
-        <el-table-column label="序号" type="index" width="80" />
+        <el-table-column label="序号" type="index" width="80"/>
         <!-- <el-table-column label="姓名" prop="studentName" width="120"  show-overflow-tooltip  /> -->
-        <el-table-column label="课程" prop="name" width="350" show-overflow-tooltip />
+        <el-table-column label="课程" prop="name" width="350" show-overflow-tooltip/>
 
         <el-table-column>
           <template #header>
@@ -65,9 +65,9 @@
         </el-form-item>
 
         <el-form-item label="上课时间" prop="classTime">
-<!--          <el-input v-if="typeOperation === 'edit'" v-model="editForm.">{{ editForm. }}</el-input>-->
-<!--          <el-input v-if="typeOperation === 'add'" v-model="editForm."></el-input>-->
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.classTime.weekDay"  placeholder="Select">
+          <!--          <el-input v-if="typeOperation === 'edit'" v-model="editForm.">{{ editForm. }}</el-input>-->
+          <!--          <el-input v-if="typeOperation === 'add'" v-model="editForm."></el-input>-->
+          <el-select v-if="typeOperation === 'edit'" v-model="editForm.classTime.weekDay" placeholder="Select">
             <el-option
                 v-for="item in dayOptions"
                 :key="item.value"
@@ -76,15 +76,15 @@
             />
           </el-select>
 
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.classTime.section"  placeholder="Select">
-          <el-option
-              v-for="item in sectionOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-          />
+          <el-select v-if="typeOperation === 'edit'" v-model="editForm.classTime.section" placeholder="Select">
+            <el-option
+                v-for="item in sectionOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+            />
           </el-select>
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.classTime.weekDay"  placeholder="Select">
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.classTime.weekDay" placeholder="Select">
             <el-option
                 v-for="item in dayOptions"
                 :key="item.value"
@@ -92,7 +92,7 @@
                 :value="item.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.classTime.section"  placeholder="Select">
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.classTime.section" placeholder="Select">
             <el-option
                 v-for="item in sectionOptions"
                 :key="item.value"
@@ -104,7 +104,7 @@
 
         </el-form-item>
         <el-form-item label="学年" prop="year">
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.year"  placeholder="Select">
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="Select">
             <el-option
                 v-for="item in yearOptions"
                 :key="item.value"
@@ -112,7 +112,7 @@
                 :value="item.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.semester"  placeholder="Select">
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="Select">
             <el-option
                 v-for="item in semesterOptions"
                 :key="item.value"
@@ -120,7 +120,7 @@
                 :value="item.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.year"  placeholder="Select">
+          <el-select v-if="typeOperation === 'edit'" v-model="editForm.year" placeholder="Select">
             <el-option
                 v-for="item in yearOptions"
                 :key="item.value"
@@ -128,7 +128,7 @@
                 :value="item.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester"  placeholder="Select">
+          <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="Select">
             <el-option
                 v-for="item in semesterOptions"
                 :key="item.value"
@@ -137,7 +137,6 @@
             />
           </el-select>
         </el-form-item>
-
 
 
         <el-form-item label="授课地点" prop="location">
@@ -146,11 +145,12 @@
         </el-form-item>
 
         <el-form-item label="课容量" prop="capacity">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.capacity">{{ editForm.capacity}}</el-input>
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.capacity">{{ editForm.capacity }}</el-input>
           <el-input v-if="typeOperation === 'add'" v-model="editForm.capacity"></el-input>
         </el-form-item>
         <el-form-item label="授课班级" prop="studentClass">
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentClass"  placeholder="Select" multiple="true">
+          <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentClass" placeholder="Select"
+                     multiple="true">
             <el-option
                 v-for="item in classOptions"
                 :key="item.value"
@@ -158,7 +158,8 @@
                 :value="item.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.studentClass"  placeholder="Select" multiple="true">
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.studentClass" placeholder="Select"
+                     multiple="true">
             <el-option
                 v-for="item in classOptions"
                 :key="item.value"
@@ -169,7 +170,8 @@
         </el-form-item>
 
         <el-form-item label="授课年级" prop="studentSection">
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentSection"  placeholder="Select" multiple="true">
+          <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentSection" placeholder="Select"
+                     multiple="true">
             <el-option
                 v-for="item in studentSectionOptions"
                 :key="item.value"
@@ -177,7 +179,8 @@
                 :value="item.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.studentClass"  placeholder="Select" multiple="true">
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.studentClass" placeholder="Select"
+                     multiple="true">
             <el-option
                 v-for="item in studentSectionOptions"
                 :key="item.value"
@@ -198,20 +201,35 @@
         <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
       </div>
     </el-dialog>
+    <el-dialog v-model="studentDialogVisible" width="70%">
+      <div class="studentTitle">
+        选课学生
+        <el-button class="addButton" @click="addStudent">添加学生</el-button>
+      </div>
+      <el-table :data="studentData.slice((currentStudentPage - 1) * studentPageSize, currentStudentPage * studentPageSize)" style="width: 80%" border
+                stripe size="large" class="courseTable">
+        <el-table-column label="姓名" prop="name" width="350" show-overflow-tooltip/>
+        <el-table-column label="学号" type="index" width="80"/>
+        <el-table-column>
+          <template #header>
+            <el-button size="small" type="danger" class="button" @click="deleteStudent(scope.row)">删除学生</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
   </div>
 </template>
 <script lang="ts" setup>
-import { computed, ref, reactive } from 'vue'
-import { Search, User } from '@element-plus/icons-vue'
+import {computed, ref, reactive} from 'vue'
+import {Search, User} from '@element-plus/icons-vue'
 import service from '../../request/index'
-import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
-import { ElMessage, ElMessageBox } from 'element-plus'
-interface User {
-  name: string,
-  practiceDescription: string,
-  practiceId: string,
-  studentName: string
-}
+import {messageSuccess, messageWarning, messageError, messageInfo} from '../../utils/message'
+import {ElMessage, ElMessageBox} from 'element-plus'
+import {hideLoading, showLoading} from "@/utils/loading";
+
+
+
 const dayOptions = [
   {
     value: 1,
@@ -242,7 +260,7 @@ const dayOptions = [
     label: '星期日',
   },
 ]
-const sectionOptions=[
+const sectionOptions = [
   {
     value: 1,
     label: '1-2节',
@@ -265,74 +283,87 @@ const sectionOptions=[
   },
 
 ]
-const yearOptions=[
+const yearOptions = [
   {
     value: 2019,
     label: '2019',
-  },{
+  }, {
     value: 2020,
     label: '2020',
-  },{
+  }, {
     value: 2021,
     label: '2021',
-  },{
+  }, {
     value: 2022,
     label: '2022',
-  },{
+  }, {
     value: 2023,
     label: '2023',
   },
 ]
-const semesterOptions=[
+const semesterOptions = [
   {
     value: 1,
     label: '春季学期',
-  },{
+  }, {
     value: 2,
     label: '秋季学期',
   },
 ]
-const classOptions=[
+const classOptions = [
   {
     value: 1,
     label: '1班',
-  },{
+  }, {
     value: 2,
     label: '2班',
-  },{
+  }, {
     value: 3,
     label: '3班',
   }
 ]
-const studentSectionOptions=[
+const studentSectionOptions = [
   {
     value: 1,
     label: '大一',
-  },{
+  }, {
     value: 2,
     label: '大二',
-  },{
+  }, {
     value: 3,
     label: '大三',
-  },{
+  }, {
     value: 4,
     label: '大四',
   }
 ]
 let tableData = reactive([
   {
-    name:'web',
+    name: 'web',
+
+
+  },
+
+])
+let studentData = reactive([
+  {
+    studentNumber:'123',
+
 
   },
 
 ])
 /* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
-let typeOperation = ref(''); //edit,checkStudent,add 编辑，查看，添加
-let centerDialogVisible = ref(false);
-let isShow = ref(false);
+let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
+let centerDialogVisible = ref(false); //控制改增弹出框
+let studentDialogVisible = ref(false); //控制改增弹出框
 let currentPage = ref(1);
+let currentStudentPage = ref(1);
 let pageSize = ref(7);
-const formData = ref();
+let studentPageSize = ref(20);
+let formData = ref();//改增校验绑定的空form
+let pageCount = ref();
+let centerDialogVisibleCheck = ref(false);//查的弹出框
 const rulesEditForm = reactive({   /* 定义校验规则 */
   // name: [{ required: true, message: '请输入课程名！', trigger: 'blur' }],
   // description: [{ required: true, message: '请输入课程简介！', trigger: 'blur' }],
@@ -351,29 +382,36 @@ let editForm = reactive({
   token: '',
   name: '',
   weekStart: '',
-  weekEnd:'',
-  classTime:{
-    weekDay:'',
-    section:'',
+  weekEnd: '',
+  classTime: {
+    weekDay: '',
+    section: '',
   },
-  capacity:'',
-  studentClass:'',
-  studentSection:'',
-  location:'',
-  year:'',
-  description:'',
-  semester:'',
-  credit:'',
-  courseId: null,
+  capacity: '',
+  studentClass: '',
+  studentSection: '',
+  location: '',
+  year: '',
+  description: '',
+  semester: '',
+  credit: '',
+  courseId: '',
 });
-const search = ref('')
-const filterTableData = computed(() =>
-    tableData.filter(
-        (data) =>
-            !search.value ||
-            data.name.toLowerCase().includes(search.value.toLowerCase())
-    )
-)
+let studentForm=reactive({
+  token:'',
+  studentNumber:'',
+  courseId: '',
+  name:'',
+  id:'',
+});
+// const search = ref('')
+// const filterTableData = computed(() =>
+//     tableData.filter(
+//         (data) =>
+//             !search.value ||
+//             data.name.toLowerCase().includes(search.value.toLowerCase())
+//     )
+// )
 /* loginFormPhone.value.validate((valid)=>{
     if(valid){
       service.post('/api/user/loginCode',{code:login_data_phone.captcha}).then(res => {
@@ -389,62 +427,75 @@ const filterTableData = computed(() =>
       }
   })
  */
-const loadPracticeTable = async () => {   //查找所有的数据,这个接口是不是有点问题,学生端还用传userNumber吗
-  /* formData.value.valid */
-  formData.value.validate((valid) => {
-    if (valid) {
-      service.post('/api/course/findAllCourse', { token: localStorage.getItem("token") }).then(res => {
-        if (res.data.success) {
-          const data = res.data;
-          let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
-          tableData = arr
-          localStorage.setItem('token', data.token)
-        } else {
-          messageWarning(res.data.message)
-        }
-      })
-          .catch(function (error) {
-            console.log(error)
-          })
+const loadCourseTable = async () => {
+  showLoading();
+  await service.post('/api/course/find', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value}).then(res => {
+    if (res.data.success) {
+      hideLoading();
+      let data = res.data;
+      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
+      pageCount.value = data.totalPage;
+      tableData = arr
+      localStorage.setItem('token', data.token)
+
     } else {
-      messageError("请完善全部信息")
+      hideLoading();
+      messageWarning(res.data.message)
     }
   })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
 }
-loadPracticeTable() //进入默认执行
+loadCourseTable() //进入默认执行
 
 const add = () => {
   centerDialogVisible.value = true;
   typeOperation.value = 'add';
+  editForm.name = '';
+  editForm.weekStart = '';
+  editForm.weekEnd = '';
+  editForm.classTime.weekDay = '';
+  editForm.classTime.section = '';
+  editForm.capacity = '';
+  editForm.studentClass = '';
+  editForm.studentSection = '';
+  editForm.location = '';
+  editForm.year = '';
+  editForm.description = '';
+  editForm.semester = '';
+  editForm.credit = '';
 }
 
-// const handleCheck = (row) => {   //查看单个的数据 //一条一条赋值吧，一起赋值出bug了
-//   centerDialogVisible.value = true;
-//   editForm.practiceDescription = row.practiceDescription;
-//   editForm.name = row.name;
-//   editForm.practiceId = row.practiceId;
-//   editForm.studentName = row.studentName;
-//   console.log(editForm)
-//   typeOperation.value = 'check'; //查看完就完事儿
-// }
+
+
+const handleCheck = (row) => {   //查看单个的数据 //一条一条赋值吧，一起赋值出bug了
+  studentDialogVisible.value = true;
+
+  typeOperation.value = 'check'; //查看完就完事儿
+}
+
 
 const handleEdit = (row) => {  //改
   centerDialogVisible.value = true;
-  editForm.name=row.name;
-  editForm.weekStart=row.weekStart;
+  editForm.name = row.name;
+  editForm.weekStart = row.weekStart;
   editForm.weekEnd = row.weekEnd;
-  editForm.classTime.weekDay=row.classTime.weekDay;
-  editForm.classTime.section=row.classTime.section;
-  editForm.capacity=row.capacity;
-  editForm.studentClass=row.studentClass;
-  editForm.studentSection=row.studentSection;
-  editForm.location=row.location;
-  editForm.year=row.year;
-  editForm.description=row.description;
-  editForm.semester=row.semester;
-  editForm.credit=row.credit;
+  editForm.classTime.weekDay = row.classTime.weekDay;
+  editForm.classTime.section = row.classTime.section;
+  editForm.capacity = row.capacity;
+  editForm.studentClass = row.studentClass;
+  editForm.studentSection = row.studentSection;
+  editForm.location = row.location;
+  editForm.year = row.year;
+  editForm.description = row.description;
+  editForm.semester = row.semester;
+  editForm.credit = row.credit;
+  editForm.courseId = row.courseId;
   // editForm = Object.assign({}, row);//先弹对话框，然后提交，提交之后再传参数吧
-  console.log(editForm)
+
   typeOperation.value = 'edit';
 }
 
@@ -459,124 +510,146 @@ const handleDelete = (row) => {  //删  //异步可能有问题
       }
   )
       .then(() => {
-        service.post('/api/course/delete', { token: localStorage.getItem("token"), id: row.id }).then(res => {
+        service.post('/api/course/delete', {token: localStorage.getItem("token"), courseId: row.id}).then(res => {
           if (res.data.success) {
+            hideLoading()
             messageSuccess('删除成功!')
-            loadPracticeTable() //重新加载现在表单中的数据
+            loadCourseTable() //重新加载现在表单中的数据
             localStorage.setItem("token", res.data.token)
           } else {
+            hideLoading();
             messageWarning(res.data.message)
           }
         })
       })
-      .catch(() => {
-        messageInfo("取消删除")
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
       })
 }
 
-const sumbitEditRow = () => {
-  editForm.token = localStorage.getItem("token")
-  // if (typeOperation.value === 'check') {
-  //   /* handleCheck() */
-  //
-  // } else
-    if (typeOperation.value === 'edit') {
-    /* handleEdit() */
-    service.post('/api/course/save',
-        {
-          token: editForm.token,
-          name: editForm.name,
-          weekStart: editForm.weekStart,
-          weekEnd: editForm.weekEnd,
-          weekDay: editForm.classTime.weekDay,
-          section: editForm.classTime.section,
-          capacity:editForm.capacity,
-          studentClass: editForm.studentClass,
-          studentSection: editForm.studentSection,
-          location: editForm.location,
-          year: editForm.year,
-          description: editForm.description,
-          semester: editForm.semester,
-          credit: editForm.credit,
-        })
-        .then(res => {  //直接把这一行的数据给出去可以吗
-          if (res.data.success) {
-            messageSuccess("编辑成功！")
-            typeOperation.value = '';
-            loadPracticeTable()
-            localStorage.setItem("token", res.data.token)
-          } else {
-            messageError("编辑失败!")
-            console.log(res.data.message)
-          }
-        })
-    isShow.value = false;
-  } else if (typeOperation.value === 'add') {
-    service.post('/api/course/save',
-        {
-          token: editForm.token,
-          name: editForm.name,
-          weekStart: editForm.weekStart,
-          weekEnd: editForm.weekEnd,
-          weekDay: editForm.classTime.weekDay,
-          section: editForm.classTime.section,
-          capacity:editForm.capacity,
-          studentClass: editForm.studentClass,
-          studentSection: editForm.studentSection,
-          location: editForm.location,
-          year: editForm.year,
-          description: editForm.description,
-          semester: editForm.semester,
-          credit: editForm.credit,
-        })
-        .then(res => {
+const sumbitEditRow = async () => {
+  await formData.value.validate(((valid) => {
+    if (valid) {
+      if (typeOperation.value === 'edit') {
+        /* handleEdit() */
+        showLoading();
+        service.post('/api/course/save',
+            {
+              token: localStorage.getItem("token"),
+              name: editForm.name,
+              weekStart: editForm.weekStart,
+              weekEnd: editForm.weekEnd,
+              weekDay: editForm.classTime.weekDay,
+              section: editForm.classTime.section,
+              capacity: editForm.capacity,
+              studentClass: editForm.studentClass,
+              studentSection: editForm.studentSection,
+              location: editForm.location,
+              year: editForm.year,
+              description: editForm.description,
+              semester: editForm.semester,
+              credit: editForm.credit,
+              courseId:editForm.courseId,
+            })
+            .then(res => {  //直接把这一行的数据给出去可以吗
               if (res.data.success) {
-                messageSuccess("添加成功！")
+                hideLoading();
+                messageSuccess("编辑成功！")
                 typeOperation.value = '';
-                loadPracticeTable()
+                loadCourseTable()
                 localStorage.setItem("token", res.data.token)
+
               } else {
-                messageError("添加失败！")
-                console.log(res.data.message)
+                hideLoading();
+                messageError(res.data.message)
               }
-            }
-        )
-    isShow.value = false;
-  } else {
-    messageError('出现错误！')
-  }
-  editForm.name = '',
-      editForm.weekStart='',
-      editForm.weekEnd='',
-      editForm.classTime.weekDay='',
-      editForm.classTime.section='',
-      editForm.capacity='',
-      editForm.studentClass='',
-      editForm.studentSection='',
-      editForm.location='',
-      editForm.year='',
-      editForm.description='',
-      editForm.semester='',
-      editForm.credit='',
+            })
+            .catch(function (error) {
+              hideLoading();
+              messageError("服务器开小差了呢");
+              console.log(error)
+            })
+      } else if (typeOperation.value === 'add') {
+        showLoading()
+        service.post('/api/course/save',
+            {
+              token: localStorage.getItem("token"),
+              name: editForm.name,
+              weekStart: editForm.weekStart,
+              weekEnd: editForm.weekEnd,
+              weekDay: editForm.classTime.weekDay,
+              section: editForm.classTime.section,
+              capacity: editForm.capacity,
+              studentClass: editForm.studentClass,
+              studentSection: editForm.studentSection,
+              location: editForm.location,
+              year: editForm.year,
+              description: editForm.description,
+              semester: editForm.semester,
+              credit: editForm.credit,
+            })
+            .then(res => {
+                  if (res.data.success) {
+                    hideLoading()
+                    messageSuccess("添加成功！")
+                    typeOperation.value = '';
+                    loadCourseTable()
+                    localStorage.setItem("token", res.data.token)
+                  } else {
+                    hideLoading()
+                    messageError(res.data.message)
+                  }
+                }
+            )
+            .catch(function (error) {
+              hideLoading();
+              messageError("服务器开小差了呢");
+              console.log(error)
+            })
+      } else {
+        messageError('出错了！')
+      }
+    } else {
+      messageWarning("请填写完整!")
+    }
+  }))
+  editForm.name = '';
+  editForm.weekStart = '';
+  editForm.weekEnd = '';
+  editForm.classTime.weekDay = '';
+  editForm.classTime.section = '';
+  editForm.capacity = '';
+  editForm.studentClass = '';
+  editForm.studentSection = '';
+  editForm.location = '';
+  editForm.year = '';
+  editForm.description = '';
+  editForm.semester = '';
+  editForm.credit = '';
+  editForm.courseId='';
   centerDialogVisible.value = false;
+  centerDialogVisibleCheck.value = false;
   typeOperation.value = '';
+  formData.value = null;
 };
 
 const closeDialog = () => {
-  centerDialogVisible.value = false;
   if (typeOperation.value === 'edit') {
-    messageInfo("取消编辑")
+    centerDialogVisible.value = false;
+    messageInfo("编辑取消")
+    typeOperation.value = '';
   } else if (typeOperation.value === 'add') {
-    messageInfo("取消添加")
+    centerDialogVisible.value = false;
+    typeOperation.value = '';
+    messageInfo("添加取消")
   }
 }
 const handleCurrentChange = (currentPage) => {
   currentPage.value = currentPage;
   console.log(currentPage)
 }
-
-
-
 
 
 /* if(!row.id){
@@ -589,6 +662,15 @@ const handleCurrentChange = (currentPage) => {
   height: 60px;
   font-family: 微软雅黑;
   font-size: 6vh;
+  font-weight: 500;
+  line-height: 1vh;
+  color: #0273f1;
+}
+.studentTitle {
+  margin-top: 30px;
+  height: 60px;
+  font-family: 微软雅黑;
+  font-size: 3vh;
   font-weight: 500;
   line-height: 1vh;
   color: #0273f1;
@@ -623,8 +705,10 @@ const handleCurrentChange = (currentPage) => {
       color: #0273f1;
       font-size: 2.5vh;
     }
-    .pracitceTable{
+
+    .pracitceTable {
       background-color: aqua;
+
       .button {
         width: 60px;
         height: 30px;
@@ -632,7 +716,6 @@ const handleCurrentChange = (currentPage) => {
     }
   }
 }
-
 
 
 .practiceDialog {
