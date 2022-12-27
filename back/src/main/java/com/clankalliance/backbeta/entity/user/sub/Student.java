@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,8 +35,9 @@ public class Student extends User {
                 super();
                 courseSet = new HashSet<>();
                 scoreSet = new HashSet<>();
-                practiceSet = new HashSet<>();
-                rewardSet = new HashSet<>();
+                activity = new ArrayList<>();
+                practiceSet = new ArrayList<>();
+                rewardSet = new ArrayList<>();
         }
 
         public Student(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
@@ -58,27 +60,27 @@ public class Student extends User {
                 this.scoreSet = scoreSet;
         }
 
-        public Set<Activity> getActivity() {
+        public List<Activity> getActivity() {
                 return activity;
         }
 
-        public void setActivity(Set<Activity> activity) {
+        public void setActivity(List<Activity> activity) {
                 this.activity = activity;
         }
 
-        public Set<Practice> getPracticeSet() {
+        public List<Practice> getPracticeSet() {
                 return practiceSet;
         }
 
-        public void setPracticeSet(Set<Practice> practiceSet) {
+        public void setPracticeSet(List<Practice> practiceSet) {
                 this.practiceSet = practiceSet;
         }
 
-        public Set<Reward> getRewardSet() {
+        public List<Reward> getRewardSet() {
                 return rewardSet;
         }
 
-        public void setRewardSet(Set<Reward> rewardSet) {
+        public void setRewardSet(List<Reward> rewardSet) {
                 this.rewardSet = rewardSet;
         }
 
@@ -116,15 +118,15 @@ public class Student extends User {
 
         @JsonIgnore
         @OneToMany
-        private Set<Activity> activity;
+        private List<Activity> activity;
 
         @JsonIgnore
         @ManyToMany(cascade = CascadeType.PERSIST)
-        private Set<Practice> practiceSet;
+        private List<Practice> practiceSet;
 
         @JsonIgnore
         @ManyToMany(cascade = CascadeType.PERSIST)
-        private Set<Reward> rewardSet;
+        private List<Reward> rewardSet;
 
         //学生好友
         @JsonIgnore

@@ -32,8 +32,6 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private StudentRepository studentRepository;
 
-    @Resource
-    private TeacherRepository teacherRepository;
 
     @Resource
     private ActivityRepository activityRepository;
@@ -75,16 +73,22 @@ public class ActivityServiceImpl implements ActivityService {
                 Activity activity=new Activity(id,name,description,date,result,student);
                 activityRepository.save(activity);
                 //将activity加入进学生的活动表中
-                Set<Activity> activitySet=student.getActivity();
-                activitySet.add(activity);
-                student.setActivity(activitySet);
+                List<Activity> activityList=student.getActivity();
+                activityList.add(activity);
+                student.setActivity(activityList);
                 studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("课外活动创建成功");
             }else if(user instanceof Manager){
                 //管理员没有课外活动表，故只能修改活动
-                Activity activityOld = activityRepository.findById(id).get();
+                Optional<Activity> aop = activityRepository.findById(id);
+                if(aop.isEmpty()){
+                    response.setMessage("管理员无法创建课外活动");
+                    response.setSuccess(false);
+                    return response;
+                }
+                Activity activityOld = aop.get();
                 Student student=activityOld.getStudent();
                 Activity activity=new Activity(id,name,description,date,result,student);
                 activityRepository.save(activity);
@@ -119,11 +123,16 @@ public class ActivityServiceImpl implements ActivityService {
             if(user instanceof Student || user instanceof Manager){
                 Optional<Activity> activityOp=activityRepository.findById(id);
                 //将活动和学生解绑
+                if(activityOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
                 Activity activity=activityOp.get();
                 Student student=activity.getStudent();
-                Set<Activity> activitySet=student.getActivity();
-                activitySet.remove(activity);
-                student.setActivity(activitySet);
+                List<Activity> activityList=student.getActivity();
+                activityList.remove(activity);
+                student.setActivity(activityList);
                 activityRepository.delete(activity);
 
                 response.setSuccess(true);
@@ -156,25 +165,19 @@ public class ActivityServiceImpl implements ActivityService {
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
-                Set<Activity> activitySet=student.getActivity();
-                if(activitySet.size() <= pageSize){
-                    response.setContent(activitySet);
+                List<Activity> activityList=student.getActivity();
+                if(activityList.size() <= pageSize){
+                    response.setContent(activityList);
                     response.setSuccess(true);
                     response.setMessage("活动表返回成功");
                     response.setTotalPage(1);
-                }else if(activitySet.size() ==0){
+                }else if(activityList.size() ==0){
                     response.setSuccess(true);
                     response.setMessage("该学生没有参加课外活动");
                 }else {
-                    List<Activity> subActivityList=new ArrayList<>(pageSize);
-                    int count=1;
-                    for(Activity a : activitySet){
-                        if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
-                            subActivityList.add(a);
-                        }
-                        count++;
-                    }
-                    int size=activitySet.size();
+                    Collections.reverse(activityList);
+                    List<Activity> subActivityList= activityList.subList((pageNum - 1) * pageSize,pageNum * pageSize >= activityList.size()? activityList.size() - 1 :pageNum * pageSize );
+                    int size=activityList.size();
                     //计算总页数
                     Integer totalPage = size / pageSize;
                     if(size - totalPage*pageSize != 0){

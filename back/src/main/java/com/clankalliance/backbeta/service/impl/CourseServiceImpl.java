@@ -330,15 +330,15 @@ public class CourseServiceImpl implements CourseService {
                     //对没有id的ClassTime进行id的补充
                     t.setId(t.getSection() + (t.getWeekDay() - 1) * 5);
                 }
-                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass,studentSection,location,year,semester,credit,description,studentSet,(Teacher) user,scoreSet);
+                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass,studentSection,location,year,semester,credit,description,studentSet,teacher,scoreSet);
+                courseRepository.save(course);
+
                 //在教师的课程表中加入课程
                 Set<Course> teacherCourseSet = teacher.getCourseSet();
                 teacherCourseSet.add(course);
                 teacher.setCourseSet(teacherCourseSet);
                 //保存
-                courseRepository.save(course);
                 teacherRepository.save(teacher);
-
                 response.setSuccess(true);
                 response.setMessage("保存成功");
             }else if(user instanceof Manager){

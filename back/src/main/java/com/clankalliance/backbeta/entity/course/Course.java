@@ -24,7 +24,6 @@ public class Course {
     //为避免long传向前台出现精度丢失，通过注释将long化为String
     @Id
     @JsonSerialize(using= ToStringSerializer.class)
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
     //课程名
@@ -68,6 +67,7 @@ public class Course {
     @OneToMany
     private Set<Student> studentSet;
 
+    @JsonIgnore
     @ManyToOne
     private Teacher teacher;
 

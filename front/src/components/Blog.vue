@@ -31,8 +31,8 @@
     <div class="rightWindow">
       <div class="operationCard">
         <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <li v-for="item in postList"  :key="item" class="infinite-list-item" style="padding-top: 3vh">
-            <div class="postBox">
+          <li v-for="(item,index) in postList.arr"  :key="index" :type="Post"  class="infinite-list-item" style="padding-top: 3vh">
+            <div class="postBox" >
               <a style="font-size: 4vh">{{item.heading}}</a>
               <div class="postBoxBottom">
                 <div class="bottomLeft">
@@ -148,9 +148,7 @@ const targetURL = ref('api/blog/getMain')
 //若为true,代表已经到底
 const loadOver = ref(false);
 
-const postList : Array<Post> = reactive([
-
-]);
+const postList  = reactive({arr:[]})
 const disabled = ref(false)
 const uploadRef = ref();
 
@@ -387,8 +385,8 @@ const refresh = () => {
       console.log(res)
       if (data.success) {
         blog.value = '';
-        postList.push(data.content);
-        console.log(postList)
+        postList.arr.push(data.content);
+        console.log(postList.arr)
         startIndex.value = data.startIndex;
         loadOver.value = true;
         localStorage.setItem('token', data.token)

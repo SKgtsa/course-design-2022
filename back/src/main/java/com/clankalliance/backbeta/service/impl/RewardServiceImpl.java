@@ -1,13 +1,11 @@
 package com.clankalliance.backbeta.service.impl;
 
-import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.repository.RewardRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
-import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.RewardService;
 import com.clankalliance.backbeta.service.UserService;
@@ -78,9 +76,9 @@ public class RewardServiceImpl implements RewardService {
                 rewardRepository.save(reward);
 
                 //将reward加入进学生的活动表中
-                Set<Reward> rewardSet=student.getRewardSet();
-                rewardSet.add(reward);
-                student.setRewardSet(rewardSet);
+                List<Reward> rewardList=student.getRewardSet();
+                rewardList.add(reward);
+                student.setRewardSet(rewardList);
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -127,9 +125,9 @@ public class RewardServiceImpl implements RewardService {
                 //遍历此成果奖励的学生表，更新学生表中学生的成果奖励表
                 Set<Student> studentSet=reward.getStudentSet();
                 for(Student s : studentSet){
-                    Set<Reward> rewardSet=s.getRewardSet();
-                    rewardSet.remove(reward);
-                    s.setRewardSet(rewardSet);
+                    List<Reward> rewardList=s.getRewardSet();
+                    rewardList.remove(reward);
+                    s.setRewardSet(rewardList);
                 }
                 rewardRepository.delete(reward);
 
@@ -138,12 +136,17 @@ public class RewardServiceImpl implements RewardService {
             }else if(user instanceof Student){
                 //Student只能将自己从成果奖励的学生表中移出，而不能删除此成果奖励(除非成果奖励为个人奖项)
                 Optional<Reward> rewardOp=rewardRepository.findById(id);
+                if(rewardOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
                 Reward reward=rewardOp.get();
                 Student student=(Student) user;
                 //在学生的成果表中删除成果
-                Set<Reward> rewardSet=student.getRewardSet();
-                rewardSet.remove(reward);
-                student.setRewardSet(rewardSet);
+                List<Reward> rewardList=student.getRewardSet();
+                rewardList.remove(reward);
+                student.setRewardSet(rewardList);
                 //在成果的学生表中删除学生
                 Set<Student> studentSet=reward.getStudentSet();
                 studentSet.remove(reward);
@@ -183,25 +186,19 @@ public class RewardServiceImpl implements RewardService {
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
-                Set<Reward> rewardSet=student.getRewardSet();
-                if(rewardSet.size() <= pageSize){
-                    response.setContent(rewardSet);
+                List<Reward> rewardList=student.getRewardSet();
+                if(rewardList.size() <= pageSize){
+                    response.setContent(rewardList);
                     response.setSuccess(true);
                     response.setMessage("成果表返回成功");
                     response.setTotalPage(1);
-                }else if(rewardSet.size() ==0){
+                }else if(rewardList.size() ==0){
                     response.setSuccess(true);
                     response.setMessage("该学生没有参加成果奖励");
                 }else {
-                    List<Reward> subRewardList=new ArrayList<>(pageSize);
-                    int count=1;
-                    for(Reward r : rewardSet){
-                        if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
-                            subRewardList.add(r);
-                        }
-                        count++;
-                    }
-                    int size=rewardSet.size();
+                    Collections.reverse(rewardList);
+                    List<Reward> subRewardList= rewardList.subList((pageNum - 1) * pageSize,pageNum * pageSize >= rewardList.size()? rewardList.size() - 1 :pageNum * pageSize );
+                    int size=rewardList.size();
                     //计算总页数
                     Integer totalPage = size / pageSize;
                     if(size - totalPage*pageSize != 0){

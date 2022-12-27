@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Practice;
+import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
@@ -78,9 +79,9 @@ public class PracticeServiceImpl implements PracticeService {
                 practiceRepository.save(practice);
 
                 //将practice加入进学生的活动表中
-                Set<Practice> practiceSet=student.getPracticeSet();
-                practiceSet.add(practice);
-                student.setPracticeSet(practiceSet);
+                List<Practice> practiceList=student.getPracticeSet();
+                practiceList.add(practice);
+                student.setPracticeSet(practiceList);
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -128,9 +129,9 @@ public class PracticeServiceImpl implements PracticeService {
                 //遍历此社会实践的学生表，更新学生表中学生的社会实践表
                 Set<Student> studentSet=practice.getStudentSet();
                 for(Student s : studentSet){
-                    Set<Practice> practiceSet=s.getPracticeSet();
-                    practiceSet.remove(practice);
-                    s.setPracticeSet(practiceSet);
+                    List<Practice> practiceList=s.getPracticeSet();
+                    practiceList.remove(practice);
+                    s.setPracticeSet(practiceList);
                 }
                 practiceRepository.delete(practice);
 
@@ -139,12 +140,17 @@ public class PracticeServiceImpl implements PracticeService {
             }else if(user instanceof Student){
                 //Student只能将自己从社会实践的学生表中移出，而不能删除此社会实践(除非社会实践为个人立项)
                 Optional<Practice> practiceOp=practiceRepository.findById(id);
+                if(practiceOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
                 Practice practice=practiceOp.get();
                 Student student=(Student) user;
                 //在学生的实践表中删除实践
-                Set<Practice> practiceSet=student.getPracticeSet();
-                practiceSet.remove(practice);
-                student.setPracticeSet(practiceSet);
+                List<Practice> practiceList=student.getPracticeSet();
+                practiceList.remove(practice);
+                student.setPracticeSet(practiceList);
                 //在实践的学生表中删除学生
                 Set<Student> studentSet=practice.getStudentSet();
                 studentSet.remove(practice);
@@ -184,25 +190,19 @@ public class PracticeServiceImpl implements PracticeService {
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
-                Set<Practice> practiceSet=student.getPracticeSet();
-                if(practiceSet.size() <= pageSize){
-                    response.setContent(practiceSet);
+                List<Practice> practiceList=student.getPracticeSet();
+                if(practiceList.size() <= pageSize){
+                    response.setContent(practiceList);
                     response.setSuccess(true);
                     response.setMessage("活动表返回成功");
                     response.setTotalPage(1);
-                }else if(practiceSet.size() ==0){
+                }else if(practiceList.size() ==0){
                     response.setSuccess(true);
                     response.setMessage("没有参加社会实践");
                 }else {
-                    List<Practice> subPracticeList=new ArrayList<>(pageSize);
-                    int count=1;
-                    for(Practice p : practiceSet){
-                        if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
-                            subPracticeList.add(p);
-                        }
-                        count++;
-                    }
-                    int size=practiceSet.size();
+                    Collections.reverse(practiceList);
+                    List<Practice> subPracticeList= practiceList.subList((pageNum - 1) * pageSize,pageNum * pageSize >= practiceList.size()? practiceList.size() - 1 :pageNum * pageSize );
+                    int size=practiceList.size();
                     //计算总页数
                     Integer totalPage = size / pageSize;
                     if(size - totalPage*pageSize != 0){
