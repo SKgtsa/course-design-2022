@@ -31,7 +31,7 @@
     <div class="rightWindow">
       <div class="operationCard">
         <ul v-infinite-scroll="refresh" class="infinite-list" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <li v-for="item in postList" :ref="postListRef" :key="item" class="infinite-list-item" style="padding-top: 3vh">
+          <li v-for="item in postList"  :key="item" class="infinite-list-item" style="padding-top: 3vh">
             <div class="postBox">
               <a style="font-size: 4vh">{{item.heading}}</a>
               <div class="postBoxBottom">
@@ -148,11 +148,23 @@ const targetURL = ref('api/blog/getMain')
 //若为true,代表已经到底
 const loadOver = ref(false);
 
-const postList = reactive([
+const postList : Array<Post> = reactive([
 
 ]);
 const disabled = ref(false)
 const uploadRef = ref();
+
+interface Post{
+  id: string,
+  heading: string,
+  nickName: string,
+  time: string,
+  topImageURL: string,
+  avatarURL: string,
+  userId: number,
+  likeNum: number,
+  like: boolean,
+}
 
 const postListRef = (el) => {
   // el为每一个ref
@@ -160,20 +172,21 @@ const postListRef = (el) => {
 
 }
 
-const likeThis = (key: number) => {
-  if(postList[key].like){
+const likeThis = (target: Post) => {
+  if(target.like){
     ElMessage({
       message: "您已点过赞",
       type: 'error'
     })
   }else{
     showLoading();
-    service.post('api/blog/like',{token: localStorage.getItem("token"), blogId: postList[key].id}).then(res => {
+    service.post('api/blog/like',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
       const data = res.data;
       console.log('点赞成功收到回调')
       console.log(res)
       if (data.success) {
-        postList[key].like = true;
+        //这里有问题
+        target.like = true;
         localStorage.setItem('token', data.token)
       } else {
         ElMessage({
