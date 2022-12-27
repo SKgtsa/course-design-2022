@@ -23,4 +23,6 @@ public interface CourseService {
     CommonResponse handleFindAllCourse(String token,boolean filterOpen,Integer pageNum,Integer pageSize);
 
     CommonResponse handleFindCourseStudent(String token, long courseId, Integer pageNum, Integer pageSize);
+
+    CommonResponse handleTeacherFindCourse(String token, Integer year, String semester);
 }

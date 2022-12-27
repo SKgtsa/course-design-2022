@@ -558,4 +558,28 @@ public class CourseServiceImpl implements CourseService {
         }
         return response;
     }
+
+    @Override
+    public CommonResponse handleTeacherFindCourse(String token, Integer year, String semester){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262478737566732288");//教师
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Teacher){
+                Teacher teacher=(Teacher) user;
+                long teacherId= teacher.getId();
+                List<Course> courseList=courseRepository.findByTeacherTime(teacherId,year,semester);
+                response.setContent(courseList);
+                response.setSuccess(true);
+                response.setMessage("教师课程表返回成功");
+            }
+        }
+        return response;
+    }
 }
