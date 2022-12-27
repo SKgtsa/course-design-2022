@@ -19,7 +19,7 @@
           :label-width="0" label-position="left" :rules="rulesPwd" status-icon>
           <el-form-item class="loginPageFormText" label="" prop="userNumber">
             <el-input :prefix-icon="User" class="loginPage_form_input" id="username" v-model="login_data.userNumber"
-              placeholder="请输入学工号"></el-input>
+              maxlength="15" placeholder="请输入学工号"></el-input>
           </el-form-item>
           <el-form-item class="loginPageFormText" label="" prop="password">
             <el-input :prefix-icon="Lock" class="loginPage_form_input" type="password" id="pwd"
@@ -39,12 +39,12 @@
           :label-width="0" label-position="left" :rules="rulesCaptcha" status-icon>
           <el-form-item class="loginPageFormText" label="" prop="userPhone">
             <el-input :prefix-icon="User" class="loginPage_form_input" id="userPhone"
-              v-model="login_data_phone.userPhone" placeholder="请输入手机号"></el-input>
+              v-model="login_data_phone.userPhone" placeholder="请输入手机号" maxlength="11"></el-input>
           </el-form-item>
           <el-form-item class="loginPageFormText" label="" prop="captcha">
             <el-row>
               <el-col :span="16">
-                <el-input :prefix-icon="Message" class="loginPage_form_input captchaInput" id="captcha"
+                <el-input :prefix-icon="Message" class="loginPage_form_input captchaInput" id="captcha" maxlength="5"
                   v-model="login_data_phone.captcha" placeholder="请输入验证码" />
               </el-col>
               <el-col :span="8">
@@ -138,18 +138,18 @@ const submitPwd = async (formEl: FormInstance | undefined) => {
         const data = res.data;
         if (data.success) {
           hideLoading();
-          console.log(login_data.password,login_data.userNumber)
-          localStorage.setItem("token",data.token)
-          let url =  "http://courseback.clankalliance.cn" +data.user.avatarURL;
+          console.log(login_data.password, login_data.userNumber)
+          localStorage.setItem("token", data.token)
+          let url = "http://courseback.clankalliance.cn" + data.user.avatarURL;
           console.log(localStorage.getItem('token'))
           setNickName(data.user.nickName);
           setAvatarURL(url);
           /*       localStorage.setItem("userName", data.user.name) */
           messageSuccess(data.message)
           if (data.character == 0) {
-            router.push('/ScoreManage') //学生页面
+            router.push('/Main') //学生页面
           } else if (data.character == 1) {
-            router.push('/ScoreManage'); //教师界面
+            router.push('/TeacherSelfInformation'); //教师界面
           } else if (data.character == 2) {
             router.push('/ScoreManage'); //管理员界面，最后再改
           }
@@ -158,6 +158,11 @@ const submitPwd = async (formEl: FormInstance | undefined) => {
           console.log('!data.success')
           messageError(data.message)
         }
+      })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
       })
     } else {
       messageError("请填写正确的用户名和密码！")
@@ -192,6 +197,11 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
           hideLoading();
           messageError(data.message)
         }
+      })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
       })
     }
     else {

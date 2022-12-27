@@ -62,11 +62,11 @@ const years = [
 ]
 const semester = [
   {
-    value: 1,
+    value: '春季学期',
     label: '春季学期',
   },
   {
-    value: 2,
+    value: '秋季学期',
     label: '秋季学期',
   },
 ]
