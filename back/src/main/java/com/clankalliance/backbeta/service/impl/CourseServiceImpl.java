@@ -299,7 +299,7 @@ public class CourseServiceImpl implements CourseService {
      * @param description 课程描述
      * @return
      */
-    public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,String studentClass,String studentSection,String location,Integer year, String semester,Double credit,String description){
+    public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description){
         CommonResponse response ;
         if(token.equals("114514")){
             response = new CommonResponse();
@@ -330,7 +330,7 @@ public class CourseServiceImpl implements CourseService {
                     //对没有id的ClassTime进行id的补充
                     t.setId(t.getSection() + (t.getWeekDay() - 1) * 5);
                 }
-                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass,studentSection,location,year,semester,credit,description,studentSet,teacher,scoreSet);
+                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,studentSet,teacher,scoreSet);
                 courseRepository.save(course);
 
                 //在教师的课程表中加入课程
@@ -344,7 +344,7 @@ public class CourseServiceImpl implements CourseService {
             }else if(user instanceof Manager){
                 //管理员没有课程表，故只能修改
                 Course courseOld = courseRepository.findById(courseId).get();
-                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass,studentSection,location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet());
+                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet());
                 courseRepository.save(course);
 
                 response.setSuccess(true);
@@ -500,7 +500,6 @@ public class CourseServiceImpl implements CourseService {
      * 打分时返回所选课程的所有学生
      * 验证token,根据courseId找到课程，遍历course的学生列表
      * 只选取名字name id返回前端
-     * 该方法分页问题未解决，暂不实现
      * @param token 用户令牌
      * @param courseId 课程id
      * @return

@@ -18,9 +18,9 @@ public class TeacherCourseSaveRequest {
 
     private String name;
 
-    private String studentSection;
+    private List<String> studentSection;
 
-    private String studentClass;
+    private List<String> studentClass;
 
     private Integer weekStart;
 

@@ -38,6 +38,7 @@ public class Student extends User {
                 activity = new ArrayList<>();
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
+                collection = new ArrayList<>();
                 section = null;
         }
 
@@ -48,6 +49,7 @@ public class Student extends User {
                 activity = new ArrayList<>();
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
+                collection = new ArrayList<>();
                 this.section = section;
         }
 
@@ -123,6 +125,14 @@ public class Student extends User {
                 this.postList = postList;
         }
 
+        public List<Post> getCollection() {
+                return collection;
+        }
+
+        public void setCollection(List<Post> collection) {
+                this.collection = collection;
+        }
+
         //学生届次
         private String section;
 
@@ -158,4 +168,8 @@ public class Student extends User {
         @JsonIgnore
         @OneToMany
         private List<Post> postList;
+
+        @JsonIgnore
+        @OneToMany
+        private List<Post> collection;
 }

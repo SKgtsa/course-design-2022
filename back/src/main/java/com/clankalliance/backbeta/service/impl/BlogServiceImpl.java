@@ -172,6 +172,33 @@ public class BlogServiceImpl implements BlogService {
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
+    //收藏的帖子 按时间顺序分页
+    @Override
+    public CommonResponse handleCollectPost(String token, int length, int startIndex){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        List<Post> totalPost = new ArrayList<>();
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            totalPost = teacher.getCollection();
+        }else if(user instanceof Student){
+            Student student = (Student) user;
+            totalPost = student.getCollection();
+        }
+        totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+        Collections.reverse(totalPost);
+        response.setMessage("查找成功");
+        List<PostResponseTarget> resultList = new ArrayList<>();
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setContent(tempList);
+        response.setStartIndex(tempList.size() + startIndex);
+        return response;
+    }
     //查看详细文章 前端传来token和文章id 获取全文
     @Override
     public CommonResponse handleDetailPage(String token,String blogId){
@@ -230,6 +257,85 @@ public class BlogServiceImpl implements BlogService {
                 return response;
             }
             postRepository.save(post);
+            response.setMessage("操作成功");
+            return response;
+        }
+    }
+    //点赞 若已点赞就取消
+    @Override
+    public CommonResponse handleCollect(String token, String blogId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        Optional<Post> pop = postRepository.findById(blogId);
+        if(pop.isEmpty()){
+            response.setSuccess(false);
+            response.setMessage("找不到文章");
+            return response;
+        }else{
+            Post post = pop.get();
+            if(user instanceof Student){
+                Student student = (Student) user;
+                List<Post> postList = student.getCollection();
+                if(postList.contains(post)){
+                    postList.remove(post);
+                }else{
+                    postList.add(post);
+                }
+                student.setCollection(postList);
+                studentRepository.save(student);
+            }else if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
+                List<Post> postList = teacher.getCollection();
+                if(postList.contains(post)){
+                    postList.remove(post);
+                }else{
+                    postList.add(post);
+                }
+                teacher.setCollection(postList);
+                teacherRepository.save(teacher);
+            }else{
+                response.setMessage("权限错误");
+                response.setSuccess(false);
+                return response;
+            }
+            response.setMessage("操作成功");
+            return response;
+        }
+    }
+    //管理员任意删除，其他角色删除自己的
+    public CommonResponse handleDelete(String token, String blogId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        Optional<Post> pop = postRepository.findById(blogId);
+        if(pop.isEmpty()){
+            response.setSuccess(false);
+            response.setMessage("找不到文章");
+            return response;
+        }else{
+            Post post = pop.get();
+            if(user instanceof Student){
+                Student student = (Student) user;
+                List<Post> postList = student.getPostList();
+                if(!postList.contains(post)){
+                    response.setMessage("您无权进行此操作");
+                    response.setSuccess(false);
+                    return response;
+                }
+            }else if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
+                List<Post> postList = teacher.getPostList();
+                if(!postList.contains(post)){
+                    response.setMessage("您无权进行此操作");
+                    response.setSuccess(false);
+                    return response;
+                }
+            }
+            //有权限 进行删除
+            postRepository.delete(post);
             response.setMessage("操作成功");
             return response;
         }
