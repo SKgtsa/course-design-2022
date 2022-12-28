@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.controller;
 
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.request.course.*;
 import com.clankalliance.backbeta.request.user.TokenCheckRequest;
@@ -89,6 +90,12 @@ public class CourseController {
     @PostMapping("/findCourseStudent")
     public CommonResponse findCourseStudent(@RequestBody FindStudentOfCourseRequest request){
         return courseService.handleFindCourseStudent(request.getToken(),request.getCourseId(),request.getPageNum(),request.getPageSize());
+    }
+
+    //教师获取自己所教的课程
+    @PostMapping("/teacherFind")
+    public CommonResponse teacherFindCourse(@RequestBody TeacherFindCourseRequest request){
+        return courseService.handleTeacherFindCourse(request.getToken(), request.getYear(), request.getSemester());
     }
 
 

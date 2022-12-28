@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.controller;
 import com.clankalliance.backbeta.request.blog.BlogSubmitRequest;
 import com.clankalliance.backbeta.request.blog.CommonBlogRequest;
 import com.clankalliance.backbeta.request.blog.MainRequest;
+import com.clankalliance.backbeta.request.blog.UserRequest;
 import com.clankalliance.backbeta.request.score.ScoreEditRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.BlogService;
@@ -39,6 +40,11 @@ public class BlogController {
         return blogService.handleLikePost(request.getToken(), request.getLength(), request.getStartIndex());
     }
 
+    @PostMapping("/getCollect")
+    public CommonResponse getCollect(@RequestBody MainRequest request){
+        return blogService.handleCollectPost(request.getToken(), request.getLength(), request.getStartIndex());
+    }
+
     @PostMapping("/getDetail")
     public CommonResponse getDetail(@RequestBody CommonBlogRequest request){
         return blogService.handleDetailPage(request.getToken(), request.getBlogId());
@@ -49,14 +55,24 @@ public class BlogController {
         return blogService.handleLike(request.getToken(), request.getBlogId());
     }
 
+    @PostMapping("/collect")
+    public CommonResponse collect(@RequestBody CommonBlogRequest request){
+        return blogService.handleCollect(request.getToken(), request.getBlogId());
+    }
+
     @PostMapping("/comment")
     public CommonResponse comment(@RequestBody CommonBlogRequest request){
         return blogService.handleComment(request.getToken(), request.getBlogId(), request.getContent());
     }
 
-    @PostMapping("/test")
-    public CommonResponse save(@RequestBody ScoreEditRequest request){
-        return new CommonResponse<>();
+    @PostMapping("/delete")
+    public CommonResponse delete(@RequestBody CommonBlogRequest request){
+        return blogService.handleDelete(request.getToken(), request.getBlogId());
+    }
+
+    @PostMapping("/subscribe")
+    public CommonResponse subscribe(@RequestBody UserRequest request){
+        return blogService.handleSubscribe(request.getToken(), request.getUserId());
     }
 
 }

@@ -9,6 +9,7 @@ import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,11 +26,16 @@ public class Teacher extends User {
         public Teacher(){
                 super();
                 courseSet = new HashSet<>();
+                collection = new ArrayList<>();
+                postList = new ArrayList<>();
+
         }
 
         public Teacher(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
                 super(id,userNumber,nickName,name,password,phone,gradeClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
                 courseSet = new HashSet<>();
+                collection = new ArrayList<>();
+                postList = new ArrayList<>();
         }
 
         public Set<Course> getCourseSet() {
@@ -64,6 +70,14 @@ public class Teacher extends User {
                 this.postList = postList;
         }
 
+        public List<Post> getCollection() {
+                return collection;
+        }
+
+        public void setCollection(List<Post> collection) {
+                this.collection = collection;
+        }
+
         //删除老师会一并删除他的课程
         @JsonIgnore
         @OneToMany
@@ -81,5 +95,9 @@ public class Teacher extends User {
         @JsonIgnore
         @OneToMany
         private List<Post> postList;
+
+        @JsonIgnore
+        @OneToMany
+        private List<Post> collection;
 
 }

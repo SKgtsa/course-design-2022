@@ -516,6 +516,8 @@ const submit = () => {
         localStorage.setItem('token', data.token)
         drawerOpen.value = false;
         hideLoading();
+        loadOver.value = false;
+        pageData.postList = [];
         refresh();
         //用新token向后端要新的blog列表并更新显示
       } else {

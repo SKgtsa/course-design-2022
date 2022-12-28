@@ -10,14 +10,22 @@ public interface BlogService {
     CommonResponse handleMine(String token, int length, int startIndex);
     //获取所有帖子 按时间顺序分页
     CommonResponse handleMainPage(String token, int length, int startIndex);
-    //获取关注着的帖子 按时间顺序分页
+    //获取关注者的帖子 按时间顺序分页
     CommonResponse handleLikePost(String token, int length, int startIndex);
+    //获取收藏的帖子 按时间顺序分页
+    CommonResponse handleCollectPost(String token, int length, int startIndex);
     //查看详细文章 前端传来token和文章id 获取全文
     CommonResponse handleDetailPage(String token,String blogId);
     //点赞
     CommonResponse handleLike(String token, String blogId);
+    //收藏
+    CommonResponse handleCollect(String token, String blogId);
+    //删除 只能删除自己的以及管理员删除
+    CommonResponse handleDelete(String token, String blogId);
     //评论
     CommonResponse handleComment(String token, String blogId, String content);
     //关注
     CommonResponse handleSubscribe(String token, Long userId);
+
+
 }

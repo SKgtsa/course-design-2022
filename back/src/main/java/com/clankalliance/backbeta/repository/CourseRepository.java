@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,7 +25,8 @@ public interface CourseRepository extends JpaRepository<Course,Integer> {
     Optional<Course> deleteById(long id);
 
     @Query("from Course c where c.teacher.id=?1 and c.id=?2")
-    Optional<Course> findByTeacherAndId(Long teacherId,Long courseId);
+    Optional<Course> findByTeacherAndId(long teacherId,long courseId);
 
-
+    @Query("from Course c where c.teacher.id=?1 and c.year=?2 and c.semester=?3")
+    List<Course> findByTeacherTime(long teacherId, Integer year, String semester);
 }
