@@ -14,6 +14,10 @@ public interface BlogService {
     CommonResponse handleLikePost(String token, int length, int startIndex);
     //获取收藏的帖子 按时间顺序分页
     CommonResponse handleCollectPost(String token, int length, int startIndex);
+    //查看个人主页 若登录状态失效则以游客模式
+    CommonResponse handlePersonalPageData(String token, Long userId);
+    //查看个人主页 博客更新方法
+    CommonResponse handlePersonalPagePost(String token, int length, int startIndex,Long userId);
     //查看详细文章 前端传来token和文章id 获取全文
     CommonResponse handleDetailPage(String token,String blogId);
     //点赞

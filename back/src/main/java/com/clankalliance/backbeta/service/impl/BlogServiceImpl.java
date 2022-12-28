@@ -1,6 +1,8 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.blog.BlogDetail;
 import com.clankalliance.backbeta.entity.blog.Comment;
+import com.clankalliance.backbeta.entity.blog.PersonalPageData;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
@@ -168,7 +170,7 @@ public class BlogServiceImpl implements BlogService {
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
-        response.setContent(tempList);
+        response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
@@ -195,16 +197,85 @@ public class BlogServiceImpl implements BlogService {
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
-        response.setContent(tempList);
+        response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
+
+    //查看个人主页 若登录状态失效则以游客模式
+    @Override
+    public CommonResponse handlePersonalPageData(String token, Long userId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        //success为false代表登录失效，但仍允许浏览
+        User user = userService.findById(userId);
+        boolean follow = false;
+        if(user == null){
+            response.setSuccess(false);
+            response.setMessage("用户不存在");
+            response.setContent(new PersonalPageData());
+            return response;
+        }
+        if(response.getSuccess()){
+            User target = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student = (Student) user;
+                if(target instanceof Student){
+                    follow = student.getFriendS().contains(target);
+                }else if(target instanceof Teacher){
+                    follow = student.getFriendT().contains(target);
+                }
+            }else if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
+                if(target instanceof Student){
+                    follow = teacher.getFriendS().contains(target);
+                }else if(target instanceof Teacher){
+                    follow = teacher.getFriendS().contains(target);
+                }
+            }
+        }
+        response.setContent(new PersonalPageData(user, follow));
+        response.setMessage("查找成功");
+        return response;
+    }
+    //查看个人主页 博客更新方法
+    @Override
+    public CommonResponse handlePersonalPagePost(String token, int length, int startIndex,Long userId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        //success为false代表登录失效，但仍允许浏览
+        User user = userService.findById(userId);
+        if(user == null){
+            response.setSuccess(false);
+            response.setMessage("用户不存在");
+            response.setContent(new PersonalPageData());
+            return response;
+        }
+        List<Post> totalPost = new ArrayList<>();
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            totalPost = teacher.getPostList();
+        }else if(user instanceof Student){
+            Student student = (Student) user;
+            totalPost = student.getPostList();
+        }
+        totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+        Collections.reverse(totalPost);
+        response.setMessage("查找成功");
+        List<PostResponseTarget> resultList = new ArrayList<>();
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setContent(resultList);
+        response.setStartIndex(tempList.size() + startIndex);
+        return response;
+    }
+
     //查看详细文章 前端传来token和文章id 获取全文
     @Override
     public CommonResponse handleDetailPage(String token,String blogId){
         CommonResponse response = tokenUtil.tokenCheck(token);
-        if(!response.getSuccess())
-            return response;
+//        if(!response.getSuccess())
+//            return response;
         Optional<Post> pop = postRepository.findById(blogId);
         if(pop.isEmpty()){
             response.setSuccess(false);
@@ -212,9 +283,7 @@ public class BlogServiceImpl implements BlogService {
             return response;
         }else{
             Post post = pop.get();
-            Map result = new HashMap<String,String>();
-            result.put("content",post.getContent());
-            response.setContent(result);
+            response.setContent(new BlogDetail(post.getContent(), post.getCommentList()));
             response.setMessage("查找成功");
             return response;
         }
@@ -370,6 +439,11 @@ public class BlogServiceImpl implements BlogService {
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
+        if(response.getMessage().equals("" + userId)){
+            response.setSuccess(false);
+            response.setMessage("不能关注自己");
+            return response;
+        }
         User user = userService.findById(Long.parseLong(response.getMessage()));
         User target = userService.findById(userId);
         if(user instanceof Teacher){

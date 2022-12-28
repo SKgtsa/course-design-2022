@@ -1,33 +1,31 @@
 package com.clankalliance.backbeta.service.impl;
 
-import com.baomidou.mybatisplus.core.injector.methods.DeleteById;
 import com.clankalliance.backbeta.entity.Score;
+import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
-import com.clankalliance.backbeta.repository.ClassTimeRepository;
 import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.service.UserService;
-import com.clankalliance.backbeta.utils.FindCourseStudentUtil;
+import com.clankalliance.backbeta.utils.FindCourseStudentData;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
-import org.apache.ibatis.jdbc.Null;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.swing.text.Style;
 import java.util.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -519,13 +517,11 @@ public class CourseServiceImpl implements CourseService {
                 Optional<Course> courseOp=courseRepository.findById(courseId);
                 Course course=courseOp.get();
                 Set<Student> studentSet=course.getStudentSet();
-                List<FindCourseStudentUtil> allStudentList=new ArrayList<>();
+                List<FindCourseStudentData> allStudentList=new ArrayList<>();
                 for(Student s : studentSet){
-                    long studentId=s.getId();
-                    String studentName=s.getName();
-                    FindCourseStudentUtil tmp=new FindCourseStudentUtil(studentId,studentName);
-                    allStudentList.add(tmp);
+                    allStudentList.add(new FindCourseStudentData(s));
                 }
+                allStudentList = allStudentList.stream().sorted(Comparator.comparing(FindCourseStudentData::getUserNumber)).collect(Collectors.toList());
                 if(allStudentList.size() <= pageSize){
                     response.setContent(allStudentList);
                     response.setSuccess(true);
@@ -534,9 +530,9 @@ public class CourseServiceImpl implements CourseService {
                     response.setSuccess(true);
                     response.setMessage("该学生没有参加课外活动");
                 }else {
-                    List<FindCourseStudentUtil> subStudentList=new ArrayList<>(pageSize);
+                    List<FindCourseStudentData> subStudentList=new ArrayList<>(pageSize);
                     int count=1;
-                    for(FindCourseStudentUtil s : allStudentList){
+                    for(FindCourseStudentData s : allStudentList){
                         if(count>= pageNum*(pageSize-1) || count<= pageNum*pageSize){
                             subStudentList.add(s);
                         }

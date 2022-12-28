@@ -5,6 +5,8 @@ import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,7 @@ public class PostResponseTarget {
     //头像url
     private String avatarURL;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
     //发帖时间
     private String time;
@@ -42,11 +45,11 @@ public class PostResponseTarget {
         id = post.getId();
         heading = post.getHeading();
         nickName = post.getNickName();
-        avatarURL = post.getAvatarURL();
+        avatarURL = post.getAvatarUrl();
         userId = post.getUserId();
         time = post.getTime();
         likeNum = post.getLikeS().size() + post.getLikeT().size();
-        topImageURL = post.getTopImageUrl();
+        topImageURL = post.getTopImageURL();
         like = post.getLikeS().contains(user) || post.getLikeT().contains(user);
         if(user instanceof Teacher){
             collect = ((Teacher) user).getCollection().contains(post);

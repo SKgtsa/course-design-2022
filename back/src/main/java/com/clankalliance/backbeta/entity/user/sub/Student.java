@@ -1,10 +1,7 @@
 package com.clankalliance.backbeta.entity.user.sub;
 
-import com.clankalliance.backbeta.entity.Activity;
-import com.clankalliance.backbeta.entity.Reward;
+import com.clankalliance.backbeta.entity.*;
 import com.clankalliance.backbeta.entity.blog.Post;
-import com.clankalliance.backbeta.entity.Practice;
-import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -39,6 +36,7 @@ public class Student extends User {
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
                 collection = new ArrayList<>();
+                achievementList = new ArrayList<>();
                 section = null;
         }
 
@@ -50,6 +48,7 @@ public class Student extends User {
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
                 collection = new ArrayList<>();
+                achievementList = new ArrayList<>();
                 this.section = section;
         }
 
@@ -133,6 +132,14 @@ public class Student extends User {
                 this.collection = collection;
         }
 
+        public List<Achievement> getAchievementList() {
+                return achievementList;
+        }
+
+        public void setAchievementList(List<Achievement> achievementList) {
+                this.achievementList = achievementList;
+        }
+
         //学生届次
         private String section;
 
@@ -172,4 +179,9 @@ public class Student extends User {
         @JsonIgnore
         @OneToMany
         private List<Post> collection;
+
+        @JsonIgnore
+        @OneToMany
+        private List<Achievement> achievementList;
+
 }

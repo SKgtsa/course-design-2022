@@ -13,5 +13,6 @@ public class MainRequest {
     private String token;
     private int length;
     private int startIndex;
+    private Long userId;
 
 }

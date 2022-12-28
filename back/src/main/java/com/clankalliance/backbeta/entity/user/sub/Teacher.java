@@ -1,5 +1,6 @@
 package com.clankalliance.backbeta.entity.user.sub;
 
+import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
@@ -28,7 +29,7 @@ public class Teacher extends User {
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
-
+                achievementList = new ArrayList<>();
         }
 
         public Teacher(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
@@ -36,6 +37,7 @@ public class Teacher extends User {
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
+                achievementList = new ArrayList<>();
         }
 
         public Set<Course> getCourseSet() {
@@ -78,6 +80,14 @@ public class Teacher extends User {
                 this.collection = collection;
         }
 
+        public List<Achievement> getAchievementList() {
+                return achievementList;
+        }
+
+        public void setAchievementList(List<Achievement> achievementList) {
+                this.achievementList = achievementList;
+        }
+
         //删除老师会一并删除他的课程
         @JsonIgnore
         @OneToMany
@@ -99,5 +109,9 @@ public class Teacher extends User {
         @JsonIgnore
         @OneToMany
         private List<Post> collection;
+
+        @JsonIgnore
+        @OneToMany
+        private List<Achievement> achievementList;
 
 }

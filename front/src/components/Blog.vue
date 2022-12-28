@@ -16,6 +16,7 @@
               <el-menu-item index="1">广场</el-menu-item>
               <el-menu-item index="2">我的关注</el-menu-item>
               <el-menu-item index="3">我的博客</el-menu-item>
+              <el-menu-item index="4">我的收藏</el-menu-item>
             </el-menu>
           </div>
         </div>
@@ -42,11 +43,12 @@
                     </div>
                     <div class="bottomRight">
                       <div class="bottomTop">
-                        <el-image :src="item.avatarURL" @click="jumpToPersonal(item)" class="avatar"/>
-                        <a class="nickName" @click="jumpToPersonal(item)">{{item.nickName}}</a>
+                        <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
+                        <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
                       </div>
                       <div class="bottomBottom">
-                        <el-button @click="likeThis(item)">点赞</el-button>
+                        <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                        <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
                         <a class="likeNum">{{item.likeNum}}</a>
                       </div>
                     </div>
@@ -104,21 +106,46 @@
       <editor v-model="postContent"
               :init="init"
               :disabled="disabled"
-              :id="tinymceId">
+              :id="blogEditorId">
       </editor>
       <el-button @click="submit">提交</el-button>
     </div>
   </el-drawer>
   <!--弹出框 显示博客详细正文-->
-  <el-dialog v-model="showDetail" width="80%">
+  <el-dialog
+      v-model="showDetail"
+      width="80%"
+      modal-append-to-body=false
+  >
     <div :style="{ 'background-image': `url(${pageData.target.topImageURL})` }" class="detailTopImage"/>
     <a class="detailHeading">{{pageData.target.heading}}</a>
     <div class="userInfoArea">
-      <el-image :src="pageData.target.avatarURL" @click="jumpToPersonal(pageData.target)" class="avatar"/>
-      <a class="nickName" @click="jumpToPersonal(pageData.target)">{{pageData.target.nickName}}</a>
+      <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="pageData.target.avatarURL" class="avatar"/></el-button>
+      <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{pageData.target.nickName}}</a>
     </div>
     <div class="postContent">
       <div v-html="pageData.targetContent.content"/>
+    </div>
+    <div class="commentArea">
+      <div class="commentEditor">
+        <editor v-model="commentContent"
+                :init="initComment"
+                :disabled="disabled"
+                :id="commentEditorId">
+        </editor>
+        <el-button @click="commentSubmit">提交</el-button>
+      </div>
+      <div class="comment">
+        <div v-for="(item,index) in pageData.targetContent.commentList" class="commentCard">
+          <div v-html="item.content" class="commentContent"/>
+          <div class="commentTool">
+            <div class="userInfoArea">
+              <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="'http://courseback.clankalliance.cn' + item.avatarURL" class="avatar"/></el-button>
+              <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </el-dialog>
 
@@ -146,6 +173,7 @@ import type { UploadFile } from 'element-plus'
 import service from "@/request";
 import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
+import router from "@/router";
 const blog = ref('')
 const testURL = 'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp';
 const imageList = [
@@ -180,11 +208,12 @@ const pageData  = reactive({
     time: '',
     topImageURL: '',
     avatarURL: '',
-    userId: 0,
+    userId: '',
     likeNum: 0,
-    like: false
+    like: false,
+    collect: false,
   },
-  targetContent: {content: ''},
+  targetContent: {content: '',commentList: []},
 })
 const disabled = ref(false)
 const uploadRef = ref();
@@ -196,18 +225,14 @@ interface Post{
   time: string,
   topImageURL: string,
   avatarURL: string,
-  userId: number,
+  userId: string,
   likeNum: number,
   like: boolean,
+  collect: boolean;
 }
 
-const postListRef = (el) => {
-  // el为每一个ref
-  console.log(el);
-
-}
-
-const likeThis = (target: Post) => {
+const likeThis = (target: Post, event: Event) => {
+  event.stopPropagation();
   console.log('likeThis()')
   console.log(target)
   showLoading();
@@ -218,6 +243,33 @@ const likeThis = (target: Post) => {
     if (data.success) {
       //这里有问题
       target.like = !target.like;
+      if(target.like){
+        target.likeNum += 1;
+      }else{
+        target.likeNum -= 1;
+      }
+      localStorage.setItem('token', data.token)
+    } else {
+      ElMessage({
+        message: data.message,
+        type: 'error'
+      })
+    }
+    hideLoading();
+  })
+}
+
+const collectThis = (target: Post, event: Event) => {
+  event.stopPropagation();
+  console.log('likeThis()')
+  console.log(target)
+  showLoading();
+  service.post('api/blog/collect',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
+    const data = res.data;
+    console.log('收藏成功收到回调')
+    console.log(res)
+    if (data.success) {
+      target.collect = !target.collect;
       localStorage.setItem('token', data.token)
     } else {
       ElMessage({
@@ -240,10 +292,7 @@ const jumpToDetail = (target: Post) => {
     console.log(res)
     if (data.success) {
       let content = data.content;
-      console.log(content)
       content.content = content.content.toString().replace('<img',"<img style='max-width:100%;height:auto;'")
-      console.log(content)
-
       pageData.targetContent = content;
       localStorage.setItem('token', data.token)
     } else {
@@ -257,9 +306,13 @@ const jumpToDetail = (target: Post) => {
   })
 }
 
-const jumpToPersonal = (target: Post) => {
+const jumpToPersonal = (userId : string, event: Event) => {
   console.log('jumpToPersonal()')
-  console.log(target)
+  event.stopPropagation();
+  router.push({
+    path: '/personalPage',
+    query: {userId: userId}
+  })
 }
 
 const handleMenuOpen = (key: string, keyPath: string[]) => {
@@ -273,6 +326,9 @@ const handleMenuOpen = (key: string, keyPath: string[]) => {
       break;
     case '3':
       targetURL.value = 'api/blog/getMine';
+      break;
+    case '4':
+      targetURL.value = 'api/blog/getCollect';
       break;
   }
   startIndex.value = 0;
@@ -322,18 +378,25 @@ const props = defineProps({
   toolbar: {
     type: [String, Array],
     default:
-        "bold forecolor backcolor |fontfamily fontsize|image link",
+        " alignleft aligncenter alignright alighjustify|bold underline forecolor backcolor |fontfamily fontsize|image | blockquote | undo redo ",
   },//必填
+  commentToolBar: {
+    type: [String,Array],
+    default:
+        " alignleft aligncenter alignright alighjustify|bold underline| undo redo ",
+  }
 })
 //编辑器内容
 const postContent = ref(props.value)
-const tinymceId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
-//定义一个对象 init初始化
+const commentContent = ref("")
+const blogEditorId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
+const commentEditorId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
+//博客编辑器 初始化方法
 const init = reactive({
-  selector: '#' + tinymceId.value, //富文本编辑器的id,
+  selector: '#' + blogEditorId.value, //富文本编辑器的id,
   language_url: "/tinymce/langs/zh_CN.js", // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
   language: "zh_CN", //语言
-  skin_url: "/tinymce/skins/ui/oxide", // skin路径，具体路径看自己的项目
+  skin_url: "/tinymce/skins/ui/CUSTOM", // skin路径，具体路径看自己的项目
   placeholder: '请在此处编辑正文',
   height: 300, //编辑器高度
   max_height: 800,
@@ -406,6 +469,34 @@ const init = reactive({
     }
   }
 })
+//评论编辑器 初始化方法
+const initComment = reactive({
+  selector: '#' + commentEditorId.value, //富文本编辑器的id,
+  language_url: "/tinymce/langs/zh_CN.js", // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
+  language: "zh_CN", //语言
+  skin_url: "/tinymce/skins/ui/CUSTOM", // skin路径，具体路径看自己的项目
+  placeholder: '请在此处评论',
+  height: 200, //编辑器高度
+  max_height: 200,
+  branding: false, //是否禁用“Powered by TinyMCE”
+  menubar: false, //顶部菜单栏显示
+  image_dimensions: true, //去除宽高属性
+  plugins: props.plugins,  //这里的数据是在props里面就定义好了的
+  toolbar: props.commentToolBar, //这里的数据是在props里面就定义好了的
+  font_family_formats: '微软雅黑=Microsoft Yahei; Arial=arial,helvetica,sans-serif; 宋体=SimSun;  Impact=impact,chicago;', //字体
+  font_size_formats: '11px 12px 14px 16px 18px 24px 36px 48px 64px 72px', //文字大小
+  paste_webkit_styles: "all",
+  paste_merge_formats: true,
+  nonbreaking_force_tab: false,
+  paste_auto_cleanup_on_paste: false,
+  // resize: false,
+  file_picker_types: 'file',
+  images_upload_url: '/api/upload/generalUpload',
+  images_upload_base_path: 'http://courseback.clankalliance.cn',
+  content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
+
+
+})
 
 //监听外部传递进来的的数据变化
 watch(
@@ -445,10 +536,10 @@ const writeBlog = () => {
 const refresh = () => {
   if(!requesting.value){
     if(loadOver.value){
-      ElMessage({
-        message: "已经到底了",
-        type: 'error'
-      })
+      // ElMessage({
+      //   message: "已经到底了",
+      //   type: 'error'
+      // })
     }else{
       showLoading();
       requesting.value = true;
@@ -518,7 +609,42 @@ const submit = () => {
         hideLoading();
         loadOver.value = false;
         pageData.postList = [];
+        startIndex.value = 0;
         refresh();
+        //用新token向后端要新的blog列表并更新显示
+      } else {
+        console.log(res)
+        ElMessage({
+          message: data.message,
+          type: 'error'
+        })
+        hideLoading();
+      }
+    })
+  }
+  console.log(postContent.value);
+}
+const commentSubmit = () => {
+  showLoading();
+  if(commentContent.value.length == 0){
+    ElMessage({
+      message: '评论不能为空',
+      type: 'error'
+    })
+  }else{
+    service.post('api/blog/comment', { token: localStorage.getItem("token"), blogId: pageData.target.id, content: commentContent.value }).then(res => {
+      const data = res.data;
+      console.log(res)
+      if (data.success) {
+        blog.value = '';
+        ElMessage({
+          message: '发送成功',
+          type: 'success'
+        })
+        localStorage.setItem('token', data.token)
+        hideLoading();
+        jumpToDetail(pageData.target);
+        commentContent.value = "";
         //用新token向后端要新的blog列表并更新显示
       } else {
         console.log(res)
@@ -539,6 +665,12 @@ const getContent = (v: string) => {
 </script>
 
 <style scoped lang="scss">
+.commentCard{
+  background-color: #EEEEEE;
+  border-radius: 1vw;
+  padding-left: 1vw;
+  box-shadow: 0 0 3px 0  rgba(140,140,140,0.8);
+}
 .detailHeading{
   font-size: 5vh;
 }
@@ -554,10 +686,6 @@ const getContent = (v: string) => {
   background-attachment: fixed;
   background-size: cover;
 }
-
-
-.writeBox{
-}
 .headingInputWrapper{
   padding-top: 1.5vh;
   padding-bottom: 2vh;
@@ -565,6 +693,11 @@ const getContent = (v: string) => {
 .headingInput{
   font-size: 3vh;
   height: 4vh;
+}
+.avatarButton{
+  width: 5vw;
+  height: 5vw;
+  border-radius: 2.5vw;
 }
 .avatar{
   width: 5vw;
@@ -581,6 +714,7 @@ const getContent = (v: string) => {
 .likeNum{
   font-weight: bold;
   font-size: 2vw;
+  padding-top: 1.2vw;
 }
 .cardBackground{
   z-index: 1;
@@ -623,6 +757,14 @@ const getContent = (v: string) => {
   width: 30vw;
   flex-direction: row-reverse;
   display: flex;
+}
+.likeCollectButton{
+  width: 3vw;
+  background-color: rgba(0,0,0,0);
+  border-style: none;
+}
+.likeCollectImage{
+  width: 3vw;
 }
 .bottomBottom{
   width: 30vw;
