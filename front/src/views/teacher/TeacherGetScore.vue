@@ -159,21 +159,22 @@ let scoreData = reactive([
 
 ]);
 let idExport = ref();
-let scoreForm= reactive({
-  studentName:'',
-  dailyScore:'',
-  endScore:'',
-  weight:'',
-});
-const handleCheck = (row) =>{
-  centerDialogVisible.value=true;
-  scoreForm.dailyScore=row.dailyScore;
-  scoreForm.endScore=row.endScore;
-  scoreForm.studentName=row.studentName;
-  scoreForm.weight=row.weight;
-  idExport.value = row.id;
-}
-const loadScoreTable = async (row) => {
+// let scoreForm= reactive({
+//   studentName:'',
+//   dailyScore:'',
+//   endScore:'',
+//   weight:'',
+// });
+// const handleCheck = (row) =>{
+//
+//
+//   scoreForm.dailyScore=row.dailyScore;
+//   scoreForm.endScore=row.endScore;
+//   scoreForm.studentName=row.studentName;
+//   scoreForm.weight=row.weight;
+//   idExport.value = row.id;
+// }
+const handleCheck = async (row) => {
   showLoading();
   await service.post('/api/score/teacherDetail', { token: localStorage.getItem("token"),courseId:row.courseId}).then(res => {
     if (res.data.success) {
@@ -182,7 +183,7 @@ const loadScoreTable = async (row) => {
       let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
       scoreData = arr
       localStorage.setItem('token', data.token)
-
+      centerDialogVisible.value=true;
     } else {
       hideLoading();
       messageWarning(res.data.message)
