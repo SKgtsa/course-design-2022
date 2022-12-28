@@ -69,19 +69,19 @@
           <!--          <el-input v-if="typeOperation === 'add'" v-model="editForm."></el-input>-->
           <el-select v-if="typeOperation === 'edit'" v-model="editForm.classTime.weekDay" placeholder="Select">
             <el-option
-                v-for="item in dayOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="weekDay in dayOptions"
+                :key="weekDay.value"
+                :label="weekDay.label"
+                :value="weekDay.value"
             />
           </el-select>
 
           <el-select v-if="typeOperation === 'edit'" v-model="editForm.classTime.section" placeholder="Select">
             <el-option
-                v-for="item in sectionOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="section in sectionOptions"
+                :key="section.value"
+                :label="section.label"
+                :value="section.value"
             />
           </el-select>
           <el-select v-if="typeOperation === 'add'" v-model="editForm.classTime.weekDay" placeholder="Select">
@@ -152,19 +152,19 @@
           <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentClass" placeholder="Select"
                      multiple="true">
             <el-option
-                v-for="item in classOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="studentClass in classOptions"
+                :key="studentClass.value"
+                :label="studentClass.label"
+                :value="studentClass.value"
             />
           </el-select>
           <el-select v-if="typeOperation === 'add'" v-model="editForm.studentClass" placeholder="Select"
                      multiple="true">
             <el-option
-                v-for="item in classOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="studentClass in classOptions"
+                :key="studentClass.value"
+                :label="studentClass.label"
+                :value="studentClass.value"
             />
           </el-select>
         </el-form-item>
@@ -173,19 +173,19 @@
           <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentSection" placeholder="Select"
                      multiple="true">
             <el-option
-                v-for="item in studentSectionOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="studentSection in studentSectionOptions"
+                :key="studentSection.value"
+                :label="studentSection.label"
+                :value="studentSection.value"
             />
           </el-select>
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.studentClass" placeholder="Select"
+          <el-select v-if="typeOperation === 'add'" v-model="editForm.studentSection" placeholder="Select"
                      multiple="true">
             <el-option
-                v-for="item in studentSectionOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="studentSection in studentSectionOptions"
+                :key="studentSection.value"
+                :label="studentSection.label"
+                :value="studentSection.value"
             />
           </el-select>
         </el-form-item>

@@ -37,6 +37,19 @@
                         </el-table-column>
                     </el-table>
                 </div>
+              <el-dialog v-model="centerDialogVisible" width="70%" draggable="true">
+                <div class="studentTitle">
+                  学生成绩
+                </div>
+                <el-table :data="scoreData" style="width: 80%" border
+                          stripe size="small" class="courseTable" max-height="400">
+                  <el-table-column label="序号" type="index" width="80"/>
+                  <el-table-column label="姓名" prop="studentName" width="160"  show-overflow-tooltip  />
+                  <el-table-column label="平时成绩" prop="dailyScore" width="160"  show-overflow-tooltip  />
+                  <el-table-column label="期末成绩" prop="endScore" width="160"  show-overflow-tooltip  />
+                  <el-table-column label="总成绩成绩" prop="finalScore"   show-overflow-tooltip  />
+                </el-table>
+              </el-dialog>
             </div>
         </div>
     </div>
@@ -44,12 +57,12 @@
   
 <script lang="ts" setup>
 import service from '@/request';
-import { messageError, messageSuccess } from '@/utils/message';
+import {messageError, messageSuccess, messageWarning} from '@/utils/message';
 import { reactive } from '@vue/reactivity';
 import { ref } from 'vue'
 import { showLoading, hideLoading } from '@/utils/loading';
 
-
+let centerDialogVisible=ref();
 let yearsValue = ref();
 let semesterValue = ref();
 let tableData = reactive({
@@ -120,11 +133,66 @@ let testData = reactive([
     },
 
 ]);
+let scoreData = reactive([
+  {
+    studentName:'xiaoming',
+    dailyScore:100,
+    endScore:100,
+    finalScore:100,
+  },
+  {
+    studentName:'xiaoming',
+    dailyScore:100,
+    endScore:100,
+    finalScore:100,
+  },{
+    studentName:'xiaoming',
+    dailyScore:100,
+    endScore:100,
+    finalScore:100,
+  },{
+    studentName:'xiaoming',
+    dailyScore:100,
+    endScore:100,
+    finalScore:100,
+  },
 
+]);
 let idExport = ref();
-
+let scoreForm= reactive({
+  studentName:'',
+  dailyScore:'',
+  endScore:'',
+  weight:'',
+});
 const handleCheck = (row) =>{
-    idExport.value = row.id;
+  centerDialogVisible.value=true;
+  scoreForm.dailyScore=row.dailyScore;
+  scoreForm.endScore=row.endScore;
+  scoreForm.studentName=row.studentName;
+  scoreForm.weight=row.weight;
+  idExport.value = row.id;
+}
+const loadScoreTable = async (row) => {
+  showLoading();
+  await service.post('/api/score/teacherDetail', { token: localStorage.getItem("token"),courseId:row.courseId}).then(res => {
+    if (res.data.success) {
+      hideLoading();
+      let data = res.data;
+      let arr = data.content //拿到了返回的数组,这个是data.data还是data.token
+      scoreData = arr
+      localStorage.setItem('token', data.token)
+
+    } else {
+      hideLoading();
+      messageWarning(res.data.message)
+    }
+  })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
 }
 const check = async () => {  //进去先加载查看课表方法，然后绑定上  
     showLoading();
