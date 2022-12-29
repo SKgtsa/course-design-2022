@@ -44,7 +44,7 @@ const router = createRouter({
       component: () => import('../views/student/MainView.vue')
     },
     {
-      path: '/HomePage',
+      path: '/Student',
       name: 'HomePage',
       component: () => import('../views/student/HomePage.vue'),
       meta: {
@@ -52,53 +52,53 @@ const router = createRouter({
       },
       children: [
         {
-          path: '/CourseSelect',
+          path: '/Student/CourseSelect',
           name: 'CourseSelect',
           component: () => import('../views/student/CourseSelect.vue')
         },
         {
-          path: '/ScoreManage',
+          path: '/Student/ScoreManage',
           name: 'ScoreManage',
           component: () => import('../views/student/ScoreManage.vue')
         },
         {
-          path: '/SelfInformation',
+          path: '/Student/SelfInformation',
           name: 'SelfInformation',
           component: () => import('../views/student/SelfInformation.vue')
         },
         {
-          path: '/Main',
+          path: '/Student/Main',
           name: 'main',
           component: () => import('../views/student/MainView.vue')
         },
         {
-          path: '/AcademicManagement',
+          path: '/Student/AcademicManagement',
           name: 'AcademicManagement',
           component: () => import('../views/student/AcademicManagement.vue'),
           children: [
             {
-              path:'/AcademicManagement/AMHome',
+              path:'/Student/AcademicManagement/AMHome',
               name:'AMHome',
               component:()=> import('../views/student/AMHome.vue')
             },
             {
-              path: '/AcademicManagement/StudentEvaluate',
+              path: '/Student/AcademicManagement/StudentEvaluate',
               name: 'StudentEvaluate',
               component: () => import('../views/student/StudentEvaluate.vue')
             },
             {
-              path: '/AcademicManagement/Practice',
+              path: '/Student/AcademicManagement/Practice',
               name: 'Practice',
               component: () => import('../views/student/PracticeView.vue')
             },
             {
-              path: '/AcademicManagement/Activity',
+              path: '/Student/AcademicManagement/Activity',
               name: 'Activity',
               component: () => import('../views/student/ActivityView.vue')
             },
 
             {
-              path: '/AcademicManagement/Reward',
+              path: '/Student/AcademicManagement/Reward',
               name: 'Reward',
               component: () => import('../views/student/RewardView.vue')
             },
@@ -107,7 +107,7 @@ const router = createRouter({
       ]
     },
     {
-      path: '/TeacherHomePage',
+      path: '/Teacher',
       name: 'TeacherHomePage',
       component: () => import('../views/teacher/TeacherHomePage.vue'),
       meta: {
@@ -115,29 +115,44 @@ const router = createRouter({
       },
       children: [
         {
-          path: '/TeacherCourseManage',
+          path: '/Teacher/CourseManage',
           name: 'TeacherCourseManage',
           component: () => import('../views/teacher/TeacherCourseManage.vue')
         },
         {
-          path: '/TeacherMain',
+          path: '/Teacher/Main',
           name: 'TeacherMain',
           component: () => import('../views/teacher/TeacherMainView.vue')
         },
         {
-          path: '/TeacherScoreManage',
+          path: '/Teacher/ScoreManage',
           name: 'TeacherScoreManage',
           component: () => import('../views/teacher/TeacherScoreManage.vue')
         },
         {
-          path:'/TeacherGetScore',
+          path:'/Teacher/GetScore',
           name:'TeacherGetScore',
           component: ()=> import('../views/teacher/TeacherGetScore.vue')
         },
         {
-          path: '/TeacherSelfInformation',
+          path: '/Teacher/SelfInformation',
           name: 'TeacherSelfInformation',
           component: () => import('../views/teacher/TeacherSelfInformation.vue')
+        },
+      ]
+    },
+    {
+      path: '/Manager',
+      name: 'ManagerHomePage',
+      component: () => import('../views/manager/HomePage.vue'),
+      meta: {
+        keepAlive: true
+      },
+      children: [
+        {
+          path: '/Manager/Main',
+          name: 'ManagerMainView',
+          component: () => import('../views/manager/MainView.vue')
         },
       ]
     }

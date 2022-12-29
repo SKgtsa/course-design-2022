@@ -78,8 +78,9 @@ import axios from "axios";
 import service from "@/request";
 import { Lock, User, Message, Phone } from '@element-plus/icons-vue';
 import { messageError, messageSuccess } from "@/utils/message";
-import { getNickName, setNickName, getAvatarURL, setAvatarURL } from '../global/global'
 import { hideLoading, showLoading } from "@/utils/loading";
+import {getBaseURL, setAvatarURL, setNickName, setUserId} from "@/global/global";
+import {identityJump} from "@/utils/identityJump";
 const login_data = reactive({
   userNumber: '',
   password: '',
@@ -140,19 +141,14 @@ const submitPwd = async (formEl: FormInstance | undefined) => {
           hideLoading();
           console.log(login_data.password, login_data.userNumber)
           localStorage.setItem("token", data.token)
-          let url = "http://courseback.clankalliance.cn" + data.user.avatarURL;
+          let url = getBaseURL() + data.user.avatarURL;
           console.log(localStorage.getItem('token'))
+          setUserId(data.user.id);
           setNickName(data.user.nickName);
           setAvatarURL(url);
           /*       localStorage.setItem("userName", data.user.name) */
           messageSuccess(data.message)
-          if (data.character == 0) {
-            router.push('/Main') //学生页面
-          } else if (data.character == 1) {
-            router.push('/TeacherSelfInformation'); //教师界面
-          } else if (data.character == 2) {
-            router.push('/ScoreManage'); //管理员界面，最后再改
-          }
+          identityJump(data.character)
         } else {
           hideLoading();
           console.log('!data.success')
@@ -181,18 +177,13 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
         const data = res.data;
         if (data.success) {
           localStorage.setItem("token", data.token)
-          let url = "http://courseback.clankalliance.cn" + data.user.avatarURL
+          let url = getBaseURL() + data.user.avatarURL
           setNickName(data.user.nickName);
+          setUserId(data.user.id);
           setAvatarURL(url);
           messageSuccess("登录成功!")
-          if (data.character == 0) {  //这个还没写
-
-          } else if (data.character == 1) {
-
-          } else if (data.character == 2) {
-
-          }
-          router.push('/SelfInformation')
+          hideLoading()
+          identityJump(data.character)
         } else {
           hideLoading();
           messageError(data.message)

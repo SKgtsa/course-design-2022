@@ -7,16 +7,13 @@ import 'element-plus/theme-chalk/display.css'
 import 'element-plus/dist/index.css'
 import './assets/main.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-import store from "./store";
-import qs from 'qs'     
+import qs from 'qs'
 
 const app = createApp(App)
 app.config.globalProperties.$qs = qs
 app.use(router)
 
 app.use(ElementPlus)
-
-app.use(store)
 
 app.mount('#app')
 

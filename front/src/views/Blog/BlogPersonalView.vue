@@ -5,7 +5,7 @@
     <div class="leftArea">
       <div class="infoCard">
         <div class="userInfoCard">
-          <el-image class="infoAvatar" :src="'http://courseback.clankalliance.cn' + pageData.data.avatarURL"/>
+          <el-image class="infoAvatar" :src="getBaseURL() + pageData.data.avatarURL"/>
           <a class="infoNickName" >{{pageData.data.nickName}}</a>
         </div>
         <div class="detailInfo">
@@ -41,7 +41,7 @@
                           <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
                           <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
                         </div>
-                        <div class="bottomBottom" v-if="login.value">
+                        <div class="bottomBottom" v-if="login">
                           <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
                           <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
                           <a class="likeNum">{{item.likeNum}}</a>
@@ -72,7 +72,7 @@
       <div v-html="pageData.targetContent.content"/>
     </div>
     <div class="commentArea">
-      <div class="commentEditor" v-if="login.value">
+      <div class="commentEditor" v-if="login">
         <editor v-model="commentContent"
                 :init="initComment"
                 :disabled="disabled"
@@ -85,7 +85,7 @@
           <div v-html="item.content" class="commentContent"/>
           <div class="commentTool">
             <div class="userInfoArea">
-              <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="'http://courseback.clankalliance.cn' + item.avatarURL" class="avatar"/></el-button>
+              <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="getBaseURL() + item.avatarURL" class="avatar"/></el-button>
               <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
             </div>
           </div>
@@ -112,11 +112,18 @@ import {ElMessage} from "element-plus";
 import {hideLoading, showLoading} from "@/utils/loading";
 import {reactive, ref} from "vue";
 import {defineEmits, onMounted, watch} from "@vue/runtime-core";
+import {loginFailed} from "@/utils/tokenCheck";
+import {getBaseURL} from "@/global/global";
 
 
 let userId  = router.currentRoute.value.query.userId as String;
 console.log(userId)
 console.log(router)
+
+const hasUser = ref(true)
+
+if(userId == undefined)
+  hasUser.value = false;
 
 const login = ref(false);
 
@@ -177,7 +184,7 @@ const initComment = reactive({
   // resize: false,
   file_picker_types: 'file',
   images_upload_url: '/api/upload/generalUpload',
-  images_upload_base_path: 'http://courseback.clankalliance.cn',
+  images_upload_base_path: getBaseURL(),
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
 })
 
@@ -265,10 +272,7 @@ const subscribe = () => {
       pageData.data.follow = true;
       localStorage.setItem('token', data.token)
     } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      loginFailed()
     }
     localStorage.setItem('token', data.token)
     hideLoading();
@@ -292,8 +296,8 @@ const refresh = () => {
         login.value = data.success;
         let tempList = pageData.postList;
         for(let i = 0;i < data.content.length;i ++ ){
-          data.content[i].avatarURL = 'http://courseback.clankalliance.cn' + data.content[i].avatarURL;
-          data.content[i].topImageURL = 'http://courseback.clankalliance.cn' + data.content[i].topImageURL;
+          data.content[i].avatarURL = getBaseURL() + data.content[i].avatarURL;
+          data.content[i].topImageURL = getBaseURL() + data.content[i].topImageURL;
           tempList.push(data.content[i]);
         }
         pageData.postList = tempList;
@@ -304,10 +308,12 @@ const refresh = () => {
         localStorage.setItem('token', data.token)
          if (!data.success) {
           pageData.loadOver = true;
-          ElMessage({
-            message: data.message,
-            type: 'error'
-          })
+           if(data.message != '登录失效' && data.message != '查找成功'){
+             ElMessage({
+               message: data.message,
+               type: 'error'
+             })
+           }
         }
         pageData.requesting = false;
         hideLoading();
@@ -318,23 +324,31 @@ const refresh = () => {
 }
 
 const init = () => {
-  showLoading()
-  console.log(userId)
-  pageData.requesting = true;
-  //初始化方法
-  service.post('api/blog/getPersonal', {token: localStorage.getItem("token"), userId: userId}).then(res => {
-    const data = res.data;
-    console.log('初始化成功')
-    console.log(res)
-    localStorage.setItem('token', data.token)
-    login.value = data.success;
-    let temp = data.content;
-    login.value = data.success;
-    pageData.data = temp;
-    hideLoading();
-    pageData.requesting = false;
-    refresh();
-  })
+  if(hasUser.value){
+    showLoading()
+    console.log(userId)
+    pageData.requesting = true;
+    //初始化方法
+    service.post('api/blog/getPersonal', {token: localStorage.getItem("token"), userId: userId}).then(res => {
+      const data = res.data;
+      console.log('初始化成功')
+      console.log(res)
+      localStorage.setItem('token', data.token)
+      login.value = data.success;
+      let temp = data.content;
+      login.value = data.success;
+      pageData.data = temp;
+      hideLoading();
+      pageData.requesting = false;
+      refresh();
+    })
+  }else{
+    ElMessage({
+      message: '用户不存在',
+      type: 'error'
+    })
+  }
+
 }
 
 init();
@@ -360,10 +374,7 @@ const likeThis = (target: Post, event: Event) => {
       }
       localStorage.setItem('token', data.token)
     } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      loginFailed()
     }
     hideLoading();
   })
@@ -382,10 +393,7 @@ const collectThis = (target: Post, event: Event) => {
       target.collect = !target.collect;
       localStorage.setItem('token', data.token)
     } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      loginFailed()
     }
     hideLoading();
   })
@@ -443,10 +451,7 @@ const commentSubmit = () => {
         //用新token向后端要新的blog列表并更新显示
       } else {
         console.log(res)
-        ElMessage({
-          message: data.message,
-          type: 'error'
-        })
+        loginFailed()
         hideLoading();
       }
     })

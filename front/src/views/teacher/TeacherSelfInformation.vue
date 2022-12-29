@@ -96,6 +96,7 @@ import { reactive, ref } from "vue";
 import { showLoading, hideLoading } from '@/utils/loading';
 import TEditor from '../../components/TEditor.vue'
 import serviceFile from '@/request/indexFile';
+import {getBaseURL} from "@/global/global";
 //变量
 //控制查看，更改信息弹出框
 let centerDialogVisibleInf = ref(false);
@@ -145,7 +146,7 @@ let uploadImg = async (f) => {
     if (data.success) {
       hideLoading();
       localStorage.setItem('token', data.token);
-      information.photoURL = 'http://courseback.clankalliance.cn' + data.content;
+      information.photoURL = getBaseURL() + data.content;
       messageSuccess("更换成功！")
     } else {
       hideLoading();
@@ -218,7 +219,7 @@ const loadInformationData = async () => {   //查看个人信息
         information.password = content.password,
         information.studentClass = content.studentClass,
         information.idCardNumber = content.idCardNumber;
-      let url = 'http://courseback.clankalliance.cn' + content.photoURL;
+      let url = getBaseURL() + content.photoURL;
       information.photoURL = url,
         information.id = content.id,
         localStorage.setItem('token', data.token)

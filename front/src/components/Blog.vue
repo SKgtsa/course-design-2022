@@ -140,7 +140,7 @@
           <div v-html="item.content" class="commentContent"/>
           <div class="commentTool">
             <div class="userInfoArea">
-              <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="'http://courseback.clankalliance.cn' + item.avatarURL" class="avatar"/></el-button>
+              <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="getBaseURL() + item.avatarURL" class="avatar"/></el-button>
               <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
             </div>
           </div>
@@ -168,14 +168,14 @@ import { onMounted, defineEmits, watch } from "@vue/runtime-core"
 
 import { reactive, ref } from "vue";
 import {ElMessage, ElMessageBox} from "element-plus";
-import { Delete, Download, Plus, ZoomIn } from '@element-plus/icons-vue'
+import { Delete, Plus } from '@element-plus/icons-vue'
 import type { UploadFile } from 'element-plus'
 import service from "@/request";
 import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
+import {getBaseURL} from "@/global/global";
 const blog = ref('')
-const testURL = 'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp';
 const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
   'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
@@ -414,7 +414,7 @@ const init = reactive({
   // resize: false,
   file_picker_types: 'file',
   images_upload_url: '/api/upload/generalUpload',
-  images_upload_base_path: 'http://courseback.clankalliance.cn',
+  images_upload_base_path: getBaseURL(),
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
 
@@ -426,18 +426,16 @@ const init = reactive({
       let params = new FormData()
       params.append('file', blobInfo.blob())
       params.append('token',localStorage.getItem('token'))
-
       let config = {
         headers: {
           "Content-Type": "multipart/form-data",
 
         }
       }
-
       service.post('api/upload/generalUpload', params, config).then(res => {
         console.log(res);
         if (res.data.success) {
-          resolve('http://courseback.clankalliance.cn' + res.data.content)  //上传成功，在成功函数里填入图片路径
+          resolve(getBaseURL() + res.data.content)  //上传成功，在成功函数里填入图片路径
           localStorage.setItem('token',res.data.token)
           init.images_upload_url = res.data.content;
         } else {
@@ -492,7 +490,7 @@ const initComment = reactive({
   // resize: false,
   file_picker_types: 'file',
   images_upload_url: '/api/upload/generalUpload',
-  images_upload_base_path: 'http://courseback.clankalliance.cn',
+  images_upload_base_path: getBaseURL(),
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
 
 
@@ -551,8 +549,8 @@ const refresh = () => {
           blog.value = '';
           let tempList = pageData.postList;
           for(let i = 0;i < data.content.length;i ++ ){
-            data.content[i].avatarURL = 'http://courseback.clankalliance.cn' + data.content[i].avatarURL;
-            data.content[i].topImageURL = 'http://courseback.clankalliance.cn' + data.content[i].topImageURL;
+            data.content[i].avatarURL = getBaseURL() + data.content[i].avatarURL;
+            data.content[i].topImageURL = getBaseURL() + data.content[i].topImageURL;
             tempList.push(data.content[i]);
           }
           pageData.postList = tempList;
@@ -812,29 +810,6 @@ const getContent = (v: string) => {
           height: 100%;
           display: flex;
           flex-direction: column;
-
-          /* .squareButton {
-    border-radius:5px 5px 0 0;
-    margin: 0 auto;
-    width: 100%;
-    height: 8vh;
-    background-color: #0a55cc;
-    color: #FFFFFF;
-    padding-left: 3vw;
-    padding-right: 3vw;
-    height: 5vh;
-    border-style: none;
-  }
-
-  .myInfoButton {
-    margin: 0 auto;
-    width: 100%;
-    background-color: #afc8f1;
-    padding-left: 3vw;
-    padding-right: 3vw;
-    height: 5vh;
-    border-style: none;
-  } */
           .opButton {
             justify-content: center;
             height: 5vh;

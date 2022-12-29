@@ -1,9 +1,10 @@
 import axios from 'axios'
+import {getBaseURL} from "@/global/global";
 
 //已创建的axios实例
 const service = axios.create({
     //这里本来的baseURL填错了
-    baseURL: 'http://courseback.clankalliance.cn',
+    baseURL: getBaseURL(),
     timeout: 60000,
 })
 export let get =async (url,params) =>{
