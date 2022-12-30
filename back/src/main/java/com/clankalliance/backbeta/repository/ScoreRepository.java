@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,6 +23,14 @@ public interface ScoreRepository extends JpaRepository<Score,Integer> {
      */
     @Query("from Score s where s.course.id=?1 and s.student.id=?2")
     Optional<Score> findByCourseStudentId(long courseId, long studentId);
+
+    /**
+     * 根据学生id查找与他相关联的所有成绩
+     * @param studentId 学生id
+     * @return
+     */
+    @Query("from Score s where s.student.id=?2")
+    List<Score> findByStudentId(long studentId);
 
     @Query("from Score s where s.student.id=?1 and s.course.id=?2 and s.course.year=?3 and s.course.semester=?4")
     Optional<Score> findByTime(long studentId, long courseId ,Integer year, String semester);
