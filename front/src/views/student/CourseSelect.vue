@@ -4,8 +4,8 @@
             <div class="content">
                 <el-container>
                     <el-aside class="classSchedulePage">
-                        <el-table :data="tableData" style="width: 100%" height="600" :cell-style="{ padding: '22px 0' }"
-                            class="tableStyle" border stripe>
+                        <el-table :data="tableData.arr" :key="random" style="width: 100%" height="600"
+                            :cell-style="{ padding: '22px 0' }" class="tableStyle" border stripe>
                             <el-table-column class="cellStyle" prop="title" label="节次" width="180"></el-table-column>
                             <el-table-column class="cellStyle" prop="Monday" label="周一"></el-table-column>
                             <el-table-column class="cellStyle" prop="Tuesday" label="周二"></el-table-column>
@@ -41,13 +41,14 @@
                         <a class="courseSelectPageTitle">进入选课</a>
                         <el-checkbox v-model="filter" label="" size="large" class="checkBox">
                             <a>过滤掉冲突课程</a>
-                            <el-button type="primary" @click="getCourseInformation" style="margin-left: 50px;margin-bottom:5px ;">
+                            <el-button type="primary" @click="getCourseInformation"
+                                style="margin-left: 50px;margin-bottom:5px ;">
                                 <a>查询</a>
                             </el-button>
                         </el-checkbox>
                     </span>
                     <div class="selectTable">
-                        <el-table :data="courseInfo" height="550" :header-cell-style="{ 'text-align': 'center' }"
+                        <el-table :data="courseInfo.arr" height="550" :header-cell-style="{ 'text-align': 'center' }"
                             :cell-style="{ padding: '20px 0' }" style="font-size: 16px" border>
                             <el-table-column prop="name" label="课程名称" align="center" width="150" />
                             <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
@@ -55,16 +56,17 @@
                             <el-table-column prop="credit" align="center" label="学分" width="60" />
                             <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
                             <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
-                            <el-table-column prop="classTime" align="center" label="上课时间" width="150">
+                            <el-table-column prop="time" align="center" label="上课时间" width="150">
                                 <template #default="time">
-                                    <p v-for="(item, index) in time.row.classTime">
-                                        第{{ time.row.classTime[index].weekDay }}周的第{{
-                                                time.row.classTime[index].section
-                                        }}大节
+                                    <p v-for="(item, index) in time.row.time">
+                                        星期{{ time.row.time[index].weekDay }}的第{{
+        time.row.time[index].section
+}}大节
                                     </p>
                                 </template>
                             </el-table-column>
-                            <el-table-column prop="capacity" align="center" label="课容量" width="120" />
+                            <el-table-column prop="capacity" align="center" label="课容量" width="60" />
+                            <el-table-column prop="studentNum" align="center" label="选课人数" width="60" />
                             <el-table-column prop="location" align="center" label="上课地点" width="150" />
                             <el-table-column label="选课" width="150" align="center">
                                 <template #default="scope">
@@ -83,7 +85,7 @@
             </div>
             <el-dialog v-model="dialogTableVisibleDetails" title="查看课程信息" width="700" class="dialogPage" align="true"
                 :align-center="true">
-                <el-table :data="backData" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
+                <el-table :data="backData.arr" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
                     :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
                     <el-table-column prop="name" label="课程名称" align="center" width="180" />
                     <el-table-column prop="teacherName" label="教师姓名" align="center" width="100" />
@@ -91,10 +93,10 @@
                     <el-table-column prop="credit" align="center" label="学分" width="60" />
                     <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
                     <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
-                    <el-table-column prop="classTime" align="center" label="上课时间" width="250">
+                    <el-table-column prop="time" align="center" label="上课时间" width="250">
                         <template #default="time">
-                            <p v-for="(item, index) in time.row.classTime">
-                                第{{ time.row.classTime[index].weekDay }}周的第{{ time.row.classTime[index].section }}大节
+                            <p v-for="(item, index) in time.row.time">
+                                星期{{ time.row.time[index].weekDay }}的第{{ time.row.time[index].section }}大节
                             </p>
                         </template>
                     </el-table-column>
@@ -105,7 +107,7 @@
             </el-dialog>
             <el-dialog v-model="dialogTableVisibleDrop" title="退选课程" width="700" class="dialogPage" align="true"
                 :align-center="true">
-                <el-table :data="backData" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
+                <el-table :data="backData.arr" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
                     :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
                     <el-table-column prop="name" label="课程名称" align="center" width="140" />
                     <el-table-column prop="teacherName" label="教师姓名" align="center" width="80" />
@@ -113,10 +115,10 @@
                     <el-table-column prop="credit" align="center" label="学分" width="60" />
                     <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
                     <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
-                    <el-table-column prop="classTime" align="center" label="上课时间" width="150">
+                    <el-table-column prop="time" align="center" label="上课时间" width="150">
                         <template #default="time">
-                            <p v-for="(item, index) in time.row.classTime">
-                                第{{ time.row.classTime[index].weekDay }}周的第{{ time.row.classTime[index].section }}大节
+                            <p v-for="(item, index) in time.row.time">
+                                星期{{ time.row.time[index].weekDay }}的第{{ time.row.time[index].section }}大节
                             </p>
                         </template>
                     </el-table-column>
@@ -142,8 +144,9 @@ import { ElMessageBox } from 'element-plus';
 import { reactive, ref } from 'vue';
 import { showLoading, hideLoading } from "../../utils/loading";
 
+let random = Math.random();
 let currentPage = ref(1);
-let pageSize = ref(10);
+let pageSize = ref(2);
 let dialogTableVisibleDetails = ref(false); //查看详细信息弹出框
 let dialogTableVisibleDrop = ref(false); //退课弹出框
 let filter = ref(false);  //是否过滤掉冲突课程
@@ -183,84 +186,149 @@ const activities = [
     },
 ]
 
-let courseInfo = reactive([]); //给我的所有课程，用于选课
-let backData = reactive([]); //我的课程，用于生成课表
-let tableData = reactive([ //课表中的数据，用于显示
-    {
-        title: '第一大节(8:00-9:50)',
-        Monday: '',
-        Tuesday: '',
-        Wednesday: '',
-        Thursday: '',
-        Friday: '',
-        Saturday: '',
-        Sunday: '',
-    },
-    {
-        title: '第二大节(10:10-12:00)',
-        Monday: '',
-        Tuesday: '',
-        Wednesday: '',
-        Thursday: '',
-        Friday: '',
-        Saturday: '',
-        Sunday: '',
-    },
-    {
-        title: "第三大节(14:00-15:50)",
-        Monday: '',
-        Tuesday: '',
-        Wednesday: '',
-        Thursday: '',
-        Friday: '',
-        Saturday: '',
-        Sunday: '',
-    },
-    {
-        title: '第四大节(16:10-18:00)',
-        Monday: '',
-        Tuesday: '',
-        Wednesday: '',
-        Thursday: '',
-        Friday: '',
-        Saturday: '',
-        Sunday: '',
-    },
-    {
-        title: '第五大节(17:00-20:50)',
-        Monday: '',
-        Tuesday: '',
-        Wednesday: '',
-        Thursday: '',
-        Friday: '',
-        Saturday: '',
-        Sunday: '',
-    },
-])
-
+let courseInfo = reactive({
+    arr: []
+}); //给我的所有课程，用于选课
+let backData = reactive({
+    arr: [],
+}); //我的课程，用于生成课表
+let tableData = reactive({
+    arr: [ //课表中的数据，用于显示
+        {
+            title: '第一大节(8:00-9:50)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: '第二大节(10:10-12:00)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: "第三大节(14:00-15:50)",
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: '第四大节(16:10-18:00)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: '第五大节(17:00-20:50)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+    ],
+})
+let MidTableData = reactive({
+    arr: [ //课表中的数据，用于显示
+        {
+            title: '第一大节(8:00-9:50)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: '第二大节(10:10-12:00)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: "第三大节(14:00-15:50)",
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: '第四大节(16:10-18:00)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+        {
+            title: '第五大节(17:00-20:50)',
+            Monday: '',
+            Tuesday: '',
+            Wednesday: '',
+            Thursday: '',
+            Friday: '',
+            Saturday: '',
+            Sunday: '',
+        },
+    ],
+})
 //该方法用于拼接课表数据
-const checkCourseTime = () => {   //更新课表页
-    for (let i = 0; i < backData.length; i++) {
-        for (let j = 0; j < backData[i].classTime.length; j++) {
-            let n = backData[i].classTime[j].section - 1; //数组下标从0开始
-            if (backData[i].classTime[j].weekDay == 1) {
-                console.log(backData[i].name);
-                tableData[n].Monday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
-            } else if (backData[i].classTime[j].weekDay == 2) {
-                tableData[n].Tuesday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
-            } else if (backData[i].classTime[j].weekDay == 3) {
-                tableData[n].Wednesday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
-            } else if (backData[i].classTime[j].weekDay == 4) {
-                tableData[n].Thursday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
-            } else if (backData[i].classTime[j].weekDay == 5) {
-                tableData[n].Friday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
-            } else if (backData[i].classTime[j].weekDay == 6) {
-                tableData[n].Saturday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
-            } else if (backData[i].classTime[j].weekDay == 7) {
-                tableData[n].Sunday = '课程名称:' + backData[i].name + "  " + '@上课地址:' + backData[i].location;
+const checkCourseTime = () => {   //更新课表页    //如果backData是0，就不进for循环了
+    console.log(backData.arr.length)
+    /* if (backData.arr.length == 0) {
+        tableData = MidTableData;
+    } */
+    for (let i = 0; i < backData.arr.length; i++) {
+        for (let j = 0; j < backData.arr[i].time.length; j++) {
+            let n = backData.arr[i].time[j].section - 1; //数组下标从0开始
+            if (backData.arr[i].time[j].weekDay == 1) {
+                console.log(backData.arr[i].name);
+                tableData.arr[n].Monday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
+            } else if (backData.arr[i].time[j].weekDay == 2) {
+                tableData.arr[n].Tuesday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
+            } else if (backData.arr[i].time[j].weekDay == 3) {
+                tableData.arr[n].Wednesday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
+            } else if (backData.arr[i].time[j].weekDay == 4) {
+                tableData.arr[n].Thursday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
+            } else if (backData.arr[i].time[j].weekDay == 5) {
+                tableData.arr[n].Friday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
+            } else if (backData.arr[i].time[j].weekDay == 6) {
+                tableData.arr[n].Saturday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
+            } else if (backData.arr[i].time[j].weekDay == 7) {
+                tableData.arr[n].Sunday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
             }
         }
+
     }
+    console.log(tableData)
 }
 //加载课表方法
 //后端发给我一个已经选课的数组，我绑定到backData里，然后执行checkCourseTime来
@@ -270,11 +338,15 @@ const courseSelected = async () => {
     showLoading()
     await service.post('/api/course/findCourseList', { token: localStorage.getItem('token') }).then(res => {
         let data = res.data;
+
         if (data.success) {
-            localStorage.setItem('token', data.token);
-            backData = data.content;
-            checkCourseTime();//调用拼接的方法
             hideLoading();
+            random = Math.random()
+            localStorage.setItem('token', data.token);
+            backData.arr = data.content;
+            console.log(backData.arr);
+            if(backData.arr.length==0){tableData.arr = MidTableData.arr}
+            else{ checkCourseTime()};
         } else {
             hideLoading();
             messageError(data.message);
@@ -287,7 +359,7 @@ const courseSelected = async () => {
         })
 }
 
-/* courseSelected(); //进入页面先执行一次 */
+courseSelected(); //进入页面先执行一次 
 
 
 //得到可以选的课的课程信息
@@ -297,10 +369,13 @@ const getCourseInformation = async () => {//下午说这个传参加了一个siz
     showLoading()
     await service.post('/api/course/findAllCourse', { token: localStorage.getItem('token'), filterOpern: filter.value, pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
         let data = res.data;
+        console.log(filter.value)
         if (data.success) {
-            console.log(res)
+            console.log(res.data.totalPage)
+            console.log(res.data.content)
             localStorage.setItem('token', data.token);
-            courseInfo = data.content;
+            courseInfo.arr = data.content;
+            console.log(courseInfo.arr)
             pageCount.value = data.totalPage;
             hideLoading()
         } else {
@@ -314,8 +389,8 @@ const getCourseInformation = async () => {//下午说这个传参加了一个siz
             console.log(error)
         })
 }
-
-getCourseInformation();//进入页面自动加载
+//进去先默认刷新课表，然后课程信息自己要
+/* getCourseInformation() */;//进入页面自动加载
 //进去即使没有选课也把空课表给我，让我给backData赋初始值
 
 
@@ -336,20 +411,21 @@ const dropCourse = async (row) => {
                 if (res.data.success) {
                     hideLoading()
                     messageSuccess('退课成功!')
-                    courseSelected();//退课要重新获得选课信息
-                    getCourseInformation();//重新更改可选课程数据
                     localStorage.setItem("token", res.data.token)
+                    courseSelected();//退课要重新获得选课信息
+                    /*   getCourseInformation();//重新更改可选课程数据 */
                 } else {
                     messageWarning(res.data.message)
                     hideLoading()
                 }
             })
-        })
-        .catch(function (error) {
-            hideLoading();
-            messageError("服务器开小差了呢");
-            console.log(error)
-        })
+                .catch(function (error) {
+                    hideLoading();
+                    messageError("服务器开小差了呢");
+                    console.log(error)
+                })
+        }
+        )
 }
 
 //选课
@@ -358,11 +434,12 @@ const handleSelect = async (row) => { //选课
     await service.post('/api/course/select', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
         let data = res.data;
         if (data.success) {
+            console.log(res.data)
             hideLoading();
-            messageSuccess('选课成功！');
             localStorage.setItem('token', data.token);
+            messageSuccess('选课成功！');
             courseSelected();
-            getCourseInformation();
+            /*       getCourseInformation(); */
         } else {
             messageError(data.message);
             hideLoading()
@@ -386,7 +463,7 @@ const viewDetails = () => {
     dialogTableVisibleDetails.value = true;
 }
 
-const loadDropDialog = (row) => {
+const loadDropDialog = () => {
     dialogTableVisibleDrop.value = true;
 }
 
