@@ -187,7 +187,7 @@ public class CourseServiceImpl implements CourseService {
                     course.setStudentSet(studentSet);
                     courseRepository.save(course);
                     Set<Course> courseSet = student.getCourseSet();
-                    courseSet.remove(student);
+                    courseSet.remove(course);
                     student.setCourseSet(courseSet);
                     studentRepository.save(student);
                     response.setSuccess(true);
