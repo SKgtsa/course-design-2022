@@ -13,6 +13,7 @@ import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Optional;
 
 @CrossOrigin
 @RestController
@@ -31,11 +32,13 @@ public class CourseController {
     //学生选课
     @PostMapping("/select")
     public CommonResponse selectCourse(@RequestBody StudentCourseSaveRequest request){
-        CommonResponse response = tokenUtil.tokenCheck(request.getToken());
-        if(!response.getSuccess())
-            return response;
-        Student student = studentRepository.findUserById(Long.valueOf(response.getMessage())).get();
-        return courseService.bind(request.getCourseId(),student);
+        CommonResponse tokenResponse = tokenUtil.tokenCheck(request.getToken());
+        if(!tokenResponse.getSuccess())
+            return tokenResponse;
+        Student student = studentRepository.findUserById(Long.valueOf(tokenResponse.getMessage())).get();
+        CommonResponse response = courseService.bind(request.getCourseId(),student);
+        response.setToken(tokenResponse.getToken());
+        return response;
     }
 
     //学生退课
@@ -47,12 +50,20 @@ public class CourseController {
     //老师或管理员给课添加新学生
     @PostMapping("/addStudent")
     public CommonResponse addStudent(@RequestBody EditCourseStudentRequest request){
-        CommonResponse response = tokenUtil.tokenCheck(request.getToken());
-        if(!response.getSuccess())
-            return response;
+        CommonResponse tokenResponse = tokenUtil.tokenCheck(request.getToken());
+        if(!tokenResponse.getSuccess())
+            return tokenResponse;
         //通过request.getStudentNumber找出id
-        Student student = studentRepository.findByUserNumber(request.getStudentNumber()).get();
-        return courseService.bind(request.getCourseId(),student);
+        Optional<Student> sop = studentRepository.findByUserNumber(request.getStudentNumber());
+        if(sop.isEmpty()){
+            tokenResponse.setSuccess(false);
+            tokenResponse.setMessage("学生不存在");
+            return tokenResponse;
+        }
+        Student student = sop.get();
+        CommonResponse response = courseService.bind(request.getCourseId(),student);
+        response.setToken(tokenResponse.getToken());
+        return response;
     }
 
 

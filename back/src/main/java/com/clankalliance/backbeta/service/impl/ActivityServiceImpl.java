@@ -1,6 +1,8 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.Activity;
+import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
@@ -11,6 +13,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepositor
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.ActivityService;
+import com.clankalliance.backbeta.service.ScoreService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
@@ -31,14 +34,65 @@ public class ActivityServiceImpl implements ActivityService {
     private UserService userService;
 
     @Resource
-    private UserRepository userRepository;
-
-    @Resource
     private StudentRepository studentRepository;
 
 
     @Resource
     private ActivityRepository activityRepository;
+
+    @Resource
+    private ScoreService scoreService;
+
+    private Achievement ACTIVITY_C = new Achievement(Long.parseLong("10"),"课外活动3项以上","课外活动爱好者");
+
+    private Achievement ACTIVITY_B = new Achievement(Long.parseLong("11"),"课外活动7项以上","课外活动丰富");
+
+    private Achievement ACTIVITY_A = new Achievement(Long.parseLong("12"),"课外活动10项以上","课外活动达人");
+
+    private Achievement ACTIVITY_POINT = new Achievement(Long.parseLong("13"),"同时获得课外活动与绩点最高成就","文体两开花");
+
+    @Override
+    public Achievement getACTIVITY_POINT() {
+        return ACTIVITY_POINT;
+    }
+
+    @Override
+    public Achievement getACTIVITY_A() {
+        return ACTIVITY_A;
+    }
+
+    private List<Achievement> updateAchievementList(Student student){
+        List<Activity> rewardList = student.getActivity();
+        int activityNum = rewardList.size();
+        List<Achievement> achievementList = student.getAchievementList();
+        if(activityNum >= 10){
+            if(achievementList.contains(ACTIVITY_B)){
+                achievementList.remove(ACTIVITY_B);
+            }else if(achievementList.contains(ACTIVITY_C)){
+                achievementList.remove(ACTIVITY_C);
+            }
+            achievementList.add(ACTIVITY_A);
+            if(achievementList.contains(scoreService.getPOINT_A())){
+                achievementList.add(ACTIVITY_POINT);
+            }
+        }else if(activityNum >= 7){
+            if(achievementList.contains(ACTIVITY_A)){
+                achievementList.remove(ACTIVITY_A);
+            }else if(achievementList.contains(ACTIVITY_C)){
+                achievementList.remove(ACTIVITY_C);
+            }
+            achievementList.add(ACTIVITY_B);
+        }else if(activityNum >= 3){
+            if(achievementList.contains(ACTIVITY_A)){
+                achievementList.remove(ACTIVITY_A);
+            }else if(achievementList.contains(ACTIVITY_B)){
+                achievementList.remove(ACTIVITY_B);
+            }
+            achievementList.add(ACTIVITY_C);
+        }
+        return achievementList;
+    }
+
 
     /**
      * 保存课外活动
@@ -80,6 +134,7 @@ public class ActivityServiceImpl implements ActivityService {
                 List<Activity> activityList=student.getActivity();
                 activityList.add(activity);
                 student.setActivity(activityList);
+                student.setAchievementList(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -139,7 +194,8 @@ public class ActivityServiceImpl implements ActivityService {
                 student.setActivity(activityList);
                 activityRepository.delete(activity);
                 // activityRepository.save(activity);
-                userRepository.save(student);
+                student.setAchievementList(updateAchievementList(student));
+                studentRepository.save(student);
 
                 response.setSuccess(true);
                 response.setMessage("课程删除成功");

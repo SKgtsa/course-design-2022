@@ -1,22 +1,22 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
-import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.ScoreRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
+import com.clankalliance.backbeta.service.ActivityService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.service.ScoreService;
 import com.clankalliance.backbeta.utils.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.swing.text.AbstractDocument;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -42,6 +42,58 @@ public class ScoreServiceImpl implements ScoreService {
     @Resource
     private ScoreRepository scoreRepository;
 
+    @Resource
+    private ActivityService activityService;
+
+    private Achievement POINT_C = new Achievement(Long.parseLong("1"),"绩点3.5以上","勤奋好学");
+
+    private Achievement POINT_B = new Achievement(Long.parseLong("2"),"绩点3.8以上","博学多闻");
+
+    private Achievement POINT_A = new Achievement(Long.parseLong("3"),"绩点4.0以上","百科字典");
+
+    @Override
+    public Achievement getPOINT_A() {
+        return POINT_A;
+    }
+
+    private List<Achievement> updateAchievementList(Student student){
+        List<Score> scoreList = scoreRepository.findByStudentId(student.getId());
+        Double point = 0.0;
+        Double totalCredit = 0.0;
+        for(Score s : scoreList){
+            point += ((s.getEndScore() * s.getWeight() + s.getDailyScore() * (1 - s.getWeight())) - 50) / 10;
+            totalCredit += s.getCourse().getCredit();
+        }
+        Double pointResult = totalCredit.equals(0.0)? 0.0: point/totalCredit;
+        List<Achievement> achievementList = student.getAchievementList();
+        if(pointResult >= 4.0){
+            if(achievementList.contains(POINT_B)){
+                achievementList.remove(POINT_B);
+            }else if(achievementList.contains(POINT_C)){
+                achievementList.remove(POINT_C);
+            }
+            achievementList.add(POINT_A);
+            if(achievementList.contains(activityService.getACTIVITY_A())){
+                achievementList.add(activityService.getACTIVITY_POINT());
+            }
+        }else if(pointResult >= 3.8){
+            if(achievementList.contains(POINT_A)){
+                achievementList.remove(POINT_A);
+            }else if(achievementList.contains(POINT_C)){
+                achievementList.remove(POINT_C);
+            }
+            achievementList.add(POINT_B);
+        }else if(pointResult >= 3.5){
+            if(achievementList.contains(POINT_A)){
+                achievementList.remove(POINT_A);
+            }else if(achievementList.contains(POINT_B)){
+                achievementList.remove(POINT_B);
+            }
+            achievementList.add(POINT_C);
+        }
+        return achievementList;
+    }
+
     /**
      * 处理成绩保存的方法，先进行token验证，再存储。传入数据合乎规范
      * @param token 用户token
@@ -63,9 +115,6 @@ public class ScoreServiceImpl implements ScoreService {
         }
         if(response.getSuccess()){
             //token验证成功
-
-
-
             Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
             long id;
             if(scoreOp.isEmpty()){
@@ -99,9 +148,10 @@ public class ScoreServiceImpl implements ScoreService {
             courseScoreSet.add(score);
             course.setScoreSet(courseScoreSet);
             //保存
-            studentRepository.save(student);
-            courseRepository.save(course);
             scoreRepository.save(score);
+            courseRepository.save(course);
+            student.setAchievementList(updateAchievementList(student));
+            studentRepository.save(student);
             response.setSuccess(true);
             response.setMessage("保存成功");
         }
@@ -217,46 +267,11 @@ public class ScoreServiceImpl implements ScoreService {
                 response.setMessage("成绩查询成功");
             }
         }
-//        CommonResponse response = tokenUtil.tokenCheck(token);
-//        if(response.getSuccess()){
-//            User user = userService.findById(Long.parseLong(response.getMessage()));
-//            //身份为教师
-//            if(user instanceof Teacher || user instanceof Manager){
-//
-//                Course course = courseRepository.findById(courseId).get();
-//                Set<Student> studentSet = course.getStudentSet();
-//                List<Score> scoreList = new ArrayList<>();
-//                for(Student s: studentSet){
-//                    Optional<Score> sop = scoreRepository.findByCourseStudentId(courseId,s.getId());
-//                    if(sop.isPresent()){
-//                        scoreList.add(sop.get());
-//                    }
-//                }
-//            response.setContent(scoreList);
-//            }//身份为学生
-//            else if(user instanceof Student){
-//                long userId = user.getId();
-//                List<Score> scoreList = new ArrayList<>();
-//                Optional<Score> sop = scoreRepository.findByTime(userId,courseId,Year,Semester);
-//                while(sop.isPresent()){
-//                    scoreList.add(sop.get());
-//                }
-//                response.setContent(scoreList);
-//            }
-//        }
-//        return response;
         return response;
     }
 
     public CommonResponse handleFindDetail(String token,long courseId){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             //token验证成功
             User user = userService.findById(Long.parseLong(response.getMessage()));

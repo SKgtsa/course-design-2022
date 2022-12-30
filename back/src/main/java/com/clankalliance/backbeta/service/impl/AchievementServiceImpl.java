@@ -14,6 +14,7 @@ import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
@@ -38,6 +39,7 @@ public class AchievementServiceImpl implements AchievementService {
 
     @Resource
     private TokenUtil tokenUtil;
+
 
     @Override
     public CommonResponse handleEvaluate(String token, Long userId, String name, String description){
