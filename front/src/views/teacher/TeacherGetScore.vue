@@ -198,7 +198,7 @@ const handleCheck = async (row) => {
 const check = async () => {  //进去先加载查看课表方法，然后绑定上  
     showLoading();
     await service.post('/api/course/studentFind', {
-        token: localStorage.getItem('token'), semester: semesterValue.value, year: yearsValue
+        token: localStorage.getItem('token'), semester: semesterValue.value, year: yearsValue.value
     })
         .then(res => {
             let data = res.data;

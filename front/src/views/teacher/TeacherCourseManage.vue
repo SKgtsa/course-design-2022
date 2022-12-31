@@ -20,18 +20,31 @@
           <a>查询创建课程信息</a>
         </el-button>
       </div>
-      <el-table :data="tableData.arr" style="width: 80%" border stripe size="large" class="courseTable"
+      <el-table :data="tableData.arr" style="width:75vw" border stripe size="large" class="courseTable"
         :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
         <el-table-column label="课程" prop="name" width="200" show-overflow-tooltip />
+        <el-table-column label="地点" prop="location" width="240" show-overflow-tooltip />
+        <el-table-column label="开课周" prop="weekStart" width="60" show-overflow-tooltip />
+        <el-table-column label="结束周" prop="weekEnd" width="60" show-overflow-tooltip />
+        <el-table-column label="上课时间" prop="time" width="250" show-overflow-tooltip>
+          <template #default="time">
+            <p v-for="(item, index) in time.row.time">
+              星期{{ time.row.time[index].weekDay }}的第{{
+    time.row.time[index].section
+}}大节
+            </p>
+          </template>
+        </el-table-column>
         <el-table-column width="300">
           <template #header>
             操作
           </template>
           <template #default="scope">
             <!-- 默认行和列 -->
-            <el-button @click="viewDetails(scope.row)" class="button" type="primary">课程详情</el-button>
-            <el-button size="small" @click="loadStudentTable(scope.row.id)" class="button" type="primary">选课学生</el-button>
+            <!-- <el-button @click="viewDetails(scope.row)" class="button" type="primary">课程详情</el-button> -->
+            <el-button size="small" @click="loadStudentTable(scope.row.id)" class="button"
+              type="primary">选课学生</el-button>
             <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑课程</el-button>
             <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
           </template>
@@ -74,8 +87,8 @@
           <el-option v-for="item in weekEndOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="上课时间:" prop="classTime">
-        <el-cascader v-model="editForm.classTime" :options="classTime" :props="mul" clearable placeholder="上课时间" />
+      <el-form-item label="上课时间:" prop="time">
+        <el-cascader v-model="editForm.time" :options="time" :props="mul" clearable placeholder="上课时间" />
       </el-form-item>
       <span style="display: flex; flex-direction: row;">
         <el-form-item label="学年:" prop="year">
@@ -105,9 +118,10 @@
       </el-form-item>
       <span style="display:flex;flex-direction:row">
         <el-form-item label="课容量:" prop="capacity">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.capacity" maxlength="5">{{ editForm.capacity
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.capacity" maxlength="5" type="number">{{
+    editForm.capacity
 }}</el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.capacity" maxlength="5"></el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.capacity" maxlength="5" type="number"> </el-input>
         </el-form-item>
         <el-form-item label="学分:" prop="credit">
           <el-input v-if="typeOperation === 'edit'" v-model="editForm.credit" maxlength="2" type="number">{{
@@ -145,14 +159,16 @@
       <el-input class="studentNumberInput" v-model="studentNumber" placeholder="请输入学生学号" />
       <el-button class="addButton" @click="addStudent">添加学生</el-button>
     </div>
-    <el-table :data="studentData.arr" style="width: 80%" border stripe size="small" class="courseTable"
-      max-height="400">
+    <el-table :data="studentData.arr" style="width: 90%" border stripe size="small" class="courseTable" max-height="400"
+      :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
+      :cell-style="{ 'height': '14px', 'font-size': '10px', 'text-align': 'center', 'font-weight': '450' }">>
       <el-table-column label="姓名" prop="name" width="120" show-overflow-tooltip />
-     <el-table-column label="学号" prop="studentNumber" width="350" show-overflow-tooltip />
-     <el-table-column label="年级" prop="studentSection" width="150" show-overflow-tooltip />
-     <el-table-column label="班级" prop="studentSection" width="150" show-overflow-tooltip />
+      <el-table-column label="学号" prop="userNumber" width="250" show-overflow-tooltip />
+      <el-table-column label="年级" prop="section" width="150" show-overflow-tooltip />
+      <el-table-column label="班级" prop="studentClass" width="150" show-overflow-tooltip />
       <el-table-column>
         <template #header>
+          操作
         </template>
         <template #default="scope">
           <el-button @click="deleteStudent(scope.row)">删除学生</el-button>
@@ -160,18 +176,17 @@
       </el-table-column>
     </el-table>
     <div class="pagination">
-        <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
-          @current-change="handleCurrentChange" :current-page="pageNum" :page-size="pageSize"
-          style="text-align: center">
-        </el-pagination>
-      </div>
+      <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
+        @current-change="handleCurrentChange" :current-page="pageNum" :page-size="pageSize" style="text-align: center">
+      </el-pagination>
+    </div>
   </el-dialog>
 </template>
 <script lang="ts" setup>
 import { computed, ref, reactive } from 'vue'
 import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage, ElMessageBox, rowContextKey } from 'element-plus'
 import { hideLoading, showLoading } from "@/utils/loading";
 
 const mul = { multiple: true }
@@ -182,7 +197,7 @@ interface time {
   section: Number;
 }
 
-const classTime = [
+const time = [
   {
     value: 1,
     label: '星期一',
@@ -615,9 +630,9 @@ let idCourse = ref();//用于删除学生的课程id
 const rulesEditForm = reactive({   /* 定义校验规则 */
   name: [{ required: true, message: '请输入课程名！', trigger: 'blur' }],
   description: [{ required: true, message: '请输入课程简介！', trigger: 'blur' }],
-  weekStart: [{ required: true, message: '请选择课程起始周！', trigger: 'blur' }, { max: 16, min: 1, message: '请输入”1-16“的教学周!', trigger: 'blur' }],
-  weekEnd: [{ required: true, message: '请选择课程结束周！', trigger: 'blur' }, { max: 16, min: 1, message: '请输入”1-16“的教学周!', trigger: 'blur' }],
-  classTime:[{ required: true, message: '请选择上课时间！', trigger: 'blur' }],
+  weekStart: [{ required: true, message: '请选择课程起始周！', trigger: 'blur' },],
+  weekEnd: [{ required: true, message: '请选择课程结束周！', trigger: 'blur' },],
+  time: [{type: 'array', required: true, message: '请选择上课时间', trigger:  'change' }],
   capacity: [{ required: true, message: '请输入课程容量！', trigger: 'blur' }],
   studentClass: [{ required: true, message: '请选择学生班级！', trigger: 'blur' }],
   location: [{ required: true, message: '请输入上课地址！', trigger: 'blur' }],
@@ -630,31 +645,32 @@ let editForm = reactive({
   name: '',
   weekStart: '',
   weekEnd: '',
-  classTime: [],
+  time: [],
   capacity: '',
   studentClass: [],
-  studentSection:[],
+  studentSection: [],
   location: '',
   year: '',
   description: '',
   semester: '',
   credit: '',
-  courseId:'',
+  courseId: '',
 });
-let studentForm = reactive({
+/* let studentForm = reactive({
   token: '',
   studentNumber: '',
   courseId: '',
   name: '',
   id: '',
 });
-
+ */
 const loadCourseTable = async () => {
   showLoading();
-  await service.post('/api/course/teacherFind', { token: localStorage.getItem("token"), semester: semesterValue, year: yearsValue }).then(res => {
+  await service.post('/api/course/teacherFind', { token: localStorage.getItem("token"), semester: semesterValue.value, year: yearsValue.value }).then(res => {
     if (res.data.success) {
       hideLoading();
       let data = res.data;
+      messageSuccess('查询成功')
       localStorage.setItem('token', data.token);
       tableData.arr = data.content;
     } else {
@@ -673,7 +689,7 @@ let detailsForm = reactive({
   /*   name: '',
     weekStart: '',
     weekEnd: '',
-    classTime:[],
+    time:[],
     capacity:'',
     studentClass:[],
     studentSection:[],
@@ -704,12 +720,12 @@ const add = () => {
   editForm.name = '';
   editForm.weekStart = '';
   editForm.weekEnd = '';
-  /*   editForm.classTime.weekDay = '';
-    editForm.classTime.section = ''; */
+  /*   editForm.time.weekDay = '';
+    editForm.time.section = ''; */
   editForm.capacity = '';
   editForm.studentClass = [];
   editForm.studentSection = [];
-  editForm.classTime = [];
+  editForm.time = [];
   editForm.location = '';
   editForm.year = '';
   editForm.description = '';
@@ -724,21 +740,26 @@ const add = () => {
 // }
 
 let studentData = reactive({
-  arr:[],
+  arr: [],
 });
 
 //加载选课学生
 const loadStudentTable = async (id) => {
   showLoading();
-  await service.post('/api/course/findCourseStudent', { token: localStorage.getItem("token"),pageNum:pageNum.value,
-  pageSize:pageSize.value,courseId:id }).then(res => {
+  await service.post('/api/course/findCourseStudent', {
+    token: localStorage.getItem("token"), pageNum: pageNum.value,
+    pageSize: pageSize.value, courseId: id
+  }).then(res => {
     if (res.data.success) {
       hideLoading();
+      console.log(res.data.content)
+      console.log(id)
       idCourse.value = id;
       let data = res.data;
       let content = data.content;
       studentData.arr = content;
       localStorage.setItem('token', data.token)
+      studentDialogVisible.value = true;
 
     } else {
       hideLoading();
@@ -759,10 +780,25 @@ const handleEdit = (row) => {  //改
   editForm.name = row.name;
   editForm.weekStart = row.weekStart;
   editForm.weekEnd = row.weekEnd;
-  editForm.classTime  = row.classTime;
+  editForm.time = row.time;
   editForm.capacity = row.capacity;
   editForm.studentClass = row.studentClass;
-  editForm.studentSection = row.studentSection;
+  let arrIntSet = [];
+  	    // 将字符串转换成数组，此时是字符串数组
+  let arrString = row.studentClass.substr(1,row.studentClass.length-2).split(',');
+  for(let arrInt = 0; arrInt<arrString.length;arrInt++){
+    arrIntSet.push(parseInt(arrString[arrInt]))
+  }
+	// 将新的Number数组，绑定到select空间的v-model上
+	editForm.studentClass=arrIntSet;
+  arrIntSet = [];
+  let arrInt;
+  arrString = row.studentSection.substr(1,row.studentSection.length-2).split(',');
+  for(arrInt = 0; arrInt<arrString.length;arrInt++){
+    arrIntSet.push(parseInt(arrString[arrInt]))
+  }
+  editForm.studentSection=arrIntSet;
+
   editForm.location = row.location;
   editForm.year = row.year;
   editForm.description = row.description;
@@ -818,7 +854,10 @@ const deleteStudent = (row) => {  //删  //异步可能有问题
     }
   )
     .then(() => {
-      service.post('/api/course/removeStudent', { token: localStorage.getItem("token"), courseId: idCourse.value, studentNumber: row.studentNumber }).then(res => {
+      console.log(idCourse.value)
+      console.log(row.userNumber)
+      service.post('/api/course/removeStudent', { token: localStorage.getItem("token"), studentNumber: row.userNumber, courseId: idCourse.value, }).then(res => {
+        console.log(res)
         if (res.data.success) {
           hideLoading()
           messageSuccess('删除成功!')
@@ -862,11 +901,19 @@ const addStudent = async () => {
       console.log(error)
     })
 };
+
+let midTime = reactive([]);//中间变量
+let weekDayValue = ref('');
+let sectionValue = ref('');
 const sumbitEditRow = async () => {
+  for (let i = 0; i < editForm.time.length; i++) {
+    weekDayValue.value = editForm.time[i][0];
+    sectionValue.value = editForm.time[i][1];
+    midTime.push({ weekDay: weekDayValue.value, section: sectionValue.value });
+  }
+  editForm.time = midTime;
   console.log(editForm)
-  console.log(editForm.classTime)
-  console.log(editForm.studentClass)
-  console.log(editForm.studentSection)
+  console.log(editForm.time)
   await formCourseData.value.validate(((valid) => {
     if (valid) {
       if (typeOperation.value === 'edit') {
@@ -878,8 +925,7 @@ const sumbitEditRow = async () => {
             name: editForm.name,
             weekStart: editForm.weekStart,
             weekEnd: editForm.weekEnd,
-            /* weekDay: editForm.classTime.weekDay,
-            section: editForm.classTime.section, */
+            time: editForm.time,
             capacity: editForm.capacity,
             studentClass: editForm.studentClass,
             studentSection: editForm.studentSection,
@@ -915,7 +961,7 @@ const sumbitEditRow = async () => {
             name: editForm.name,
             weekStart: editForm.weekStart,
             weekEnd: editForm.weekEnd,
-            classTime:editForm.classTime,
+            time: editForm.time,
             capacity: editForm.capacity,
             studentClass: editForm.studentClass,
             studentSection: editForm.studentSection,
@@ -929,9 +975,9 @@ const sumbitEditRow = async () => {
             if (res.data.success) {
               hideLoading()
               messageSuccess("添加成功！")
+              localStorage.setItem("token", res.data.token)
               typeOperation.value = '';
               loadCourseTable()
-              localStorage.setItem("token", res.data.token)
             } else {
               hideLoading()
               messageError(res.data.message)
@@ -953,11 +999,11 @@ const sumbitEditRow = async () => {
   editForm.name = '';
   editForm.weekStart = '';
   editForm.weekEnd = '';
-  /* editForm.classTime.weekDay = '';
-  editForm.classTime.section = ''; */
+  /* editForm.time.weekDay = '';
+  editForm.time.section = ''; */
   editForm.capacity = '';
-  editForm.classTime = [],
-  editForm.location = '';
+  editForm.time = [],
+    editForm.location = '';
   editForm.studentClass = [];
   editForm.studentSection = [];
   editForm.year = '';
@@ -1008,7 +1054,7 @@ const handleCurrentChange = (currentPage) => {
 .content {
   width: 100%;
   height: 100vh;
-  margin-left: 9%;
+  margin-left: 6vw;
   padding-top: 5vh;
 
   .pageContent {
@@ -1039,6 +1085,9 @@ const handleCurrentChange = (currentPage) => {
       border-radius: 1vw;
       color: #0273f1;
       font-size: 2.5vh;
+    }
+    .courseTable{
+      
     }
 
     .checkBox {
