@@ -3,8 +3,8 @@
         <el-container>
             <el-aside class="aside">
                 <div class="operationPage">
-                    <el-menu router default-active="/AcademicManagement/AMHome" class="menu">
-                        <el-menu-item index="/AcademicManagement/AMHome">
+                    <el-menu router default-active="/Student/AcademicManagement/AMHome" class="menu">
+                        <el-menu-item index="/Student/AcademicManagement/AMHome">
                             <el-icon>
                                 <location />
                             </el-icon>
@@ -18,12 +18,12 @@
                                 <span>精彩生活</span>
                             </template>
                             <el-menu-item-group>
-                                <el-menu-item index="/AcademicManagement/Practice">社会实践</el-menu-item>
-                                <el-menu-item index="/AcademicManagement/Activity">课外活动</el-menu-item>
-                                <el-menu-item index="/AcademicManagement/Reward">成果奖励</el-menu-item>
+                                <el-menu-item index="/Student/AcademicManagement/Practice">社会实践</el-menu-item>
+                                <el-menu-item index="/Student/AcademicManagement/Activity">课外活动</el-menu-item>
+                                <el-menu-item index="/Student/AcademicManagement/Reward">成果奖励</el-menu-item>
                             </el-menu-item-group>
                         </el-sub-menu>
-                        <el-menu-item index="/AcademicManagement/StudentEvaluate">
+                        <el-menu-item index="/Student/AcademicManagement/StudentEvaluate">
                             <el-icon>
                                 <location />
                             </el-icon>

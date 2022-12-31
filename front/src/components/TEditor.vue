@@ -25,6 +25,7 @@ import { reactive, ref } from "vue"
 import { onMounted, defineEmits, watch } from "@vue/runtime-core"
 import axios from 'axios'
 import service from "@/request";
+import {getBaseURL} from "@/global/global";
 // import { updateImg } from '@/api/order/order'
 const emits = defineEmits(["getContent"])
 //这里我选择将数据定义在props里面，方便在不同的页面也可以配置出不同的编辑器，当然也可以直接在组件中直接定义
@@ -78,7 +79,7 @@ const init = reactive({
   // resize: false,
   file_picker_types: 'file',
   images_upload_url: '/api/upload/generalUpload',
-  images_upload_base_path: 'http://courseback.clankalliance.cn',
+  images_upload_base_path: getBaseURL(),
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   images_upload_handler: (blobInfo, progress) => new Promise((resolve, reject) => {
 

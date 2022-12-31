@@ -3,6 +3,8 @@ package com.clankalliance.backbeta.entity.blog;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -29,13 +31,14 @@ public class Post {
     //作者昵称
     private String nickName;
     //头像url
-    private String avatarURL;
+    private String avatarUrl;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long userId;
     //发帖时间
     private String time;
     //封面图
-    private String topImageUrl;
+    private String topImageURL;
     //评论
     @JsonIgnore
     @OneToMany

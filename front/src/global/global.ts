@@ -1,17 +1,34 @@
 //全局变量
 
 import {reactive, ref} from "vue";
-let nickName = ref('爷傲♥奈我何？'); //用户名
-let avatarURL = ref('https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg'); //用户头像地址
+const baseURL = ref('http://courseback.clankalliance.cn')
+const defaultAvatarURL = ref('http://courseback.clankalliance.cn')
 export let getNickName = () =>{
-      return nickName.value;
+      return localStorage.getItem('nickName')
+}
+
+export let setNickName = (name) =>{
+    localStorage.setItem('nickName',name)
+}
+export let getBaseURL=  ()=>{
+    return baseURL.value;
+}
+
+export let setAvatarURL = (url) =>{
+    localStorage.setItem('avatarURL',url)
 }
 export let getAvatarURL=  ()=>{
-      return avatarURL.value;
+    return localStorage.getItem('avatarURL')
 }
-export let setNickName = (name) =>{
-    nickName.value = name;
+
+export const getDefaultAvatarURL = () => {
+    return defaultAvatarURL.value;
 }
-export let setAvatarURL = (url) =>{
-    avatarURL.value = url;
+
+export let setUserId = (userId) =>{
+    localStorage.setItem('userId',userId)
 }
+export let getUserId=  ()=>{
+    return localStorage.getItem('userId');
+}
+

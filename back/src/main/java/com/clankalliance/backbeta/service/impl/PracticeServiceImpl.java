@@ -1,5 +1,6 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.user.User;
@@ -35,6 +36,42 @@ public class PracticeServiceImpl implements PracticeService {
 
     @Resource
     private StudentRepository studentRepository;
+
+
+    private Achievement PRACTICE_C = new Achievement(Long.parseLong("14"),"社会实践5项以上","回报社会");
+
+    private Achievement PRACTICE_B = new Achievement(Long.parseLong("15"),"社会实践12项以上","乐于实践");
+
+    private Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
+
+    private List<Achievement> updateAchievementList(Student student){
+        List<Practice> practiceList = student.getPracticeSet();
+        int practiceNum = practiceList.size();
+        List<Achievement> achievementList = student.getAchievementList();
+        if(practiceNum >= 10){
+            if(achievementList.contains(PRACTICE_B)){
+                achievementList.remove(PRACTICE_B);
+            }else if(achievementList.contains(PRACTICE_C)){
+                achievementList.remove(PRACTICE_C);
+            }
+            achievementList.add(PRACTICE_A);
+        }else if(practiceNum >= 7){
+            if(achievementList.contains(PRACTICE_A)){
+                achievementList.remove(PRACTICE_A);
+            }else if(achievementList.contains(PRACTICE_C)){
+                achievementList.remove(PRACTICE_C);
+            }
+            achievementList.add(PRACTICE_B);
+        }else if(practiceNum >= 3){
+            if(achievementList.contains(PRACTICE_A)){
+                achievementList.remove(PRACTICE_A);
+            }else if(achievementList.contains(PRACTICE_B)){
+                achievementList.remove(PRACTICE_B);
+            }
+            achievementList.add(PRACTICE_C);
+        }
+        return achievementList;
+    }
 
     /**
      * 保存社会实践
@@ -82,6 +119,7 @@ public class PracticeServiceImpl implements PracticeService {
                 List<Practice> practiceList=student.getPracticeSet();
                 practiceList.add(practice);
                 student.setPracticeSet(practiceList);
+                student.setAchievementList(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -132,6 +170,7 @@ public class PracticeServiceImpl implements PracticeService {
                     List<Practice> practiceList=s.getPracticeSet();
                     practiceList.remove(practice);
                     s.setPracticeSet(practiceList);
+                    s.setAchievementList(updateAchievementList(s));
                     studentRepository.save(s);
                 }
                 practiceRepository.delete(practice);
@@ -160,6 +199,7 @@ public class PracticeServiceImpl implements PracticeService {
                 if(studentSet.size() == 0){
                     practiceRepository.delete(practice);
                 }
+                student.setAchievementList(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);

@@ -44,7 +44,7 @@ public class UserController {
 
     @PostMapping("/register")
     public CommonResponse register(@RequestBody UserSaveRequest request){
-        return userService.handleRegister(request.getIdentity(), request.getCode(), request.getPhone(), request.getUserNumber(), request.getPassword(),request.getName(),request.getStudentClass(),request.getIdCardNumber(),request.getGender(),request.getEthnic(),request.getPoliticalAffiliation(), request.getEMail(),request.getNickName());
+        return userService.handleRegister(request.getIdentity(), request.getCode(), request.getPhone(), request.getUserNumber(), request.getPassword(),request.getName(),request.getStudentClass(),request.getIdCardNumber(),request.getGender(),request.getEthnic(),request.getPoliticalAffiliation(), request.getEmail(),request.getNickName());
     }
 
     @PostMapping("/tokenCheck")
@@ -74,7 +74,7 @@ public class UserController {
 
     @PostMapping("/editInfo")
     public CommonResponse handleEditInfo(@RequestBody UserSaveRequest request){
-        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEMail(),request.getPoliticalAffiliation());
+        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation());
     }
 
     @PostMapping("/editBlogInfo")

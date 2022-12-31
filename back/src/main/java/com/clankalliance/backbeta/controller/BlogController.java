@@ -1,10 +1,8 @@
 package com.clankalliance.backbeta.controller;
 
-import com.clankalliance.backbeta.request.blog.BlogSubmitRequest;
 import com.clankalliance.backbeta.request.blog.CommonBlogRequest;
 import com.clankalliance.backbeta.request.blog.MainRequest;
 import com.clankalliance.backbeta.request.blog.UserRequest;
-import com.clankalliance.backbeta.request.score.ScoreEditRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.BlogService;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +31,16 @@ public class BlogController {
     @PostMapping("/getMain")
     public CommonResponse getMain(@RequestBody MainRequest request){
         return blogService.handleMainPage(request.getToken(), request.getLength(), request.getStartIndex());
+    }
+
+    @PostMapping("/getPersonal")
+    public CommonResponse getPersonal(@RequestBody MainRequest request){
+        return blogService.handlePersonalPageData(request.getToken(), request.getUserId());
+    }
+
+    @PostMapping("/getPersonalPost")
+    public CommonResponse getPersonalPost(@RequestBody MainRequest request){
+        return blogService.handlePersonalPagePost(request.getToken(), request.getLength(), request.getStartIndex(), request.getUserId());
     }
 
     @PostMapping("/getLike")

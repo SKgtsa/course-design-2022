@@ -1,6 +1,8 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.Reward;
+import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
@@ -32,6 +34,42 @@ public class RewardServiceImpl implements RewardService {
 
     @Resource
     private RewardRepository rewardRepository;
+
+
+    private Achievement REWARD_C = new Achievement(Long.parseLong("7"),"成果奖励3项以上","淡泊名利小修士");
+
+    private Achievement REWARD_B = new Achievement(Long.parseLong("8"),"成果奖励7项以上","勤勤恳恳打工人");
+
+    private Achievement REWARD_A = new Achievement(Long.parseLong("9"),"成果奖励10项以上","奖金证书收割机");
+
+    private List<Achievement> updateAchievementList(Student student){
+        List<Reward> rewardList = student.getRewardSet();
+        int rewardNum = rewardList.size();
+        List<Achievement> achievementList = student.getAchievementList();
+        if(rewardNum >= 10){
+            if(achievementList.contains(REWARD_B)){
+                achievementList.remove(REWARD_B);
+            }else if(achievementList.contains(REWARD_C)){
+                achievementList.remove(REWARD_C);
+            }
+            achievementList.add(REWARD_A);
+        }else if(rewardNum >= 7){
+            if(achievementList.contains(REWARD_A)){
+                achievementList.remove(REWARD_A);
+            }else if(achievementList.contains(REWARD_C)){
+                achievementList.remove(REWARD_C);
+            }
+            achievementList.add(REWARD_B);
+        }else if(rewardNum >= 3){
+            if(achievementList.contains(REWARD_A)){
+                achievementList.remove(REWARD_A);
+            }else if(achievementList.contains(REWARD_B)){
+                achievementList.remove(REWARD_B);
+            }
+            achievementList.add(REWARD_C);
+        }
+        return achievementList;
+    }
 
     /**
      * 保存成果奖励
@@ -79,8 +117,8 @@ public class RewardServiceImpl implements RewardService {
                 List<Reward> rewardList=student.getRewardSet();
                 rewardList.add(reward);
                 student.setRewardSet(rewardList);
+                student.setAchievementList(updateAchievementList(student));
                 studentRepository.save(student);
-
                 response.setSuccess(true);
                 response.setMessage("成果奖励创建成功");
             }else if(user instanceof Manager){
@@ -89,7 +127,6 @@ public class RewardServiceImpl implements RewardService {
                 Set<Student> studentSet=rewardOld.getStudentSet();
                 Reward reward=new Reward(id,name,description,studentSet);
                 rewardRepository.save(reward);
-
                 response.setSuccess(true);
                 response.setMessage("成果奖励修改成功");
             }
@@ -128,6 +165,7 @@ public class RewardServiceImpl implements RewardService {
                     List<Reward> rewardList=s.getRewardSet();
                     rewardList.remove(reward);
                     s.setRewardSet(rewardList);
+                    s.setAchievementList(updateAchievementList(s));
                     studentRepository.save(s);
                 }
                 rewardRepository.delete(reward);
@@ -156,6 +194,7 @@ public class RewardServiceImpl implements RewardService {
                 if(studentSet.size() == 0){
                     rewardRepository.delete(reward);
                 }
+                student.setAchievementList(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);

@@ -1,8 +1,9 @@
 import axios from 'axios'
+import {getBaseURL} from "@/global/global";
 
 //新创建用来传输文件的实例
 const serviceFile = axios.create({
-    baseURL: 'http://courseback.clankalliance.cn',
+    baseURL: getBaseURL(),
     timeout: 60000,
     headers: {'Content-Type' : 'multipart/form-data'},
 })

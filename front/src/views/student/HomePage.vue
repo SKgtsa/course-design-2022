@@ -87,27 +87,27 @@
       <el-container>
         <el-main class="mainWindow">
           <div class="rightWindow">
-            <el-menu router default-active="/Main" active-text-color="#2d67fd" background-color="#e9eff9"
+            <el-menu router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#e9eff9"
               class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
               :collapse="true">
-              <el-menu-item index="/Main">
+              <el-menu-item index="/Student/Main">
                 <template #title>我的主页</template>
                 <el-icon>
                   <HomeFilled />
                 </el-icon>
               </el-menu-item>
-              <el-menu-item index="/CourseSelect">
+              <el-menu-item index="/Student/CourseSelect">
                 <template #title>选课指南</template>
                 <el-icon>
                   <Document />
                 </el-icon>
-              </el-menu-item> <el-menu-item index="/ScoreManage">
+              </el-menu-item> <el-menu-item index="/Student/ScoreManage">
                 <el-icon>
                   <DocumentChecked />
                 </el-icon>
                 <template #title>成绩管理</template>
               </el-menu-item>
-              <el-menu-item index="/AcademicManagement/AMHome">
+              <el-menu-item index="/Student/AcademicManagement/AMHome">
                 <el-icon>
                   <PictureFilled />
                 </el-icon>
@@ -142,14 +142,18 @@ import {
   DocumentChecked,
 } from '@element-plus/icons-vue'
 import router from "@/router";
-import { useStore } from 'vuex' // 引入useStore 方法
-import { getAvatarURL, getNickName, setAvatarURL, setNickName } from '../../global/global';
+import {
+  getAvatarURL,
+  getBaseURL,
+  getNickName,
+  getUserId,
+  setAvatarURL,
+  setNickName,
+  setUserId
+} from '../../global/global';
 import { RouterView } from 'vue-router';
-import type { UploadFile } from 'element-plus'
 import { messageError, messageSuccess } from '@/utils/message';
 import service from '@/request';
-import axios from 'axios';
-import { dataType } from 'element-plus/es/components/table-v2/src/common';
 import serviceFile from "@/request/indexFile";
 import { hideLoading, showLoading } from '@/utils/loading';
 
@@ -167,7 +171,7 @@ let uploadImg = async (f) => {
     if (data.success) {
       hideLoading();
       localStorage.setItem('token', data.token);
-      let url = 'http://courseback.clankalliance.cn' + data.content;
+      let url = getBaseURL() + data.content;
       console.log(url);
       setAvatarURL(url);
 
@@ -214,7 +218,12 @@ let formEditPwd = reactive({
 let pwdEditData = ref();
 
 const toSelfInformation = () => { //个人主页
-  router.push('/SelfInformation');
+  router.push({
+    path: '/personalPage',
+    query: {
+      userId: getUserId()
+    }
+  });
 }
 
 const editNick = () => { //弹出修改昵称界面

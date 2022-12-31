@@ -1,6 +1,10 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.Achievement;
+import com.clankalliance.backbeta.entity.Reward;
+import com.clankalliance.backbeta.entity.blog.BlogDetail;
 import com.clankalliance.backbeta.entity.blog.Comment;
+import com.clankalliance.backbeta.entity.blog.PersonalPageData;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
@@ -48,6 +52,100 @@ public class BlogServiceImpl implements BlogService {
     @Resource
     private TeacherRepository teacherRepository;
 
+
+    private Achievement COLLECT_C = new Achievement(Long.parseLong("4"),"收藏博客5篇以上","博客初心者");
+
+    private Achievement COLLECT_B = new Achievement(Long.parseLong("5"),"收藏博客30篇以上","食量巨大的阅读者");
+
+    private Achievement COLLECT_A = new Achievement(Long.parseLong("6"),"收藏博客50篇以上","识文解意的爱书人");
+
+    private Achievement WRITE_C = new Achievement(Long.parseLong("17"),"撰写第一篇博客","初级作家");
+
+    private Achievement WRITE_B = new Achievement(Long.parseLong("18"),"撰写博客5篇以上","生产力作家");
+
+    private Achievement WRITE_A = new Achievement(Long.parseLong("19"),"撰写博客10篇以上","文豪");
+
+    private Achievement LIKE = new Achievement(Long.parseLong("20"),"单篇博客收获点赞10个以上","高质量人类作家");
+
+
+    private List<Achievement> updateAchievementListCollect(User user){
+        int collectNum;
+        List<Achievement> achievementList;
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher)user;
+            collectNum = teacher.getCollection().size();
+            achievementList = teacher.getAchievementList();
+        }else if(user instanceof Student){
+            Student student = (Student)user;
+            collectNum = student.getCollection().size();
+            achievementList = student.getAchievementList();
+        }else{
+            return new ArrayList<>();
+        }
+        if(collectNum >= 50){
+            if(achievementList.contains(COLLECT_B)){
+                achievementList.remove(COLLECT_B);
+            }else if(achievementList.contains(COLLECT_C)){
+                achievementList.remove(COLLECT_C);
+            }
+            achievementList.add(COLLECT_A);
+        }else if(collectNum >= 30){
+            if(achievementList.contains(COLLECT_A)){
+                achievementList.remove(COLLECT_A);
+            }else if(achievementList.contains(COLLECT_C)){
+                achievementList.remove(COLLECT_C);
+            }
+            achievementList.add(COLLECT_B);
+        }else if(collectNum >= 5){
+            if(achievementList.contains(COLLECT_A)){
+                achievementList.remove(COLLECT_A);
+            }else if(achievementList.contains(COLLECT_B)){
+                achievementList.remove(COLLECT_B);
+            }
+            achievementList.add(COLLECT_C);
+        }
+        return achievementList;
+    }
+
+    private List<Achievement> updateAchievementListWrite(User user){
+        int writeNum;
+        List<Achievement> achievementList;
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher)user;
+            writeNum = teacher.getPostList().size();
+            achievementList = teacher.getAchievementList();
+        }else if(user instanceof Student){
+            Student student = (Student)user;
+            writeNum = student.getPostList().size();
+            achievementList = student.getAchievementList();
+        }else{
+            return new ArrayList<>();
+        }
+        if(writeNum >= 10){
+            if(achievementList.contains(WRITE_B)){
+                achievementList.remove(WRITE_B);
+            }else if(achievementList.contains(WRITE_C)){
+                achievementList.remove(WRITE_C);
+            }
+            achievementList.add(WRITE_A);
+        }else if(writeNum >= 5){
+            if(achievementList.contains(WRITE_A)){
+                achievementList.remove(WRITE_A);
+            }else if(achievementList.contains(WRITE_C)){
+                achievementList.remove(WRITE_C);
+            }
+            achievementList.add(WRITE_B);
+        }else if(writeNum >= 1){
+            if(achievementList.contains(WRITE_A)){
+                achievementList.remove(WRITE_A);
+            }else if(achievementList.contains(WRITE_B)){
+                achievementList.remove(WRITE_B);
+            }
+            achievementList.add(WRITE_C);
+        }
+        return achievementList;
+    }
+
     @Override
     public CommonResponse handleSubmit(String token, String heading, String content, MultipartFile topImage){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -71,6 +169,7 @@ public class BlogServiceImpl implements BlogService {
             response.setMessage("权限错误");
             return response;
         }
+        updateAchievementListWrite(user);
         if(user instanceof Teacher){
             Teacher teacher = (Teacher) user;
             List<Post> postList = teacher.getPostList();
@@ -168,7 +267,7 @@ public class BlogServiceImpl implements BlogService {
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
-        response.setContent(tempList);
+        response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
@@ -195,16 +294,85 @@ public class BlogServiceImpl implements BlogService {
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
-        response.setContent(tempList);
+        response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
+
+    //查看个人主页 若登录状态失效则以游客模式
+    @Override
+    public CommonResponse handlePersonalPageData(String token, Long userId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        //success为false代表登录失效，但仍允许浏览
+        User user = userService.findById(userId);
+        boolean follow = false;
+        if(user == null){
+            response.setSuccess(false);
+            response.setMessage("用户不存在");
+            response.setContent(new PersonalPageData());
+            return response;
+        }
+        if(response.getSuccess()){
+            User target = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student = (Student) user;
+                if(target instanceof Student){
+                    follow = student.getFriendS().contains(target);
+                }else if(target instanceof Teacher){
+                    follow = student.getFriendT().contains(target);
+                }
+            }else if(user instanceof Teacher){
+                Teacher teacher = (Teacher) user;
+                if(target instanceof Student){
+                    follow = teacher.getFriendS().contains(target);
+                }else if(target instanceof Teacher){
+                    follow = teacher.getFriendS().contains(target);
+                }
+            }
+        }
+        response.setContent(new PersonalPageData(user, follow));
+        response.setMessage("查找成功");
+        return response;
+    }
+    //查看个人主页 博客更新方法
+    @Override
+    public CommonResponse handlePersonalPagePost(String token, int length, int startIndex,Long userId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        //success为false代表登录失效，但仍允许浏览
+        User user = userService.findById(userId);
+        if(user == null){
+            response.setSuccess(false);
+            response.setMessage("用户不存在");
+            response.setContent(new PersonalPageData());
+            return response;
+        }
+        List<Post> totalPost = new ArrayList<>();
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            totalPost = teacher.getPostList();
+        }else if(user instanceof Student){
+            Student student = (Student) user;
+            totalPost = student.getPostList();
+        }
+        totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+        Collections.reverse(totalPost);
+        response.setMessage("查找成功");
+        List<PostResponseTarget> resultList = new ArrayList<>();
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setContent(resultList);
+        response.setStartIndex(tempList.size() + startIndex);
+        return response;
+    }
+
     //查看详细文章 前端传来token和文章id 获取全文
     @Override
     public CommonResponse handleDetailPage(String token,String blogId){
         CommonResponse response = tokenUtil.tokenCheck(token);
-        if(!response.getSuccess())
-            return response;
+//        if(!response.getSuccess())
+//            return response;
         Optional<Post> pop = postRepository.findById(blogId);
         if(pop.isEmpty()){
             response.setSuccess(false);
@@ -212,9 +380,7 @@ public class BlogServiceImpl implements BlogService {
             return response;
         }else{
             Post post = pop.get();
-            Map result = new HashMap<String,String>();
-            result.put("content",post.getContent());
-            response.setContent(result);
+            response.setContent(new BlogDetail(post.getContent(), post.getCommentList()));
             response.setMessage("查找成功");
             return response;
         }
@@ -233,6 +399,7 @@ public class BlogServiceImpl implements BlogService {
             return response;
         }else{
             Post post = pop.get();
+
             if(user instanceof Student){
                 Student student = (Student) user;
                 List<Student> studentList = post.getLikeS();
@@ -256,12 +423,33 @@ public class BlogServiceImpl implements BlogService {
                 response.setSuccess(false);
                 return response;
             }
+
+            if(post.getLikeS().size() + post.getLikeT().size() >= 10){
+                User author = userService.findById(post.getUserId());
+                if(author instanceof Teacher){
+                    Teacher teacher = (Teacher)author;
+                    List<Achievement> achievementList = teacher.getAchievementList();
+                    if(!achievementList.contains(LIKE)){
+                        achievementList.add(LIKE);
+                        teacher.setAchievementList(achievementList);
+                        teacherRepository.save(teacher);
+                    }
+                }else if(author instanceof Student){
+                    Student student = (Student) author;
+                    List<Achievement> achievementList = student.getAchievementList();
+                    if(!achievementList.contains(LIKE)){
+                        achievementList.add(LIKE);
+                        student.setAchievementList(achievementList);
+                        studentRepository.save(student);
+                    }
+                }
+            }
             postRepository.save(post);
             response.setMessage("操作成功");
             return response;
         }
     }
-    //点赞 若已点赞就取消
+    //收藏 若已收藏就取消
     @Override
     public CommonResponse handleCollect(String token, String blogId){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -275,6 +463,7 @@ public class BlogServiceImpl implements BlogService {
             return response;
         }else{
             Post post = pop.get();
+            updateAchievementListCollect(user);
             if(user instanceof Student){
                 Student student = (Student) user;
                 List<Post> postList = student.getCollection();
@@ -334,6 +523,52 @@ public class BlogServiceImpl implements BlogService {
                     return response;
                 }
             }
+            User author = userService.findById(post.getUserId());
+            if(author instanceof Student){
+                Student student = (Student) author;
+                List<Achievement> achievementList = student.getAchievementList();
+                if(post.getLikeT().size() + post.getLikeS().size() >= 10){
+                    if(achievementList.contains(LIKE)){
+                        boolean valid = false;
+                        for(Post p : student.getPostList()){
+                            if(p.getLikeS().size() + p.getLikeT().size() >= 10){
+                                valid = true;
+                                break;
+                            }
+                        }
+                        if(!valid){
+                            achievementList.remove(LIKE);
+                            student.setAchievementList(achievementList);
+                        }
+                    }
+                }
+                student.setAchievementList(updateAchievementListWrite(student));
+                student.setAchievementList(updateAchievementListCollect(student));
+                studentRepository.save(student);
+            }else if(author instanceof Teacher){
+                Teacher teacher = (Teacher) author;
+                List<Achievement> achievementList = teacher.getAchievementList();
+                if(post.getLikeT().size() + post.getLikeS().size() >= 10){
+                    if(achievementList.contains(LIKE)){
+                        boolean valid = false;
+                        for(Post p : teacher.getPostList()){
+                            if(p.getLikeS().size() + p.getLikeT().size() >= 10){
+                                valid = true;
+                                break;
+                            }
+                        }
+                        if(!valid){
+                            achievementList.remove(LIKE);
+                            teacher.setAchievementList(achievementList);
+                        }
+                    }
+                }
+                teacher.setAchievementList(updateAchievementListWrite(teacher));
+                teacher.setAchievementList(updateAchievementListCollect(teacher));
+                teacherRepository.save(teacher);
+            }
+
+
             //有权限 进行删除
             postRepository.delete(post);
             response.setMessage("操作成功");
@@ -370,6 +605,11 @@ public class BlogServiceImpl implements BlogService {
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
+        if(response.getMessage().equals("" + userId)){
+            response.setSuccess(false);
+            response.setMessage("不能关注自己");
+            return response;
+        }
         User user = userService.findById(Long.parseLong(response.getMessage()));
         User target = userService.findById(userId);
         if(user instanceof Teacher){

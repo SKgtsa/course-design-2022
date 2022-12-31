@@ -1,31 +1,38 @@
 <template>
 </template>
 <script setup lang="ts">
-import service from '@/request';
-import router from '@/router';
-import { showLoading,hideLoading } from '@/utils/loading';
-import { messageWarning, messageError, messageInfo, messageSuccess } from '@/utils/message';
-let checkInf = async () => {
-    showLoading();
-    await service.post('/api/user/myInfo', { token: localStorage.getItem('token') }).then(res => {
-        let data = res.data;
-        if (data.success) {
-            if(data.character==0){
-                hideLoading();
-                router.push('/Main')
-            }
-        } else {
-            hideLoading();
-            router.push('/Login')
-        }
-    })
-        .catch(function (error) {
-            hideLoading();
-            messageError("服务器开小差了呢");
-            console.log(error)
-        })
+import {loginFailed, tokenCheckWithUser} from "@/utils/tokenCheck";
+import router from "@/router";
+import {hideLoading, showLoading} from "@/utils/loading";
+import service from "@/request";
+import {getBaseURL, setAvatarURL, setNickName, setUserId} from "@/global/global";
+import {identityJump} from "@/utils/identityJump";
+
+const tokenCheckWithUser = () => {
+  if(localStorage.getItem('token') == null)
+    router.push('/login').then();
+  showLoading()
+  service.post('/api/user/myInfo',{token: localStorage.getItem('token')}).then((res) => {
+    let data = res.data;
+    if(data.success){
+      localStorage.setItem('token',data.token);
+      console.log('将头像URL设置为')
+      console.log(data.user.avatarURL)
+      setAvatarURL(getBaseURL() + data.user.avatarURL)
+      setNickName(data.user.nickName)
+      setUserId(data.user.id);
+      hideLoading()
+      identityJump(data.character)
+    }else{
+      console.log('登录失败')
+      hideLoading()
+      loginFailed()
+    }
+  })
 }
-checkInf();
+
+tokenCheckWithUser();
+
 </script>
 <style lang="scss" scoped>
 </style>

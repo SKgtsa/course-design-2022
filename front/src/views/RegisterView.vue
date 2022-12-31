@@ -9,10 +9,10 @@
             <el-input v-model="formData.userNumber" maxlength="15" />
           </el-form-item>
           <el-form-item label="姓名:" prop="name">
-            <el-input v-model="formData.name"  maxlength="10"/>
+            <el-input v-model="formData.name" style="width:10vw" maxlength="10"/>
           </el-form-item>
           <el-form-item label="用户名:" prop="nickName">
-            <el-input v-model="formData.nickName"  maxlength="8"/>
+            <el-input v-model="formData.nickName"  style="width:10vw" maxlength="8"/>
           </el-form-item>
           <el-form-item label="身份:" prop="identity">
             <el-select v-model="formData.identity" placeholder="选择身份">
@@ -36,14 +36,14 @@
               <el-option label="共产党员" value="共产党员" />
             </el-select>
           </el-form-item>
-          <el-form-item label="民族:" prop="ethnic">
-            <el-input v-model="formData.ethnic"  maxlength="8"/>
+          <el-form-item label="民族:" prop="ethnic"  >
+            <el-input v-model="formData.ethnic" style="width:10vw" maxlength="8"/>
           </el-form-item>
           <el-form-item label="邮箱:" prop="eMail">
             <el-input v-model="formData.eMail"  maxlength="20"/>
           </el-form-item>
           <el-form-item label="手机号:" prop="phone">
-            <el-input v-model="formData.phone" placeholder="请输入手机号" maxlength="11" formatter="number"/>
+            <el-input v-model="formData.phone" placeholder="请输入手机号"/>
           </el-form-item>
           <el-form-item class="loginPageFormText" label="验证码:" prop="code">
             <el-row>
@@ -221,10 +221,6 @@ const rules = reactive({
 })
 
 
-/* phone: formData.value.phone, userNumber: formData.value.userNumber,
-  password: formData.value.password, name: formData.value.name, idCardNumber: formData.value.idCardNumber,
-    gender: formData.value.gender, ethnic: formData.value.ethnic, politicalAffiliation: formData.value.politicalAffiliation,
-      eMail: formData.value.eMail, nickName: formData.value.nickName, indentity: formData.value.identity, code: formData.value.code  */
 const register = async () => {
   console.log(formData)
   await registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
