@@ -29,7 +29,7 @@ public interface ScoreRepository extends JpaRepository<Score,Integer> {
      * @param studentId 学生id
      * @return
      */
-    @Query("from Score s where s.student.id=?2")
+    @Query("from Score s where s.student.id=?1")
     List<Score> findByStudentId(long studentId);
 
     @Query("from Score s where s.student.id=?1 and s.course.id=?2 and s.course.year=?3 and s.course.semester=?4")

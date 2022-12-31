@@ -109,11 +109,16 @@ public class ScoreServiceImpl implements ScoreService {
         if(token.equals("114514")){
             response = new CommonResponse();
             response.setSuccess(true);
-            response.setMessage("242634982651203584");
+            response.setMessage("262483010111279104");//教师gyp
         }else{
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                response.setSuccess(false);
+                response.setMessage("学生不能修改自己的信息");
+            }else{
             //token验证成功
             Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
             long id;
@@ -138,22 +143,22 @@ public class ScoreServiceImpl implements ScoreService {
             }
             Student student = studentOp.get();
             Course course = cop.get();
-            Score score = new Score(id, dailyScore, endScore, weight, studentOp.get(), cop.get());
+            Score score = new Score(id, dailyScore, endScore, weight, student, course);
+            scoreRepository.save(score);
             //在学生的成绩表中加入成绩
             Set<Score> studentScoreSet = student.getScoreSet();
             studentScoreSet.add(score);
             student.setScoreSet(studentScoreSet);
+            student.setAchievementList(updateAchievementList(student));
+            studentRepository.save(student);
             //在课程的成绩表中加入成绩
             Set<Score> courseScoreSet = course.getScoreSet();
             courseScoreSet.add(score);
             course.setScoreSet(courseScoreSet);
-            //保存
-            scoreRepository.save(score);
             courseRepository.save(course);
-            student.setAchievementList(updateAchievementList(student));
-            studentRepository.save(student);
             response.setSuccess(true);
-            response.setMessage("保存成功");
+            response.setMessage("成绩保存成功");
+            }
         }
         //token无效，直接将token验证的数据返回前端
         return response;
