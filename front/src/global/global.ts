@@ -1,8 +1,15 @@
 //全局变量
 
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 const baseURL = ref('http://courseback.clankalliance.cn')
-const defaultAvatarURL = ref('http://courseback.clankalliance.cn')
+// const baseURL = ref('http://localhost:5174')
+
+const defaultAvatarURL = ref('http://courseback.clankalliance.cn/inbuild/default.png')
+export const windowWidth = ref(0)
+export const windowHeight = ref(0)
+export const mobile = ref(false)
+
+
 export let getNickName = () =>{
       return localStorage.getItem('nickName')
 }
@@ -31,4 +38,3 @@ export let setUserId = (userId) =>{
 export let getUserId=  ()=>{
     return localStorage.getItem('userId');
 }
-

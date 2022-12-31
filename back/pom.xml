@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.clankalliance</groupId>
 	<artifactId>backbeta</artifactId>
-	<version>0.1.6</version>
+	<version>0.2.1</version>
 	<name>backbeta</name>
 	<description>backbeta</description>
 	<properties>

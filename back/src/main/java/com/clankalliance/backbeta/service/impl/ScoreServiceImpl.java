@@ -61,7 +61,7 @@ public class ScoreServiceImpl implements ScoreService {
         Double point = 0.0;
         Double totalCredit = 0.0;
         for(Score s : scoreList){
-            point += ((s.getEndScore() * s.getWeight() + s.getDailyScore() * (1 - s.getWeight())) - 50) / 10;
+            point += ((s.getEndScore() * s.getWeight() + s.getDailyScore() * (1 - s.getWeight())) - 50) / 10 * s.getCourse().getCredit();
             totalCredit += s.getCourse().getCredit();
         }
         Double pointResult = totalCredit.equals(0.0)? 0.0: point/totalCredit;
@@ -105,14 +105,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     public CommonResponse handleSave(String token, long courseId, long studentId, Integer dailyScore, Integer endScore, Double weight){
-        CommonResponse response;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262483010111279104");//教师gyp
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -172,14 +165,7 @@ public class ScoreServiceImpl implements ScoreService {
      * @return
      */
     public CommonResponse handleFind(String token, Integer Year, String  Semester){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("259887250475716608");//259887250475716608
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             //token验证成功
             User user = userService.findById(Long.parseLong(response.getMessage()));
@@ -193,40 +179,44 @@ public class ScoreServiceImpl implements ScoreService {
                     if(c.getSemester().equals(Semester) && c.getYear().equals(Year)){
                         long courseId=c.getId();
                         Optional<Score> scoreOp=scoreRepository.findByTime(studentId,courseId,Year,Semester);
-                        Score score=scoreOp.get();
-                        int dailyScore= score.getDailyScore();
-                        int endScore= score.getEndScore();
-                        double weight=score.getWeight();
-                        double finalScore= dailyScore*(1-weight)+endScore*weight;
-                        Integer finalScore1=(int) finalScore;
-                        int rank;
-                        Set<Student> courseStudentSet=c.getStudentSet();
-                        int capacity=courseStudentSet.size();
-                        List<Integer> finalList=new ArrayList<>(capacity);
-                        finalList.add(finalScore1);
-                        for(Student stu : courseStudentSet){
-                            long stuId=stu.getId();
-                            Optional<Score> scOp=scoreRepository.findByTime(stuId,courseId,Year,Semester);
-                            Score sc=scOp.get();
-                            int dailySc= sc.getDailyScore();
-                            int endSc= sc.getEndScore();
-                            double weightSc=sc.getWeight();
-                            double finalSc= dailySc*(1-weightSc)+endSc*weightSc;
-                            Integer finalSc1=(int) finalSc;
-                            finalList.add(finalSc1);
-                        }
-                        //使用list的sort方法进行归并排序
-                        finalList.sort(new Comparator<Integer>() {
-                            @Override
-                            public int compare(Integer o1, Integer o2) {
-                                return  o2.compareTo(o1);
+                        if(scoreOp.isPresent()){
+                            Score score=scoreOp.get();
+                            int dailyScore= score.getDailyScore();
+                            int endScore= score.getEndScore();
+                            double weight=score.getWeight();
+                            double finalScore= dailyScore*(1-weight)+endScore*weight;
+                            Integer finalScore1=(int) finalScore;
+                            int rank;
+                            Set<Student> courseStudentSet=c.getStudentSet();
+                            int capacity=courseStudentSet.size();
+                            List<Integer> finalList=new ArrayList<>(capacity);
+                            finalList.add(finalScore1);
+                            for(Student stu : courseStudentSet){
+                                long stuId=stu.getId();
+                                Optional<Score> scOp=scoreRepository.findByTime(stuId,courseId,Year,Semester);
+                                if(scOp.isPresent()){
+                                    Score sc=scOp.get();
+                                    int dailySc= sc.getDailyScore();
+                                    int endSc= sc.getEndScore();
+                                    double weightSc=sc.getWeight();
+                                    double finalSc= dailySc*(1-weightSc)+endSc*weightSc;
+                                    Integer finalSc1=(int) finalSc;
+                                    finalList.add(finalSc1);
+                                }
                             }
-                        });
-                        rank=finalList.indexOf(finalScore1) + 1;
-                        //将所获得的数据封装进所建立的对象内
-                        String courseName=c.getName();
-                        ScoreUtil tmp=new ScoreUtil(courseName,dailyScore,endScore,weight,finalScore1,rank);
-                        StuScore.add(tmp);
+                            //使用list的sort方法进行归并排序
+                            finalList.sort(new Comparator<Integer>() {
+                                @Override
+                                public int compare(Integer o1, Integer o2) {
+                                    return  o2.compareTo(o1);
+                                }
+                            });
+                            rank=finalList.indexOf(finalScore1) + 1;
+                            //将所获得的数据封装进所建立的对象内
+                            String courseName=c.getName();
+                            ScoreUtil tmp=new ScoreUtil(courseName,dailyScore,endScore,weight,finalScore1,rank);
+                            StuScore.add(tmp);
+                        }
                     }
                 }
                 response.setContent(StuScore);
@@ -247,19 +237,21 @@ public class ScoreServiceImpl implements ScoreService {
                         for(Student s : studentCourseSet){
                             long studentId=s.getId();
                             Optional<Score> scoreOp=scoreRepository.findByTime(studentId,courseId,Year,Semester);
-                            Score score=scoreOp.get();
-                            int dailyScore= score.getDailyScore();
-                            int endScore= score.getEndScore();
-                            weight=score.getWeight();
-                            double finalScore= dailyScore*(1-weight)+endScore*weight;
-                            int finalScore1=(int) finalScore;
-                            total+=finalScore1;
-                            if(finalScore1>=60){
-                                passStudent++;
+                            if(scoreOp.isPresent()){
+                                Score score=scoreOp.get();
+                                int dailyScore= score.getDailyScore();
+                                int endScore= score.getEndScore();
+                                weight=score.getWeight();
+                                double finalScore= dailyScore*(1-weight)+endScore*weight;
+                                int finalScore1=(int) finalScore;
+                                total+=finalScore1;
+                                if(finalScore1>=60){
+                                    passStudent++;
+                                }
                             }
                         }
-                        Integer averageScore = total/studentNum;
-                        double passRate = passStudent/studentNum;
+                        Integer averageScore = studentNum == 0? 0 : total/studentNum;
+                        double passRate = studentNum == 0? 0 : passStudent/studentNum;
                         DecimalFormat df = new DecimalFormat("#0.000");
                         String passRate1=df.format(passRate);
                         String courseName=c.getName();
@@ -290,13 +282,15 @@ public class ScoreServiceImpl implements ScoreService {
                 for(Student s : studentSet){
                     long studentId=s.getId();
                     Optional<Score> scoreOp=scoreRepository.findByCourseStudentId(courseId,studentId);
-                    Score score=scoreOp.get();
-                    String studentName=s.getName();
-                    Integer dailyScore=score.getDailyScore();
-                    Integer endScore=score.getEndScore();
-                    Double weight=score.getWeight();
-                    FindDetailUtil tmp=new FindDetailUtil(studentName,dailyScore,endScore,weight);
-                    DetailList.add(tmp);
+                    if(scoreOp.isPresent()){
+                        Score score=scoreOp.get();
+                        Integer dailyScore=score.getDailyScore();
+                        Integer endScore=score.getEndScore();
+                        Double weight=score.getWeight();
+                        String studentName=s.getName();
+                        FindDetailUtil tmp=new FindDetailUtil(studentName,dailyScore,endScore,weight);
+                        DetailList.add(tmp);
+                    }
                 }
                 response.setContent(DetailList);
                 response.setMessage("学生成绩查询成功");

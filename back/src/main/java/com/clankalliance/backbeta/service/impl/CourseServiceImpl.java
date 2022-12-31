@@ -365,15 +365,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleFindAllCourse(String token,boolean filterOpen,Integer pageNum,Integer pageSize){
-        //CommonResponse response = tokenUtil.tokenCheck(token);
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262549303493529600");//学生
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);;
         if(response.getSuccess()){
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -383,41 +375,42 @@ public class CourseServiceImpl implements CourseService {
                 //过滤器打开时，在全部课表中删除时间冲突课程
                 if(filterOpen){
                     for(Course c : courseSet){
-                        List<ClassTime> time=c.getTime();
-                        for(Course re : allCourseList){
-                            if(re.getTime().equals(time)){
-                                allCourseList.remove(re);
+                        allCourseList.remove(c);
+                        List<ClassTime> timeList = c.getTime();
+                        List<Course> allCourseSample = allCourseList;
+                        for(Course target : allCourseSample){
+                            if(target.getWeekStart() <= c.getWeekEnd() && target.getWeekEnd() >= c.getWeekStart()){
+                                for(ClassTime t : timeList){
+                                    if(target.getTime().contains(t)){
+                                        allCourseList.remove(target);
+                                        break;
+                                    }
+                                }
                             }
                         }
                     }
                 }
-                if(allCourseList.size() <= pageSize){
+                if(allCourseList.size() == 0){
                     response.setContent(allCourseList);
-                    response.setSuccess(true);
-                    response.setMessage("返回课程成功");
-                }else if(allCourseList.size() == 0){
-                    response.setSuccess(true);
-                    response.setMessage("无课程可供学生选择");
+                    response.setTotalPage(1);
                 }else{
                     List<CourseResponseTarget> result = new ArrayList<>();
-                    int count=1;
-                    for(Course c1 : allCourseList){
-                        if(count> (pageNum-1)*pageSize && count<= pageNum*pageSize){
-                            result.add(new CourseResponseTarget(c1));
-                        }
-                        count++;
+                    for(int i = (pageNum - 1) * pageSize;i < allCourseList.size() && i < pageNum * pageSize;i ++){
+                        result.add(new CourseResponseTarget(allCourseList.get(i)));
                     }
                     int size=allCourseList.size();
                     //计算总页数
                     Integer totalPage = size / pageSize;
-                    if(size - totalPage*pageSize != 0){
+                    if(size % pageSize != 0){
                         totalPage++;
                     }
                     response.setContent(result);
                     response.setSuccess(true);
-                    response.setMessage("返回课程成功");
+                    response.setMessage("查询成功");
                     response.setTotalPage(totalPage);
                 }
+                response.setSuccess(true);
+                response.setMessage("查询成功");
             }
         }
         return response;

@@ -1,137 +1,189 @@
 <template>
     <div class="mainArea">
-        <div class="mainCard">
-            <div class="content">
-                <el-container>
-                    <el-aside class="classSchedulePage">
-                        <el-table :data="tableData.arr" :key="random" style="width: 100%" height="600"
-                            :cell-style="{ padding: '22px 0' }" class="tableStyle" border stripe>
-                            <el-table-column class="cellStyle" prop="title" label="节次" width="180"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Monday" label="周一"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Tuesday" label="周二"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Wednesday" label="周三"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Thursday" label="周四"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Friday" label="周五"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Saturday" label="周六"></el-table-column>
-                            <el-table-column class="cellStyle" prop="Sunday" label="周日"></el-table-column>
-                        </el-table>
-                    </el-aside>
-                    <el-main class="operationPage">
-                        <div class="title">
-                            <a>选课指南</a>
-                        </div>
-                        <el-timeline class="progressPage">
-                            <el-timeline-item v-for="(activity, index) in activities" :key="index" :type="activity.type"
-                                :size="activity.size" :hollow="activity.hollow" :timestamp="activity.timestamp">
-                                {{ activity.content }}
-                            </el-timeline-item>
-                        </el-timeline>
-                        <div class="buttonSet">
-                            <el-button type="default" @click="courseSelected" class="opButton">
-                                <a>刷新课表</a></el-button>
-                            <el-button type="default" @click="loadDropDialog" class="opButton">
-                                <a>退选课程</a></el-button>
-                            <el-button type="default" @click="viewDetails" class="opButton">
-                                <a>查看已选课程</a></el-button>
-                        </div>
-                    </el-main>
-                </el-container>
-                <div class="courseSelectPage">
-                    <span>
-                        <a class="courseSelectPageTitle">进入选课</a>
-                        <el-checkbox v-model="filter" label="" size="large" class="checkBox">
-                            <a>过滤掉冲突课程</a>
-                            <el-button type="primary" @click="getCourseInformation"
-                                style="margin-left: 50px;margin-bottom:5px ;">
-                                <a>查询</a>
-                            </el-button>
-                        </el-checkbox>
-                    </span>
-                    <div class="selectTable">
-                        <el-table :data="courseInfo.arr" height="550" :header-cell-style="{ 'text-align': 'center' }"
-                            :cell-style="{ padding: '20px 0' }" style="font-size: 16px" border>
-                            <el-table-column prop="name" label="课程名称" align="center" width="150" />
-                            <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
-                            <el-table-column prop="description" label="课程描述" align="center" width="232" />
-                            <el-table-column prop="credit" align="center" label="学分" width="60" />
-                            <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
-                            <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
-                            <el-table-column prop="time" align="center" label="上课时间" width="150">
-                                <template #default="time">
-                                    <p v-for="(item, index) in time.row.time">
-                                        星期{{ time.row.time[index].weekDay }}的第{{
-        time.row.time[index].section
-}}大节
-                                    </p>
-                                </template>
-                            </el-table-column>
-                            <el-table-column prop="capacity" align="center" label="课容量" width="60" />
-                            <el-table-column prop="studentNum" align="center" label="选课人数" width="60" />
-                            <el-table-column prop="location" align="center" label="上课地点" width="150" />
-                            <el-table-column label="选课" width="150" align="center">
-                                <template #default="scope">
-                                    <el-button size="large" @click="handleSelect(scope.row)">选课</el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                        <div class="pagination">
-                            <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
-                                @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize"
-                                style="text-align: center">
-                            </el-pagination>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <el-dialog v-model="dialogTableVisibleDetails" title="查看课程信息" width="700" class="dialogPage" align="true"
-                :align-center="true">
-                <el-table :data="backData.arr" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
-                    :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
-                    <el-table-column prop="name" label="课程名称" align="center" width="180" />
-                    <el-table-column prop="teacherName" label="教师姓名" align="center" width="100" />
-                    <el-table-column prop="description" label="课程描述" align="center" width="265" />
-                    <el-table-column prop="credit" align="center" label="学分" width="60" />
-                    <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
-                    <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
-                    <el-table-column prop="time" align="center" label="上课时间" width="250">
-                        <template #default="time">
-                            <p v-for="(item, index) in time.row.time">
-                                星期{{ time.row.time[index].weekDay }}的第{{ time.row.time[index].section }}大节
-                            </p>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="capacity" align="center" label="课容量" width="120" />
-                    <el-table-column prop="location" align="center" label="上课地点" width="150" />
+      <div :style="{'display':'flex','flex-direction':`${mobile? 'column':'row'}`}">
+        <div class="timeTableCard" :style="{
+          'width': `${mobile? 90: 90*ratio}vw`,
+          'height': `${mobile? 70: 20 + 50*verticalRatio}vh`
+        }">
+          <div :style="{
+            'width':`${mobile? 25: 25*ratio}vw`,
+            'height':`${mobile? 60: 60*verticalRatio}`
+          }" class="leftSection">
+            <div  :style="{
+              'width':`${mobile? 25: 25*ratio}vw`,
+              'height':`${mobile? 10: 10*verticalRatio}vh`
+              }">
 
-                </el-table>
-            </el-dialog>
-            <el-dialog v-model="dialogTableVisibleDrop" title="退选课程" width="700" class="dialogPage" align="true"
-                :align-center="true">
-                <el-table :data="backData.arr" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
-                    :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
-                    <el-table-column prop="name" label="课程名称" align="center" width="140" />
-                    <el-table-column prop="teacherName" label="教师姓名" align="center" width="80" />
-                    <el-table-column prop="description" label="课程描述" align="center" width="265" />
-                    <el-table-column prop="credit" align="center" label="学分" width="60" />
-                    <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
-                    <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
-                    <el-table-column prop="time" align="center" label="上课时间" width="150">
-                        <template #default="time">
-                            <p v-for="(item, index) in time.row.time">
-                                星期{{ time.row.time[index].weekDay }}的第{{ time.row.time[index].section }}大节
-                            </p>
-                        </template>
-                    </el-table-column>
-                    <el-table-column prop="capacity" align="center" label="课容量" width="120" />
-                    <el-table-column prop="location" align="center" label="上课地点" width="150" />
-                    <el-table-column label="操作" width="200" align="center">
-                        <template #default="scope">
-                            <el-button size="large" @click="dropCourse(scope.row)">退课</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </el-dialog>
+            </div>
+            <div  :style="{
+              'width':`${mobile? 25: 25*ratio}vw`,
+              'height':`${mobile? 10: 10*verticalRatio}vh`
+              }" v-for="(item, index) in sections">
+              <a>{{item}}</a>
+            </div>
+          </div>
+          <div :style="{
+            'width':`${mobile? 65: 65*ratio}vw`,
+          }" class="topWeekDay">
+            <div  :style="{
+              'width':`${mobile? 12: 12*ratio}vw`,
+              }" v-for="item in weekDays">
+              <a>{{item}}</a>
+            </div>
+          </div>
+          <div class="lunchTime" :style="{
+            'width':`${mobile? 62: 62*ratio}vw`,
+            'height':`${mobile? 8: 8*verticalRatio}vh`,
+            'top': `${mobile? 40: 10 + 30*verticalRatio}vh`,
+            'left':`${mobile? 28: 28*ratio}vw`
+          }">
+            <a style="align-self: center">午休时间</a>
+          </div>
+          <!--课表卡片-->
+          <div v-for="(item, index) in pageData.courseTime" class="timeTable">
+            <el-popover
+                placement="top-start"
+                :width="200"
+                trigger="hover"
+            >
+              <template #reference>
+                <div class="timeCard" :style="{
+                  'top': `${(item.section > 2? item.section * 10 + 20 :item.section * 10 + 10)* (mobile? 1: verticalRatio)}vh`,
+                   'left': `${((item.weekDay * 13 + 15) * (mobile? 1: ratio))}vw`,
+                   'position':'absolute',
+                   'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`,
+                   'width':`${12 * (mobile? 1: ratio)}vw`,
+                   'height': `${9 * (mobile? 1: verticalRatio)}vh`
+                }" >
+                  <a class="courseName">{{pageData.myCourse[item.courseIndex].name}}</a>
+                </div>
+              </template>
+              <div style="display: flex;flex-direction: column">
+                <a style="font-weight: bold">{{pageData.myCourse[item.courseIndex].description}}</a>
+                <a>{{pageData.myCourse[item.courseIndex].location}}</a>
+              </div>
+            </el-popover>
+          </div>
         </div>
+        <div :style="{
+          'width':`${mobile? 90: 90* (1 - ratio)}vw`
+        }">
+          <div class="title">
+            <a>选课指南</a>
+          </div>
+          <el-timeline class="progressPage">
+            <el-timeline-item v-for="(activity, index) in activities" :key="index" :type="activity.type"
+                              :size="activity.size" :hollow="activity.hollow" :timestamp="activity.timestamp">
+              {{ activity.content }}
+            </el-timeline-item>
+          </el-timeline>
+          <div class="buttonSet">
+            <el-button type="default" @click="courseSelected" class="opButton">
+              <a>刷新课表</a></el-button>
+            <el-button type="default" @click="loadDropDialog" class="opButton">
+              <a>退选课程</a></el-button>
+            <el-button type="default" @click="viewDetails" class="opButton">
+              <a>查看已选课程</a></el-button>
+          </div>
+        </div>
+      </div>
+      <div class="courseSelectArea">
+        <div class="courseSelectPage">
+          <div class="courseSelectTop">
+            <a class="courseSelectPageTitle">进入选课</a>
+            <div class="checkBox">
+              <el-button type="primary" @click="getCourseInformation" class="queryButton">
+                <a>查询</a>
+              </el-button>
+              <el-checkbox  v-model="filter">
+                <a>过滤掉冲突课程</a>
+              </el-checkbox>
+            </div>
+
+          </div>
+
+          <div class="selectTable">
+            <el-table :data="pageData.courseList" height="550" :header-cell-style="{ 'text-align': 'center' }" border>
+              <el-table-column prop="name" label="课程名称" align="center" width="150"  fixed="left" />
+              <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
+              <el-table-column prop="description" label="课程描述" align="center" />
+              <el-table-column prop="credit" align="center" label="学分" width="60" />
+              <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
+              <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
+              <el-table-column prop="time" align="center" label="上课时间" width="150">
+                <template #default="time">
+                  <p v-for="(item, index) in time.row.time">
+                      星期{{ time.row.time[index].weekDay }}的第{{time.row.time[index].section }}大节
+                  </p>
+                </template>
+              </el-table-column>
+              <el-table-column prop="capacity" align="center" label="课容量" width="60" />
+              <el-table-column prop="studentNum" align="center" label="选课人数" width="60" />
+              <el-table-column prop="location" align="center" label="上课地点" width="150" />
+              <el-table-column label="选课" width="150" align="center" fixed="right">
+                <template #default="scope">
+                  <el-button size="large" @click="handleSelect(scope.row)">选课</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <div class="pagination">
+              <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
+                @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize"
+                style="text-align: center">
+              </el-pagination>
+            </div>
+          </div>
+        </div>
+        <el-dialog v-model="dialogTableVisibleDetails" title="查看课程信息" width="700" class="dialogPage" align="true"
+            :align-center="true">
+            <el-table :data="pageData.myCourse" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
+                :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
+                <el-table-column prop="name" label="课程名称" align="center" width="180" />
+                <el-table-column prop="teacherName" label="教师姓名" align="center" width="100" />
+                <el-table-column prop="description" label="课程描述" align="center" width="265" />
+                <el-table-column prop="credit" align="center" label="学分" width="60" />
+                <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
+                <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
+                <el-table-column prop="time" align="center" label="上课时间" width="250">
+                    <template #default="time">
+                        <p v-for="(item, index) in time.row.time">
+                            星期{{ time.row.time[index].weekDay }}的第{{ time.row.time[index].section }}大节
+                        </p>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="capacity" align="center" label="课容量" width="120" />
+                <el-table-column prop="location" align="center" label="上课地点" width="150" />
+
+            </el-table>
+        </el-dialog>
+        <el-dialog v-model="dialogTableVisibleDrop" title="退选课程" width="700" class="dialogPage" align="true"
+            :align-center="true">
+            <el-table :data="pageData.myCourse" height="500" width="620" :header-cell-style="{ 'text-align': 'center' }"
+                :cell-style="{ padding: '5px 0' }" style="font-size: 16px" border>
+                <el-table-column prop="name" label="课程名称" align="center" width="140" />
+                <el-table-column prop="teacherName" label="教师姓名" align="center" width="80" />
+                <el-table-column prop="description" label="课程描述" align="center" width="265" />
+                <el-table-column prop="credit" align="center" label="学分" width="60" />
+                <el-table-column prop="weekStart" align="center" label="开始周" width="60" />
+                <el-table-column prop="weekEnd" align="center" label="结束周" width="60" />
+                <el-table-column prop="time" align="center" label="上课时间" width="150">
+                    <template #default="time">
+                        <p v-for="(item, index) in time.row.time">
+                            星期{{ time.row.time[index].weekDay }}的第{{ time.row.time[index].section }}大节
+                        </p>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="capacity" align="center" label="课容量" width="120" />
+                <el-table-column prop="location" align="center" label="上课地点" width="150" />
+                <el-table-column label="操作" width="200" align="center">
+                    <template #default="scope">
+                        <el-button size="large" @click="dropCourse(scope.row)">退课</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </el-dialog>
+      </div>
+
     </div>
 
 
@@ -143,14 +195,26 @@ import { messageSuccess, messageWarning, messageInfo, messageError } from '@/uti
 import { ElMessageBox } from 'element-plus';
 import { reactive, ref } from 'vue';
 import { showLoading, hideLoading } from "../../utils/loading";
+import {mobile} from "@/global/global";
 
-let random = Math.random();
+//pc端 横向占比
+const ratio = ref(0.7);
+//pc端 纵向占比
+const verticalRatio = ref(0.9);
+
+
 let currentPage = ref(1);
-let pageSize = ref(2);
+let pageSize = ref(4);
 let dialogTableVisibleDetails = ref(false); //查看详细信息弹出框
 let dialogTableVisibleDrop = ref(false); //退课弹出框
 let filter = ref(false);  //是否过滤掉冲突课程
 let pageCount = ref();
+const fontColorSet = [
+    '#000','#FFF','#FFF','#FFF'
+]
+const baseColorSet = [
+  '#23a35d','#85B8CB','#1D6A96','#245a74','#a92939','#ebba11','#631F16'
+]
 //获得已经选课的课程信息,用于更新课表
 const activities = [
     {
@@ -186,246 +250,163 @@ const activities = [
     },
 ]
 
-let courseInfo = reactive({
-    arr: []
-}); //给我的所有课程，用于选课
-let backData = reactive({
-    arr: [],
-}); //我的课程，用于生成课表
-let tableData = reactive({
-    arr: [ //课表中的数据，用于显示
-        {
-            title: '第一大节(8:00-9:50)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: '第二大节(10:10-12:00)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: "第三大节(14:00-15:50)",
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: '第四大节(16:10-18:00)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: '第五大节(17:00-20:50)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-    ],
-})
-let MidTableData = reactive({
-    arr: [ //课表中的数据，用于显示
-        {
-            title: '第一大节(8:00-9:50)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: '第二大节(10:10-12:00)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: "第三大节(14:00-15:50)",
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: '第四大节(16:10-18:00)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-        {
-            title: '第五大节(17:00-20:50)',
-            Monday: '',
-            Tuesday: '',
-            Wednesday: '',
-            Thursday: '',
-            Friday: '',
-            Saturday: '',
-            Sunday: '',
-        },
-    ],
-})
-//该方法用于拼接课表数据
-const checkCourseTime = () => {   //更新课表页    //如果backData是0，就不进for循环了
-    console.log(backData.arr.length)
-    /* if (backData.arr.length == 0) {
-        tableData = MidTableData;
-    } */
-    for (let i = 0; i < backData.arr.length; i++) {
-        for (let j = 0; j < backData.arr[i].time.length; j++) {
-            let n = backData.arr[i].time[j].section - 1; //数组下标从0开始
-            if (backData.arr[i].time[j].weekDay == 1) {
-                console.log(backData.arr[i].name);
-                tableData.arr[n].Monday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            } else if (backData.arr[i].time[j].weekDay == 2) {
-                tableData.arr[n].Tuesday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            } else if (backData.arr[i].time[j].weekDay == 3) {
-                tableData.arr[n].Wednesday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            } else if (backData.arr[i].time[j].weekDay == 4) {
-                tableData.arr[n].Thursday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            } else if (backData.arr[i].time[j].weekDay == 5) {
-                tableData.arr[n].Friday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            } else if (backData.arr[i].time[j].weekDay == 6) {
-                tableData.arr[n].Saturday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            } else if (backData.arr[i].time[j].weekDay == 7) {
-                tableData.arr[n].Sunday = '课程名称:' + backData.arr[i].name + "  " + '@上课地址:' + backData.arr[i].location;
-            }
-        }
+const weekDays = ['周一','周二','周三','周四','周五','周六','周日']
 
-    }
-    console.log(tableData)
+const sections = ['第一大节','第二大节','' ,'第三大节','第四大节','第五大节']
+
+//页面的所有响应式数据
+const pageData = reactive({
+  courseList: [],//可选的课程
+  myCourse : [] ,//我的课程
+  courseTime: [],//课表上显示的数据 带有课名及时间信息 存储myCourse中的index代表索引
+})
+
+interface Course{
+  id: 0,
+  name: '',
+  weekStart: 0,
+  weekEnd: 0,
+  time: [{
+    weekDay: 0,
+    section: 0
+  },{
+    weekDay: 0,
+    section: 0
+  }
+  ],
+  capacity: 0,
+  studentClass: [],
+  studentSection: [],
+  location: '',
+  year: 0,
+  semester: '',
+  credit: 0.0,
+  description: '',
 }
+
+interface CourseTime{
+  weekDay: 0,
+  section: 0,
+}
+
+interface CourseTimeData{
+  courseIndex: 0,
+  weekDay: 0,
+  section: 0,
+}
+
+const handlePosition = (target : CourseTimeData) => {
+  console.log('position: absolute; top:' + target.section * 2 + 'vh; left: ' + target.weekDay * 2 + 'vw');
+  return 'position: absolute; top:' + target.section * 2 + 'vh; left: ' + target.weekDay * 2 + 'vw';
+}
+
+/**
+ * 根据myCourse更新课程时间
+ */
+const handleCourseTime = () => {
+  let result = [];
+  for(let i = 0;i < pageData.myCourse.length;i ++){
+    let temp : Course = pageData.myCourse[i];
+    for(let j = 0;j < temp.time.length;j ++){
+      result.push({
+        courseIndex: i,
+        weekDay: temp.time[j].weekDay,
+        section: temp.time[j].section
+      })
+    }
+  }
+  pageData.courseTime = result;
+  console.log('完成myCourse更新')
+  console.log(pageData)
+}
+
 //加载课表方法
-//后端发给我一个已经选课的数组，我绑定到backData里，然后执行checkCourseTime来
+//后端发给我一个已经选课的数组，我绑定到myCourse里，然后执行checkCourseTime来
 //拼接课表,所以那个查看已选课程信息的按钮绑定的函数还是viewDetails,在这个函数中调用
 //checkCourseTime方法
-const courseSelected = async () => {
-    showLoading()
-    await service.post('/api/course/findCourseList', { token: localStorage.getItem('token') }).then(res => {
-        let data = res.data;
-
-        if (data.success) {
-            hideLoading();
-            random = Math.random()
-            localStorage.setItem('token', data.token);
-            backData.arr = data.content;
-            console.log(backData.arr);
-            if(backData.arr.length==0){tableData.arr = MidTableData.arr}
-            else{ checkCourseTime()};
-        } else {
-            hideLoading();
-            messageError(data.message);
-        }
+const courseSelected = () => {
+  showLoading()
+  console.log('进入courseSelected方法')
+    service.post('/api/course/findCourseList', { token: localStorage.getItem('token') }).then(res => {
+      let data = res.data;
+      console.log(res);
+      if (data.success) {
+        hideLoading();
+        localStorage.setItem('token', data.token);
+        pageData.myCourse = data.content;
+        console.log(pageData);
+        handleCourseTime();
+      } else {
+        hideLoading();
+        messageError(data.message);
+      }
     })
-        .catch(function (error) {
-            hideLoading();
-            messageError("服务器开小差了呢");
-            console.log(error)
-        })
+    .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+    })
 }
 
-courseSelected(); //进入页面先执行一次 
+courseSelected(); //进入页面先执行一次
 
 
-//得到可以选的课的课程信息
-//进入页面动态加载
-//发送请求后传给我一个数组，数组中有每个课程，我绑定到courseInfo中
-const getCourseInformation = async () => {//下午说这个传参加了一个size，一个pageNum
-    showLoading()
-    await service.post('/api/course/findAllCourse', { token: localStorage.getItem('token'), filterOpern: filter.value, pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
-        let data = res.data;
-        console.log(filter.value)
-        if (data.success) {
-            console.log(res.data.totalPage)
-            console.log(res.data.content)
-            localStorage.setItem('token', data.token);
-            courseInfo.arr = data.content;
-            console.log(courseInfo.arr)
-            pageCount.value = data.totalPage;
-            hideLoading()
-        } else {
-            hideLoading()
-            messageError(data.message);
-        }
-    })
-        .catch(function (error) {
-            hideLoading();
-            messageError("服务器开小差了呢");
-            console.log(error)
-        })
+/**
+ * 刷新可选课程的方法 会更新pageData.courseList
+ */
+const getCourseInformation = () => {
+  showLoading()
+  service.post('/api/course/findAllCourse', { token: localStorage.getItem('token'), filterOpen: filter.value, pageNum: currentPage.value, pageSize: pageSize.value }).then(res => {
+    let data = res.data;
+    console.log(filter.value)
+    if (data.success) {
+      localStorage.setItem('token', data.token);
+      pageData.courseList = data.content;
+      console.log(pageData)
+      pageCount.value = data.totalPage;
+    } else {
+      messageError(data.message);
+    }
+    hideLoading()
+  })
+  .catch(function (error) {
+    hideLoading();
+    messageError("服务器开小差了呢");
+    console.log(error)
+  })
 }
-//进去先默认刷新课表，然后课程信息自己要
-/* getCourseInformation() */;//进入页面自动加载
-//进去即使没有选课也把空课表给我，让我给backData赋初始值
 
 
 //退课是否退课，发送请求，退课成功，要后端课表数据，调用函数
 const dropCourse = async (row) => {
-    await ElMessageBox.confirm(
-        '确认退课吗?',
-        'Warning',
-        {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            type: 'warning',
-        }
-    )
-        .then(() => {
-            showLoading()
-            service.post('/api/course/quit', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
-                if (res.data.success) {
-                    hideLoading()
-                    messageSuccess('退课成功!')
-                    localStorage.setItem("token", res.data.token)
-                    courseSelected();//退课要重新获得选课信息
-                    /*   getCourseInformation();//重新更改可选课程数据 */
-                } else {
-                    messageWarning(res.data.message)
-                    hideLoading()
-                }
-            })
-                .catch(function (error) {
-                    hideLoading();
-                    messageError("服务器开小差了呢");
-                    console.log(error)
-                })
-        }
-        )
+  await ElMessageBox.confirm(
+    '确认退课吗?',
+    'Warning',
+    {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+    }
+  )
+  .then(() => {
+    showLoading()
+    service.post('/api/course/quit', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
+      if (res.data.success) {
+          messageSuccess('退课成功!')
+          localStorage.setItem("token", res.data.token)
+          courseSelected();//退课要重新获得选课信息
+          /*   getCourseInformation();//重新更改可选课程数据 */
+      } else {
+          messageWarning(res.data.message)
+      }
+      hideLoading()
+    })
+    .catch(function (error) {
+      hideLoading();
+      messageError("服务器开小差了呢");
+      console.log(error)
+    })
+  })
 }
 
 //选课
@@ -456,7 +437,6 @@ const handleSelect = async (row) => { //选课
 const handleCurrentChange = (current) => {  //切换页码
     currentPage.value = current;
     getCourseInformation();
-
 }
 
 const viewDetails = () => {
@@ -470,119 +450,96 @@ const loadDropDialog = () => {
 </script>
 <style lang="scss" scoped>
 .mainArea {
-    padding-top: 4vh;
-    padding-bottom: 3vh;
-    padding-left: 2vw;
-    width: 92vw;
-
-    .mainCard {
-        background-color: #FFFFFF;
-        padding-top: 6vh;
-        padding-bottom: 6vh;
-        padding-left: 3vw;
-        padding-right: 3vw;
-        border-radius: 4vw;
-
-        .content {
-            height: 1300px;
-            padding-left: vw;
-
-            .classSchedulePage {
-                width: 900px;
-                height: 600px;
-
-                .tableStyle {
-                    border: 0.5px solid;
-                    cursor: pointer;
-                }
-            }
-
-            .operationPage {
-                height: 600px;
-                background-color: #f8fad7;
-                border-top: 1px solid;
-                border-right: 1px solid;
-                border-bottom: 1px solid;
-
-                .title {
-                    padding-top: 10px;
-                    font-size: 18px;
-                    font-weight: 550;
-                    text-align: center;
-                }
-
-                .progressPage {
-                    padding-top: 40px;
-                    padding-left: 65px;
-                }
-
-                .buttonSet {
-                    display: flex;
-                    flex-direction: column;
-                    padding-left: 48px;
-
-                    .opButton {
-                        display: flex;
-                        flex-direction: column;
-                        margin-top: 3vh;
-                        justify-content: center;
-                        margin-left: 1vw;
-                        width: 15vw;
-                        height: 4vh;
-                        background: transparent;
-                        border: 0.5px solid #f88075 !important;
-                        border-radius: 6px;
-                        border: none;
-                        color: rgb(71, 51, 51);
-                        text-align: center;
-                        display: inline-block;
-                        font-size: 16px;
-                        font-weight: 500;
-                        -webkit-transition-duration: 0.4s;
-                        transition-duration: 0.4s;
-                        cursor: pointer;
-                        text-decoration: none;
-                        text-transform: uppercase;
-                    }
-
-                    .opButton:hover {
-                        color: rgb(78, 94, 244);
-
-                    }
-                }
-            }
-
-            .courseSelectPage {
-                padding-top: 30px;
-                padding-bottom: 15px;
-                height: 680px;
-                background-color: #c4dcf2;
-
-                .courseSelectPageTitle {
-                    padding-top: 10px;
-                    font-size: 28px;
-                    margin-left: 6px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                }
-
-                .checkBox {
-                    padding-left: 40px;
-                }
-
-                .selectTable {
-                    padding-left: 10px;
-                    padding-right: 10px;
-                }
-
-                .pagination {
-                    padding-top: 30px;
-                    float: right;
-                }
-
-            }
-        }
-
-    }
+  padding-left: 2vw;
+  padding-top: 40px;
 }
+.timeTableCard{
+  background-color: #FFFFFF;
+  border-radius: 2vw;
+  display: flex;
+  flex-direction: row;
+}
+.topWeekDay{
+  display: flex;
+  flex-direction: row;
+}
+.lunchTime{
+  background-color: #8a8f97;
+  position: absolute;
+  border-radius: 13px;
+  display: flex;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 3vh;
+  font-weight: bold;
+}
+.courseName{
+  align-self: center;
+}
+.timeTable{
+
+}
+.timeCard{
+  border-radius: 1vw;
+  color: #FFFFFF;
+  font-size: 2.2vh;
+  display: flex;
+  justify-content: center;
+}
+.courseCard{
+  background-color: #0a8ce2;
+  border-radius: 0.3vw;
+
+}
+.courseSelectArea{
+  padding-top: 2vh;
+}
+.courseSelectTop{
+  border-color: #0a8ce2;
+  border-style: solid;
+  border-width: 5px;
+  border-top-left-radius: 3vw;
+  border-top-right-radius: 3vw;
+  height: 5vh;
+  display: flex;
+  flex-direction: row;
+}
+.queryButton{
+  border-color: #0a8ce2;
+  border-style: solid;
+  border-width: 5px;
+  border-top-right-radius: 3vw;
+  border-top-style: none;
+  border-right-style: none;
+  border-bottom-style: none;
+  background-color: rgba(0,0,0,0);
+  color: #0a8ce2;
+  font-weight: bold;
+  font-size: 3vh;
+  height: 6vh;
+  margin: -0.4% 0;
+  padding-right: 3vw;
+  padding-left: 3vw;
+}
+.courseSelectPageTitle{
+  padding-left: 2vw;
+  font-size: 4vh;
+  color: #0a8ce2;
+  width: 30%;
+}
+.courseSelectPage{
+  width: 90vw;
+  background-color: #FFFFFF;
+  border-radius: 3vw;
+
+}
+.checkBox{
+  width: 70%;
+  height: 5vh;
+
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+
 </style>
