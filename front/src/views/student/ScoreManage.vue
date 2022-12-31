@@ -20,8 +20,8 @@
         </div>
         <div class="tablePage">
           <el-table :data="tableData.arr" stripe size="large" class="scoreTable"
-            :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-            :cell-style="{ 'height': '15px', 'font-size': '16px', 'text-align': 'center', 'font-weight': '450' }">
+            :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+            :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
             <!-- 显示斑马纹和边框 -->
             <el-table-column label="课程名" prop="courseName" width="250" show-overflow-tooltip />
             <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
@@ -121,35 +121,35 @@ const check = async () => {
       width: 80vw;
       height: 90vh;
       border-radius: 1vw;
-      box-shadow: 0 0 10px 0 #b9ccee;
+      box-shadow: 0 0 1.25vh 0 #b9ccee;
 
       .head {
         height: 20vh;
-        padding-left: 15px;
-        padding-top: 20px;
+        padding-left: 1.875vh;
+        padding-top: 2.5vh;
 
         .title {
           display: flex;
           flex-direction: column;
-          padding-left: 25px;
-          font-size: 25px;
+          padding-left: 3.125vh;
+          font-size: 3.125vh;
           font-weight: 600;
         }
 
         .selectPanel {
-          margin-top: 30px;
+          margin-top: 3.75vh;
           display: flex;
           flex-direction: row;
 
           .selectLabel {
-            font-size: 18px;
-            padding-right: 10px;
-            padding-left: 30px;
+            font-size: 2.25vh;
+            padding-right: 1.25vh;
+            padding-left: 3.75vh;
           }
 
           .checkButton {
-            margin-left: 30px;
-            font-size: 16px;
+            margin-left: 3.75vh;
+            font-size: 2vh;
           }
         }
 
@@ -159,13 +159,13 @@ const check = async () => {
         display: flex;
         flex-direction: column;
         padding-left: 3vw;
-        margin-top: 10px;
+        margin-top: 1.25vh;
         height: 60vh;
         width: 70vw;
 
         .scoreTable {
-          border-top: 0.5px solid;
-          border-bottom: 0.5px solid;
+          border-top: 0.0625vh solid;
+          border-bottom: 0.0625vh solid;
         }
       }
     }

@@ -301,34 +301,34 @@ const register = async () => {
   width: 100%;
   background-color: rgba(51, 126, 204, 0.3);
   /* text-align: center; */
-  margin-top: 10px;
-  margin-left: 25px;
-  margin-right: 25px;
-  line-height: 50px;
-  border-radius: 35px;
+  margin-top: 1.25vh;
+  margin-left: 3.125vh;
+  margin-right: 3.125vh;
+  line-height: 6.25vh;
+  border-radius: 4.375vh;
 }
 
 .captchaInput {
-  height: 50px;
+  height: 6.25vh;
   width: 100% ! important;
-  padding-right: 0px;
-  border-top-right-radius: 0px !important;
-  border-bottom-right-radius: 0px !important;
+  padding-right: 0vh;
+  border-top-right-radius: 0vh !important;
+  border-bottom-right-radius: 0vh !important;
 }
 
 .captchaButton {
   background-color: rgba(103, 194, 58, 0.5);
-  margin-top: 4px;
-  margin-left: 5px;
-  height: 43px !important;
+  margin-top: 0.5vh;
+  margin-left: 0.625vh;
+  height: 5.375vh !important;
   width: 90% !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 3px !important;
+  border-radius: 0.375vh !important;
 }
 
 .buttonLogin {
-  margin-top: 40px;
+  margin-top: 5vh;
 }
 </style>

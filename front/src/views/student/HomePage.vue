@@ -32,7 +32,7 @@
           <p3>该网站归属某组所有，任何侵权行为均要付相应的法律责任!(确信)</p3>
         </el-dialog>
         <!-- 修改头像弹出框 -->
-        <el-dialog v-model="dialogVisibleImg" style=" width: 400px!important;height: 300px!important;">
+        <el-dialog v-model="dialogVisibleImg" style=" width: 50vh!important;height: 37.5vh!important;">
           <section>
             <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
               :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
@@ -350,7 +350,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 
   padding: 0;
   //padding: 0 0 !important;
-  //height: 80px !important;
+  //height: 80vh !important;
   //width: 100%;
   //position: fixed;
   //z-index: 9999;
@@ -361,19 +361,19 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
 }
 
 .avatarImage {
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
 }
 
 .el-aside {
-  width: 200px;
+  width: 25vh;
   padding-top: 2.2vh;
 }
 
@@ -405,7 +405,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .logoDiv {
-  height: 70px !important;
+  height: 8.75vh !important;
   width: 35%;
 }
 
@@ -414,16 +414,16 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .img {
-  height: 65px !important;
-  margin-top: 2px;
-  margin-left: 2px;
-  width: 280px;
-  /*  margin-top: 8px;
-   margin-bottom: 8px; */
+  height: 8.125vh !important;
+  margin-top: 0.25vh;
+  margin-left: 0.25vh;
+  width: 35vh;
+  /*  margin-top: 8vh;
+   margin-bottom: 8vh; */
 }
 
 .nav-bar-top {
-  height: 83px;
+  height: 10.375vh;
 }
 
 .flex-grow {
@@ -448,29 +448,29 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 img {
-  padding-right: 5px;
-  margin: 10px;
+  padding-right: 0.625vh;
+  margin: 1.25vh;
 }
 
 .nick {
   display: flex;
   flex-direction: row;
-  padding-right: 100px;
-  padding-top: 17px;
-  height: 60px;
+  padding-right: 12.5vh;
+  padding-top: 2.125vh;
+  height: 7.5vh;
 }
 
 .nickName {
-  padding-top: 10px;
-  padding-left: 13px;
+  padding-top: 1.25vh;
+  padding-left: 1.625vh;
   position: bottom;
-  font-size: 14px;
+  font-size: 1.75vh;
 }
 
 .copyright {
-  padding-top: 5px;
-  padding-right: 5px;
-  font-size: 14px;
+  padding-top: 0.625vh;
+  padding-right: 0.625vh;
+  font-size: 1.75vh;
   cursor: pointer;
 
 }
@@ -481,8 +481,8 @@ img {
 }
 
 .avatar-uploader .avatar {
-  width: 178px;
-  height: 178px;
+  width: 22.25vh;
+  height: 22.25vh;
   display: block;
 
 }

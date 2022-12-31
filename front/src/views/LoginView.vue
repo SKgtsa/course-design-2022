@@ -287,19 +287,19 @@ const rulesCaptcha = reactive({
 }
 
 .loginWindow {
-  width: 360px;
-  height: 400px;
+  width: 45vh;
+  height: 50vh;
   background-color: rgba(30, 30, 30, 0.8);
   border-radius: 2vw;
-  padding-top: 4vh;
+  padding-top: 0vh;
   position: absolute;
   right: 10vw;
-  box-shadow: 2px 5px 17px 2px rgba(21, 40, 46, 0.5);
+  box-shadow: 0.25vh 0.625vh 2.125vh 0.25vh rgba(21, 40, 46, 0.5);
 
 }
 
 .loginPage_form {
-  margin-top: 60px;
+  margin-top: 10vh;
   height: 70%;
   width: 80%;
   text-align: center;
@@ -308,13 +308,13 @@ const rulesCaptcha = reactive({
 }
 
 .loginPage_form_input {
-  font-size: 16px;
+  font-size: 2vh;
   border: 0;
   /* border-bottom:2px solid #fff; */
-  padding: 5px 10px;
+  padding: 0.625vh 1.25vh;
   background: #4f484800;
   color: #fff;
-  height: 50px;
+  height: 6.25vh;
 }
 
 .loginPage_form_input>>>.el-input__prefix {
@@ -330,7 +330,7 @@ const rulesCaptcha = reactive({
 
 .switchButtonDiv {
   position: absolute;
-  top: 0px;
+  top: 0vh;
   width: 100%;
   display: flex;
   height: 6vh;
@@ -340,10 +340,10 @@ const rulesCaptcha = reactive({
   height: 100%;
   width: 50%;
   float: left;
-  padding: 0px;
-  margin-left: 0px !important;
+  padding: 0vh;
+  margin-left: 0vh !important;
   border-bottom-color: rgb(255, 255, 255);
-  border-width: 2px;
+  border-width: 0.25vh;
   border-style: double;
   /* background-color: rgb(0,0,150,0.5) */
   ;
@@ -364,19 +364,19 @@ const rulesCaptcha = reactive({
 .loginPageEl-botton {
   width: 80%;
   /* text-align: center; */
-  margin-left: 25px;
-  margin-right: 25px;
-  line-height: 25px;
-  border-radius: 15px;
-  margin-top: 10px;
-  height: 40px;
+  margin-left: 3.125vh;
+  margin-right: 3.125vh;
+  line-height: 3.125vh;
+  border-radius: 1.875vh;
+  margin-top: 1.25vh;
+  height: 5vh;
   font-weight: bold;
   font-style: inherit;
   font-size: medium;
 }
 
 .captchaInput {
-  height: 50px;
+  height: 6.25vh;
   width: 100% ! important;
   padding-right: 0px;
   border-top-right-radius: 0px !important;
@@ -385,28 +385,28 @@ const rulesCaptcha = reactive({
 
 .captchaButton {
   background-color: rgba(103, 194, 58, 0.5);
-  margin-top: 4px;
-  margin-left: 5px;
-  height: 43px !important;
+  margin-top: 0.5vh;
+  margin-left: 0.625vh;
+  height: 5.375vh !important;
   width: 90% !important;
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 3px !important;
+  border-radius: 0.375vh !important;
 }
 
 .buttonLogin {
-  margin-top: 40px;
+  margin-top: 5vh;
 }
 
 .el-checkbox {
-  --el-checkbox-font-size: 15px;
+  --el-checkbox-font-size: 1.875vh;
   --el-checkbox-font-weight: 1000;
   color: rgb(255, 255, 255);
 }
 
 .spacing {
-  padding-top: 30px;
+  padding-top: 3.75vh;
 }
 
 .img {
