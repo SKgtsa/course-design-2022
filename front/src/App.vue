@@ -1,5 +1,21 @@
 <script setup lang="ts">
 
+import {mobile, windowHeight, windowWidth} from "@/global/global";
+
+const getWindowResize = function () {
+  windowWidth.value = window.innerWidth;
+  windowHeight.value = window.innerHeight;
+  if(window.innerWidth / window.innerHeight <= 1){
+    mobile.value = true;
+  }else{
+    mobile.value = false;
+  }
+}
+
+
+getWindowResize()
+window.addEventListener('resize',getWindowResize)
+
 
 </script>
 

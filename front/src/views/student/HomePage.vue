@@ -1,7 +1,7 @@
 <template>
   <div class="back">
     <el-container>
-      <el-header class="el-header">
+      <el-header class="el-header" v-if="!mobile">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
           background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
           <img src="../../assets/images/logo.png" @click="checkCopyright" alt="logo未加载">
@@ -84,10 +84,18 @@
           </div>
         </el-dialog>
       </el-header>
+      <el-header v-if="mobile" >
+        <el-menu style="height: 10vh;width: 100vw;background-color: #0a8ce2; display: flex;flex-direction: row">
+          <a style="font-size: 5vh;color: #FFFFFF;font-weight: bold;line-height: 10vh">教学系统</a>
+          <div class="flex-grow">
+            <el-button>菜单</el-button>
+          </div>
+        </el-menu>
+      </el-header>
       <el-container>
         <el-main class="mainWindow">
           <div class="rightWindow">
-            <el-menu router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#e9eff9"
+            <el-menu v-if="!mobile" router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#e9eff9"
               class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
               :collapse="true">
               <el-menu-item index="/Student/Main">
@@ -149,7 +157,7 @@ import {
   getUserId,
   setAvatarURL,
   setNickName,
-  setUserId
+    mobile
 } from '../../global/global';
 import { RouterView } from 'vue-router';
 import { messageError, messageSuccess } from '@/utils/message';

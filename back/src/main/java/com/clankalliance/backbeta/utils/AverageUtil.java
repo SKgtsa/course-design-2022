@@ -1,5 +1,13 @@
 package com.clankalliance.backbeta.utils;
 
+
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class AverageUtil {
     private String courseName;
 
@@ -9,6 +17,7 @@ public class AverageUtil {
 
     private String passRate;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long courseId;
 
 
@@ -19,4 +28,5 @@ public class AverageUtil {
         this.passRate=passRate;
         this.courseId=courseId;
     }
+
 }
