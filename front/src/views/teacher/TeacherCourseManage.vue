@@ -2,27 +2,31 @@
   <div class="content">
     <div class="pageContent">
       <!-- :row-key="record=>record.id" -->
-      <div class="title">
-        课程管理
-        <el-button class="addButton" @click="add">添加课程</el-button>
+      <div class="titleBox">
+        <a style="font-size: 3vw;
+        font-weight: 500;
+        font-family: 微软雅黑;">课程管理</a>
+        <el-button class="addButton" @click="add">
+          <a style=" font-size:1.3vw;"> 添加课程</a>
+        </el-button>
       </div>
       <div class="checkBox">
         <a class="selectLabel">学年:</a>
-        <el-select style="width:8vw" v-model="yearsValue" placeholder="学年">
+        <el-select style="width:8vw;height:auto" v-model="yearsValue" placeholder="学年">
           <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
-        <a class=" selectLabel" style="padding-left:50px">学期:</a>
+        <a class=" selectLabel" style="padding-left:8vw">学期:</a>
         <el-select style="width:13vw" v-model="semesterValue" placeholder="学期：">
           <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
             :value="item.value"></el-option>
         </el-select>
-        <el-button type="primary" style="margin-left: 5vw;" @click="loadCourseTable">
-          <a>查询创建课程信息</a>
+        <el-button style="margin-left: 5vw;width: 10vw;height:6vh;border-color: deepskyblue;" @click="loadCourseTable">
+          <a style=" font-size:1.2vw;">查询创建课程信息</a>
         </el-button>
       </div>
       <el-table :data="tableData.arr" style="width:75vw" border stripe size="large" class="courseTable"
-        :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
+        :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+        :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
         <el-table-column label="课程" prop="name" width="200" show-overflow-tooltip />
         <el-table-column label="地点" prop="location" width="240" show-overflow-tooltip />
         <el-table-column label="开课周" prop="weekStart" width="60" show-overflow-tooltip />
@@ -45,7 +49,7 @@
             <!-- <el-button @click="viewDetails(scope.row)" class="button" type="primary">课程详情</el-button> -->
             <el-button size="small" @click="loadStudentTable(scope.row.id)" class="button"
               type="primary">选课学生</el-button>
-            <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑课程</el-button>
+            <el-button size="small" @click="handleEdit(scope.row)" class="button">查看或编辑</el-button>
             <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
           </template>
         </el-table-column>
@@ -90,24 +94,24 @@
       <el-form-item label="上课时间:" prop="time">
         <el-cascader v-model="editForm.time" :options="time" :props="mul" clearable placeholder="上课时间" />
       </el-form-item>
-      <span style="display: flex; flex-direction: row;">
-        <el-form-item label="学年:" prop="year">
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="2020">
-            <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.year" placeholder="2020">
-            <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="学期:" prop="semester">
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
-            <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="春季学期">
-            <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-      </span>
+
+      <el-form-item label="学年:" prop="year">
+        <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="2020">
+          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-if="typeOperation === 'edit'" v-model="editForm.year" placeholder="2020">
+          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="学期:" prop="semester">
+        <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
+          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="春季学期">
+          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+
 
       <el-form-item label="授课地点:" prop="location">
         <el-input v-if="typeOperation === 'edit'" style="width:15vw" v-model="editForm.location" maxlength="30">{{
@@ -116,20 +120,31 @@
         <el-input v-if="typeOperation === 'add'" style="width:15vw" v-model="editForm.location"
           maxlength="30"></el-input>
       </el-form-item>
-      <span style="display:flex;flex-direction:row">
-        <el-form-item label="课容量:" prop="capacity">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.capacity" maxlength="5" type="number">{{
+
+      <el-form-item label="平时分占总分比重" prop="weight">
+        <el-input v-if="typeOperation === 'edit'" style="width:15vw" 
+       placeholder="输入权重,如占比30%则输入0.3" v-model="editForm.weight" type="number" maxlength="3">{{
+    editForm.location
+}}</el-input>
+        <el-input v-if="typeOperation === 'add'" style="width:15vw" v-model="editForm.weight" type="number"
+          maxlength="3"></el-input>
+      </el-form-item>
+      <el-form-item label="课容量:" prop="capacity">
+        <el-input v-if="typeOperation === 'edit'" style="width:8vw" v-model="editForm.capacity" maxlength="5"
+          type="number">{{
     editForm.capacity
 }}</el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.capacity" maxlength="5" type="number"> </el-input>
-        </el-form-item>
-        <el-form-item label="学分:" prop="credit">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.credit" maxlength="2" type="number">{{
+        <el-input v-if="typeOperation === 'add'" style="width:8vw" v-model="editForm.capacity" maxlength="5"
+          type="number"> </el-input>
+      </el-form-item>
+      <el-form-item label="学分:" prop="credit">
+        <el-input v-if="typeOperation === 'edit'" style="width:8vw" v-model="editForm.credit" maxlength="2"
+          type="number">{{
     editForm.credit
 }}</el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.credit" maxlength="2" type="number"></el-input>
-        </el-form-item>
-      </span>
+        <el-input v-if="typeOperation === 'add'" style="width:8vw" v-model="editForm.credit" maxlength="2"
+          type="number"></el-input>
+      </el-form-item>
       <el-form-item label="授课班级:" prop="studentClass">
         <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentClass" placeholder="1班" multiple="true">
           <el-option v-for="item in classOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -160,8 +175,8 @@
       <el-button class="addButton" @click="addStudent">添加学生</el-button>
     </div>
     <el-table :data="studentData.arr" style="width: 90%" border stripe size="small" class="courseTable" max-height="400"
-      :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-      :cell-style="{ 'height': '14px', 'font-size': '10px', 'text-align': 'center', 'font-weight': '450' }">>
+      :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+      :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">>
       <el-table-column label="姓名" prop="name" width="120" show-overflow-tooltip />
       <el-table-column label="学号" prop="userNumber" width="250" show-overflow-tooltip />
       <el-table-column label="年级" prop="section" width="150" show-overflow-tooltip />
@@ -632,10 +647,11 @@ const rulesEditForm = reactive({   /* 定义校验规则 */
   description: [{ required: true, message: '请输入课程简介！', trigger: 'blur' }],
   weekStart: [{ required: true, message: '请选择课程起始周！', trigger: 'blur' },],
   weekEnd: [{ required: true, message: '请选择课程结束周！', trigger: 'blur' },],
-  time: [{type: 'array', required: true, message: '请选择上课时间', trigger:  'change' }],
+  time: [{ type: 'array', required: true, message: '请选择上课时间', trigger: 'change' }],
   capacity: [{ required: true, message: '请输入课程容量！', trigger: 'blur' }],
   studentClass: [{ required: true, message: '请选择学生班级！', trigger: 'blur' }],
   location: [{ required: true, message: '请输入上课地址！', trigger: 'blur' }],
+  weight:[{required:true,message:'请输入平时分占比!',trigger:'blur'}],
   semester: [{ required: true, message: '请选择学期！', trigger: 'blur' }],
   credit: [{ required: true, message: '请输入学分！', trigger: 'blur' }],
   studentSection: [{ required: true, message: '请输入上课年级！', trigger: 'blur' }]
@@ -651,6 +667,7 @@ let editForm = reactive({
   studentSection: [],
   location: '',
   year: '',
+  weight:'',
   description: '',
   semester: '',
   credit: '',
@@ -671,6 +688,7 @@ const loadCourseTable = async () => {
       hideLoading();
       let data = res.data;
       messageSuccess('查询成功')
+      console.log(data.content)
       localStorage.setItem('token', data.token);
       tableData.arr = data.content;
     } else {
@@ -720,6 +738,7 @@ const add = () => {
   editForm.name = '';
   editForm.weekStart = '';
   editForm.weekEnd = '';
+  editForm.weight = '',
   /*   editForm.time.weekDay = '';
     editForm.time.section = ''; */
   editForm.capacity = '';
@@ -780,25 +799,33 @@ const handleEdit = (row) => {  //改
   editForm.name = row.name;
   editForm.weekStart = row.weekStart;
   editForm.weekEnd = row.weekEnd;
-  editForm.time = row.time;
+  editForm.time = [];
+  for(let i = 0 ;i<row.time.length;i++){
+    let midArray = [];
+    midArray.push(row.time[i].weekDay);
+    midArray.push(row.time[i].section);
+    editForm.time.push(midArray);
+  }
+  console.log('!!!')
+  console.log(editForm.time)
+  editForm.weight = row.weight;
   editForm.capacity = row.capacity;
   editForm.studentClass = row.studentClass;
   let arrIntSet = [];
-  	    // 将字符串转换成数组，此时是字符串数组
-  let arrString = row.studentClass.substr(1,row.studentClass.length-2).split(',');
-  for(let arrInt = 0; arrInt<arrString.length;arrInt++){
+  // 将字符串转换成数组，此时是字符串数组
+  let arrString = row.studentClass.substr(1, row.studentClass.length - 2).split(',');
+  for (let arrInt = 0; arrInt < arrString.length; arrInt++) {
     arrIntSet.push(parseInt(arrString[arrInt]))
   }
-	// 将新的Number数组，绑定到select空间的v-model上
-	editForm.studentClass=arrIntSet;
+  // 将新的Number数组，绑定到select空间的v-model上
+  editForm.studentClass = arrIntSet;
   arrIntSet = [];
   let arrInt;
-  arrString = row.studentSection.substr(1,row.studentSection.length-2).split(',');
-  for(arrInt = 0; arrInt<arrString.length;arrInt++){
+  arrString = row.studentSection.substr(1, row.studentSection.length - 2).split(',');
+  for (arrInt = 0; arrInt < arrString.length; arrInt++) {
     arrIntSet.push(parseInt(arrString[arrInt]))
   }
-  editForm.studentSection=arrIntSet;
-
+  editForm.studentSection = arrIntSet;
   editForm.location = row.location;
   editForm.year = row.year;
   editForm.description = row.description;
@@ -931,6 +958,7 @@ const sumbitEditRow = async () => {
             studentSection: editForm.studentSection,
             location: editForm.location,
             year: editForm.year,
+            weight:editForm.weight,
             description: editForm.description,
             semester: editForm.semester,
             credit: editForm.credit,
@@ -967,6 +995,7 @@ const sumbitEditRow = async () => {
             studentSection: editForm.studentSection,
             location: editForm.location,
             year: editForm.year,
+            weight:editForm.weight,
             description: editForm.description,
             semester: editForm.semester,
             credit: editForm.credit,
@@ -1010,6 +1039,7 @@ const sumbitEditRow = async () => {
   editForm.description = '';
   editForm.semester = '';
   editForm.credit = '';
+  editForm.weight = '',
   editForm.courseId = '';
   centerDialogVisible.value = false;
   centerDialogVisibleCheck.value = false;
@@ -1066,38 +1096,40 @@ const handleCurrentChange = (currentPage) => {
     padding-top: 3vh;
     padding-bottom: 3vh;
 
-    .title {
-      margin-top: 10px;
-      height: 30px;
-      font-family: 微软雅黑;
-      font-size: 5vh;
-      font-weight: 500;
+    .titleBox {
+      margin-top: 1.5vh;
+      height: 5vh;
       line-height: 1vh;
       color: #0273f1;
+
+      .title {}
+
+      .addButton {
+        margin-left: 3vw;
+        width: 10vw;
+        height: 5vh;
+        border-color: #0273f1;
+        border-style: solid;
+        border-width: 0.3vw;
+        border-radius: 1vw;
+        color: #0273f1;
+      }
+
     }
 
-    .addButton {
-      width: 10vw;
-      height: 5vh;
-      border-color: #0273f1;
-      border-style: solid;
-      border-width: 4px;
-      border-radius: 1vw;
-      color: #0273f1;
-      font-size: 2.5vh;
-    }
-    .courseTable{
-      
+
+    .courseTable {
+      height: 60vh;
     }
 
     .checkBox {
       padding-top: 5vh;
-      padding-left: 0px;
+      padding-left: 0vw;
       padding-bottom: 2vh;
 
       .selectLabel {
-        font-size: 18px;
-        padding-right: 20px;
+        font-size: 1.5vw;
+        padding-right: 4vw;
       }
 
     }
@@ -1106,22 +1138,16 @@ const handleCurrentChange = (currentPage) => {
       background-color: aqua;
 
       .button {
-        width: 60px;
-        height: 30px;
+        width: 9vw;
+        height: 5.5vh;
       }
     }
   }
 }
 
 
-
-.practiceDialog {
-  width: 300px !important;
-  height: 600px !important;
-}
-
 .areaTextInput {
-  font-size: 15px;
+  font-size: 0.4vw;
 }
 
 .dialogButtonPage {
@@ -1131,12 +1157,12 @@ const handleCurrentChange = (currentPage) => {
 .dialogButton {
   height: 5vh;
   width: 5vw;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 0.8vw;
+  padding-right: 0.8vw;
 }
 
 .pagination {
-  padding-bottom: 10px;
-  padding-left: 230px;
+  padding-bottom: 3vh;
+  padding-left: 40vw;
 }
 </style>

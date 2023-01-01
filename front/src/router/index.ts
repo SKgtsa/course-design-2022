@@ -130,11 +130,6 @@ const router = createRouter({
           component: () => import('../views/teacher/TeacherScoreManage.vue')
         },
         {
-          path:'/Teacher/GetScore',
-          name:'TeacherGetScore',
-          component: ()=> import('../views/teacher/TeacherGetScore.vue')
-        },
-        {
           path: '/Teacher/SelfInformation',
           name: 'TeacherSelfInformation',
           component: () => import('../views/teacher/TeacherSelfInformation.vue')

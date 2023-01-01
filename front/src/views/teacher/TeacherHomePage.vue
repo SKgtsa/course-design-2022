@@ -102,19 +102,16 @@
                   <Document />
                 </el-icon>
               </el-menu-item>
-              <el-sub-menu>
-                <template #title>
+            
+      
+                <el-menu-item index="/Teacher/ScoreManage">
+                  <template #title>成绩管理</template>
                   <el-icon>
                     <icon-menu/>
                   </el-icon>
-                </template>
-                <el-menu-item index="/Teacher/GetScore">
-                  历史成绩数据
+
+                  
                 </el-menu-item>
-                <el-menu-item index="/Teacher/ScoreManage">
-                  打分系统
-                </el-menu-item>
-              </el-sub-menu>
             </el-menu>
           </div>
           <div class="leftMenu">
