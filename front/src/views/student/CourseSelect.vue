@@ -1,25 +1,34 @@
 <template>
     <div class="mainArea">
-      <div :style="{'display':'flex','flex-direction':`${mobile? 'column':'row'}`}">
+      <div :style="{'display':'flex','flex-direction':`${mobile? 'column':'row'}`,'padding-top':`${mobile? 3:0}vh`}">
         <div class="timeTableCard" :style="{
           'width': `${mobile? 90: 90*ratio}vw`,
-          'height': `${mobile? 70: 20 + 50*verticalRatio}vh`
+          'height': `${mobile? 23 + 50*verticalRatio: 70}vh`,
+          'padding-top': '1vh'
         }">
           <div :style="{
             'width':`${mobile? 25: 25*ratio}vw`,
-            'height':`${mobile? 60: 60*verticalRatio}`
+            'height':`${mobile? 60*verticalRatio: 60}`
           }" class="leftSection">
             <div  :style="{
               'width':`${mobile? 25: 25*ratio}vw`,
-              'height':`${mobile? 10: 10*verticalRatio}vh`
-              }">
-
+              'height':`${mobile? 8*verticalRatio: 8}vh`
+              }" style="  display: flex;justify-content: center;">
+              <div style="width: 95%;height: 90%;background-color: #0a8ce2;align-self: center;border-radius: 8px"/>
             </div>
-            <div  :style="{
-              'width':`${mobile? 25: 25*ratio}vw`,
-              'height':`${mobile? 10: 10*verticalRatio}vh`
-              }" v-for="(item, index) in sections">
-              <a>{{item}}</a>
+            <div
+                :style="{
+                  'width':`${mobile? 25: 25*ratio}vw`,
+                  'height':`${mobile? 10*verticalRatio: 10}vh`,
+                  'position':'absolute',
+                  'top':`${(index * 10 + 18.5)* (mobile? verticalRatio: 1)}vh`
+                }"
+                v-for="(item, index) in sections"
+                style="  display: flex;justify-content: center;"
+            >
+              <div style="width: 95%;height: 90%;background-color: #DDDDDD;align-self: center;border-radius: 8px;display: flex;justify-content: center;">
+                <a  style="align-self: center">{{item}}</a>
+              </div>
             </div>
           </div>
           <div :style="{
@@ -33,8 +42,8 @@
           </div>
           <div class="lunchTime" :style="{
             'width':`${mobile? 62: 62*ratio}vw`,
-            'height':`${mobile? 8: 8*verticalRatio}vh`,
-            'top': `${mobile? 40: 10 + 30*verticalRatio}vh`,
+            'height':`${mobile? 8*verticalRatio: 8}vh`,
+            'top': `${mobile? 11.5 + 30*verticalRatio: 40}vh`,
             'left':`${mobile? 28: 28*ratio}vw`
           }">
             <a style="align-self: center">午休时间</a>
@@ -48,12 +57,12 @@
             >
               <template #reference>
                 <div class="timeCard" :style="{
-                  'top': `${(item.section > 2? item.section * 10 + 20 :item.section * 10 + 10)* (mobile? 1: verticalRatio)}vh`,
+                  'top': `${(item.section > 2? item.section * 10 + 19 :item.section * 10 + 9)* (mobile? verticalRatio: 1)}vh`,
                    'left': `${((item.weekDay * 13 + 15) * (mobile? 1: ratio))}vw`,
                    'position':'absolute',
                    'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`,
                    'width':`${12 * (mobile? 1: ratio)}vw`,
-                   'height': `${9 * (mobile? 1: verticalRatio)}vh`
+                   'height': `${9 * (mobile? verticalRatio: 1)}vh`
                 }" >
                   <a class="courseName">{{pageData.myCourse[item.courseIndex].name}}</a>
                 </div>
@@ -66,10 +75,11 @@
           </div>
         </div>
         <div :style="{
-          'width':`${mobile? 90: 90* (1 - ratio)}vw`
+          'width':`${mobile? 90: 80* (1 - ratio)}vw`,
+          'padding-left':'2vw',
         }">
           <div class="title">
-            <a>选课指南</a>
+            <a style="font-size: 4vh;font-weight: bold;color: #0a8ce2;line-height: 8vh">选课指南</a>
           </div>
           <el-timeline class="progressPage">
             <el-timeline-item v-for="(activity, index) in activities" :key="index" :type="activity.type"
@@ -78,8 +88,6 @@
             </el-timeline-item>
           </el-timeline>
           <div class="buttonSet">
-            <el-button type="default" @click="courseSelected" class="opButton">
-              <a>刷新课表</a></el-button>
             <el-button type="default" @click="loadDropDialog" class="opButton">
               <a>退选课程</a></el-button>
             <el-button type="default" @click="viewDetails" class="opButton">
@@ -196,11 +204,12 @@ import { ElMessageBox } from 'element-plus';
 import { reactive, ref } from 'vue';
 import { showLoading, hideLoading } from "../../utils/loading";
 import {mobile} from "@/global/global";
+import {loginFailed} from "@/utils/tokenCheck";
 
 //pc端 横向占比
 const ratio = ref(0.7);
 //pc端 纵向占比
-const verticalRatio = ref(0.9);
+const verticalRatio = ref(1.2);
 
 
 let currentPage = ref(1);
@@ -338,13 +347,12 @@ const courseSelected = () => {
         handleCourseTime();
       } else {
         hideLoading();
-        messageError(data.message);
+        loginFailed();
       }
     })
     .catch(function (error) {
-        hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+      hideLoading();
+      loginFailed();
     })
 }
 
@@ -364,15 +372,16 @@ const getCourseInformation = () => {
       pageData.courseList = data.content;
       console.log(pageData)
       pageCount.value = data.totalPage;
+      hideLoading()
     } else {
-      messageError(data.message);
+      hideLoading()
+      loginFailed();
     }
-    hideLoading()
   })
   .catch(function (error) {
     hideLoading();
-    messageError("服务器开小差了呢");
-    console.log(error)
+    console.log(error);
+    loginFailed();
   })
 }
 
@@ -392,19 +401,20 @@ const dropCourse = async (row) => {
     showLoading()
     service.post('/api/course/quit', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
       if (res.data.success) {
-          messageSuccess('退课成功!')
-          localStorage.setItem("token", res.data.token)
-          courseSelected();//退课要重新获得选课信息
-          /*   getCourseInformation();//重新更改可选课程数据 */
+        messageSuccess('退课成功!')
+        localStorage.setItem("token", res.data.token)
+        courseSelected();//退课要重新获得选课信息
+        /*   getCourseInformation();//重新更改可选课程数据 */
+        hideLoading()
       } else {
-          messageWarning(res.data.message)
+        hideLoading()
+        loginFailed();
       }
-      hideLoading()
+
     })
     .catch(function (error) {
       hideLoading();
-      messageError("服务器开小差了呢");
-      console.log(error)
+      loginFailed();
     })
   })
 }
@@ -415,21 +425,21 @@ const handleSelect = async (row) => { //选课
     await service.post('/api/course/select', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
         let data = res.data;
         if (data.success) {
-            console.log(res.data)
-            hideLoading();
-            localStorage.setItem('token', data.token);
-            messageSuccess('选课成功！');
-            courseSelected();
-            /*       getCourseInformation(); */
+          console.log(res.data)
+          hideLoading();
+          localStorage.setItem('token', data.token);
+          messageSuccess('选课成功！');
+          courseSelected();
+          /*       getCourseInformation(); */
+          hideLoading()
         } else {
-            messageError(data.message);
-            hideLoading()
+          hideLoading()
+          loginFailed();
         }
     })
         .catch(function (error) {
-            hideLoading();
-            messageError("服务器开小差了呢");
-            console.log(error)
+          hideLoading()
+          loginFailed();
         })
 }
 
@@ -451,13 +461,15 @@ const loadDropDialog = () => {
 <style lang="scss" scoped>
 .mainArea {
   padding-left: 2vw;
-  padding-top: 40px;
+  padding-top: 1vh;
+  padding-bottom: 3vh;
 }
 .timeTableCard{
   background-color: #FFFFFF;
   border-radius: 2vw;
   display: flex;
   flex-direction: row;
+  box-shadow: 0 0 3px 0  rgba(140,140,140,0.4);
 }
 .topWeekDay{
   display: flex;
@@ -531,15 +543,16 @@ const loadDropDialog = () => {
   width: 90vw;
   background-color: #FFFFFF;
   border-radius: 3vw;
-
+  box-shadow: 0 0 3px 0  rgba(140,140,140,0.4);
+  padding-bottom: 3vh;
 }
 .checkBox{
-  width: 70%;
+  width: 60%;
   height: 5vh;
-
   display: flex;
   flex-direction: row-reverse;
 }
-
+.buttonSet{
+}
 
 </style>

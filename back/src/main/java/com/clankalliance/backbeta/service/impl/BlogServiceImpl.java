@@ -1,10 +1,9 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Achievement;
-import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.blog.BlogDetail;
 import com.clankalliance.backbeta.entity.blog.Comment;
-import com.clankalliance.backbeta.entity.blog.PersonalPageData;
+import com.clankalliance.backbeta.response.dataBody.PersonalPageData;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
@@ -15,7 +14,7 @@ import com.clankalliance.backbeta.repository.userRepository.CommentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
-import com.clankalliance.backbeta.response.PostResponseTarget;
+import com.clankalliance.backbeta.response.dataBody.PostResponseTarget;
 import com.clankalliance.backbeta.service.BlogService;
 import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
@@ -304,16 +303,16 @@ public class BlogServiceImpl implements BlogService {
     public CommonResponse handlePersonalPageData(String token, Long userId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         //success为false代表登录失效，但仍允许浏览
-        User user = userService.findById(userId);
+        User target = userService.findById(userId);
         boolean follow = false;
-        if(user == null){
+        if(target == null){
             response.setSuccess(false);
             response.setMessage("用户不存在");
             response.setContent(new PersonalPageData());
             return response;
         }
         if(response.getSuccess()){
-            User target = userService.findById(Long.parseLong(response.getMessage()));
+            User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student = (Student) user;
                 if(target instanceof Student){
@@ -330,7 +329,7 @@ public class BlogServiceImpl implements BlogService {
                 }
             }
         }
-        response.setContent(new PersonalPageData(user, follow));
+        response.setContent(new PersonalPageData(target, follow));
         response.setMessage("查找成功");
         return response;
     }
@@ -339,19 +338,19 @@ public class BlogServiceImpl implements BlogService {
     public CommonResponse handlePersonalPagePost(String token, int length, int startIndex,Long userId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         //success为false代表登录失效，但仍允许浏览
-        User user = userService.findById(userId);
-        if(user == null){
+        User target = userService.findById(userId);
+        if(target == null){
             response.setSuccess(false);
             response.setMessage("用户不存在");
             response.setContent(new PersonalPageData());
             return response;
         }
         List<Post> totalPost = new ArrayList<>();
-        if(user instanceof Teacher){
-            Teacher teacher = (Teacher) user;
+        if(target instanceof Teacher){
+            Teacher teacher = (Teacher) target;
             totalPost = teacher.getPostList();
-        }else if(user instanceof Student){
-            Student student = (Student) user;
+        }else if(target instanceof Student){
+            Student student = (Student) target;
             totalPost = student.getPostList();
         }
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
@@ -359,8 +358,11 @@ public class BlogServiceImpl implements BlogService {
         response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
         List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
-        for(Post p : tempList){
-            resultList.add(new PostResponseTarget(user,p));
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            for(Post p : tempList){
+                resultList.add(new PostResponseTarget(user,p));
+            }
         }
         response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
@@ -617,12 +619,21 @@ public class BlogServiceImpl implements BlogService {
             if(target instanceof Teacher){
                 Teacher t = (Teacher) target;
                 Set<Teacher> set = teacher.getFriendT();
+                if(set.contains(t)){
+                    set.remove(t);
+                }else{
+                    set.add(t);
+                }
                 set.add(t);
                 teacher.setFriendT(set);
             }else if(target instanceof Student){
                 Student s = (Student) target;
                 Set<Student> set = teacher.getFriendS();
-                set.add(s);
+                if(set.contains(s)){
+                    set.remove(s);
+                }else{
+                    set.add(s);
+                }
                 teacher.setFriendS(set);
             }
             teacherRepository.save(teacher);
@@ -631,12 +642,20 @@ public class BlogServiceImpl implements BlogService {
             if(target instanceof Teacher){
                 Teacher t = (Teacher) target;
                 Set<Teacher> set = student.getFriendT();
-                set.add(t);
+                if(set.contains(t)){
+                    set.remove(t);
+                }else{
+                    set.add(t);
+                }
                 student.setFriendT(set);
             }else if(target instanceof Student){
                 Student s = (Student) target;
                 Set<Student> set = student.getFriendS();
-                set.add(s);
+                if(set.contains(s)){
+                    set.remove(s);
+                }else{
+                    set.add(s);
+                }
                 student.setFriendS(set);
             }
             studentRepository.save(student);

@@ -76,7 +76,7 @@ public class CourseController {
     //保存课程
     @PostMapping("/save")
     public CommonResponse saveCourse(@RequestBody TeacherCourseSaveRequest request){
-        return courseService.handleTeacherSave(request.getToken(),request.getCourseId(),request.getName(),request.getWeekStart(),request.getWeekEnd(),request.getTime(),request.getCapacity(),request.getStudentClass(),request.getStudentSection(),request.getLocation(), request.getYear(), request.getSemester(),request.getCredit(),request.getDescription());
+        return courseService.handleTeacherSave(request.getToken(),request.getCourseId(),request.getName(),request.getWeekStart(),request.getWeekEnd(),request.getTime(),request.getCapacity(),request.getStudentClass(),request.getStudentSection(),request.getLocation(), request.getYear(), request.getSemester(),request.getCredit(),request.getDescription(),request.getWeight());
     }
 
     //删除课程

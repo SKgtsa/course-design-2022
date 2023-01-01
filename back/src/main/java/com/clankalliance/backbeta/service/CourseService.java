@@ -14,7 +14,7 @@ public interface CourseService {
 
     CommonResponse handleRemoveStudent(String token,long courseId,long studentNumber);
 
-    CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description);
+    CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description,Double weight);
 
     CommonResponse handleDelete(String token,long courseId);
 

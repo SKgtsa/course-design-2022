@@ -39,5 +39,7 @@ public class TeacherCourseSaveRequest {
     private Double credit;
 
     private String description;
+
+    private Double weight;
 }
 

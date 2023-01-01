@@ -1,15 +1,11 @@
-package com.clankalliance.backbeta.utils;
+package com.clankalliance.backbeta.response.dataBody;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
 @Data
 @NoArgsConstructor
-public class ScoreUtil {
+public class ScoreData {
 //    @Id
 //    @GeneratedValue(strategy = GenerationType.AUTO)
 //    private long id;
@@ -26,7 +22,7 @@ public class ScoreUtil {
 
     private Integer rank;
 
-    public ScoreUtil(String courseName,Integer dailyScore,Integer endScore,Double weight,Integer finalScore,Integer rank){
+    public ScoreData(String courseName, Integer dailyScore, Integer endScore, Double weight, Integer finalScore, Integer rank){
         this.courseName=courseName;
         this.dailyScore=dailyScore;
         this.endScore=endScore;

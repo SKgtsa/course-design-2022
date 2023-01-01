@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.response;
+package com.clankalliance.backbeta.response.dataBody;
 
 
 import com.clankalliance.backbeta.entity.blog.Post;

@@ -43,13 +43,13 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private ScoreService scoreService;
 
-    private Achievement ACTIVITY_C = new Achievement(Long.parseLong("10"),"课外活动3项以上","课外活动爱好者");
+    private final Achievement ACTIVITY_C = new Achievement(Long.parseLong("10"),"课外活动3项以上","课外活动爱好者");
 
-    private Achievement ACTIVITY_B = new Achievement(Long.parseLong("11"),"课外活动7项以上","课外活动丰富");
+    private final Achievement ACTIVITY_B = new Achievement(Long.parseLong("11"),"课外活动7项以上","课外活动丰富");
 
-    private Achievement ACTIVITY_A = new Achievement(Long.parseLong("12"),"课外活动10项以上","课外活动达人");
+    private final Achievement ACTIVITY_A = new Achievement(Long.parseLong("12"),"课外活动10项以上","课外活动达人");
 
-    private Achievement ACTIVITY_POINT = new Achievement(Long.parseLong("13"),"同时获得课外活动与绩点最高成就","文体两开花");
+    private final Achievement ACTIVITY_POINT = new Achievement(Long.parseLong("13"),"同时获得课外活动与绩点最高成就","文体两开花");
 
     @Override
     public Achievement getACTIVITY_POINT() {

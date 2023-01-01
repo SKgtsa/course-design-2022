@@ -1,9 +1,7 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Achievement;
-import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Score;
-import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
@@ -14,10 +12,10 @@ import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
-import com.clankalliance.backbeta.response.CourseResponseTarget;
+import com.clankalliance.backbeta.response.dataBody.CourseResponseTarget;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.service.UserService;
-import com.clankalliance.backbeta.utils.FindCourseStudentData;
+import com.clankalliance.backbeta.response.dataBody.FindCourseStudentData;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
@@ -51,9 +49,9 @@ public class CourseServiceImpl implements CourseService {
     @Resource
     private TeacherRepository teacherRepository;
 
-    private Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
+    private final Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
 
-    private Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
+    private final Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
 
     private List<Achievement> updateAchievementListCourse(Teacher teacher){
         Set<Course> courseSet = teacher.getCourseSet();
@@ -219,9 +217,10 @@ public class CourseServiceImpl implements CourseService {
      * @param semester 授课学期
      * @param credit 学分
      * @param description 课程描述
+     * @param weight 权重(期末分占最终成绩的比例
      * @return
      */
-    public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description){
+    public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description,Double weight){
         //CommonResponse response = tokenUtil.tokenCheck(token);
         CommonResponse response ;
         if(token.equals("114514")){
@@ -253,7 +252,7 @@ public class CourseServiceImpl implements CourseService {
                     //对没有id的ClassTime进行id的补充
                     t.setId(t.getSection() + (t.getWeekDay() - 1) * 5);
                 }
-                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,studentSet,teacher,scoreSet);
+                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,studentSet,teacher,scoreSet,weight);
                 courseRepository.save(course);
 
                 //在教师的课程表中加入课程
@@ -268,7 +267,7 @@ public class CourseServiceImpl implements CourseService {
             }else if(user instanceof Manager){
                 //管理员没有课程表，故只能修改
                 Course courseOld = courseRepository.findById(courseId).get();
-                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet());
+                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet(),weight);
                 courseRepository.save(course);
                 response.setSuccess(true);
                 response.setMessage("保存成功");

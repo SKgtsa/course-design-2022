@@ -29,14 +29,17 @@
         </el-carousel>
       </div>
     </div>
-    <div class="rightWindow">
+    <div class="rightWindow"  :style="{
+        'padding-right':`${mobile? 0:'1.5vw'}`,
+        'width':`${mobile? 'auto': '70vw'}`
+      }">
       <div class="operationCard">
-        <ul v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 3vh">
+        <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
+          <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 2vh">
             <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
               <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
                 <div class="cardContent" >
-                  <a style="font-size: 4vh">{{item.heading}}</a>
+                  <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
                   <div class="postBoxBottom">
                     <div class="bottomLeft">
                       <a>{{item.time}}</a>
@@ -57,7 +60,7 @@
               </div>
             </div>
           </div>
-        </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -174,7 +177,7 @@ import service from "@/request";
 import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
-import {getBaseURL} from "@/global/global";
+import {getBaseURL, mobile} from "@/global/global";
 const blog = ref('')
 const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
@@ -724,12 +727,13 @@ const getContent = (v: string) => {
 .postBox{
   z-index: 5;
   border-radius: 2vw;
-  width: 62vw;
-  background-color: #000;
+  width: 95%;
+  margin: auto;
+  background-color: #666;
   background-size: cover;
   background-position: center;
   color: #FFF;
-  position: relative;
+
 }
 .boxContainer{
   border-radius: 2vw;
@@ -780,8 +784,8 @@ const getContent = (v: string) => {
     padding-left: 0vh;
 
     .panel {
-      padding-top: 5vh;
-      padding-left: 2vw;
+      padding-top: 2vh;
+      padding-left: 1vw;
 
       .panelCard {
         width: 90%;
@@ -791,7 +795,7 @@ const getContent = (v: string) => {
         box-shadow: 0 0 10px 0 #b9ccee;
         display: flex;
         flex-direction: column;
-        padding-top: 2vh;
+        padding-top: 1vh;
 
         .writeButton {
           margin: 0 auto;
@@ -810,41 +814,6 @@ const getContent = (v: string) => {
           height: 100%;
           display: flex;
           flex-direction: column;
-          .opButton {
-            justify-content: center;
-            height: 5vh;
-            color: #41339b;
-            background: transparent;
-            /* 边框样式、颜色、宽度 */
-            /*      border-style: none; */
-            border-bottom: 1px solid;
-            /* 给边框添加圆角 */
-            /*  border-radius: 2px; */
-            border: none;
-            text-align: center;
-            display: inline-block;
-            font-size: 19px;
-            font-family: 华文楷体;
-            font-weight: bold;
-            -webkit-transition-duration: 0.4s;
-            /* Safari */
-            transition-duration: 0.4s;
-            cursor: pointer;
-            text-transform: uppercase;
-          }
-
-          .opButton:hover {
-            background-color: #0a55cc;
-            color: #f3fa26;
-          }
-
-          .divider {
-            width: 90%;
-            justify-content: center;
-            margin: 0px !important;
-            padding-left: 2vw !important;
-          ;
-          }
         }
       }
     }
@@ -864,10 +833,8 @@ const getContent = (v: string) => {
   }
 
   .rightWindow {
-    padding: 5vh 1vw 2vh 0;
-
+    padding-top: 1vh;
     .operationCard {
-      padding-top: 2vh;
       background-color: #FFFFFF;
       width: 70vw;
       height: 80vh;

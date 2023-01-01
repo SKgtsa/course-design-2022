@@ -31,8 +31,6 @@ public class Score {
 
     private Integer endScore;
 
-    private Double weight;
-
     @ManyToOne
     private Student student;
 

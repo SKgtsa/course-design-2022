@@ -3,7 +3,7 @@
     <el-container>
       <el-header class="el-header" v-if="!mobile">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
-          background-color="#e9eff9" text-color="#3e5ca8" active-text-color="#2d67fd" router>
+          background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd" router >
           <img src="../../assets/images/logo.png" @click="checkCopyright" alt="logo未加载">
           <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
@@ -24,13 +24,7 @@
             </el-dropdown>
             <a class="nickName">{{ getNickName() }}</a>
           </div>
-          <a @click="checkCopyright" class="copyright">@版权</a>
         </el-menu>
-
-        <el-dialog v-model="dialogCopyright">
-          <h3>版权说明</h3>
-          <p3>该网站归属某组所有，任何侵权行为均要付相应的法律责任!(确信)</p3>
-        </el-dialog>
         <!-- 修改头像弹出框 -->
         <el-dialog v-model="dialogVisibleImg" style=" width: 50vh!important;height: 37.5vh!important;">
           <section>
@@ -85,17 +79,80 @@
         </el-dialog>
       </el-header>
       <el-header v-if="mobile" >
-        <el-menu style="height: 10vh;width: 100vw;background-color: #0a8ce2; display: flex;flex-direction: row">
+        <el-menu
+            style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row"
+            mode="horizontal"
+            :ellipsis="false"
+        >
           <a style="font-size: 5vh;color: #FFFFFF;font-weight: bold;line-height: 10vh">教学系统</a>
-          <div class="flex-grow">
-            <el-button>菜单</el-button>
+          <div class="flex-grow"/>
+          <div style="padding-right: 2vw;padding-top: 2.5vh">
+            <el-button class="menuButton" @click="openMenu">
+              <el-image :src="'http://courseback.clankalliance.cn/inbuild/menu.png'" class="menuButtonImage"/>
+            </el-button>
           </div>
         </el-menu>
+        <!--移动端的右侧菜单-->
+        <el-drawer
+            with-header="false"
+            v-model="menuDrawerOpen"
+            :direction="'rtl'"
+            :size="'90%'"
+            z-index="50"
+        >
+          <div class="nickMobile">
+            <el-dropdown trigger="click">
+              <el-button class="avatarMobile">
+                <el-image class="avatarImageMobile" :src="getAvatarURL()" />
+              </el-button>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="toSelfInformation">个人信息页</el-dropdown-item>
+                  <el-dropdown-item @click="editAvatar">修改头像</el-dropdown-item>
+                  <el-dropdown-item @click="editNick">修改昵称</el-dropdown-item>
+                  <el-dropdown-item @click="editPwd">修改密码</el-dropdown-item>
+                  <el-dropdown-item @click="drop">退出</el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+          <a class="nickNameMobile">{{ getNickName() }}</a>
+          <el-menu router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#e9eff9"
+                    text-color="#3e5ca8" @open="handleOpen" @close="handleClose">
+            <el-menu-item index="/Student/Main" @click="closeMenuDrawer">
+              <template #title>我的主页</template>
+              <el-icon>
+                <HomeFilled />
+              </el-icon>
+            </el-menu-item>
+            <el-menu-item index="/Student/CourseSelect"  @click="closeMenuDrawer">
+              <template #title>选课指南</template>
+              <el-icon>
+                <Document />
+              </el-icon>
+            </el-menu-item> <el-menu-item index="/Student/ScoreManage"  @click="closeMenuDrawer">
+            <el-icon>
+              <DocumentChecked />
+            </el-icon>
+            <template #title>成绩管理</template>
+          </el-menu-item>
+            <el-menu-item index="/Student/AcademicManagement/AMHome"  @click="closeMenuDrawer">
+              <el-icon>
+                <PictureFilled />
+              </el-icon>
+              <template #title>学工管理</template>
+            </el-menu-item>
+          </el-menu>
+
+        </el-drawer>
+
+
+
       </el-header>
       <el-container>
         <el-main class="mainWindow">
           <div class="rightWindow">
-            <el-menu v-if="!mobile" router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#e9eff9"
+            <el-menu v-if="!mobile" router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#f0f2ff"
               class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
               :collapse="true">
               <el-menu-item index="/Student/Main">
@@ -165,11 +222,15 @@ import service from '@/request';
 import serviceFile from "@/request/indexFile";
 import { hideLoading, showLoading } from '@/utils/loading';
 
-//查看版权说明
-let dialogCopyright = ref(false);
-const checkCopyright = () => {
-  dialogCopyright.value = true;
-};
+const menuDrawerOpen = ref(false);
+
+const openMenu = () => {
+  menuDrawerOpen.value = true;
+}
+
+const closeMenuDrawer = () => {
+  menuDrawerOpen.value = false;
+}
 
 let uploadImg = async (f) => {
   showLoading();
@@ -226,6 +287,7 @@ let formEditPwd = reactive({
 let pwdEditData = ref();
 
 const toSelfInformation = () => { //个人主页
+  menuDrawerOpen.value = false;
   router.push({
     path: '/personalPage',
     query: {
@@ -236,18 +298,25 @@ const toSelfInformation = () => { //个人主页
 
 const editNick = () => { //弹出修改昵称界面
   dialogVisibleName.value = true;
+  menuDrawerOpen.value = false;
 }
 
 const drop = () => {  //退出
+  localStorage.setItem('token',null);
+  localStorage.setItem('nickName','');
+  localStorage.setItem('userId',null)
+  menuDrawerOpen.value = false;
   router.push('/Login');
 }
 
 const editAvatar = () => {  //弹出修改图片界面
   dialogVisibleImg.value = true;
+  menuDrawerOpen.value = false;
 }
 
 const editPwd = () => {  //弹出修改密码界面
   dialogVisiblePwd.value = true;
+  menuDrawerOpen.value = false;
 }
 
 const nickNameRules = reactive({
@@ -351,17 +420,25 @@ const handleSelect = (key: string, keyPath: string[]) => {
 .back {
   margin: 0;
   padding: 0;
-  background-color: #e9eff9;
+  background-color: #f0f2ff;
 }
 
+.menuButton{
+  background-color: rgba(0,0,0,0);
+  border-style: none;
+  width: 5vh;
+  height: 5vh;
+}
+.menuButtonImage{
+  width: 5vh;
+}
+.nav-bar-top {
+  height: 7vh;
+  border-style: none;
+}
 .el-header {
-
+  height: 7vh;
   padding: 0;
-  //padding: 0 0 !important;
-  //height: 80vh !important;
-  //width: 100%;
-  //position: fixed;
-  //z-index: 9999;
 }
 
 .headerMenu {
@@ -369,15 +446,27 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .avatar {
-  width: 5vh;
-  height: 5vh;
-  border-radius: 2.5vh;
+  width: 4vh;
+  height: 4vh;
+  border-radius: 2vh;
 }
 
 .avatarImage {
-  width: 5vh;
-  height: 5vh;
-  border-radius: 2.5vh;
+  width: 4vh;
+  height: 4vh;
+  border-radius: 2vh;
+}
+
+.avatarMobile {
+  width: 12vh;
+  height: 12vh;
+  border-radius: 6vh;
+}
+
+.avatarImageMobile {
+  width: 12vh;
+  height: 12vh;
+  border-radius: 6vh;
 }
 
 .el-aside {
@@ -430,9 +519,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
    margin-bottom: 8vh; */
 }
 
-.nav-bar-top {
-  height: 10.375vh;
-}
+
 
 .flex-grow {
   flex-grow: 1;
@@ -443,18 +530,6 @@ const handleSelect = (key: string, keyPath: string[]) => {
   font-size: 3.5vh;
 }
 
-.title {
-  font-family: 华文楷体, serif;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-size: 7vh;
-  margin-right: 1vh;
-  margin-left: 3vh;
-  color: #FFFFFF;
-}
-
 img {
   padding-right: 0.625vh;
   margin: 1.25vh;
@@ -463,24 +538,33 @@ img {
 .nick {
   display: flex;
   flex-direction: row;
-  padding-right: 12.5vh;
-  padding-top: 2.125vh;
+  padding-top: 1.5vh;
   height: 7.5vh;
+  flex-direction: row-reverse;
+  padding-right: 1vw;
+}
+
+.nickMobile {
+  display: flex;
+  flex-direction: row;
+  height: 7.5vh;
+  flex-direction: row-reverse;
+  padding-bottom: 2vh;
 }
 
 .nickName {
-  padding-top: 1.25vh;
-  padding-left: 1.625vh;
-  position: bottom;
+  line-height: 4vh;
   font-size: 1.75vh;
+  padding-right: 0.5vw;
+  font-weight: bold;
+  color: rgba(60,96,198,0.9);
 }
-
-.copyright {
-  padding-top: 0.625vh;
-  padding-right: 0.625vh;
-  font-size: 1.75vh;
-  cursor: pointer;
-
+.nickNameMobile {
+  line-height: 12vh;
+  font-size: 6vh;
+  font-weight: bold;
+  color: rgba(60,96,198,0.9);
+  padding-left: 2vw;
 }
 
 .dialogImg {
