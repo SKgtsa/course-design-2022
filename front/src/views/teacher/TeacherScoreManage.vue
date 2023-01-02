@@ -23,6 +23,7 @@
             :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
             :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
             <!-- 显示斑马纹和边框 -->
+            <el-table-column label="课程号" prop="courseId" width="200" show-overflow-tooltip />
             <el-table-column label="课程名" prop="courseName" width="200" show-overflow-tooltip />
             <el-table-column label="通过率" prop="passRate" width="150" show-overflow-tooltip />
             <el-table-column label="平均分" prop="average" width="150" show-overflow-tooltip />

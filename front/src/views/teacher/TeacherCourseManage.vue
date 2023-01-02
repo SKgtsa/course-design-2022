@@ -27,11 +27,12 @@
       <el-table :data="tableData.arr" style="width:75vw" border stripe size="large" class="courseTable"
         :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
-        <el-table-column label="课程" prop="name" width="200" show-overflow-tooltip />
-        <el-table-column label="地点" prop="location" width="240" show-overflow-tooltip />
-        <el-table-column label="开课周" prop="weekStart" width="60" show-overflow-tooltip />
-        <el-table-column label="结束周" prop="weekEnd" width="60" show-overflow-tooltip />
-        <el-table-column label="上课时间" prop="time" width="250" show-overflow-tooltip>
+        <el-table-column label="课程号" prop="id" width="200" show-overflow-tooltip />
+        <el-table-column label="课程" prop="name" width="160" show-overflow-tooltip />
+        <el-table-column label="地点" prop="location" width="160" show-overflow-tooltip />
+        <el-table-column label="开课周" prop="weekStart" width="50" show-overflow-tooltip />
+        <el-table-column label="结束周" prop="weekEnd" width="50" show-overflow-tooltip />
+        <el-table-column label="上课时间" prop="time" width="200" show-overflow-tooltip>
           <template #default="time">
             <p v-for="(item, index) in time.row.time">
               星期{{ time.row.time[index].weekDay }}的第{{
@@ -720,17 +721,6 @@ let detailsForm = reactive({
 
 
 
-//查看课程详情
-const viewDetails = (row) => {
-  let i;
-  for (i = 0; i < tableData.arr.length; i++) {
-    if (row.id == tableData.arr[i].id) {
-      break;
-    }
-    detailsForm = tableData.arr[i];//不知道可不可以这样赋值
-    //然后弹出窗显示这个detailsForm,不要绑定:rule,不写这个属性
-  }
-}
 
 const add = () => {
   centerDialogVisible.value = true;
@@ -1119,7 +1109,7 @@ const handleCurrentChange = (currentPage) => {
 
 
     .courseTable {
-      height: 60vh;
+      height: 70vh;
     }
 
     .checkBox {

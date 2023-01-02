@@ -3,7 +3,7 @@
     <el-container>
       <el-header class="el-header" v-if="!mobile">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
-                 background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd" router >
+          background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd" router>
           <img src="../../assets/images/logo.png" @click="checkCopyright" alt="logo未加载">
           <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
@@ -78,17 +78,14 @@
           </div>
         </el-dialog>
       </el-header>
-      <el-header v-if="mobile" >
-        <el-menu
-            style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row"
-            mode="horizontal"
-            :ellipsis="false"
-        >
+      <el-header v-if="mobile">
+        <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row" mode="horizontal"
+          :ellipsis="false">
           <a style="font-size: 5vh;color: #FFFFFF;font-weight: bold;line-height: 10vh">教学系统</a>
-          <div class="flex-grow"/>
+          <div class="flex-grow" />
           <div style="padding-right: 2vw;padding-top: 2.5vh">
             <el-button class="menuButton" @click="openMenu">
-              <el-image :src="'http://courseback.clankalliance.cn/inbuild/menu.png'" class="menuButtonImage"/>
+              <el-image :src="'http://courseback.clankalliance.cn/inbuild/menu.png'" class="menuButtonImage" />
             </el-button>
           </div>
         </el-menu>
@@ -106,24 +103,18 @@
                 </el-icon>
               </el-menu-item>
               <el-menu-item index="/Teacher/CourseManage">
+
                 <template #title>课程管理</template>
                 <el-icon>
                   <Document />
                 </el-icon>
               </el-menu-item>
-              <el-sub-menu>
-                <template #title>
-                  <el-icon>
-                    <icon-menu/>
-                  </el-icon>
-                </template>
-                <el-menu-item index="/Teacher/GetScore">
-                  历史成绩数据
-                </el-menu-item>
-                <el-menu-item index="/Teacher/ScoreManage">
-                  打分系统
-                </el-menu-item>
-              </el-sub-menu>
+              <el-menu-item index="/Teacher/ScoreManage">
+                <template #title>成绩管理</template>
+                <el-icon>
+                  <HomeFilled />
+                </el-icon>
+              </el-menu-item>
             </el-menu>
           </div>
           <div class="leftMenu">
@@ -135,13 +126,7 @@
   </div>
 
   <!--移动端的右侧菜单-->
-  <el-drawer
-      with-header="false"
-      v-model="menuDrawerOpen"
-      :direction="'rtl'"
-      :size="'90%'"
-      z-index="50"
-  >
+  <el-drawer with-header="false" v-model="menuDrawerOpen" :direction="'rtl'" :size="'90%'" z-index="50">
     <div class="nickMobile">
       <el-dropdown trigger="click">
         <el-button class="avatarMobile">
@@ -161,7 +146,7 @@
     <a class="nickNameMobile">{{ getNickName() }}</a>
     <!--菜单区域-->
     <el-menu router default-active="/Teacher/Main" active-text-color="#2d67fd" background-color="#e9eff9"
-             text-color="#3e5ca8" @open="handleOpen" @close="handleClose">
+      text-color="#3e5ca8" @open="handleOpen" @close="handleClose">
       <el-menu-item index="/Teacher/Main">
         <template #title>我的主页</template>
         <el-icon>
@@ -177,7 +162,7 @@
       <el-sub-menu>
         <template #title>
           <el-icon>
-            <icon-menu/>
+            <icon-menu />
           </el-icon>
         </template>
         <el-menu-item index="/Teacher/GetScore">
@@ -206,7 +191,7 @@ import {
   setNickName,
   getBaseURL,
   getUserId,
-    mobile
+  mobile
 } from '../../global/global';
 import { RouterView } from 'vue-router';
 import { messageError, messageSuccess } from '@/utils/message';
@@ -236,7 +221,7 @@ let uploadImg = async (f) => {
       localStorage.setItem('token', data.token);
       let url = getBaseURL() + data.content;
       console.log(url);
-      localStorage.setItem('avatarURL',url);
+      localStorage.setItem('avatarURL', url);
 
       messageSuccess("更换成功！")
     } else {
@@ -408,19 +393,23 @@ const handleSelect = (key: string, keyPath: string[]) => {
   padding: 0;
   background-color: #f0f2ff;
 }
-.menuButton{
-  background-color: rgba(0,0,0,0);
+
+.menuButton {
+  background-color: rgba(0, 0, 0, 0);
   border-style: none;
   width: 5vh;
   height: 5vh;
 }
-.menuButtonImage{
+
+.menuButtonImage {
   width: 5vh;
 }
+
 .nav-bar-top {
   height: 7vh;
   border-style: none;
 }
+
 .el-header {
   height: 7vh;
   padding: 0;
@@ -542,13 +531,14 @@ img {
   font-size: 1.75vh;
   padding-right: 0.5vw;
   font-weight: bold;
-  color: rgba(60,96,198,0.9);
+  color: rgba(60, 96, 198, 0.9);
 }
+
 .nickNameMobile {
   line-height: 12vh;
   font-size: 6vh;
   font-weight: bold;
-  color: rgba(60,96,198,0.9);
+  color: rgba(60, 96, 198, 0.9);
   padding-left: 2vw;
 }
 
