@@ -1,0 +1,16 @@
+package com.clankalliance.backbeta.request.course;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ManagerRemoveStudentRequest {
+    private String token;
+
+    private long courseId;
+
+    private long studentId;
+}

@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.service;
 
 import com.clankalliance.backbeta.entity.course.ClassTime;
+import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.response.CommonResponse;
 
@@ -25,4 +26,18 @@ public interface CourseService {
     CommonResponse handleFindCourseStudent(String token, long courseId, Integer pageNum, Integer pageSize);
 
     CommonResponse handleTeacherFindCourse(String token, Integer year, String semester);
+
+
+
+    CommonResponse handleManagerFind(String token, long id);
+
+    CommonResponse handleManagerSave(String token, Course course);
+
+    CommonResponse handleManagerDelete(String token, long id);
+
+    CommonResponse handleManagerFindStudent(String token, long id);
+
+    CommonResponse handleManagerRemoveStudent(String token, long courseId, long studentId);
+
+    CommonResponse handleManagerAddStudent(String token, long courseId, long studentNumber);
 }

@@ -54,4 +54,14 @@ public class ScoreController {
         return excelService.handleBatchScore(file,token,courseId);
     }
 
+    @PostMapping("/managerFind")
+    public CommonResponse managerFind(@RequestBody TeacherFindDetailedScoreRequest request){
+        return scoreService.handleManagerFind(request.getToken(),request.getCourseId());
+    }
+
+    @PostMapping("/managerSave")
+    public CommonResponse managerSave(@RequestBody ScoreEditRequest request){
+        return scoreService.handleManagerSave(request.getToken(), request.getCourseId(), request.getStudentId(), request.getDailyScore(), request.getEndScore());
+    }
+
 }

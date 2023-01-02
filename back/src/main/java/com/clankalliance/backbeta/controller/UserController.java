@@ -108,4 +108,19 @@ public class UserController {
         return userService.handleChangePassword(request.getToken(),request.getPassword());
     }
 
+    @PostMapping("/managerFind")
+    public CommonResponse handleManagerFind(@RequestBody UserManagerFindRequest request){
+        return userService.handleManagerFind(request.getToken(),request.getUserNumber());
+    }
+
+    @PostMapping("/managerSave")
+    public CommonResponse handleManagerSave(@RequestBody UserManagerSaveRequest request){
+        return userService.handleManagerSave(request.getToken(), request.getUser());
+    }
+
+    @PostMapping("/managerDelete")
+    public CommonResponse handleManagerDelete(@RequestBody UserManagerDeleteRequest request){
+        return userService.handleManagerDelete(request.getToken(), request.getId());
+    }
+
 }

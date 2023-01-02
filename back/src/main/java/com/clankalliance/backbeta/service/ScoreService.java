@@ -15,4 +15,7 @@ public interface ScoreService {
 
     boolean handleBatchScore(Integer dailyScore, Integer endScore, Long studentNumber, Long courseId);
 
+    CommonResponse handleManagerFind(String token, long courseId);
+
+    CommonResponse handleManagerSave(String token, long courseId, long studentId, Integer dailyScore, Integer endScore);
 }

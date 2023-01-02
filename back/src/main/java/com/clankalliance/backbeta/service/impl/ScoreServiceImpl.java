@@ -4,6 +4,7 @@ import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.CourseRepository;
@@ -112,7 +113,7 @@ public class ScoreServiceImpl implements ScoreService {
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 response.setSuccess(false);
-                response.setMessage("学生不能修改自己的信息");
+                response.setMessage("学生不能修改自己的成绩");
             }else{
             //token验证成功
             Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
@@ -328,7 +329,97 @@ public class ScoreServiceImpl implements ScoreService {
             return false;
         }
         return true;
+    }
 
+    @Override
+    public CommonResponse handleManagerFind(String token, long courseId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            List<FindDetailScoreData> DetailList=new ArrayList<>();
+            if(user instanceof Manager){
+                Optional<Course> courseOp=courseRepository.findById(courseId);
+                if(courseOp.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("课程不存在");
+                    return response;
+                }
+                Course course=courseOp.get();
+                Set<Student> studentSet=course.getStudentSet();
+                for(Student s : studentSet){
+                    long studentId=s.getId();
+                    Optional<Score> scoreOp=scoreRepository.findByCourseStudentId(courseId,studentId);
+                    Integer dailyScore = 0;
+                    Integer endScore = 0;
+                    Double weight = 0.0;
+                    if(scoreOp.isPresent()){
+                        Score score=scoreOp.get();
+                        dailyScore += score.getDailyScore();
+                        endScore += score.getEndScore();
+                        weight += score.getCourse().getWeight();
+                    }
+                    FindDetailScoreData tmp=new FindDetailScoreData(s.getName(),s.getUserNumber(),s.getId(),dailyScore,endScore,weight);
+                    DetailList.add(tmp);
+                }
+                response.setSuccess(true);
+                response.setMessage("学生成绩查询成功");
+                response.setToken(token);
+                response.setContent(DetailList);
+            }
+        }
+        return response;
+    }
+    @Override
+    public CommonResponse handleManagerSave(String token, long courseId, long studentId, Integer dailyScore, Integer endScore){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                //token验证成功
+                Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
+                long id;
+                if(scoreOp.isEmpty()){
+                    //该学生与该课程对应成绩不存在，为成绩的创建
+                    id = snowFlake.nextId();
+                }else{
+                    //该学生与该课程对应成绩存在，为成绩的修改
+                    id = scoreOp.get().getId();
+                }
+                Optional<Student> studentOp = studentRepository.findUserById(studentId);
+                if(studentOp.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("学生不存在");
+                    return response;
+                }
+                Optional<Course> cop = courseRepository.findById(courseId);
+                if(cop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("课程不存在");
+                    return response;
+                }
+                Student student = studentOp.get();
+                Course course = cop.get();
+                Score score = new Score(id, dailyScore, endScore, student, course);
+                scoreRepository.save(score);
+                //在学生的成绩表中加入成绩
+                Set<Score> studentScoreSet = student.getScoreSet();
+                studentScoreSet.add(score);
+                student.setScoreSet(studentScoreSet);
+                student.setAchievementList(updateAchievementList(student));
+                studentRepository.save(student);
+                //在课程的成绩表中加入成绩
+                Set<Score> courseScoreSet = course.getScoreSet();
+                courseScoreSet.add(score);
+                course.setScoreSet(courseScoreSet);
+                courseRepository.save(course);
+                response.setSuccess(true);
+                response.setMessage("成绩保存成功");
+                response.setToken(token);
+            }
+        }
+        //token无效，直接将token验证的数据返回前端
+        return response;
     }
 
 }

@@ -36,4 +36,10 @@ public interface UserService {
 
     CommonResponse handleChangePassword(String token,String password);
 
+    CommonResponse handleManagerFind(String token, long userNumber);
+
+    CommonResponse handleManagerSave(String token, User user);
+
+    CommonResponse handleManagerDelete(String token, long id);
+
 }
