@@ -207,7 +207,7 @@ public class BlogServiceImpl implements BlogService {
         for(Post p : tempList){
             resultList.add(new PostResponseTarget(user,p));
         }
-        response.setContent(tempList);
+        response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;
     }
@@ -355,15 +355,16 @@ public class BlogServiceImpl implements BlogService {
         }
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
-        response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
         List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
+        User user = new Manager();
         if(response.getSuccess()){
-            User user = userService.findById(Long.parseLong(response.getMessage()));
-            for(Post p : tempList){
-                resultList.add(new PostResponseTarget(user,p));
-            }
+            user = userService.findById(Long.parseLong(response.getMessage()));
         }
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setMessage("查找成功");
         response.setContent(resultList);
         response.setStartIndex(tempList.size() + startIndex);
         return response;

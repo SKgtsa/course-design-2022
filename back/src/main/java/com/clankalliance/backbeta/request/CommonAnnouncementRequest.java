@@ -12,7 +12,6 @@ public class CommonAnnouncementRequest {
 
     private Long id;
     private String token;
-    private MultipartFile picture;
     private String heading;
     private String content;
 }
