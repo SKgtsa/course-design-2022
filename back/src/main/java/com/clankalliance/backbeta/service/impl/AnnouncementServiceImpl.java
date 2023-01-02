@@ -41,7 +41,7 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         if(!response.getSuccess())
             return response;
         List<Announcement> list = announcementRepository.findAll();
-        response.setContent(list.subList( ((list.size() - 6) >= 0 ? (list.size() - 6): 0) , list.size() - 1));
+        response.setContent(list.subList( ((list.size() - 6) >= 0 ? (list.size() - 6): 0) , list.size()));
         response.setMessage("查找成功");
         return response;
     }

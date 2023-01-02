@@ -3,7 +3,6 @@ package com.clankalliance.backbeta.controller;
 
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
-import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.request.course.*;
 import com.clankalliance.backbeta.request.user.TokenCheckRequest;

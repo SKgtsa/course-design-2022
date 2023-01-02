@@ -1,8 +1,21 @@
 <template>
-  <div class="main">
-    <div class="leftWindow">
-      <div class="panel">
-        <div class="panelCard">
+  <div class="main" :style="{
+    'flex-direction': `${mobile? 'column':'row'}`,
+    'height': `${mobile? 'auto':'100vh'}`,
+    'padding-top': `${mobile? '3vh':'0'}`,
+    'padding-bottom': `${mobile? '8vh':'0'}`
+  }">
+    <div class="leftWindow" :style="{
+      'flex-direction': `${mobile? 'column-reverse':'column'}`,
+      'width': `${mobile? '100%':'21vw'}`
+    }">
+      <div class="panel" :style="{
+        'padding-left': `${mobile? '0':'1vw'}`
+      }">
+        <div class="panelCard" :style="{
+          'height': `${mobile? 'auto':'40vh'}`,
+          'margin': `${mobile? 'auto':'0'}`
+        }">
           <div class="buttonBox">
             <el-button class="writeButton" @click="writeBlog">
               <el-image />
@@ -12,6 +25,8 @@
               default-active="1"
               class="leftMenu"
               @select="handleMenuOpen"
+              :mode="`${mobile? 'horizontal':'vertical'}`"
+
               >
               <el-menu-item index="1">广场</el-menu-item>
               <el-menu-item index="2">我的关注</el-menu-item>
@@ -21,10 +36,19 @@
           </div>
         </div>
       </div>
-      <div class="notice">
-        <el-carousel class="noticeCard" direction="vertical" :autoplay="true">
-          <el-carousel-item v-for="item in imageList" :key="item">
-            <el-image :src="item" />
+      <div class="notice" :style="{
+        'margin': `${mobile? '0 8%':'0'}`,
+        'width': `${mobile? '90%':'auto'}`
+      }">
+        <el-carousel class="noticeCard" :direction="`${mobile? 'horizontal':'vertical'}`" :autoplay="true">
+          <el-carousel-item v-for="(item,index) in pageData.announcementList" :key="item">
+            <div :style="{
+              'background-image': `url(${item.pictureUrl})`,
+              'background-size':'cover',
+              'height':'100%'
+            }" @click="jumpToAnnouncementDetail(item)">
+              <a style="color: #FFFFFF;font-size: 4vh;padding-top: 1vh;padding-left: 2vw">{{item.heading}}</a>
+            </div>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -33,9 +57,11 @@
         'padding-right':`${mobile? 0:'1.5vw'}`,
         'width':`${mobile? 'auto': '70vw'}`
       }">
-      <div class="operationCard">
+      <div class="operationCard" :style="{
+        'width': `${mobile? '100%':'70vw'}`
+      }">
         <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 2vh">
+          <div v-for="(item,index) in pageData.postList"   :key="index"  style="padding-top: 2vh">
             <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
               <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
                 <div class="cardContent" >
@@ -68,7 +94,7 @@
   <el-drawer
       with-header="false"
       v-model="drawerOpen"
-      :direction="'rtl'"
+      :direction="`${mobile? 'btt':'rtl'}`"
       :before-close="handleClose"
       :size="'90%'"
       z-index="50"
@@ -151,7 +177,18 @@
       </div>
     </div>
   </el-dialog>
-
+  <!--弹出框 显示通知正文-->
+  <el-dialog
+      v-model="showAnnouncementDetail"
+      width="80%"
+      modal-append-to-body=false
+  >
+    <div :style="{ 'background-image': `url(${pageData.targetAnnouncement.pictureUrl})` }" class="detailTopImage"/>
+    <a class="detailHeading">{{pageData.targetAnnouncement.heading}}</a>
+    <div class="postContent">
+      <div v-html="pageData.targetAnnouncement.content"/>
+    </div>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
@@ -178,6 +215,7 @@ import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
 import {getBaseURL, mobile} from "@/global/global";
+import {loginFailed} from "@/utils/tokenCheck";
 const blog = ref('')
 const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
@@ -202,6 +240,8 @@ const loadOver = ref(false);
 //若为true,展示博客正文
 const showDetail = ref(false);
 
+const showAnnouncementDetail = ref(false)
+
 const pageData  = reactive({
   postList:[],
   target: {
@@ -217,7 +257,69 @@ const pageData  = reactive({
     collect: false,
   },
   targetContent: {content: '',commentList: []},
+  announcementList: [],
+  targetAnnouncement: {
+    id: '0',
+    pictureUrl:'',
+    heading:'',
+    content: '',
+  }
 })
+
+interface Announcement{
+  id: string,
+  pictureUrl:string,
+  heading:string,
+}
+
+const updateAnnouncement = () => {
+  showLoading();
+  requesting.value = true;
+  service.post('/api/announcement/getMain',{token: localStorage.getItem('token')}).then((res) => {
+    console.log(res)
+    let data = res.data;
+    if(data.success){
+      localStorage.setItem('token',data.token);
+      for(let i = 0;i < data.content.length;i ++){
+        data.content[i].pictureUrl = getBaseURL() + data.content[i].pictureUrl;
+      }
+      pageData.announcementList = data.content;
+      hideLoading();
+      requesting.value = false;
+      refresh();
+    }else{
+      hideLoading();
+      loginFailed();
+    }
+  })
+}
+
+updateAnnouncement();
+
+
+const jumpToAnnouncementDetail = (item: Announcement) => {
+  showLoading();
+  console.log(item)
+  pageData.targetAnnouncement.id = item.id;
+  pageData.targetAnnouncement.heading = item.heading;
+  pageData.targetAnnouncement.pictureUrl = item.pictureUrl;
+  requesting.value = true;
+  service.post('/api/announcement/getDetail',{token: localStorage.getItem('token'),id: item.id}).then((res) => {
+    let data = res.data;
+    console.log(res)
+    if(data.success){
+      localStorage.setItem('token',data.token);
+      pageData.targetAnnouncement.content = data.content;
+      hideLoading();
+      requesting.value = false;
+      showAnnouncementDetail.value = true;
+    }else{
+      hideLoading();
+      loginFailed();
+    }
+  })
+}
+
 const disabled = ref(false)
 const uploadRef = ref();
 
@@ -252,13 +354,11 @@ const likeThis = (target: Post, event: Event) => {
         target.likeNum -= 1;
       }
       localStorage.setItem('token', data.token)
+      hideLoading();
     } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      hideLoading();
+      loginFailed();
     }
-    hideLoading();
   })
 }
 
@@ -274,13 +374,11 @@ const collectThis = (target: Post, event: Event) => {
     if (data.success) {
       target.collect = !target.collect;
       localStorage.setItem('token', data.token)
+      hideLoading();
     } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      hideLoading();
+      loginFailed();
     }
-    hideLoading();
   })
 }
 
@@ -298,13 +396,11 @@ const jumpToDetail = (target: Post) => {
       content.content = content.content.toString().replace('<img',"<img style='max-width:100%;height:auto;'")
       pageData.targetContent = content;
       localStorage.setItem('token', data.token)
+      hideLoading();
     } else {
-      ElMessage({
-        message: data.message,
-        type: 'error'
-      })
+      hideLoading();
+      loginFailed();
     }
-    hideLoading();
     showDetail.value = true;
   })
 }
@@ -442,12 +538,10 @@ const init = reactive({
           localStorage.setItem('token',res.data.token)
           init.images_upload_url = res.data.content;
         } else {
-          reject('HTTP Error: 上传失败');
-          return
+          loginFailed()
         }
       }).catch(() => {
-        reject('上传出错，服务器开小差了呢')
-        return
+        loginFailed()
       })
     }
   }),
@@ -563,15 +657,13 @@ const refresh = () => {
             loadOver.value = true;
           }
           localStorage.setItem('token', data.token)
+          hideLoading();
         } else {
+          hideLoading();
           loadOver.value = true;
-          ElMessage({
-            message: data.message,
-            type: 'error'
-          })
+          loginFailed()
         }
         requesting.value = false;
-        hideLoading();
       })
     }
   }
@@ -649,11 +741,8 @@ const commentSubmit = () => {
         //用新token向后端要新的blog列表并更新显示
       } else {
         console.log(res)
-        ElMessage({
-          message: data.message,
-          type: 'error'
-        })
         hideLoading();
+        loginFailed()
       }
     })
   }
@@ -666,6 +755,10 @@ const getContent = (v: string) => {
 </script>
 
 <style scoped lang="scss">
+.leftMenu{
+  border-style: none;
+
+}
 .commentCard{
   background-color: #EEEEEE;
   border-radius: 1vw;
@@ -775,21 +868,14 @@ const getContent = (v: string) => {
 }
 .main {
   display: flex;
-  height: 100vh;
 
   .leftWindow {
     display: flex;
-    flex-direction: column;
-    width: 21vw;
-    padding-left: 0vh;
-
+    padding: 0;
     .panel {
       padding-top: 2vh;
-      padding-left: 1vw;
-
       .panelCard {
         width: 90%;
-        height: 40vh;
         background-color: #FFFFFF;
         border-radius: 1vw;
         box-shadow: 0 0 10px 0 #b9ccee;
@@ -824,8 +910,9 @@ const getContent = (v: string) => {
 
       .noticeCard {
         background-color: #FFFFFF;
+        background-position: center;
         width: 90%;
-        height: 30vh;
+        height: 100%;
         border-radius: 1vw;
         box-shadow: 0 0 10px 0 #b9ccee;
       }
@@ -836,7 +923,6 @@ const getContent = (v: string) => {
     padding-top: 1vh;
     .operationCard {
       background-color: #FFFFFF;
-      width: 70vw;
       height: 80vh;
       border-radius: 2vw;
       box-shadow: 0 0 10px 0 #b9ccee;
