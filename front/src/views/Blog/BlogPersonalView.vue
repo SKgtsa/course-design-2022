@@ -9,16 +9,17 @@
   }" >
     <div class="leftArea" :style="{
       'padding-left':`${mobile? '0':'2.5vw'}`,
-      'width': `${mobile? '95%':'30vw'}`
+      'width': `${mobile? '90%':'30vw'}`
     }"
     >
       <div class="infoCard" :style="{
-        'width':`${mobile? '95vw':'25vw'}`,
+        'width':`${mobile? '90vw':'25vw'}`,
         'flex-direction': `${mobile? 'row':'column'}`,
         'padding-bottom': `${mobile? 1:5}vh`,
         'padding-top': `${mobile? 1:3}vh`,
         'padding-left': `${mobile? '1vw':0}`,
-        'padding-right': `${mobile? '1vw':0}`
+        'padding-right': `${mobile? '1vw':0}`,
+        'margin': `${mobile? '0 3%':'0'}`
       }">
         <div class="userInfoCard" :style="{
         'width':`${mobile? '40vw':'22vw'}`,
@@ -47,7 +48,7 @@
       </div>
       <div class="achievementCard" :style="{
         'width':`${mobile? 90:25}vw`,
-        'margin': `${mobile? '3% 3.5%':'5% 0'}`,
+        'margin': `${mobile? '3% 4%':'5% 0'}`,
         'height': `${mobile? 20:50}vh`
       }">
         <a style="font-size: 3vh;font-weight: bold;padding: 2vw;color: #555">称号</a>

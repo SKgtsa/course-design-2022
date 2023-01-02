@@ -4,6 +4,7 @@ import com.clankalliance.backbeta.request.CommonAnnouncementRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.AnnouncementService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 
@@ -26,8 +27,8 @@ public class AnnouncementController {
     }
 
     @PostMapping("/push")
-    public CommonResponse push(@RequestBody CommonAnnouncementRequest request){
-        return announcementService.handlePushAnnouncement(request.getToken(), request.getPicture(), request.getHeading(), request.getContent());
+    public CommonResponse push(@RequestParam("picture") MultipartFile picture,@RequestParam("token") String token, @RequestParam("heading") String heading, @RequestParam("content") String content){
+        return announcementService.handlePushAnnouncement(token, picture, heading, content);
     }
 
 }

@@ -3,11 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-     {
-       path: '/',
-       name: 'origin',
-       component: () => import('../views/OriginPage.vue')
-     },
+    {
+      path: '/',
+      name: 'origin',
+      component: () => import('../views/OriginPage.vue')
+    },
     {
       path: '/Login',
       name: 'Login',
@@ -77,9 +77,9 @@ const router = createRouter({
           component: () => import('../views/student/AcademicManagement.vue'),
           children: [
             {
-              path:'/Student/AcademicManagement/AMHome',
-              name:'AMHome',
-              component:()=> import('../views/student/AMHome.vue')
+              path: '/Student/AcademicManagement/AMHome',
+              name: 'AMHome',
+              component: () => import('../views/student/AMHome.vue')
             },
             {
               path: '/Student/AcademicManagement/StudentEvaluate',
@@ -148,6 +148,21 @@ const router = createRouter({
           path: '/Manager/Main',
           name: 'ManagerMainView',
           component: () => import('../views/manager/MainView.vue')
+        },
+        {
+          path: '/Manager/InfoManage',
+          name: 'ManagerInfoManage',
+          component: () => import('../views/manager/InfoManage.vue')
+        },
+        {
+          path: '/Manager/CourseManage',
+          name: 'ManagerCourseManage',
+          component: () => import('../views/manager/CourseManage.vue'),
+        },
+        {
+          path: '/Manager/Notice',
+          name: 'ManagerNotice',
+          component: () => import('../views/manager/NoticeView.vue'),
         },
       ]
     }
