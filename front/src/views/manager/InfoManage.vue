@@ -14,8 +14,8 @@
                                     <Search />
                                 </el-icon>
                             </el-button>
-                            <el-button type="danger" class="delectButton">
-                                <a class="delectText">删除用户</a>
+                            <el-button type="danger" class="deleteButton">
+                                <a class="deleteText">删除用户</a>
                             </el-button>
                         </span>
                     </div>
@@ -35,47 +35,398 @@
                         </el-button>
                     </span>
                     <span class="menuButtonSpan">
-                        <el-button class="menuButton">
+                        <el-button class="menuButton" @click="clickPractice">
                             <a>社会实践</a>
                         </el-button>
                     </span>
                     <span class="menuButtonSpan">
-                        <el-button class="menuButton">
+                        <el-button class="menuButton" @click="clickReward">
                             <a>成果奖励</a>
                         </el-button>
                     </span>
                     <span class="menuButtonSpan">
-                        <el-button class="menuButton">
+                        <el-button class="menuButton" @click="clickActivity">
                             <a>课外活动</a>
                         </el-button>
                     </span>
-                </div>
-                <div>
 
                 </div>
-                <div>
-
+              <div class="right">
+                <div v-if="practiceShow">
+                  <el-table :data="practiceData.arr" stripe size="large" class="practiceTable"
+                            :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+                            :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
+                    <el-table-column label="社会实践标题" prop="name" width="300" show-overflow-tooltip />
+                    <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
+                    <el-table-column  label="操作">
+                      <template #default="scope">
+                        <el-button size="medium" @click="checkPractice(scope.row)" class="button" type="primary">查看</el-button>
+                        <el-button size="medium" type="danger" class="button" @click="deletePractice(scope.row)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="pagination">
+                    <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
+                                   @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize"
+                                   style="text-align: center">
+                    </el-pagination>
+                  </div>
+                  <el-dialog v-model="practiceDialog" width="45%" draggable="true">
+                    <el-form :model="practiceForm" class="areaTextInput">
+                      <el-form-item label="标题" prop="practiceName">
+                        <span v-if="practiceTypeOperation === 'check'">{{ practiceForm.practiceName }}</span>
+                      </el-form-item>
+                      <el-form-item label="内容" prop="practiceDescription">
+                        <span v-if="practiceTypeOperation === 'check'">{{ practiceForm.practiceDescription }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-dialog>
                 </div>
+                <div v-if="rewardShow">
+                  <el-table :data="rewardData.arr" stripe size="large" class="rewardTable"
+                            :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+                            :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
+                    <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
+                    <el-table-column label="成果奖励标题" prop="name" width="300" show-overflow-tooltip />
+                    <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
+                    <el-table-column  label="操作">
+                      <template #default="scope">
+                        <el-button size="medium" @click="checkReward(scope.row)" class="button" type="primary">查看</el-button>
+                        <el-button size="medium" type="danger" class="button" @click="deleteReward(scope.row)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="pagination">
+                    <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
+                                   @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize"
+                                   style="text-align: center">
+                    </el-pagination>
+                  </div>
+                  <el-dialog v-model="rewardDialog" width="45%" draggable="true">
+                    <el-form :model="rewardForm" class="areaTextInput">
+                      <el-form-item label="标题" prop="rewardName">
+                        <span v-if="rewardTypeOperation === 'check'">{{ rewardForm.rewardName }}</span>
+                      </el-form-item>
+                      <el-form-item label="内容" prop="rewardDescription">
+                        <span v-if="rewardTypeOperation === 'check'">{{ rewardForm.rewardDescription }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-dialog>
+                </div>
+                <div v-if="activityShow">
+                  <el-table :data="activityData.arr" stripe size="large" class="practiceTable"
+                            :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+                            :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
+                    <el-table-column label="课外活动标题" prop="name" width="300" show-overflow-tooltip />
+                    <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
+                    <el-table-column  label="操作">
+                      <template #default="scope">
+                        <el-button size="medium" @click="checkActivity(scope.row)" class="button" type="primary">查看</el-button>
+                        <el-button size="medium" type="danger" class="button" @click="deleteActivity(scope.row)">删除</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <div class="pagination">
+                    <el-pagination background layout="prev, pager, next,jumper, ->" :page-count="pageCount"
+                                   @current-change="handleCurrentChange" :current-page="currentPage" :page-size="pageSize"
+                                   style="text-align: center">
+                    </el-pagination>
+                  </div>
+                  <el-dialog v-model="activityDialog" width="45%" draggable="true">
+                    <el-form :model="activityForm" class="areaTextInput">
+                      <el-form-item label="日期" prop="date">
+                        <span v-if="activityTypeOperation === 'check'">{{ activityForm.date }}</span>
+                      </el-form-item>
+                      <el-form-item label="标题" prop="practiceName">
+                        <span v-if="activityTypeOperation === 'check'">{{ activityForm.practiceName }}</span>
+                      </el-form-item>
+                      <el-form-item label="内容" prop="practiceDescription">
+                        <span v-if="activityTypeOperation === 'check'">{{ activityForm.practiceDescription }}</span>
+                      </el-form-item>
+                      <el-form-item label="成果" prop="result">
+                        <span v-if="activityTypeOperation === 'check'">{{ activityForm.result }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-dialog>
+                </div>
+              </div>
             </div>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue';
-
-
+import {reactive, ref} from 'vue';
+import {hideLoading, showLoading} from "@/utils/loading";
+import service from "@/request";
+import {messageError, messageSuccess, messageWarning} from "@/utils/message";
+import {ElMessageBox} from "element-plus";
+let currentPage = ref(1);
+let pageSize = ref(7);
+let pageCount = ref();
 let search = ref();
+let practiceShow=ref(false);
+let activityShow=ref(false);
+let rewardShow=ref(false);
 let url = ref('https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg');
-
-
+let practiceTypeOperation = ref(''); //edit,check,add 编辑，查看，添加
+let rewardTypeOperation = ref('');
+let activityTypeOperation = ref('');
+let practiceDialog = ref(false);//查的弹出框
+let rewardDialog = ref(false);//查的弹出框
+let activityDialog = ref(false);//查的弹出框
+let practiceData = reactive({
+  arr: [],
+});
+let rewardData = reactive({
+  arr: [],
+});
+let activityData = reactive({
+  arr: [],
+});
+let practiceForm = reactive({
+  practiceName: '',
+  practiceDescription: '',
+  id: '',
+});
+let rewardForm = reactive({
+  rewardName: '',
+  rewardDescription: '',
+  id: '',
+});
+let activityForm = reactive({
+  practiceName: '',
+  practiceDescription: '',
+  date: '',
+  result: '',
+  id: '',
+});
+const handleCurrentChange = (current) => {
+  currentPage.value = current;
+  loadPracticeTable() //再执行一次索要数据方法
+  console.log(currentPage)
+}
 const handleOpen = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
 }
 const handleClose = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
 }
+const clickPractice=()=>{
+  practiceShow.value=true;
+  activityShow.value=false;
+  rewardShow.value=false;
+}
+const clickReward=()=>{
+  practiceShow.value=false;
+  activityShow.value=false;
+  rewardShow.value=true;
+}
+const clickActivity=()=>{
+  practiceShow.value=false;
+  activityShow.value=true;
+  rewardShow.value=false;
+}
+const checkPractice = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
+  practiceDialog.value = true;
+  practiceForm.practiceDescription = row.practiceDescription;
+  practiceForm.practiceName = row.practiceName;
+  practiceForm.id = row.id;
+  practiceTypeOperation.value = 'check';
+}
+const loadPracticeTable = async () => {
+  showLoading();
+  await service.post('/api/practice/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:search.value}).then(res => {
+    console.log(currentPage.value, pageSize.value)
+    if (res.data.success) {
+      hideLoading();
+      console.log('初始化返回的res')
+      console.log(res);
+      let data = res.data;
+      localStorage.setItem('token', data.token)
+      console.log(localStorage.getItem('token'))
+      let array = data.content
+      pageCount.value = data.totalPage;
+      practiceData.arr = array
+      console.log(practiceData)
+    } else {
+      hideLoading();
+      messageWarning(res.data.message)
+    }
+  })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
+}
+loadPracticeTable() //进入默认执行
+const deletePractice = async (row) => {  //删  //异步不确定是否有问题
+  await ElMessageBox.confirm(
+      '确认删除该条社会实践吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        showLoading();
+        service.post('/api/practice/managerDelete', { token: localStorage.getItem("token"), practiceId: row.id }).then(res => {
+          if (res.data.success) {
+            hideLoading()
+            messageSuccess('删除成功!')
+            localStorage.setItem("token", res.data.token)
+            loadPracticeTable() //重新加载现在表单中的数据
+          } else {
+            hideLoading();
+            messageWarning(res.data.message)
+          }
+        })
+            .catch(function (error) {
+              hideLoading();
+              messageError("服务器开小差了呢");
+              console.log(error)
+            })
+      })
+}
+loadPracticeTable() //进入默认执行
+const checkReward = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
+  rewardDialog.value = true;
+  rewardForm.rewardDescription = row.rewardDescription;
+  rewardForm.rewardName = row.rewardName;
+  rewardForm.id = row.id;
+  rewardTypeOperation.value = 'check';
+}
+const deleteReward = async (row) => {  //删  //异步不确定是否有问题
+  await ElMessageBox.confirm(
+      '确认删除该条成果奖励吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        showLoading();
+        service.post('/api/reward/managerDelete', { token: localStorage.getItem("token"), rewardId: row.id }).then(res => {
+          if (res.data.success) {
+            hideLoading()
+            messageSuccess('删除成功!')
+            localStorage.setItem("token", res.data.token)
+            loadRewardTable() //重新加载现在表单中的数据
+          } else {
+            hideLoading();
+            messageWarning(res.data.message)
+          }
+        })
+            .catch(function (error) {
+              hideLoading();
+              messageError("服务器开小差了呢");
+              console.log(error)
+            })
+      })
+}
+const loadRewardTable = async () => {
+  showLoading();
+  await service.post('/api/reward/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:search.value}).then(res => {
+    console.log(currentPage.value, pageSize.value)
+    if (res.data.success) {
+      hideLoading();
+      console.log('初始化返回的res')
+      console.log(res);
+      let data = res.data;
+      localStorage.setItem('token', data.token)
+      console.log(localStorage.getItem('token'))
+      let array = data.content
+      pageCount.value = data.totalPage;
+      rewardData.arr = array
+      console.log(rewardData)
+    } else {
+      hideLoading();
+      messageWarning(res.data.message)
+    }
+  })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
+}
+loadRewardTable() //进入默认执行
+const loadActivityTable = async () => {
+  showLoading();
+  await service.post('/api/activity/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:search.value}).then(res => {
+    console.log(currentPage.value, pageSize.value)
+    if (res.data.success) {
+      hideLoading();
+      console.log('初始化返回的res')
+      console.log(res);
+      let data = res.data;
+      localStorage.setItem('token', data.token)
+      console.log(localStorage.getItem('token'))
+      let array = data.content
+      pageCount.value = data.totalPage;
+      activityData.arr = array
+      console.log(activityData)
+    } else {
+      hideLoading();
+      messageWarning(res.data.message)
+    }
+  })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
+}
+loadActivityTable() //进入默认执行
+const checkActivity = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
+  activityDialog.value = true;
+  activityForm.practiceDescription = row.practiceDescription;
+  activityForm.practiceName = row.practiceName;
+  activityForm.date = row.date;
+  activityForm.result = row.result;
+  activityForm.id = row.id;
+  activityTypeOperation.value = 'check';
+}
+const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
+  await ElMessageBox.confirm(
+      '确认删除该条社会实践吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        showLoading();
+        service.post('/api/activity/managerDelete', { token: localStorage.getItem("token"), practiceId: row.id }).then(res => {
+          if (res.data.success) {
+            hideLoading()
+            messageSuccess('删除成功!')
+            localStorage.setItem("token", res.data.token)
+            loadActivityTable() //重新加载现在表单中的数据
+          } else {
+            hideLoading();
+            messageWarning(res.data.message)
+          }
+        })
+            .catch(function (error) {
+              hideLoading();
+              messageError("服务器开小差了呢");
+              console.log(error)
+            })
+      })
+}
 </script>
 <style lang="scss" scoped>
+.right{
+  float: right;
+  width: 65vw;
+}
 .content {
     height: 100vh;
     width: 90vw;
@@ -153,7 +504,7 @@ const handleClose = (key: string, keyPath: string[]) => {
                             font-size: 1.2vw;
                         }
 
-                        .delectButton {
+                        .deleteButton {
                             height: 6vh;
                             border: 0.1vw solid;
                         }
@@ -189,11 +540,12 @@ const handleClose = (key: string, keyPath: string[]) => {
             height: 65vh;
             width: 80vw;
             background-color: bisque;
-
+            display: flex;
             .menu {
                 width: 15vw;
                 height: 65vh;
                 background-color: rgb(255, 255, 255);
+                float: left;
 
                 .menuButtonSpan {
                     width: 15vw;
