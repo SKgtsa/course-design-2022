@@ -5,24 +5,24 @@
 
                 <div class="leftPanel">
                     <a class="title">信息管理</a>
-                    <div class="search">
+                    <div class="searchOrigin">
                         <span class="searchSpan">
-                            <el-input v-model="search" type="text" class="searchTerm" maxlength="15"
+                            <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="15"
                                 placeholder="输入学工号" />
-                            <el-button type="submit" class="searchButton">
+                            <el-button type="submit" class="searchButton" @click="check">
                                 <el-icon class="icon">
                                     <Search />
                                 </el-icon>
                             </el-button>
-                            <el-button type="danger" class="deleteButton">
+                            <el-button type="danger" class="deleteButton" v-if="characterHasFound">
                                 <a class="deleteText">删除用户</a>
                             </el-button>
                         </span>
                     </div>
                 </div>
-                <div class="rightPanel">
+                <div class="rightPanel" v-if="characterHasFound">
                     <div class="imgBox">
-                        <el-image class="img" :src="url" fit="cover">
+                        <el-image class="img" :src="userPhotoUrl" fit="cover">
                         </el-image>
                     </div>
                 </div>
@@ -34,17 +34,17 @@
                             <a>个人信息</a>
                         </el-button>
                     </span>
-                    <span class="menuButtonSpan">
+                    <span class="menuButtonSpan" v-if="characterIsStudent">
                         <el-button class="menuButton" @click="clickPractice">
                             <a>社会实践</a>
                         </el-button>
                     </span>
-                    <span class="menuButtonSpan">
+                    <span class="menuButtonSpan" v-if="characterIsStudent">
                         <el-button class="menuButton" @click="clickReward">
                             <a>成果奖励</a>
                         </el-button>
                     </span>
-                    <span class="menuButtonSpan">
+                    <span class="menuButtonSpan" v-if="characterIsStudent">
                         <el-button class="menuButton" @click="clickActivity">
                             <a>课外活动</a>
                         </el-button>
@@ -52,6 +52,42 @@
 
                 </div>
               <div class="right">
+                <div v-if="informationShow">
+                  <div v-if="userIsStudent">
+                    <el-form :model="userStudentForm" class="areaTextInput" ref="formData">
+                      <el-form-item label="学号:" prop="userNumber">
+                        <span>{{ userStudentForm.userNumber }}</span>
+                      </el-form-item>
+                      <el-form-item label="姓名:" prop="name">
+                        <span>{{ userStudentForm.name }}</span>
+                      </el-form-item>
+                      <el-form-item label="性别:" prop="gender">
+                        <span>{{ userStudentForm.gender }}</span>
+                      </el-form-item>
+                      <el-form-item label="身份证号:" prop="idCardNumber">
+                        <span>{{ userStudentForm.idCardNumber }}</span>
+                      </el-form-item>
+                      <el-form-item label="班级:" prop="studentClass">
+                        <span>{{ userStudentForm.studentClass }}</span>
+                      </el-form-item>
+                      <el-form-item label="政治面貌:" prop="politicalAffiliation">
+                        <span>{{ userStudentForm.politicalAffiliation }}</span>
+                      </el-form-item>
+                      <el-form-item label="民族:" prop="ethnic">
+                        <span>{{ userStudentForm.ethnic }}</span>
+                      </el-form-item>
+                      <el-form-item label="邮箱:" prop="email">
+                        <span>{{ userStudentForm.eMail }}</span>
+                      </el-form-item>
+                      <el-form-item label="电话:" prop="phone">
+                        <span>{{ userStudentForm.phone }}</span>
+                      </el-form-item>
+                    </el-form>
+                  </div>
+                  <div v-else>
+
+                  </div>
+                </div>
                 <div v-if="practiceShow">
                   <el-table :data="practiceData.arr" stripe size="large" class="practiceTable"
                             :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
@@ -160,14 +196,20 @@ import {hideLoading, showLoading} from "@/utils/loading";
 import service from "@/request";
 import {messageError, messageSuccess, messageWarning} from "@/utils/message";
 import {ElMessageBox} from "element-plus";
+import {getBaseURL} from "@/global/global";
 let currentPage = ref(1);
 let pageSize = ref(7);
 let pageCount = ref();
+let searchOrigin = ref();
 let search = ref();
 let practiceShow=ref(false);
+let informationShow=ref(false);
 let activityShow=ref(false);
 let rewardShow=ref(false);
-let url = ref('https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg');
+let userIsStudent=ref(true);//false是老师
+let userPhotoUrl = ref();
+let characterIsStudent=ref(false);
+let characterHasFound=ref(false);
 let practiceTypeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let rewardTypeOperation = ref('');
 let activityTypeOperation = ref('');
@@ -181,6 +223,9 @@ let rewardData = reactive({
   arr: [],
 });
 let activityData = reactive({
+  arr: [],
+});
+let userData = reactive({
   arr: [],
 });
 let practiceForm = reactive({
@@ -200,6 +245,23 @@ let activityForm = reactive({
   result: '',
   id: '',
 });
+let userStudentForm=reactive({
+  id:'',
+  userNumber:'',
+  nickName:'',
+  name:'',
+  phone:'',
+  studentClass:'',
+  section:'',
+  idCardNumber:'',
+  gender:'',
+  ethnic:'',
+  politicalAffiliation:'',
+  eMail:'',
+  avatarURL:'',
+  photoURL:'',
+});
+
 const handleCurrentChange = (current) => {
   currentPage.value = current;
   loadPracticeTable() //再执行一次索要数据方法
@@ -215,16 +277,69 @@ const clickPractice=()=>{
   practiceShow.value=true;
   activityShow.value=false;
   rewardShow.value=false;
+  loadPracticeTable();
 }
 const clickReward=()=>{
   practiceShow.value=false;
   activityShow.value=false;
   rewardShow.value=true;
+  loadRewardTable();
 }
 const clickActivity=()=>{
   practiceShow.value=false;
   activityShow.value=true;
   rewardShow.value=false;
+  loadActivityTable();
+}
+const check=()=>{
+  search.value=searchOrigin.value;
+  checkUser(search.value);
+}
+const checkUser = async (userNumber) => {   //查看个人信息
+  if (search.value == '' || search.value == undefined) {
+    search.value='';
+    return;
+  }
+  showLoading();
+  await service.post('/api/user/managerFind', { token: localStorage.getItem("token") ,userNumber:userNumber,}).then(res => {
+    if (res.data.success) {
+      console.log(res);
+      let data = res.data;
+      console.log(data.token)
+      let content = data.user;
+      console.log(content)
+      if(content.studentClass==undefined){
+        userIsStudent.value=false;
+      }else {
+        userIsStudent.value=true;
+        userStudentForm.id=content.id;
+        userStudentForm.userNumber=content.userNumber;
+        userStudentForm.nickName=content.nickName;
+        userStudentForm.name = content.name;
+        userStudentForm.phone = content.phone;
+        userStudentForm.studentClass=content.studentClass;
+        userStudentForm.idCardNumber=content.idCardNumber;
+        if (content.gender == false) { userStudentForm.gender = '男'; } else userStudentForm.gender = '女';
+        userStudentForm.ethnic = content.ethnic;//民族
+        userStudentForm.politicalAffiliation=content.politicalAffiliation;
+        userStudentForm.eMail = content.eMail;
+        userStudentForm.userNumber = content.userNumber;
+        userStudentForm.avatarURL=content.avatarURL;
+        userStudentForm.photoURL=content.photoURL;
+      }
+      localStorage.setItem('token', data.token)
+      console.log(userData)
+      hideLoading()
+    } else {
+      hideLoading()
+      messageWarning(res.data.message)
+    }
+  })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
 }
 const checkPractice = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   practiceDialog.value = true;
@@ -235,7 +350,7 @@ const checkPractice = (row) => {   //查看单个的数据 一条一条赋值，
 }
 const loadPracticeTable = async () => {
   showLoading();
-  await service.post('/api/practice/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:search.value}).then(res => {
+  await service.post('/api/practice/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:searchOrigin.value}).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
@@ -259,7 +374,7 @@ const loadPracticeTable = async () => {
         console.log(error)
       })
 }
-loadPracticeTable() //进入默认执行
+// loadPracticeTable() //进入默认执行
 const deletePractice = async (row) => {  //删  //异步不确定是否有问题
   await ElMessageBox.confirm(
       '确认删除该条社会实践吗?',
@@ -290,7 +405,7 @@ const deletePractice = async (row) => {  //删  //异步不确定是否有问题
             })
       })
 }
-loadPracticeTable() //进入默认执行
+// loadPracticeTable() //进入默认执行
 const checkReward = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   rewardDialog.value = true;
   rewardForm.rewardDescription = row.rewardDescription;
@@ -330,7 +445,7 @@ const deleteReward = async (row) => {  //删  //异步不确定是否有问题
 }
 const loadRewardTable = async () => {
   showLoading();
-  await service.post('/api/reward/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:search.value}).then(res => {
+  await service.post('/api/reward/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:searchOrigin.value}).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
@@ -354,10 +469,10 @@ const loadRewardTable = async () => {
         console.log(error)
       })
 }
-loadRewardTable() //进入默认执行
+// loadRewardTable() //进入默认执行
 const loadActivityTable = async () => {
   showLoading();
-  await service.post('/api/activity/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:search.value}).then(res => {
+  await service.post('/api/activity/managerFind', { token: localStorage.getItem("token"), pageNum: currentPage.value, pageSize: pageSize.value,id:searchOrigin.value}).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
@@ -381,7 +496,7 @@ const loadActivityTable = async () => {
         console.log(error)
       })
 }
-loadActivityTable() //进入默认执行
+// loadActivityTable() //进入默认执行
 const checkActivity = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   activityDialog.value = true;
   activityForm.practiceDescription = row.practiceDescription;
@@ -465,7 +580,7 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
                     font-weight: 600;
                 }
 
-                .search {
+                .searchOrigin {
                     display: flex;
 
                     .searchSpan {
@@ -564,7 +679,7 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
 
 
 
-        /*Resize the wrap to see the search bar change!*/
+        /*Resize the wrap to see the searchOrigin bar change!*/
     }
 }
 </style>
