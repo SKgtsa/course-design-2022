@@ -6,22 +6,23 @@
                     <a class="title">课程管理</a>
                     <div class="search">
                         <span class="searchSpan">
-                            <el-input v-model="search" type="text" class="searchTerm" maxlength="30"
+                            <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="30"
                                 placeholder="输入课程号" />
-                            <el-button type="submit" class="searchButton" @click="checkCourse">
+                            <el-button type="submit" class="searchButton" @click="check">
                                 <el-icon class="icon">
                                     <Search />
                                 </el-icon>
                             </el-button>
-                            <el-button v-if="isShow" type="danger" class="delectButton" @click="delectCourse">
-                                <a class="delectText">删除课程</a>
+                            <el-button v-if="isShow" type="danger" class="deleteButton" @click="delectCourse">
+                                <a class="deleteText">删除课程</a>
                             </el-button>
                         </span>
                     </div>
                 </div>
             </div>
-            <div class="main">
-                <div class="menu">
+            <div class="divider"  v-if="isShow"></div>
+            <div class="main"> <!-- " -->
+                <div class="menu" v-if="isShow" >
                     <span class="menuButtonSpan">
                         <el-button class="menuButton" @click="changeInfo">
                             <a>课程信息</a>
@@ -37,40 +38,22 @@
                             <a>成绩管理</a>
                         </el-button>
                     </span>
-
-
-                    <!-- <el-menu router default-active="/Manager/CourseManage/CourseInfo" class="el-menu-vertical-demo"
-                        @open="handleOpen" @close="handleClose" active-text-color="#ffd04b">
-                        <el-menu-item index="/Manager/CourseManage/CourseInfo">
-                            <el-icon>
-                                <location />
-                            </el-icon>
-                            <span>课程信息</span>
-                        </el-menu-item>
-                        <el-menu-item index="/Manager/CourseManage/CourseSelect">
-                            <el-icon>
-                                <location />
-                            </el-icon>
-                            <span>选课管理</span>
-                        </el-menu-item>
-                        <el-menu-item index="/Manager/CourseManage/ScoreManage">
-                            <el-icon>
-                                <location />
-                            </el-icon>
-                            <span>成绩管理</span>
-                        </el-menu-item>
-                    </el-menu> -->
                 </div>
+                <div class="menuDivider"></div>
                 <div class="infoBox" v-if="isShow">
-                    <el-scrollbar v-if="typeShow == 'info'">
+                    <el-scrollbar v-if="typeShow == 'info' && isShow">
                         <el-form :model="editForm" ref="formCourseData" :rules="rulesEditForm" label-width="auto"
                             label-position="right" class="infoForm">
-                            <el-form-item label="课程名:" prop="name">
-                                <el-input style="width:20vw" v-model="editForm.name" maxlength="15">{{
+                            <span style="display:flex;flex-dirction:row">
+                                <el-form-item label="课程名:" prop="name">
+                                    <el-input style="width:20vw" v-model="editForm.name" maxlength="15">{{
         editForm.name
 }}</el-input>
-                            </el-form-item>
-
+                                </el-form-item>
+                                <el-button type="primary" @click="sumbitEditRow" class="submitButton">
+                                    <a>提交</a>
+                                </el-button>
+                            </span>
                             <el-form-item label="简介:" prop="description">
                                 <el-input type="textarea" maxlength="50" rows="3" v-model="editForm.description">{{
         editForm.description
@@ -146,13 +129,10 @@
                                 </el-select>
                             </el-form-item>
                         </el-form>
-                        <el-button @click="sumbitEditRow">
-                            <a>提交</a>
-                            </el-button>
                     </el-scrollbar>
-                    <div v-if="typeShow == 'select'">
+                    <div class="tableDiv" v-if="typeShow == 'select' && isShow">
                         <div class="studentTitle">
-                            选课学生
+                            <!--    选课学生 -->
                             <el-input class="studentNumberInput" v-model="studentNumber" placeholder="请输入学生学号" />
                             <el-button class="addButton" @click="addStudent">添加学生</el-button>
                         </div>
@@ -174,7 +154,7 @@
                             </el-table-column>
                         </el-table>
                     </div>
-                    <div v-if="typeShow == 'score'">
+                    <div class="tableDiv" v-if="typeShow == 'score' && isShow">
                         <div class="studentTitle">
                             修改成绩
                         </div>
@@ -219,9 +199,12 @@ import { hide } from '@popperjs/core';
 import { ElMessageBox } from 'element-plus';
 import { reactive, ref } from 'vue';
 
+
+let idCourse = ref();
 let isShow = ref(false);
 let studentNumber = ref();
 let formCourseData = ref();//改增校验绑定的空form
+let searchOrigin = ref();
 let search = ref();
 let backData = reactive({
     arr: [],
@@ -235,19 +218,25 @@ let scoreData = reactive({
 
 let typeShow = ref('info')
 
-const changeInfo = () => {
-    typeShow.value = 'info'  
+const check = () => {
+    search.value = searchOrigin.value; //防止用户只更改input的值不搜索
+    checkCourse(search.value)
 }
-const changeSelect = () => {
-    typeShow.value = 'select',
-        loadStudentTable(search.value)
-}
-const changeScore = () => {
-    typeShow.value = 'score',
-    getScore(search.value)
-}
-let idCourse = ref();
 
+const changeInfo = () => {
+    typeShow.value = 'info'
+}
+const changeSelect = async () => {
+    await loadStudentTable(search.value);
+    typeShow.value = 'select';
+
+
+}
+const changeScore = async () => {
+    await getScore(search.value);
+    typeShow.value = 'score';
+
+}
 
 const time = [
     {
@@ -434,59 +423,6 @@ const time = [
     },
 ]
 
-const dayOptions = [
-    {
-        value: 1,
-        label: '星期一',
-    },
-    {
-        value: 2,
-        label: '星期二',
-    },
-    {
-        value: 3,
-        label: '星期三',
-    },
-    {
-        value: 4,
-        label: '星期四',
-    },
-    {
-        value: 5,
-        label: '星期五',
-    },
-    {
-        value: 6,
-        label: '星期六',
-    },
-    {
-        value: 7,
-        label: '星期日',
-    },
-]
-const sectionOptions = [
-    {
-        value: 1,
-        label: '1-2节',
-    },
-    {
-        value: 2,
-        label: '3-4节',
-    },
-    {
-        value: 3,
-        label: '5-6节',
-    },
-    {
-        value: 4,
-        label: '7-8节',
-    },
-    {
-        value: 5,
-        label: '9-10节',
-    },
-
-]
 const yearOptions = [
     {
         value: 2019,
@@ -674,38 +610,40 @@ let editForm = reactive({
     weight: '',
 });
 
-/* 264769460420874240 */
+
 
 //输入课程号，得到token,为editForm附上初值
-const checkCourse = async () => {
+const checkCourse = async (id) => {
     if (search.value == '' || search.value == undefined || search.value == null) return
     showLoading();
     await service.post('/api/course/managerFind', { token: localStorage.getItem('token'), id: search.value }).then(res => {
         console.log('返回了数据')
         let data = res.data;
+        console.log(data.token)
         if (data.success) {
+            console.log(search.value)
             hideLoading();
             localStorage.setItem('token', data.token);
             messageSuccess("查询成功！")
-            let row = data.content;
-            editForm.name = row.name;
-            editForm.weekStart = row.weekStart;
-            editForm.weekEnd = row.weekEnd;
+            let content = data.content;
+            editForm.name = content.name;
+            editForm.weekStart = content.weekStart;
+            editForm.weekEnd = content.weekEnd;
             editForm.time = [];
-            for (let i = 0; i < row.time.length; i++) {
+            for (let i = 0; i < content.time.length; i++) {
                 let midArray = [];
-                midArray.push(row.time[i].weekDay);
-                midArray.push(row.time[i].section);
+                midArray.push(content.time[i].weekDay);
+                midArray.push(content.time[i].section);
                 editForm.time.push(midArray);
             }
             console.log('!!!')
             console.log(editForm.time)
-            editForm.weight = row.weight;
-            editForm.capacity = row.capacity;
-            editForm.studentClass = row.studentClass;
+            editForm.weight = content.weight;
+            editForm.capacity = content.capacity;
+            editForm.studentClass = content.studentClass;
             let arrIntSet = [];
             // 将字符串转换成数组，此时是字符串数组
-            let arrString = row.studentClass.substr(1, row.studentClass.length - 2).split(',');
+            let arrString = content.studentClass.substr(1, content.studentClass.length - 2).split(',');
             for (let arrInt = 0; arrInt < arrString.length; arrInt++) {
                 arrIntSet.push(parseInt(arrString[arrInt]))
             }
@@ -713,17 +651,17 @@ const checkCourse = async () => {
             editForm.studentClass = arrIntSet;
             arrIntSet = [];
             let arrInt;
-            arrString = row.studentSection.substr(1, row.studentSection.length - 2).split(',');
+            arrString = content.studentSection.substr(1, content.studentSection.length - 2).split(',');
             for (arrInt = 0; arrInt < arrString.length; arrInt++) {
                 arrIntSet.push(parseInt(arrString[arrInt]))
             }
             editForm.studentSection = arrIntSet;
-            editForm.location = row.location;
-            editForm.year = row.year;
-            editForm.description = row.description;
-            editForm.semester = row.semester;
-            editForm.credit = row.credit;
-            editForm.id = row.id;
+            editForm.location = content.location;
+            editForm.year = content.year;
+            editForm.description = content.description;
+            editForm.semester = content.semester;
+            editForm.credit = content.credit;
+            editForm.id = content.id;
 
             //显示信息界面
             isShow.value = true;
@@ -754,14 +692,15 @@ const sumbitEditRow = async () => {
     await formCourseData.value.validate(((valid) => {
         if (valid) {
             showLoading()
-            service.post('/api/course/managerSave', { token: localStorage.getItem('token'), course:editForm }).then(res => {
+            service.post('/api/course/managerSave', { token: localStorage.getItem('token'), course: editForm }).then(res => {
                 let data = res.data;
+                console.log(res.data);
                 if (data.success) {
                     hideLoading();
                     console.log(res.data)
                     localStorage.setItem('token', data.token);
                     messageSuccess('修改成功！');
-                    checkCourse();
+                    checkCourse(search.value);
                 } else {
                     hideLoading();
                     messageError(data.message)
@@ -781,7 +720,7 @@ const sumbitEditRow = async () => {
 };
 
 const delectCourse = async () => {
-   await ElMessageBox.confirm(
+    await ElMessageBox.confirm(
         '确认删除该课程吗?',
         'Warning',
         {
@@ -792,13 +731,13 @@ const delectCourse = async () => {
     )
         .then(() => {
             showLoading();
-             service.post('/api/course/manageDelete', { token: localStorage.getItem('token'), id: search.value }).then(res => {
+            service.post('/api/course/manageDelete', { token: localStorage.getItem('token'), id: search.value }).then(res => {
                 let data = res.data;
+                console.log(res.data);
                 if (data.success) {
                     hideLoading();
                     messageSuccess("删除成功！")
                     localStorage.setItem('token', data.token)
-                    isShow.value = false;
                 } else {
                     hideLoading()
                     messageError(data.message)
@@ -817,8 +756,10 @@ const loadStudentTable = async (id) => {
     await service.post('/api/course/managerFindStudent', {
         token: localStorage.getItem("token"), id: id
     }).then(res => {
+        console.log(id)
+        console.log(res.data);
         if (res.data.success) {
-            
+            console.log(id)
             console.log(res.data)
             hideLoading();
             console.log(res.data.content)
@@ -828,7 +769,7 @@ const loadStudentTable = async (id) => {
             console.log(localStorage.getItem('token'))
             let content = data.content;
             studentData.arr = content;
-    
+
 
         } else {
             hideLoading();
@@ -854,6 +795,7 @@ const addStudent = async () => {
         })
         .then(res => {
             if (res.data.success) {
+                console.log(res.data);
                 hideLoading()
                 messageSuccess("添加成功！")
                 localStorage.setItem("token", res.data.token)
@@ -884,14 +826,13 @@ const deleteStudent = (row) => {  //删  //异步可能有问题
             console.log(search.value)
             console.log(row.userNumber)
             showLoading();
-            console.log(localStorage.getItem('token'))
-            service.post('/api/course/managerRemoveStudent', { token: localStorage.getItem("token"),courseId: search.value, studentId: row.id }).then(res => {
+            service.post('/api/course/managerRemoveStudent', { token: localStorage.getItem("token"), courseId: search.value, studentId: row.id }).then(res => {
                 console.log(res)
                 if (res.data.success) {
                     localStorage.setItem("token", res.data.token)
                     hideLoading()
                     messageSuccess('删除成功!')
-                    loadStudentTable(search.value) //重新加载现在表单中的数据
+                    /* loadStudentTable(search.value) */ //重新加载现在表单中的数据
                 } else {
                     hideLoading();
                     messageWarning(res.data.message)
@@ -913,6 +854,7 @@ const getScore = async (id) => {
     await service.post('/api/score/managerFind', { token: localStorage.getItem("token"), courseId: id }).then(res => {
         if (res.data.success) {
             hideLoading();
+            console.log(id)
             let data = res.data;
             console.log(data.content)
             let arr = data.content
@@ -934,41 +876,35 @@ const submitEditRow = async (row) => {
         messageWarning('请填写完整！');
         return;
     }
-        await service.post('/api/score/managerSave',
-            {
-                token: localStorage.getItem("token"),
-                courseId: search.value,
-                studentId: row.studentId,
-                dailyScore: row.dailyScore,
-                endScore: row.endScore,
-            })
-            .then(res => {
-                if (res.data.success) {
-                    hideLoading()
-                    messageSuccess("修改成功！")
-                    localStorage.setItem("token", res.data.token)
-                    getScore(search.value)
-                } else {
-                    hideLoading()
-                    messageError(res.data.message)
-                }
+    await service.post('/api/score/managerSave',
+        {
+            token: localStorage.getItem("token"),
+            courseId: search.value,
+            studentId: row.studentId,
+            dailyScore: row.dailyScore,
+            endScore: row.endScore,
+        })
+        .then(res => {
+            if (res.data.success) {
+                hideLoading()
+                messageSuccess("修改成功！")
+                localStorage.setItem("token", res.data.token)
+                getScore(search.value)
+            } else {
+                hideLoading()
+                messageError(res.data.message)
             }
-            )
-            .catch(function (error) {
-                hideLoading();
-                messageError("服务器开小差了呢");
-                console.log(error)
-            })
-    }
+        }
+        )
+        .catch(function (error) {
+            hideLoading();
+            messageError("服务器开小差了呢");
+            console.log(error)
+        })
+}
 
 console.log(editForm)
 
-const handleOpen = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-    console.log(key, keyPath)
-}
 </script>
 <style lang="scss" scoped>
 .content {
@@ -982,14 +918,14 @@ const handleClose = (key: string, keyPath: string[]) => {
         margin-top: 4vh;
         margin-left: 9vw;
         width: 80vw;
-        height: 95vh;
+        height: 95.1vh;
         border-radius: 1vw;
         box-shadow: 0 0 1.25vh 0 #b9ccee;
 
         .header {
             height: 35vh;
             width: 100%;
-            background-color: rgb(232, 245, 247);
+            /*  background-color: rgb(232, 245, 247); */
             display: flex;
             flex-direction: row;
 
@@ -1080,10 +1016,16 @@ const handleClose = (key: string, keyPath: string[]) => {
             }
         }
 
+        .divider {
+            height: 0.1vh;
+            width: 80vw;
+            background-color: rgb(151, 151, 185);
+        }
+
         .main {
             height: 65vh;
             width: 80vw;
-            background-color: bisque;
+            /*    background-color: bisque; */
             display: flex;
             flex-direction: row;
 
@@ -1105,6 +1047,12 @@ const handleClose = (key: string, keyPath: string[]) => {
                 }
             }
 
+            .menuDivider {
+                height: 65vh;
+                width: 0.05vw;
+                background-color: rgb(164, 175, 199);
+            }
+
             .infoBox {
                 width: 65vw;
                 height: 65vh;
@@ -1116,32 +1064,44 @@ const handleClose = (key: string, keyPath: string[]) => {
                     padding-bottom: 3vw;
                 }
 
-                .studentTitle {
-                    margin-top: 30px;
-                    height: 60px;
-                    font-family: 微软雅黑;
-                    font-size: 3vh;
-                    font-weight: 500;
-                    line-height: 1vh;
-                    color: #0273f1;
+                .submitButton {
+                    width: 9vw;
+                    height: 4vh;
+                    margin-left: 20vw;
                 }
 
-                .studentNumberInput {
-                    width: 40%;
-                }
+                .tableDiv {
+                    padding-left: 5vw;
+                    .studentTitle {
+                        /*    padding-left:4vw; */
+                        margin-top: 4vh;
+                        height: 6vh;
+                        font-family: 微软雅黑;
+                        font-size: 3vh;
+                        font-weight: 500;
+                        line-height: 1vh;
+                        color: #0273f1;
+                    }
 
-                .addButton {
-                    margin-left: 3vw;
-                    width: 10vw;
-                    height: 5vh;
-                    border-color: #0273f1;
-                    border-style: solid;
-                    border-width: 0.3vw;
-                    border-radius: 1vw;
-                    color: #0273f1;
+                    .studentNumberInput {
+                        width: 40%;
+                    }
+
+                    .addButton {
+                        margin-left: 3vw;
+                        width: 10vw;
+                        height: 5vh;
+                        border-color: #0273f1;
+                        border-style: solid;
+                        border-width: 0.3vw;
+                        border-radius: 1vw;
+                        color: #0273f1;
+                    }
+
                 }
             }
         }
+
         /*Resize the wrap to see the search bar change!*/
     }
 }
