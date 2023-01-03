@@ -486,6 +486,9 @@ public class CourseServiceImpl implements CourseService {
                 response.setContent(courseList);
                 response.setSuccess(true);
                 response.setMessage("教师课程表返回成功");
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -507,6 +510,9 @@ public class CourseServiceImpl implements CourseService {
                 response.setSuccess(true);
                 response.setMessage("课程查找成功");
                 response.setContent(course);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -529,7 +535,6 @@ public class CourseServiceImpl implements CourseService {
                 courseRepository.save(courseTarget);
                 response.setSuccess(true);
                 response.setMessage("课程保存成功");
-                response.setToken(token);
             }else{
                 response.setSuccess(false);
                 response.setMessage("权限不足");
@@ -549,7 +554,9 @@ public class CourseServiceImpl implements CourseService {
                 courseRepository.delete(course);
                 response.setSuccess(true);
                 response.setMessage("课程删除成功");
-                response.setToken(token);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -571,6 +578,9 @@ public class CourseServiceImpl implements CourseService {
                 response.setSuccess(true);
                 response.setMessage("学生表返回成功");
                 response.setContent(result);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -591,12 +601,12 @@ public class CourseServiceImpl implements CourseService {
                 }
                 Student student=sop.get();
                 Optional<Course> cop=courseRepository.findById(courseId);
-                Course course =cop.get();
                 if(cop.isEmpty()){
                     response.setSuccess(false);
                     response.setMessage("课程不存在");
                     return response;
                 }
+                Course course =cop.get();
                 Set<Student> studentSet = course.getStudentSet();
                 if(studentSet.contains(student)){
                     //课程的学生表中存在此学生，进行删除操作
@@ -614,6 +624,9 @@ public class CourseServiceImpl implements CourseService {
                     response.setSuccess(false);
                     response.setMessage("该学生不在本课程中");
                 }
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -645,7 +658,9 @@ public class CourseServiceImpl implements CourseService {
 
                 response.setSuccess(true);
                 response.setMessage("学生添加成功");
-                response.setToken(token);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;

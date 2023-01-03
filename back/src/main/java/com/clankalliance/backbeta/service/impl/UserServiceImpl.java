@@ -34,6 +34,9 @@ public class UserServiceImpl implements UserService {
     private TokenUtil tokenUtil;
 
     @Resource
+    private UserService userService;
+
+    @Resource
     private StudentRepository studentRepository;
 
     @Resource
@@ -356,19 +359,24 @@ public class UserServiceImpl implements UserService {
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
-            Optional<Student> studentOp=studentRepository.findByUserNumber(userNumber);
-            if(studentOp.isEmpty()){
-                Optional<Teacher> teacherOp=teacherRepository.findByUserNumber(userNumber);
-                Teacher teacher=teacherOp.get();
-                response.setSuccess(true);
-                response.setMessage("查找成功");
-                response.setContent(teacher);
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Student> studentOp=studentRepository.findByUserNumber(userNumber);
+                if(studentOp.isEmpty()){
+                    Optional<Teacher> teacherOp=teacherRepository.findByUserNumber(userNumber);
+                    Teacher teacher=teacherOp.get();
+                    response.setSuccess(true);
+                    response.setMessage("查找成功");
+                    response.setContent(teacher);
+                }else{
+                    Student student=studentOp.get();
+                    response.setSuccess(true);
+                    response.setMessage("查找成功");
+                    response.setContent(student);
+                }
             }else{
-                Student student=studentOp.get();
-                response.setToken(token);
-                response.setSuccess(true);
-                response.setMessage("查找成功");
-                response.setContent(student);
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -385,14 +393,19 @@ public class UserServiceImpl implements UserService {
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
-            if(user instanceof Student){
-                studentRepository.save((Student) user);
-            }else if(user instanceof Teacher){
-                teacherRepository.save((Teacher) user);
+            User currentUser = userService.findById(Long.parseLong(response.getMessage()));
+            if(currentUser instanceof Manager){
+                if(user instanceof Student){
+                    studentRepository.save((Student) user);
+                }else if(user instanceof Teacher){
+                    teacherRepository.save((Teacher) user);
+                }
+                response.setSuccess(true);
+                response.setMessage("用户保存成功");
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
-            response.setSuccess(true);
-            response.setMessage("用户保存成功");
-            response.setToken(token);
         }
         return response;
     }
@@ -408,18 +421,23 @@ public class UserServiceImpl implements UserService {
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
-            Optional<Student> studentOp=studentRepository.findUserById(id);
-            if(studentOp.isEmpty()){
-                Optional<Teacher> teacherOp=teacherRepository.findUserById(id);
-                Teacher teacher=teacherOp.get();
-                teacherRepository.delete(teacher);
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Student> studentOp=studentRepository.findUserById(id);
+                if(studentOp.isEmpty()){
+                    Optional<Teacher> teacherOp=teacherRepository.findUserById(id);
+                    Teacher teacher=teacherOp.get();
+                    teacherRepository.delete(teacher);
+                }else{
+                    Student student=studentOp.get();
+                    studentRepository.delete(student);
+                }
+                response.setSuccess(true);
+                response.setMessage("用户删除成功");
             }else{
-                Student student=studentOp.get();
-                studentRepository.delete(student);
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
-            response.setSuccess(true);
-            response.setMessage("用户删除成功");
-            response.setToken(token);
         }
         return response;
     }

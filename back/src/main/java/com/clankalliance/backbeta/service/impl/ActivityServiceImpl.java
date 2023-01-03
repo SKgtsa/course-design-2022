@@ -266,12 +266,22 @@ public class ActivityServiceImpl implements ActivityService {
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
-            Optional<Activity> activityOp=activityRepository.findById(id);
-            Activity activity=activityOp.get();
-            response.setToken(token);
-            response.setMessage("查找成功");
-            response.setSuccess(true);
-            response.setContent(activity);
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Activity> activityOp=activityRepository.findById(id);
+                if(activityOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                }else{
+                    Activity activity=activityOp.get();
+                    response.setMessage("查找成功");
+                    response.setSuccess(true);
+                    response.setContent(activity);
+                }
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
+            }
         }
         return response;
     }
@@ -292,7 +302,6 @@ public class ActivityServiceImpl implements ActivityService {
                 Optional<Activity> activityOp=activityRepository.findById(id);
                 //将活动和学生解绑
                 if(activityOp.isEmpty()){
-                    response.setToken(token);
                     response.setMessage("对象不存在");
                     response.setSuccess(false);
                 }else{
@@ -305,10 +314,12 @@ public class ActivityServiceImpl implements ActivityService {
                     student.setAchievementList(updateAchievementList(student));
                     studentRepository.save(student);
 
-                    response.setToken(token);
                     response.setMessage("课程删除成功");
                     response.setSuccess(true);
                 }
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
