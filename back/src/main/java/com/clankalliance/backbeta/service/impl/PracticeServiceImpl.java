@@ -254,12 +254,22 @@ public class PracticeServiceImpl implements PracticeService {
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
-            Optional<Practice> practiceOp=practiceRepository.findById(id);
-            Practice practice=practiceOp.get();
-            response.setToken(token);
-            response.setMessage("查找成功");
-            response.setSuccess(true);
-            response.setContent(practice);
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Practice> practiceOp=practiceRepository.findById(id);
+                if(practiceOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
+                Practice practice=practiceOp.get();
+                response.setMessage("查找成功");
+                response.setSuccess(true);
+                response.setContent(practice);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
+            }
         }
         return response;
     }
@@ -279,6 +289,11 @@ public class PracticeServiceImpl implements PracticeService {
             if(user instanceof Manager){
                 //Manager可以彻底删除此社会实践
                 Optional<Practice> practiceOp=practiceRepository.findById(id);
+                if(practiceOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
                 //将活动和学生解绑
                 Practice practice=practiceOp.get();
                 //遍历此社会实践的学生表，更新学生表中学生的社会实践表
@@ -292,9 +307,11 @@ public class PracticeServiceImpl implements PracticeService {
                 }
                 practiceRepository.delete(practice);
 
-                response.setToken(token);
                 response.setMessage("社会实践删除成功");
                 response.setSuccess(true);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;

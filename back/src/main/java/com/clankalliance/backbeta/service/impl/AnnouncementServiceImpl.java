@@ -116,4 +116,39 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         }
     }
 
+    @Override
+    public CommonResponse handleGetAll(String token){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        List<Announcement> list = announcementRepository.findAll();
+        response.setContent(list);
+        response.setMessage("查找成功");
+        return response;
+
+    }
+
+    @Override
+    public CommonResponse handleDelete(String token,Long id){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        if(user instanceof Manager){
+            Optional<Announcement> aop = announcementRepository.findById(id);
+            if(aop.isEmpty()){
+                response.setMessage("通知不存在");
+                response.setSuccess(false);
+                return response;
+            }
+            Announcement announcement = aop.get();
+            announcementRepository.delete(announcement);
+            response.setMessage("删除成功");
+        }else{
+            response.setMessage("权限不足");
+            response.setSuccess(false);
+        }
+        return response;
+    }
+
 }

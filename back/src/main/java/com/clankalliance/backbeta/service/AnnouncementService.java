@@ -11,5 +11,8 @@ public interface AnnouncementService {
     //新建公告
     CommonResponse handlePushAnnouncement(String token, MultipartFile picture, String heading, String content);
 
+    CommonResponse handleGetAll(String token);
+
+    CommonResponse handleDelete(String token,Long id);
 
 }

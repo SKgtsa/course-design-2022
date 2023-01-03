@@ -9,8 +9,8 @@ import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
-import com.clankalliance.backbeta.repository.PostRepository;
-import com.clankalliance.backbeta.repository.userRepository.CommentRepository;
+import com.clankalliance.backbeta.repository.blogRepository.PostRepository;
+import com.clankalliance.backbeta.repository.blogRepository.CommentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
@@ -662,6 +662,47 @@ public class BlogServiceImpl implements BlogService {
             studentRepository.save(student);
         }
         response.setMessage("保存成功");
+        return response;
+    }
+
+    //搜索博客
+    public CommonResponse handleSearch(String token, String heading, int length,int startIndex){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        List<Post> totalPost = postRepository.findByHeading(heading);
+        totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
+        Collections.reverse(totalPost);
+        response.setMessage("查找成功");
+        List<PostResponseTarget> resultList = new ArrayList<>();
+        List<Post> tempList = totalPost.subList(startIndex,(startIndex + length) >= totalPost.size()? totalPost.size() : startIndex + length);
+        for(Post p : tempList){
+            resultList.add(new PostResponseTarget(user,p));
+        }
+        response.setContent(resultList);
+        return response;
+    }
+    //删除评论
+    public CommonResponse handleDeleteComment(String token,String id){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        if(user instanceof Manager){
+            Optional<Comment> cop = commentRepository.findById(id);
+            if(cop.isEmpty()){
+                response.setSuccess(false);
+                response.setMessage("评论不存在");
+                return response;
+            }
+            Comment comment = cop.get();
+            commentRepository.delete(comment);
+            response.setMessage("删除成功");
+        }else{
+            response.setMessage("权限不足");
+            response.setSuccess(false);
+        }
         return response;
     }
 

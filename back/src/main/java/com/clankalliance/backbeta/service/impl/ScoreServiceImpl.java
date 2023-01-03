@@ -364,8 +364,10 @@ public class ScoreServiceImpl implements ScoreService {
                 }
                 response.setSuccess(true);
                 response.setMessage("学生成绩查询成功");
-                response.setToken(token);
                 response.setContent(DetailList);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;
@@ -415,7 +417,9 @@ public class ScoreServiceImpl implements ScoreService {
                 courseRepository.save(course);
                 response.setSuccess(true);
                 response.setMessage("成绩保存成功");
-                response.setToken(token);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         //token无效，直接将token验证的数据返回前端

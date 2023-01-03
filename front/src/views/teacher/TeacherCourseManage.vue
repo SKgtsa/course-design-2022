@@ -1,33 +1,47 @@
 <template>
-  <div class="content">
-    <div class="pageContent">
+  <div class="content" :style="{
+    'padding-top': `${mobile? '5vh': '1vh'}`,
+    'height': `${mobile? '90vh':'100vh'}`
+  }">
+    <div class="pageContent" :style="{
+      'width': `${mobile? '100%':'80vw'}`
+    }">
       <!-- :row-key="record=>record.id" -->
-      <div class="title">
-        课程管理
-        <el-button class="addButton" @click="add">添加课程</el-button>
+      <div class="titleBox">
+        <a style="font-size: 6vh;
+        font-weight: 500;
+        padding-left: 2vw;
+      ">课程管理</a>
+        <el-button class="addButton" @click="add" >
+          <a> 添加课程</a>
+        </el-button>
       </div>
       <div class="checkBox">
         <a class="selectLabel">学年:</a>
-        <el-select style="width:8vw" v-model="yearsValue" placeholder="学年">
+        <el-select style="width:8vw;height:auto" v-model="yearsValue" placeholder="学年">
           <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
-        <a class=" selectLabel" style="padding-left:6.25vh">学期:</a>
+        <a class=" selectLabel" style="padding-left:8vw">学期:</a>
         <el-select style="width:13vw" v-model="semesterValue" placeholder="学期：">
           <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
             :value="item.value"></el-option>
         </el-select>
-        <el-button type="primary" style="margin-left: 5vw;" @click="loadCourseTable">
-          <a>查询创建课程信息</a>
+        <el-button style="margin-left: 5vw;width: 20vh;height:6vh;background-color: rgba(211,227,253,0.9);color: rgba(4,30,73);border-radius: 1vw;float: right" @click="loadCourseTable">
+          <a style=" font-size:2vh;font-weight: 600;">查询创建课程信息</a>
         </el-button>
       </div>
-      <el-table :data="tableData.arr" style="width:75vw" border stripe size="large" class="courseTable"
+      <el-table
+          :data="tableData.arr"
+          border stripe size="large" class="courseTable"
         :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
-        <el-table-column label="课程" prop="name" width="200" show-overflow-tooltip />
-        <el-table-column label="地点" prop="location" width="240" show-overflow-tooltip />
-        <el-table-column label="开课周" prop="weekStart" width="60" show-overflow-tooltip />
-        <el-table-column label="结束周" prop="weekEnd" width="60" show-overflow-tooltip />
-        <el-table-column label="上课时间" prop="time" width="250" show-overflow-tooltip>
+        :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }"
+      >
+        <el-table-column fixed="left" label="课程号" prop="id" width="200" show-overflow-tooltip />
+        <el-table-column fixed="left"  label="课程" prop="name" width="160" show-overflow-tooltip />
+        <el-table-column label="地点" prop="location" width="160" show-overflow-tooltip />
+        <el-table-column label="开课周" prop="weekStart" width="100" show-overflow-tooltip />
+        <el-table-column label="结束周" prop="weekEnd" width="100" show-overflow-tooltip />
+        <el-table-column label="上课时间" prop="time" width="200" show-overflow-tooltip>
           <template #default="time">
             <p v-for="(item, index) in time.row.time">
               星期{{ time.row.time[index].weekDay }}的第{{
@@ -36,16 +50,16 @@
             </p>
           </template>
         </el-table-column>
-        <el-table-column width="300">
+        <el-table-column fixed="right"  width="250">
           <template #header>
             操作
           </template>
-          <template #default="scope">
+          <template #default="scope" style="display: flex;flex-direction: column">
             <!-- 默认行和列 -->
             <!-- <el-button @click="viewDetails(scope.row)" class="button" type="primary">课程详情</el-button> -->
             <el-button size="small" @click="loadStudentTable(scope.row.id)" class="button"
               type="primary">选课学生</el-button>
-            <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑课程</el-button>
+            <el-button size="small" @click="handleEdit(scope.row)" class="button">查看或编辑</el-button>
             <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
           </template>
         </el-table-column>
@@ -53,7 +67,7 @@
     </div>
   </div>
 
-  <el-dialog v-model="centerDialogVisible" width="45%">
+  <el-dialog v-model="centerDialogVisible" :width="mobile? '90%':'45%'">
     <el-form :model="editForm" class="areaTextInput" ref="formCourseData" :rules="rulesEditForm" label-width="auto"
       label-position="right">
       <el-form-item label="课程名:" prop="name">
@@ -193,6 +207,7 @@ import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox, rowContextKey } from 'element-plus'
 import { hideLoading, showLoading } from "@/utils/loading";
+import {mobile} from "@/global/global";
 
 const mul = { multiple: true }
 let yearsValue = ref();
@@ -1058,51 +1073,49 @@ const handleCurrentChange = (currentPage) => {
 
 .content {
   width: 100%;
-  height: 100vh;
-  margin-left: 6vw;
-  padding-top: 5vh;
+
+  padding-top: 1vh;
 
   .pageContent {
-    width: 80vw;
-    height: 90vh;
+    height: 80vh;
     background-color: #FFFFFF;
     border-radius: 3vw;
-    padding-left: 3vw;
     padding-top: 3vh;
     padding-bottom: 3vh;
-
-    .title {
-      margin-top: 1.25vh;
-      height: 3.75vh;
-      font-family: 微软雅黑;
-      font-size: 5vh;
-      font-weight: 500;
+    box-shadow: 0 0 10px 0 #b9ccee;
+    margin: auto;
+    .titleBox {
+      margin-top: 1.5vh;
+      height: 5vh;
       line-height: 1vh;
       color: #0273f1;
+      .addButton {
+        font-size:2vh;
+        width: 15vh;
+        height: 6vh;
+        border-color: #0273f1;
+        border-style: solid;
+        border-width: 4px;
+        border-radius: 1vw;
+        color: #0273f1;
+        margin: 0 3%;
+      }
+
     }
 
-    .addButton {
-      width: 10vw;
-      height: 5vh;
-      border-color: #0273f1;
-      border-style: solid;
-      border-width: 0.5vh;
-      border-radius: 1vw;
-      color: #0273f1;
-      font-size: 2.5vh;
-    }
-    .courseTable{
-      
+
+    .courseTable {
+      height: 75%;
+      width: 98%;
+      margin: auto;
     }
 
     .checkBox {
-      padding-top: 5vh;
-      padding-left: 0vh;
-      padding-bottom: 2vh;
+      padding: 3vh 2vw 2vh;
 
       .selectLabel {
-        font-size: 2.25vh;
-        padding-right: 2.5vh;
+        font-size: 1.5vw;
+        padding-right: 4vw;
       }
 
     }
@@ -1111,8 +1124,8 @@ const handleCurrentChange = (currentPage) => {
       background-color: aqua;
 
       .button {
-        width: 7.5vh;
-        height: 3.75vh;
+        width: 9vw;
+        height: 5.5vh;
       }
     }
   }

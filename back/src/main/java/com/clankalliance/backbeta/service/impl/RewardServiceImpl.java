@@ -249,12 +249,22 @@ public class RewardServiceImpl implements RewardService {
             response = tokenUtil.tokenCheck(token);
         }
         if(response.getSuccess()){
-            Optional<Reward> rewardOp=rewardRepository.findById(id);
-            Reward reward=rewardOp.get();
-            response.setToken(token);
-            response.setMessage("查找成功");
-            response.setSuccess(true);
-            response.setContent(reward);
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Reward> rewardOp=rewardRepository.findById(id);
+                if(rewardOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
+                Reward reward=rewardOp.get();
+                response.setMessage("查找成功");
+                response.setSuccess(true);
+                response.setContent(reward);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
+            }
         }
         return response;
     }
@@ -274,7 +284,12 @@ public class RewardServiceImpl implements RewardService {
             if(user instanceof Manager){
                 //Manager可以彻底删除此成果奖励
                 Optional<Reward> rewardOp=rewardRepository.findById(id);
-                //将活动和学生解绑
+                if(rewardOp.isEmpty()){
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                    return response;
+                }
+                //将奖励和学生解绑
                 Reward reward=rewardOp.get();
                 //遍历此成果奖励的学生表，更新学生表中学生的成果奖励表
                 Set<Student> studentSet=reward.getStudentSet();
@@ -287,9 +302,11 @@ public class RewardServiceImpl implements RewardService {
                 }
                 rewardRepository.delete(reward);
 
-                response.setToken(token);
                 response.setMessage("成果奖励删除成功");
                 response.setSuccess(true);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("用户权限不足");
             }
         }
         return response;

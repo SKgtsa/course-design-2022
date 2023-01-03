@@ -31,4 +31,14 @@ public class AnnouncementController {
         return announcementService.handlePushAnnouncement(token, picture, heading, content);
     }
 
+    @PostMapping("/getAll")
+    public CommonResponse getAll(@RequestBody CommonAnnouncementRequest request){
+        return announcementService.handleGetAll(request.getToken());
+    }
+
+    @PostMapping("/delete")
+    public CommonResponse delete(@RequestBody CommonAnnouncementRequest request){
+        return announcementService.handleDelete(request.getToken(), request.getId());
+    }
+
 }
