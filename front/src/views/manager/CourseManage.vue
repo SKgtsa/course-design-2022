@@ -13,8 +13,8 @@
                                     <Search />
                                 </el-icon>
                             </el-button>
-                            <el-button type="danger" class="delectButton">
-                                <a class="delectText">删除课程</a>
+                            <el-button type="danger" class="deleteButton">
+                                <a class="deleteText">删除课程</a>
                             </el-button>
                         </span>
                     </div>
@@ -734,7 +734,7 @@ const handleClose = (key: string, keyPath: string[]) => {
                             font-size: 1.2vw;
                         }
 
-                        .delectButton {
+                        .deleteButton {
                             height: 6vh;
                             border: 0.1vw solid;
                         }
