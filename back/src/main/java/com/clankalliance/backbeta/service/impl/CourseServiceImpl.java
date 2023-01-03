@@ -587,7 +587,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CommonResponse handleManagerRemoveStudent(String token, long courseId, long studentId){
+    public CommonResponse handleManagerRemoveStudent(String token, long studentId, long courseId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             //token验证成功
