@@ -30,6 +30,9 @@ public interface BlogService {
     CommonResponse handleComment(String token, String blogId, String content);
     //关注
     CommonResponse handleSubscribe(String token, Long userId);
-
+    //搜索博客
+    CommonResponse handleSearch(String token, String heading, int length,int startIndex);
+    //删除评论
+    CommonResponse handleDeleteComment(String token,String id);
 
 }

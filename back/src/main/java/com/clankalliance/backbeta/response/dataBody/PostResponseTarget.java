@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.response.dataBody;
 
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -50,11 +51,17 @@ public class PostResponseTarget {
         time = post.getTime();
         likeNum = post.getLikeS().size() + post.getLikeT().size();
         topImageURL = post.getTopImageURL();
-        like = post.getLikeS().contains(user) || post.getLikeT().contains(user);
+        if(user instanceof Manager){
+            like = false;
+        }else{
+            like = post.getLikeS().contains(user) || post.getLikeT().contains(user);
+        }
         if(user instanceof Teacher){
             collect = ((Teacher) user).getCollection().contains(post);
         }else if(user instanceof Student){
             collect = ((Student) user).getCollection().contains(post);
+        }else{
+            collect = false;
         }
 
     }

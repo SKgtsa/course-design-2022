@@ -1,5 +1,7 @@
 package com.clankalliance.backbeta.controller;
 
+import com.clankalliance.backbeta.request.CommonDeleteRequest;
+import com.clankalliance.backbeta.request.blog.BlogSearchRequest;
 import com.clankalliance.backbeta.request.blog.CommonBlogRequest;
 import com.clankalliance.backbeta.request.blog.MainRequest;
 import com.clankalliance.backbeta.request.blog.UserRequest;
@@ -83,6 +85,15 @@ public class BlogController {
         return blogService.handleSubscribe(request.getToken(), request.getUserId());
     }
 
+    @PostMapping("/search")
+    public CommonResponse search(@RequestBody BlogSearchRequest request){
+        return blogService.handleSearch(request.getToken(),request.getHeading(), request.getLength(), request.getStartIndex());
+    }
+
     //还需要一个删评论的
+    @PostMapping("/deleteComment")
+    public CommonResponse search(@RequestBody CommonDeleteRequest request){
+        return blogService.handleDelete(request.getToken(), request.getId());
+    }
 
 }
