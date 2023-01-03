@@ -11,7 +11,7 @@
         <el-select style="width:8vw" v-model="yearsValue" placeholder="学年">
           <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
-        <a class=" selectLabel" style="padding-left:50px">学期:</a>
+        <a class=" selectLabel" style="padding-left:6.25vh">学期:</a>
         <el-select style="width:13vw" v-model="semesterValue" placeholder="学期：">
           <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
             :value="item.value"></el-option>
@@ -21,8 +21,8 @@
         </el-button>
       </div>
       <el-table :data="tableData.arr" style="width:75vw" border stripe size="large" class="courseTable"
-        :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
+        :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+        :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
         <el-table-column label="课程" prop="name" width="200" show-overflow-tooltip />
         <el-table-column label="地点" prop="location" width="240" show-overflow-tooltip />
         <el-table-column label="开课周" prop="weekStart" width="60" show-overflow-tooltip />
@@ -61,6 +61,11 @@
     editForm.name
 }}</el-input>
         <el-input v-if="typeOperation === 'add'" style="width:20vw" v-model="editForm.name" maxlength="15"></el-input>
+      </el-form-item>
+      <el-form-item label="课程号:" prop="courseId">
+        <el-input v-if="typeOperation === 'edit'" readonly style="width:20vw" v-model="editForm.courseId" maxlength="15">{{
+            editForm.courseId
+          }}</el-input>
       </el-form-item>
 
       <el-form-item label="简介:" prop="description">
@@ -160,8 +165,8 @@
       <el-button class="addButton" @click="addStudent">添加学生</el-button>
     </div>
     <el-table :data="studentData.arr" style="width: 90%" border stripe size="small" class="courseTable" max-height="400"
-      :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-      :cell-style="{ 'height': '14px', 'font-size': '10px', 'text-align': 'center', 'font-weight': '450' }">>
+      :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+      :cell-style="{ 'height': '1.75vh', 'font-size': '1.25vh', 'text-align': 'center', 'font-weight': '450' }">>
       <el-table-column label="姓名" prop="name" width="120" show-overflow-tooltip />
       <el-table-column label="学号" prop="userNumber" width="250" show-overflow-tooltip />
       <el-table-column label="年级" prop="section" width="150" show-overflow-tooltip />
@@ -783,6 +788,7 @@ const handleEdit = (row) => {  //改
   editForm.time = row.time;
   editForm.capacity = row.capacity;
   editForm.studentClass = row.studentClass;
+  editForm.courseId=row.id;
   let arrIntSet = [];
   	    // 将字符串转换成数组，此时是字符串数组
   let arrString = row.studentClass.substr(1,row.studentClass.length-2).split(',');
@@ -798,7 +804,6 @@ const handleEdit = (row) => {  //改
     arrIntSet.push(parseInt(arrString[arrInt]))
   }
   editForm.studentSection=arrIntSet;
-
   editForm.location = row.location;
   editForm.year = row.year;
   editForm.description = row.description;
@@ -1037,8 +1042,8 @@ const handleCurrentChange = (currentPage) => {
 </script>
 <style lang="scss" scoped>
 .studentTitle {
-  margin-top: 30px;
-  height: 60px;
+  margin-top: 3.75vh;
+  height: 7.5vh;
   font-family: 微软雅黑;
   font-size: 3vh;
   font-weight: 500;
@@ -1067,8 +1072,8 @@ const handleCurrentChange = (currentPage) => {
     padding-bottom: 3vh;
 
     .title {
-      margin-top: 10px;
-      height: 30px;
+      margin-top: 1.25vh;
+      height: 3.75vh;
       font-family: 微软雅黑;
       font-size: 5vh;
       font-weight: 500;
@@ -1081,7 +1086,7 @@ const handleCurrentChange = (currentPage) => {
       height: 5vh;
       border-color: #0273f1;
       border-style: solid;
-      border-width: 4px;
+      border-width: 0.5vh;
       border-radius: 1vw;
       color: #0273f1;
       font-size: 2.5vh;
@@ -1092,12 +1097,12 @@ const handleCurrentChange = (currentPage) => {
 
     .checkBox {
       padding-top: 5vh;
-      padding-left: 0px;
+      padding-left: 0vh;
       padding-bottom: 2vh;
 
       .selectLabel {
-        font-size: 18px;
-        padding-right: 20px;
+        font-size: 2.25vh;
+        padding-right: 2.5vh;
       }
 
     }
@@ -1106,8 +1111,8 @@ const handleCurrentChange = (currentPage) => {
       background-color: aqua;
 
       .button {
-        width: 60px;
-        height: 30px;
+        width: 7.5vh;
+        height: 3.75vh;
       }
     }
   }
@@ -1116,12 +1121,12 @@ const handleCurrentChange = (currentPage) => {
 
 
 .practiceDialog {
-  width: 300px !important;
-  height: 600px !important;
+  width: 37.5vh !important;
+  height: 75vh !important;
 }
 
 .areaTextInput {
-  font-size: 15px;
+  font-size: 1.875vh;
 }
 
 .dialogButtonPage {
@@ -1131,12 +1136,12 @@ const handleCurrentChange = (currentPage) => {
 .dialogButton {
   height: 5vh;
   width: 5vw;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 0.625vh;
+  padding-right: 0.625vh;
 }
 
 .pagination {
-  padding-bottom: 10px;
-  padding-left: 230px;
+  padding-bottom: 1.25vh;
+  padding-left: 28.75vh;
 }
 </style>

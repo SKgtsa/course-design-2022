@@ -7,8 +7,8 @@
       </div>
       <!-- 表格数据显示 -->
       <el-table :data="tableData.arr" stripe size="large" class="practiceTable"
-        :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
+        :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+        :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
         <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
         <el-table-column label="标题" prop="name" width="400" show-overflow-tooltip />
         <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
@@ -311,8 +311,8 @@ const handleCurrentChange = (current) => {
 </script>
 <style lang="scss" scoped>
 .title {
-  margin-top: 15px;
-  height: 60px;
+  margin-top: 1.875vh;
+  height: 7.5vh;
   font-size: 4.5vh;
   font-weight: 500;
   line-height: 1vh;
@@ -342,7 +342,7 @@ const handleCurrentChange = (current) => {
       height: 5vh;
       border-color: #0273f1;
       border-style: solid;
-      border-width: 4px;
+      border-width: 0.5vh;
       border-radius: 1vw;
       color: #0273f1;
       font-size: 2.5vh;
@@ -354,12 +354,12 @@ const handleCurrentChange = (current) => {
       color: #f2dc19;
       /*  color: '#fff';
       background-color: '#0a3370'; */
-      font-weight: '700';
+      font-weight: 700;
     }
 
     ::v-deep .el-table {
       //表格边框
-      border: solid 1px #922eef;
+      border: solid 0.125vh #922eef;
       // box-sizing: border-box;
     }
 
@@ -374,12 +374,12 @@ const handleCurrentChange = (current) => {
     }
 
     .practiceTable {
-      border: 2px solid;
+      border: 0.25vh solid;
       width: 63vw;
 
       .button {
-        width: 48px;
-        height: 30px;
+        width: 6vh;
+        height: 3.75vh;
       }
     }
   }
@@ -388,12 +388,12 @@ const handleCurrentChange = (current) => {
 
 
 .practiceDialog {
-  width: 300px !important;
-  height: 600px !important;
+  width: 37.5vh !important;
+  height: 75vh !important;
 }
 
 .areaTextInput {
-  font-size: 15px;
+  font-size: 1.875vh;
 }
 
 .dialogButtonPage {
@@ -401,12 +401,12 @@ const handleCurrentChange = (current) => {
 }
 
 .dialogButton {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 0.625vh;
+  padding-right: 0.625vh;
 }
 
 .pagination {
-  padding-top: 30px;
-  padding-left: 230px;
+  padding-top: 3.75vh;
+  padding-left: 28.75vh;
 }
 </style>

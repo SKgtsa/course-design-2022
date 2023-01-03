@@ -7,8 +7,8 @@
       </div>
       <!-- 表格数据显示 -->
       <el-table :data="tableData.arr" stripe size="large" class="practiceTable"
-        :header-cell-style="{ 'height': '30px', 'font-size': '18px', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '14px', 'font-size': '14px', 'text-align': 'center', 'font-weight': '450' }">
+        :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+        :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
         <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
         <el-table-column label="标题" prop="name" width="400" show-overflow-tooltip />
         <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
@@ -30,11 +30,11 @@
     <!--  增改弹出框 -->
     <el-dialog v-model="centerDialogVisible" width="45%" draggable="true">
       <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
-        <el-form-item label="日期" prop="date">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date" maxlength="20">{{ editForm.date }}
-          </el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.date" maxlength="20"></el-input>
-        </el-form-item>
+<!--        <el-form-item label="日期" prop="date">-->
+<!--          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date" maxlength="20">{{ editForm.date }}-->
+<!--          </el-input>-->
+<!--          <el-input v-if="typeOperation === 'add'" v-model="editForm.date" maxlength="20"></el-input>-->
+<!--        </el-form-item>-->
         <el-form-item label="标题" prop="practiceName" >
           <el-input v-if="typeOperation === 'edit'" v-model="editForm.practiceName" maxlength="30">{{ editForm.practiceName }}
           </el-input>
@@ -46,12 +46,12 @@
           <el-input v-if="typeOperation === 'add'" type="textarea"  maxlength="5000" rows="15" v-model="editForm.practiceDescription">
           </el-input>
         </el-form-item>
-        <el-form-item label="成果" prop="result">
-          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="6" maxlength="30" v-model="editForm.result">{{
-              editForm.result
-          }}</el-input>
-          <el-input v-if="typeOperation === 'add'" type="textarea" rows="6" maxlength="30" v-model="editForm.result"></el-input>
-        </el-form-item>
+<!--        <el-form-item label="成果" prop="result">-->
+<!--          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="6" maxlength="30" v-model="editForm.result">{{-->
+<!--              editForm.result-->
+<!--          }}</el-input>-->
+<!--          <el-input v-if="typeOperation === 'add'" type="textarea" rows="6" maxlength="30" v-model="editForm.result"></el-input>-->
+<!--        </el-form-item>-->
       </el-form>
       <div class="dialogButtonPage">
         <el-button @click="closeDialog" class="dialogButton">取消</el-button>
@@ -61,18 +61,18 @@
     <!-- 查看弹出框 -->
     <el-dialog v-model="centerDialogVisibleCheck" width="45%" draggable="true">
       <el-form :model="editForm" class="areaTextInput">
-        <el-form-item label="日期" prop="date">
-          <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>
-        </el-form-item>
+<!--        <el-form-item label="日期" prop="date">-->
+<!--          <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>-->
+<!--        </el-form-item>-->
         <el-form-item label="标题" prop="practiceName">
           <span v-if="typeOperation === 'check'">{{ editForm.practiceName }}</span>
         </el-form-item>
         <el-form-item label="内容" prop="practiceDescription">
           <span v-if="typeOperation === 'check'">{{ editForm.practiceDescription }}</span>
         </el-form-item>
-        <el-form-item label="成果" prop="result">
-          <span v-if="typeOperation === 'check'">{{ editForm.result }}</span>
-        </el-form-item>
+<!--        <el-form-item label="成果" prop="result">-->
+<!--          <span v-if="typeOperation === 'check'">{{ editForm.result }}</span>-->
+<!--        </el-form-item>-->
       </el-form>
     </el-dialog>
   </div>
@@ -101,19 +101,19 @@ const rulesEditForm = reactive({
   { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
   ],
   practiceDescription: [{ required: true, message: '请输入社会实践的内容！', trigger: 'blur' }],
-  date: [{ required: true, message: '请输入日期', trigger: 'blur' },
-  { max: 20, message: '请输入正确的日期!不要超过20位!', trigger: 'blur' }],
-  result: [{ required: true, message: '请输入您的成果', trigger: 'blur' },
-  { max: 30, message: '简述即可,不要超过30字', trigger: 'blur' }
-  ],
+  // date: [{ required: true, message: '请输入日期', trigger: 'blur' },
+  // { max: 20, message: '请输入正确的日期!不要超过20位!', trigger: 'blur' }],
+  // result: [{ required: true, message: '请输入您的成果', trigger: 'blur' },
+  // { max: 30, message: '简述即可,不要超过30字', trigger: 'blur' }
+  // ],
 })
 
 //改查绑定的form数据
 let editForm = reactive({
   practiceName: '',
   practiceDescription: '',
-  date: '',
-  result: '',
+  // date: '',
+  // result: '',
   id: '',
 });
 
@@ -152,16 +152,16 @@ const add = () => {
   editForm.practiceName = '';
   editForm.practiceDescription = '';
   editForm.id = '';
-  editForm.date = '';
-  editForm.result = '';
+  // editForm.date = '';
+  // editForm.result = '';
 }
 
 const handleCheck = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   centerDialogVisibleCheck.value = true;
   editForm.practiceDescription = row.practiceDescription;
   editForm.practiceName = row.practiceName;
-  editForm.date = row.date;
-  editForm.result = row.result;
+  // editForm.date = row.date;
+  // editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'check';
 }
@@ -171,8 +171,8 @@ const handleEdit = (row) => {  //改  两边属性名字不匹配
   centerDialogVisible.value = true;
   editForm.practiceDescription = row.practiceDescription;
   editForm.practiceName = row.practiceName;
-  editForm.date = row.date;
-  editForm.result = row.result;
+  // editForm.date = row.date;
+  // editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'edit';
   console.log(editForm)
@@ -218,7 +218,9 @@ const sumbitEditRow = async () => {
         service.post('/api/practice/save',
           {
             token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
-            date: editForm.date, result: editForm.result, id: editForm.id
+            // date: editForm.date,
+            // result: editForm.result,
+            id: editForm.id
           })
           .then(res => {  //直接把这一行的数据给出去可以吗
             if (res.data.success) {
@@ -240,11 +242,15 @@ const sumbitEditRow = async () => {
       } else if (typeOperation.value === 'add') {
         showLoading()
         console.log('未执行添加前的描述，名字，日期，成果')
-        console.log(editForm.practiceDescription, editForm.practiceName, editForm.date, editForm.result)
+        console.log(editForm.practiceDescription, editForm.practiceName,
+            // editForm.date,
+            // editForm.result
+        )
         service.post('/api/practice/save',
           {
             token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
-            date: editForm.date, result: editForm.result
+            // date: editForm.date,
+            // result: editForm.result
           })
           .then(res => {
             if (res.data.success) {
@@ -280,8 +286,8 @@ const sumbitEditRow = async () => {
   editForm.practiceName = '',
     editForm.practiceDescription = '',
     editForm.id = '',
-    editForm.date = '',
-    editForm.result = '',
+    // editForm.date = '',
+    // editForm.result = '',
     centerDialogVisible.value = false;
   centerDialogVisibleCheck.value = false;
   typeOperation.value = '';
@@ -311,8 +317,8 @@ const handleCurrentChange = (current) => {
 </script>
 <style lang="scss" scoped>
 .title {
-  margin-top: 15px;
-  height: 60px;
+  margin-top: 1.875vh;
+  height: 7.5vh;
   font-size: 4.5vh;
   font-weight: 500;
   line-height: 1vh;
@@ -342,7 +348,7 @@ const handleCurrentChange = (current) => {
       height: 5vh;
       border-color: #0273f1;
       border-style: solid;
-      border-width: 4px;
+      border-width: 0.5vh;
       border-radius: 1vw;
       color: #0273f1;
       font-size: 2.5vh;
@@ -354,12 +360,12 @@ const handleCurrentChange = (current) => {
       color: #f2dc19;
       /*  color: '#fff';
       background-color: '#0a3370'; */
-      font-weight: '700';
+      font-weight: 700;
     }
 
     ::v-deep .el-table {
       //表格边框
-      border: solid 1px #922eef;
+      border: solid 0.125vh #922eef;
       // box-sizing: border-box;
     }
 
@@ -374,12 +380,12 @@ const handleCurrentChange = (current) => {
     }
 
     .practiceTable {
-      border: 2px solid;
+      border: 0.25vh solid;
       width: 63vw;
 
       .button {
-        width: 48px;
-        height: 30px;
+        width: 6vh;
+        height: 3.75vh;
       }
     }
   }
@@ -388,12 +394,12 @@ const handleCurrentChange = (current) => {
 
 
 .practiceDialog {
-  width: 300px !important;
-  height: 600px !important;
+  width: 37.5vh !important;
+  height: 75vh !important;
 }
 
 .areaTextInput {
-  font-size: 15px;
+  font-size: 1.875vh;
 }
 
 .dialogButtonPage {
@@ -401,12 +407,12 @@ const handleCurrentChange = (current) => {
 }
 
 .dialogButton {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 0.625vh;
+  padding-right: 0.625vh;
 }
 
 .pagination {
-  padding-top: 30px;
-  padding-left: 230px;
+  padding-top: 3.75vh;
+  padding-left: 28.75vh;
 }
 </style>
