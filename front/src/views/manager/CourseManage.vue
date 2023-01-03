@@ -610,8 +610,8 @@ let editForm = reactive({
     weight: '',
 });
 
-
-
+/* 
+264769460420874240 */
 //输入课程号，得到token,为editForm附上初值
 const checkCourse = async (id) => {
     if (search.value == '' || search.value == undefined || search.value == null) return
@@ -731,13 +731,14 @@ const delectCourse = async () => {
     )
         .then(() => {
             showLoading();
-            service.post('/api/course/manageDelete', { token: localStorage.getItem('token'), id: search.value }).then(res => {
+            service.post('/api/course/managerDelete', { token: localStorage.getItem('token'), id: search.value }).then(res => {
                 let data = res.data;
                 console.log(res.data);
                 if (data.success) {
                     hideLoading();
                     messageSuccess("删除成功！")
                     localStorage.setItem('token', data.token)
+                    isShow.value = false;
                 } else {
                     hideLoading()
                     messageError(data.message)
@@ -826,6 +827,7 @@ const deleteStudent = (row) => {  //删  //异步可能有问题
             console.log(search.value)
             console.log(row.userNumber)
             showLoading();
+            console.log(row.id)
             service.post('/api/course/managerRemoveStudent', { token: localStorage.getItem("token"), courseId: search.value, studentId: row.id }).then(res => {
                 console.log(res)
                 if (res.data.success) {
@@ -836,6 +838,7 @@ const deleteStudent = (row) => {  //删  //异步可能有问题
                 } else {
                     hideLoading();
                     messageWarning(res.data.message)
+                    loadStudentTable(search.value);
                 }
             })
                 .catch(function (error) {
