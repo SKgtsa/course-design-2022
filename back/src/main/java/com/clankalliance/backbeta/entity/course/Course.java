@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.entity.course;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.clankalliance.backbeta.request.course.CourseRequestData;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -200,5 +201,28 @@ public class Course {
 
     public void setWeight(Double weight) {
         this.weight = weight;
+    }
+
+    public void updateInfo(CourseRequestData data){
+        name = data.getName();
+        weekStart = data.getWeekStart();
+        weekEnd = data.getWeekEnd();
+        List<ClassTime> newTime = data.getTime();
+        //为每个时间对象分配id并储存
+        //数据库中预置35个ClassTime对象
+        for(ClassTime t :newTime){
+            //对没有id的ClassTime进行id的补充
+            t.setId(t.getSection() + (t.getWeekDay() - 1) * 5);
+        }
+        time = newTime;
+        capacity = data.getCapacity();
+        studentClass = data.getStudentClass().toString();
+        studentSection = data.getStudentSection().toString();
+        location = data.getLocation();
+        year = data.getYear();
+        semester = data.getSemester();
+        credit = data.getCredit();
+        description = data.getDescription();
+        weight = data.getWeight();
     }
 }

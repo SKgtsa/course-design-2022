@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.service;
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.request.course.CourseRequestData;
 import com.clankalliance.backbeta.response.CommonResponse;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public interface CourseService {
 
     CommonResponse handleManagerFind(String token, long id);
 
-    CommonResponse handleManagerSave(String token, Course course);
+    CommonResponse handleManagerSave(String token, CourseRequestData course);
 
     CommonResponse handleManagerDelete(String token, long id);
 

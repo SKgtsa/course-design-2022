@@ -1,10 +1,11 @@
 <template>
   <div class="back">
     <el-container>
+      <!--桌面端的顶部操作栏-->
       <el-header class="el-header" v-if="!mobile">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
           background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd" router>
-          <img src="../../assets/images/logo.png" @click="checkCopyright" alt="logo未加载">
+          <img src="../../assets/images/logo.png" alt="logo未加载">
           <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
           <div class="nick">
@@ -78,6 +79,7 @@
           </div>
         </el-dialog>
       </el-header>
+      <!--移动端的顶部操作栏-->
       <el-header v-if="mobile">
         <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row" mode="horizontal"
           :ellipsis="false">
@@ -92,9 +94,10 @@
       </el-header>
       <el-container>
         <el-main class="mainWindow">
+          <!--桌面端的右侧导航栏-->
           <div v-if="!mobile" class="rightWindow">
-            <el-menu router default-active="/Teacher/Main" active-text-color="#2d67fd" background-color="#f0f2ff"
-              class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
+            <el-menu router default-active="/Teacher/Main" active-text-color="#2d67fd" background-color="rgba(0,0,0,0)"
+              class="teacherRightMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
               :collapse="true">
               <el-menu-item index="/Teacher/Main">
                 <template #title>我的主页</template>
@@ -117,7 +120,9 @@
               </el-menu-item>
             </el-menu>
           </div>
-          <div class="leftMenu">
+          <div class="leftMenu" :style="{
+            'width': `${mobile? '100%':'97%'}`
+          }">
             <router-view />
           </div>
         </el-main>
@@ -159,19 +164,12 @@
           <Document />
         </el-icon>
       </el-menu-item>
-      <el-sub-menu>
-        <template #title>
-          <el-icon>
-            <icon-menu />
-          </el-icon>
-        </template>
-        <el-menu-item index="/Teacher/GetScore">
-          历史成绩数据
-        </el-menu-item>
-        <el-menu-item index="/Teacher/ScoreManage">
-          打分系统
-        </el-menu-item>
-      </el-sub-menu>
+      <el-menu-item index="/Teacher/ScoreManage">
+        <template #title>成绩管理</template>
+        <el-icon>
+          <HomeFilled />
+        </el-icon>
+      </el-menu-item>
     </el-menu>
   </el-drawer>
 </template>
@@ -388,6 +386,9 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 </script>
 <style scoped lang='scss'>
+.teacherRightMenu{
+  width: 6.5vh;
+}
 .back {
   margin: 0;
   padding: 0;
@@ -458,7 +459,6 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .leftMenu {
-  width: 100%;
 }
 
 .asideMenu {

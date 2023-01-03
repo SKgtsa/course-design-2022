@@ -97,10 +97,14 @@
   </div>
   <el-dialog
       v-model="pageData.showDetail"
-      width="80%"
+      :width="mobile? '90%':'80%'"
       modal-append-to-body=false
   >
-    <div :style="{ 'background-image': `url(${pageData.target.topImageURL})` }" class="detailTopImage"/>
+    <div :style="{
+      'background-image': `url(${pageData.target.topImageURL})`,
+      'margin': '0 auto',
+      'width': '100%'
+    }" class="detailTopImage"/>
     <a class="detailHeading">{{pageData.target.heading}}</a>
     <div class="userInfoArea">
       <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="pageData.target.avatarURL" class="avatar"/></el-button>

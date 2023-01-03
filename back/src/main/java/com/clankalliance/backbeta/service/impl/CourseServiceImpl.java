@@ -11,6 +11,7 @@ import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
+import com.clankalliance.backbeta.request.course.CourseRequestData;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.response.dataBody.CourseResponseTarget;
 import com.clankalliance.backbeta.service.CourseService;
@@ -497,6 +498,11 @@ public class CourseServiceImpl implements CourseService {
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
                 Optional<Course> courseOp=courseRepository.findById(id);
+                if(courseOp.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("课程不存在");
+                    return response;
+                }
                 Course course=courseOp.get();
                 response.setSuccess(true);
                 response.setMessage("课程查找成功");
@@ -507,15 +513,26 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public CommonResponse handleManagerSave(String token,Course course){
+    public CommonResponse handleManagerSave(String token, CourseRequestData course){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        Optional<Course> courseOldOptional = courseRepository.findById(course.getId());
+        if(courseOldOptional.isEmpty()){
+            response.setSuccess(false);
+            response.setMessage("课程不存在");
+            return response;
+        }
+        Course courseTarget = courseOldOptional.get();
+        courseTarget.updateInfo(course);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
-                courseRepository.save(course);
+                courseRepository.save(courseTarget);
                 response.setSuccess(true);
                 response.setMessage("课程保存成功");
                 response.setToken(token);
+            }else{
+                response.setSuccess(false);
+                response.setMessage("权限不足");
             }
         }
         return response;
@@ -551,10 +568,8 @@ public class CourseServiceImpl implements CourseService {
                 for(Student s : studentSet){
                     result.add(new FindCourseStudentData(s));
                 }
-
                 response.setSuccess(true);
                 response.setMessage("学生表返回成功");
-                response.setToken(token);
                 response.setContent(result);
             }
         }

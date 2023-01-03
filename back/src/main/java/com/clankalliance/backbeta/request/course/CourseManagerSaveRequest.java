@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CourseManagerSaveRequest {
     private String token;
-    private Course course;
+    private CourseRequestData course;
 }

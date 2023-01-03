@@ -3,18 +3,19 @@
     'flex-direction': `${mobile? 'column':'row'}`,
     'height': `${mobile? 'auto':'100vh'}`,
     'padding-top': `${mobile? '3vh':'0'}`,
-    'padding-bottom': `${mobile? '8vh':'0'}`
+    'padding-bottom': `${mobile? '8vh':'0'}`,
   }">
     <div class="leftWindow" :style="{
       'flex-direction': `${mobile? 'column-reverse':'column'}`,
-      'width': `${mobile? '100%':'21vw'}`
+      'padding-left': `${mobile? '0':'1vw'}`,
+      'margin': `${mobile? '0':'0 1%'}`
     }">
       <div class="panel" :style="{
-        'padding-left': `${mobile? '0':'1vw'}`
+        'padding-bottom': `${mobile? '2vh':'0'}`
       }">
         <div class="panelCard" :style="{
           'height': `${mobile? 'auto':'40vh'}`,
-          'margin': `${mobile? 'auto':'0'}`
+          'margin': `${mobile? 'auto':'0'}`,
         }">
           <div class="buttonBox">
             <el-button class="writeButton" @click="writeBlog">
@@ -26,7 +27,6 @@
               class="leftMenu"
               @select="handleMenuOpen"
               :mode="`${mobile? 'horizontal':'vertical'}`"
-
               >
               <el-menu-item index="1">广场</el-menu-item>
               <el-menu-item index="2">我的关注</el-menu-item>
@@ -37,8 +37,8 @@
         </div>
       </div>
       <div class="notice" :style="{
-        'margin': `${mobile? '0 8%':'0'}`,
-        'width': `${mobile? '90%':'auto'}`
+        'margin': `${mobile? '0':'0'}`,
+        'width': `${mobile? '100%':'auto'}`
       }">
         <el-carousel class="noticeCard" :direction="`${mobile? 'horizontal':'vertical'}`" :autoplay="true">
           <el-carousel-item v-for="(item,index) in pageData.announcementList" :key="item">
@@ -54,11 +54,11 @@
       </div>
     </div>
     <div class="rightWindow"  :style="{
-        'padding-right':`${mobile? 0:'1.5vw'}`,
+        'padding-right':`${mobile? 0:'0.2vw'}`,
         'width':`${mobile? 'auto': '70vw'}`
       }">
       <div class="operationCard" :style="{
-        'width': `${mobile? '100%':'70vw'}`
+        'width': `${mobile? '100%':'70vw'}`,
       }">
         <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
           <div v-for="(item,index) in pageData.postList"   :key="index"  style="padding-top: 2vh">
@@ -143,10 +143,14 @@
   <!--弹出框 显示博客详细正文-->
   <el-dialog
       v-model="showDetail"
-      width="80%"
+      :width="mobile? '90%':'80%'"
       modal-append-to-body=false
   >
-    <div :style="{ 'background-image': `url(${pageData.target.topImageURL})` }" class="detailTopImage"/>
+    <div :style="{
+      'background-image': `url(${pageData.target.topImageURL})`,
+      'margin': '0 auto',
+      'width': '100%'
+    }" class="detailTopImage"/>
     <a class="detailHeading">{{pageData.target.heading}}</a>
     <div class="userInfoArea">
       <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="pageData.target.avatarURL" class="avatar"/></el-button>
@@ -180,10 +184,14 @@
   <!--弹出框 显示通知正文-->
   <el-dialog
       v-model="showAnnouncementDetail"
-      width="80%"
+      :width="mobile? '90%':'80%'"
       modal-append-to-body=false
   >
-    <div :style="{ 'background-image': `url(${pageData.targetAnnouncement.pictureUrl})` }" class="detailTopImage"/>
+    <div :style="{
+      'background-image': `url(${pageData.targetAnnouncement.pictureUrl})`,
+      'margin': '0 auto',
+      'width': '100%'
+    }" class="detailTopImage"/>
     <a class="detailHeading">{{pageData.targetAnnouncement.heading}}</a>
     <div class="postContent">
       <div v-html="pageData.targetAnnouncement.content"/>
@@ -757,12 +765,11 @@ const getContent = (v: string) => {
 <style scoped lang="scss">
 .leftMenu{
   border-style: none;
-
 }
 .commentCard{
   background-color: #EEEEEE;
   border-radius: 1vw;
-  padding-left: 1vw;
+  padding: 1vh;
   box-shadow: 0 0 3px 0  rgba(140,140,140,0.8);
 }
 .detailHeading{
@@ -808,7 +815,6 @@ const getContent = (v: string) => {
 .likeNum{
   font-weight: bold;
   font-size: 2vw;
-  padding-top: 1.2vw;
 }
 .cardBackground{
   z-index: 1;
@@ -868,27 +874,27 @@ const getContent = (v: string) => {
 }
 .main {
   display: flex;
-
   .leftWindow {
+    width: 100%;
     display: flex;
-    padding: 0;
     .panel {
       padding-top: 2vh;
+      display: flex;
+      flex-direction: row-reverse;
       .panelCard {
-        width: 90%;
+        width: 97%;
         background-color: #FFFFFF;
         border-radius: 1vw;
         box-shadow: 0 0 10px 0 #b9ccee;
         display: flex;
         flex-direction: column;
         padding-top: 1vh;
-
         .writeButton {
           margin: 0 auto;
           width: 90%;
           height: 8vh;
-          background-color: rgba(30, 30, 30, 0.8);
-          color: #FFFFFF;
+          background-color: rgba(211,227,253,0.9);
+          color: rgba(4,30,73);
           font-size: 3vh;
           text-align: left;
           font-weight: 500;
@@ -906,25 +912,26 @@ const getContent = (v: string) => {
 
     .notice {
       padding-top: 2vh;
-      padding-left: 2vw;
-
+      display: flex;
+      flex-direction: row-reverse;
       .noticeCard {
         background-color: #FFFFFF;
         background-position: center;
-        width: 90%;
+        width: 95%;
         height: 100%;
         border-radius: 1vw;
         box-shadow: 0 0 10px 0 #b9ccee;
+        margin: 0 auto;
       }
     }
   }
 
   .rightWindow {
-    padding-top: 1vh;
+    padding-top: 0.5vh;
     .operationCard {
+      border-radius: 2vh;
       background-color: #FFFFFF;
       height: 80vh;
-      border-radius: 2vw;
       box-shadow: 0 0 10px 0 #b9ccee;
     }
 

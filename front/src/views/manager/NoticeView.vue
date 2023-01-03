@@ -1,4 +1,5 @@
 <template>
+  <a>noticeView</a>
 </template>
 <script lang="ts" setup>
 </script>
