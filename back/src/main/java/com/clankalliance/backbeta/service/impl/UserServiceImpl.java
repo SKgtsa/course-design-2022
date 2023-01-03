@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.Optional;
+import java.util.concurrent.RecursiveTask;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -343,5 +344,85 @@ public class UserServiceImpl implements UserService {
         }
         return response;
     }
+
+    @Override
+    public CommonResponse handleManagerFind(String token, long userNumber){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262923114181169152");//xzy
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            Optional<Student> studentOp=studentRepository.findByUserNumber(userNumber);
+            if(studentOp.isEmpty()){
+                Optional<Teacher> teacherOp=teacherRepository.findByUserNumber(userNumber);
+                Teacher teacher=teacherOp.get();
+                response.setSuccess(true);
+                response.setMessage("查找成功");
+                response.setContent(teacher);
+            }else{
+                Student student=studentOp.get();
+                response.setToken(token);
+                response.setSuccess(true);
+                response.setMessage("查找成功");
+                response.setContent(student);
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerSave(String token,User user){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262923114181169152");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            if(user instanceof Student){
+                studentRepository.save((Student) user);
+            }else if(user instanceof Teacher){
+                teacherRepository.save((Teacher) user);
+            }
+            response.setSuccess(true);
+            response.setMessage("用户保存成功");
+            response.setToken(token);
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerDelete(String token, long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262923114181169152");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            Optional<Student> studentOp=studentRepository.findUserById(id);
+            if(studentOp.isEmpty()){
+                Optional<Teacher> teacherOp=teacherRepository.findUserById(id);
+                Teacher teacher=teacherOp.get();
+                teacherRepository.delete(teacher);
+            }else{
+                Student student=studentOp.get();
+                studentRepository.delete(student);
+            }
+            response.setSuccess(true);
+            response.setMessage("用户删除成功");
+            response.setToken(token);
+        }
+        return response;
+    }
+
 
 }

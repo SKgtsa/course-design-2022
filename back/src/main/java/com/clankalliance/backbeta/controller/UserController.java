@@ -11,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
-import java.util.Map;
 
 
 @CrossOrigin
@@ -107,6 +106,21 @@ public class UserController {
     @PostMapping("/changePassword")
     public CommonResponse handleChangePassword(@RequestBody PasswordChangeRequest request){
         return userService.handleChangePassword(request.getToken(),request.getPassword());
+    }
+
+    @PostMapping("/managerFind")
+    public CommonResponse handleManagerFind(@RequestBody UserManagerFindRequest request){
+        return userService.handleManagerFind(request.getToken(),request.getUserNumber());
+    }
+
+    @PostMapping("/managerSave")
+    public CommonResponse handleManagerSave(@RequestBody UserManagerSaveRequest request){
+        return userService.handleManagerSave(request.getToken(), request.getUser());
+    }
+
+    @PostMapping("/managerDelete")
+    public CommonResponse handleManagerDelete(@RequestBody UserManagerDeleteRequest request){
+        return userService.handleManagerDelete(request.getToken(), request.getId());
     }
 
 }

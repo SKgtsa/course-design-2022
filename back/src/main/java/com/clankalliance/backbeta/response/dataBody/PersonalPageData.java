@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.entity.blog;
+package com.clankalliance.backbeta.response.dataBody;
 
 import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.user.User;

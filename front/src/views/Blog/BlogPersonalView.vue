@@ -1,58 +1,96 @@
 <template>
 <!--博客的个人页面-->
 
-  <div class="page">
-    <div class="leftArea">
-      <div class="infoCard">
-        <div class="userInfoCard">
-          <el-image class="infoAvatar" :src="getBaseURL() + pageData.data.avatarURL"/>
+  <div class="page" :style="{
+    'flex-direction':`${mobile? 'column':'row'}`,
+    'height': `${mobile? 'auto':'100vh'}`,
+    'width': `${mobile? 'auto':'100vw'}`,
+    'padding-bottom':`${mobile? '6vh':'0'}`
+  }" >
+    <div class="leftArea" :style="{
+      'padding-left':`${mobile? '0':'2.5vw'}`,
+      'width': `${mobile? '90%':'30vw'}`
+    }"
+    >
+      <div class="infoCard" :style="{
+        'width':`${mobile? '90vw':'25vw'}`,
+        'flex-direction': `${mobile? 'row':'column'}`,
+        'padding-bottom': `${mobile? 1:5}vh`,
+        'padding-top': `${mobile? 1:3}vh`,
+        'padding-left': `${mobile? '1vw':0}`,
+        'padding-right': `${mobile? '1vw':0}`,
+        'margin': `${mobile? '0 3%':'0'}`
+      }">
+        <div class="userInfoCard" :style="{
+        'width':`${mobile? '40vw':'22vw'}`,
+        'margin':`${mobile? 'auto':'0 4%'}`,
+        'padding': `${mobile? '1vw':'0.5vw'}`
+      }">
+          <el-image class="infoAvatar" :style="{
+            'width':`${mobile? 20:7}vw`,
+            'height':`${mobile? 20:7}vw`,
+            'border-radius':`${mobile? 10:3.5}vw`
+          }" :src="getBaseURL() + pageData.data.avatarURL"/>
           <a class="infoNickName" >{{pageData.data.nickName}}</a>
         </div>
-        <div class="detailInfo">
+        <div class="detailInfo" :style="{
+          'width':`${mobile? '40vw':'21vw'}`,
+          'padding':`${mobile? '1vw':'1vw'}`
+        }">
           <a>{{pageData.data.name}}</a>
           <a>{{pageData.data.gender}}</a>
           <a>{{pageData.data.identity}}</a>
           <a>{{pageData.data.eMail}}</a>
         </div>
-        <el-button v-if="login" @click="subscribe" class="subscribeButton"> {{pageData.data.follow? '已关注':'关注'}} </el-button>
+        <el-button v-if="login" @click="subscribe" class="subscribeButton" :style="{
+          'width':`${mobile? 'auto':'20vw'}`,
+        }"> {{pageData.data.follow? '已关注':'关注'}} </el-button>
       </div>
-      <div class="achievementCard">
-        <a>成就</a>
+      <div class="achievementCard" :style="{
+        'width':`${mobile? 90:25}vw`,
+        'margin': `${mobile? '3% 4%':'5% 0'}`,
+        'height': `${mobile? 20:50}vh`
+      }">
+        <a style="font-size: 3vh;font-weight: bold;padding: 2vw;color: #555">称号</a>
         <div v-for="(item,index) in pageData.data.achievementList" class="achievement">
           <a>{{item.name}}</a>
         </div>
       </div>
     </div>
-    <div class="rightArea">
-      <div class="blogCard">
-        <div class="blogList">
-          <ul v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
-            <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 3vh">
-              <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
-                <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
-                  <div class="cardContent" >
-                    <a style="font-size: 4vh">{{item.heading}}</a>
-                    <div class="postBoxBottom">
-                      <div class="bottomLeft">
-                        <a>{{item.time}}</a>
+    <div class="rightArea" :style="{
+        'padding-right':`${mobile? 0:'1.5vw'}`,
+        'width':`${mobile? 'auto': '70vw'}`
+      }">
+      <div class="blogCard" :style="{
+        'margin':`${mobile? 'auto':'0' }`,
+        'width':`${mobile? '95%':'auto'}`
+      }">
+        <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
+          <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 2vh">
+            <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
+              <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
+                <div class="cardContent" >
+                  <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
+                  <div class="postBoxBottom">
+                    <div class="bottomLeft">
+                      <a>{{item.time}}</a>
+                    </div>
+                    <div class="bottomRight">
+                      <div class="bottomTop">
+                        <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
+                        <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
                       </div>
-                      <div class="bottomRight">
-                        <div class="bottomTop">
-                          <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
-                          <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
-                        </div>
-                        <div class="bottomBottom" v-if="login">
-                          <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
-                          <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
-                          <a class="likeNum">{{item.likeNum}}</a>
-                        </div>
+                      <div class="bottomBottom" v-if="login">
+                        <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                        <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
+                        <a class="likeNum">{{item.likeNum}}</a>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -114,6 +152,7 @@ import {reactive, ref} from "vue";
 import {defineEmits, onMounted, watch} from "@vue/runtime-core";
 import {loginFailed} from "@/utils/tokenCheck";
 import {getBaseURL} from "@/global/global";
+import {mobile} from "@/global/global";
 
 
 let userId  = router.currentRoute.value.query.userId as String;
@@ -465,36 +504,24 @@ const commentSubmit = () => {
 <style scoped>
 .page{
   display: flex;
-  flex-direction: row;
   background-color: #DDDDDD;
-  width: 100vw;
-  height: 100vh;
 }
 .leftArea{
   display: flex;
   flex-direction: column;
-  width: 30vw;
-  padding-left: 2.5vw;
   padding-top: 5vh;
 }
 .infoCard{
-  width: 25vw;
   display: flex;
-  flex-direction: column;
   background-color: #FFFFFF;
   border-radius: 2vw;
-  padding-bottom: 5vh;
-  padding-top: 3vh;
 }
 .userInfoCard{
   display: flex;
   flex-direction: row;
   border-radius: 2vw;
   background-color: #EEEEEE;
-  width: 22vw;
-  margin: 0 4%;
   min-height: 7vw;
-  padding: 0.5vw;
 }
 .infoAvatar{
   width: 7vw;
@@ -515,37 +542,42 @@ const commentSubmit = () => {
   font-size: 1.5vw;
   border-radius: 2vw;
   background-color: #EEEEEE;
-  width: 21vw;
   margin: 3% 4%;
   min-height: 7vw;
-  padding: 1vw;
   font-weight: bold;
   color: #555;
 }
 .subscribeButton{
-  width: 20vw;
   margin: auto;
   font-weight: bold;
 }
 .achievementCard{
   background-color: #FFFFFF;
-  width: 25vw;
   border-radius: 2vw;
-  height: 50vh;
-  margin: 5% 0;
 }
 .rightArea{
-  width: 70vw;
   display: flex;
   flex-direction: column;
-  padding-right: 1.5vw;
   padding-top: 3vh;
+
 }
 .blogCard{
-  width: 69vw;
   border-radius: 2vw;
   background-color: #FFFFFF;
   height: 90vh;
+}
+.listArea{
+  padding: 0;;
+}
+.postBox{
+  z-index: 5;
+  border-radius: 2vw;
+  width: 95%;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
+  color: #FFF;
+  margin: auto;
 }
 .commentCard{
   background-color: #EEEEEE;
@@ -587,24 +619,10 @@ const commentSubmit = () => {
 }
 .likeNum{
   font-weight: bold;
-  font-size: 2vw;
-  padding-top: 1.2vw;
+  font-size: 3vh;
+  padding-top: 0.2vh;
 }
-.listArea{
-  width: 65vw;
-  padding: 0;
-  margin: 0 5%;
-}
-.postBox{
-  z-index: 5;
-  border-radius: 2vw;
-  width: 62vw;
-  background-color: #000;
-  background-size: cover;
-  background-position: center;
-  color: #FFF;
-  position: relative;
-}
+
 .boxContainer{
   border-radius: 2vw;
   padding: 1vw;
@@ -616,14 +634,13 @@ const commentSubmit = () => {
 .postBoxBottom{
   flex-direction: row;
   display: flex;
-  width: 58vw;
+  width: 100%;
 }
 .bottomLeft{
-  width: 29vw;
+  width: 50%;
 }
 .bottomRight{
-  width: 29vw;
-  margin: 0 0;
+  width: 50%;
 }
 .bottomTop{
   width: 30vw;

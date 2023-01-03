@@ -43,13 +43,13 @@ public class ActivityServiceImpl implements ActivityService {
     @Resource
     private ScoreService scoreService;
 
-    private Achievement ACTIVITY_C = new Achievement(Long.parseLong("10"),"课外活动3项以上","课外活动爱好者");
+    private final Achievement ACTIVITY_C = new Achievement(Long.parseLong("10"),"课外活动3项以上","课外活动爱好者");
 
-    private Achievement ACTIVITY_B = new Achievement(Long.parseLong("11"),"课外活动7项以上","课外活动丰富");
+    private final Achievement ACTIVITY_B = new Achievement(Long.parseLong("11"),"课外活动7项以上","课外活动丰富");
 
-    private Achievement ACTIVITY_A = new Achievement(Long.parseLong("12"),"课外活动10项以上","课外活动达人");
+    private final Achievement ACTIVITY_A = new Achievement(Long.parseLong("12"),"课外活动10项以上","课外活动达人");
 
-    private Achievement ACTIVITY_POINT = new Achievement(Long.parseLong("13"),"同时获得课外活动与绩点最高成就","文体两开花");
+    private final Achievement ACTIVITY_POINT = new Achievement(Long.parseLong("13"),"同时获得课外活动与绩点最高成就","文体两开花");
 
     @Override
     public Achievement getACTIVITY_POINT() {
@@ -161,6 +161,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     /**
      * 删除课外活动
+     * Manger与Student均使用此方法删除Activity
      * 验证token,验证登陆状态
      * 根据id找到课外活动并删除
      * @param token 用户令牌
@@ -179,26 +180,25 @@ public class ActivityServiceImpl implements ActivityService {
         }
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Student || user instanceof Manager){
+            if(user instanceof Student){
                 Optional<Activity> activityOp=activityRepository.findById(id);
                 //将活动和学生解绑
                 if(activityOp.isEmpty()){
                     response.setMessage("对象不存在");
                     response.setSuccess(false);
-                    return response;
-                }
-                Activity activity=activityOp.get();
-                Student student=activity.getStudent();
-                List<Activity> activityList=student.getActivity();
-                activityList.remove(activity);
-                student.setActivity(activityList);
-                activityRepository.delete(activity);
-                // activityRepository.save(activity);
-                student.setAchievementList(updateAchievementList(student));
-                studentRepository.save(student);
+                }else{
+                    Activity activity=activityOp.get();
+                    Student student=activity.getStudent();
+                    List<Activity> activityList=student.getActivity();
+                    activityList.remove(activity);
+                    student.setActivity(activityList);
+                    activityRepository.delete(activity);
+                    student.setAchievementList(updateAchievementList(student));
+                    studentRepository.save(student);
 
-                response.setSuccess(true);
-                response.setMessage("课程删除成功");
+                    response.setMessage("课程删除成功");
+                    response.setSuccess(true);
+                }
             }
         }
         return response;
@@ -249,6 +249,65 @@ public class ActivityServiceImpl implements ActivityService {
                     response.setMessage("活动表返回成功");
                     response.setSuccess(true);
                     response.setTotalPage(totalPage);
+                }
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerFind(String token,long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//Manager
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            Optional<Activity> activityOp=activityRepository.findById(id);
+            Activity activity=activityOp.get();
+            response.setToken(token);
+            response.setMessage("查找成功");
+            response.setSuccess(true);
+            response.setContent(activity);
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerDelete(String token,long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262555784829865984");//Manager身份
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Activity> activityOp=activityRepository.findById(id);
+                //将活动和学生解绑
+                if(activityOp.isEmpty()){
+                    response.setToken(token);
+                    response.setMessage("对象不存在");
+                    response.setSuccess(false);
+                }else{
+                    Activity activity=activityOp.get();
+                    Student student=activity.getStudent();
+                    List<Activity> activityList=student.getActivity();
+                    activityList.remove(activity);
+                    student.setActivity(activityList);
+                    activityRepository.delete(activity);
+                    student.setAchievementList(updateAchievementList(student));
+                    studentRepository.save(student);
+
+                    response.setToken(token);
+                    response.setMessage("课程删除成功");
+                    response.setSuccess(true);
                 }
             }
         }

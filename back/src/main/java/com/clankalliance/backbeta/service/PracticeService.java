@@ -8,4 +8,8 @@ public interface PracticeService {
     CommonResponse handleDelete(String token, long id);
 
     CommonResponse handleFind(String token,Integer pageNum,Integer pageSize);
+
+    CommonResponse handleManagerFind(String token, long id);
+
+    CommonResponse handleManagerDelete(String token, long id);
 }

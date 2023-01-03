@@ -190,4 +190,15 @@ public class Course {
     public void setScoreSet(Set<Score> scoreSet) {
         this.scoreSet = scoreSet;
     }
+
+    //权重 最终分数里期末分数的占比
+    private Double weight;
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public void setWeight(Double weight) {
+        this.weight = weight;
+    }
 }

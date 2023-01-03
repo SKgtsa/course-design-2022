@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Achievement;
+import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.user.User;
@@ -36,11 +37,11 @@ public class RewardServiceImpl implements RewardService {
     private RewardRepository rewardRepository;
 
 
-    private Achievement REWARD_C = new Achievement(Long.parseLong("7"),"成果奖励3项以上","淡泊名利小修士");
+    private final Achievement REWARD_C = new Achievement(Long.parseLong("7"),"成果奖励3项以上","淡泊名利小修士");
 
-    private Achievement REWARD_B = new Achievement(Long.parseLong("8"),"成果奖励7项以上","勤勤恳恳打工人");
+    private final Achievement REWARD_B = new Achievement(Long.parseLong("8"),"成果奖励7项以上","勤勤恳恳打工人");
 
-    private Achievement REWARD_A = new Achievement(Long.parseLong("9"),"成果奖励10项以上","奖金证书收割机");
+    private final Achievement REWARD_A = new Achievement(Long.parseLong("9"),"成果奖励10项以上","奖金证书收割机");
 
     private List<Achievement> updateAchievementList(Student student){
         List<Reward> rewardList = student.getRewardSet();
@@ -154,25 +155,7 @@ public class RewardServiceImpl implements RewardService {
         }
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Manager){
-                //Manager可以彻底删除此成果奖励
-                Optional<Reward> rewardOp=rewardRepository.findById(id);
-                //将活动和学生解绑
-                Reward reward=rewardOp.get();
-                //遍历此成果奖励的学生表，更新学生表中学生的成果奖励表
-                Set<Student> studentSet=reward.getStudentSet();
-                for(Student s : studentSet){
-                    List<Reward> rewardList=s.getRewardSet();
-                    rewardList.remove(reward);
-                    s.setRewardSet(rewardList);
-                    s.setAchievementList(updateAchievementList(s));
-                    studentRepository.save(s);
-                }
-                rewardRepository.delete(reward);
-
-                response.setSuccess(true);
-                response.setMessage("成果奖励删除成功");
-            }else if(user instanceof Student){
+            if(user instanceof Student){
                 //Student只能将自己从成果奖励的学生表中移出，而不能删除此成果奖励(除非成果奖励为个人奖项)
                 Optional<Reward> rewardOp=rewardRepository.findById(id);
                 if(rewardOp.isEmpty()){
@@ -250,6 +233,63 @@ public class RewardServiceImpl implements RewardService {
                     response.setSuccess(true);
                     response.setTotalPage(totalPage);
                 }
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerFind(String token,long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//Manager
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            Optional<Reward> rewardOp=rewardRepository.findById(id);
+            Reward reward=rewardOp.get();
+            response.setToken(token);
+            response.setMessage("查找成功");
+            response.setSuccess(true);
+            response.setContent(reward);
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerDelete(String token,long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262555784829865984");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                //Manager可以彻底删除此成果奖励
+                Optional<Reward> rewardOp=rewardRepository.findById(id);
+                //将活动和学生解绑
+                Reward reward=rewardOp.get();
+                //遍历此成果奖励的学生表，更新学生表中学生的成果奖励表
+                Set<Student> studentSet=reward.getStudentSet();
+                for(Student s : studentSet){
+                    List<Reward> rewardList=s.getRewardSet();
+                    rewardList.remove(reward);
+                    s.setRewardSet(rewardList);
+                    s.setAchievementList(updateAchievementList(s));
+                    studentRepository.save(s);
+                }
+                rewardRepository.delete(reward);
+
+                response.setToken(token);
+                response.setMessage("成果奖励删除成功");
+                response.setSuccess(true);
             }
         }
         return response;

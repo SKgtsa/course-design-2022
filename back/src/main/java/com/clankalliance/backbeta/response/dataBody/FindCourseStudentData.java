@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.utils;
+package com.clankalliance.backbeta.response.dataBody;
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

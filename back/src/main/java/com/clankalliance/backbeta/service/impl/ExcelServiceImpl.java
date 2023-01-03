@@ -1,10 +1,11 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.alibaba.excel.EasyExcel;
-import com.clankalliance.backbeta.entity.RegisterData;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.ExcelService;
-import com.clankalliance.backbeta.utils.ExcelListener;
+import com.clankalliance.backbeta.utils.ExcelListener.RegisterListener.BatchRegisterData;
+import com.clankalliance.backbeta.utils.ExcelListener.RegisterListener.RegisterListener;
+import com.clankalliance.backbeta.utils.ExcelListener.ScoreListener.ScoreListener;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,13 +23,7 @@ public class ExcelServiceImpl implements ExcelService {
 
     @Override
     public CommonResponse handleBatchRegister(MultipartFile file, String token) {
-        CommonResponse response;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
         // 获取文件名
@@ -45,7 +40,42 @@ public class ExcelServiceImpl implements ExcelService {
             response.setMessage("保存失败");
             return response;
         }
-        EasyExcel.read(temp, RegisterData.class,new ExcelListener()).sheet().doRead();
+        try{
+            EasyExcel.read(temp, BatchRegisterData.class, new RegisterListener()).sheet().doRead();
+        }catch(Exception e){
+            response.setMessage("创建失败 请检查表格");
+            return response;
+        }
+        response.setMessage("创建成功");
+        return response;
+    }
+
+    public CommonResponse handleBatchScore(MultipartFile file, String token, Long courseId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        // 获取文件名
+        String fileName = file.getOriginalFilename();
+        // 获取文件后缀
+        String prefix = fileName.substring(fileName.lastIndexOf("."));
+        File temp;
+        try {
+            temp = File.createTempFile(fileName, prefix);
+            file.transferTo(temp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.setSuccess(false);
+            response.setMessage("保存失败");
+            return response;
+        }
+        ScoreListener scoreListener = new ScoreListener();
+        scoreListener.setCourseId(courseId);
+        try{
+            EasyExcel.read(temp, BatchRegisterData.class,scoreListener).sheet().doRead();
+        }catch(Exception e){
+            response.setMessage("创建失败 请检查表格");
+            return response;
+        }
         response.setMessage("创建成功");
         return response;
     }

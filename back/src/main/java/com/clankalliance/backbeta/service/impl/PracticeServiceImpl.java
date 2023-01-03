@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Achievement;
+import com.clankalliance.backbeta.entity.Activity;
 import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.user.User;
@@ -38,11 +39,11 @@ public class PracticeServiceImpl implements PracticeService {
     private StudentRepository studentRepository;
 
 
-    private Achievement PRACTICE_C = new Achievement(Long.parseLong("14"),"社会实践5项以上","回报社会");
+    private final Achievement PRACTICE_C = new Achievement(Long.parseLong("14"),"社会实践5项以上","回报社会");
 
-    private Achievement PRACTICE_B = new Achievement(Long.parseLong("15"),"社会实践12项以上","乐于实践");
+    private final Achievement PRACTICE_B = new Achievement(Long.parseLong("15"),"社会实践12项以上","乐于实践");
 
-    private Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
+    private final Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
 
     private List<Achievement> updateAchievementList(Student student){
         List<Practice> practiceList = student.getPracticeSet();
@@ -159,25 +160,7 @@ public class PracticeServiceImpl implements PracticeService {
         }
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Manager){
-                //Manager可以彻底删除此社会实践
-                Optional<Practice> practiceOp=practiceRepository.findById(id);
-                //将活动和学生解绑
-                Practice practice=practiceOp.get();
-                //遍历此社会实践的学生表，更新学生表中学生的社会实践表
-                Set<Student> studentSet=practice.getStudentSet();
-                for(Student s : studentSet){
-                    List<Practice> practiceList=s.getPracticeSet();
-                    practiceList.remove(practice);
-                    s.setPracticeSet(practiceList);
-                    s.setAchievementList(updateAchievementList(s));
-                    studentRepository.save(s);
-                }
-                practiceRepository.delete(practice);
-
-                response.setSuccess(true);
-                response.setMessage("社会实践删除成功");
-            }else if(user instanceof Student){
+            if(user instanceof Student){
                 //Student只能将自己从社会实践的学生表中移出，而不能删除此社会实践(除非社会实践为个人立项)
                 Optional<Practice> practiceOp=practiceRepository.findById(id);
                 if(practiceOp.isEmpty()){
@@ -255,6 +238,63 @@ public class PracticeServiceImpl implements PracticeService {
                     response.setSuccess(true);
                     response.setTotalPage(totalPage);
                 }
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerFind(String token,long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("259887250475716608");//Manager
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            Optional<Practice> practiceOp=practiceRepository.findById(id);
+            Practice practice=practiceOp.get();
+            response.setToken(token);
+            response.setMessage("查找成功");
+            response.setSuccess(true);
+            response.setContent(practice);
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerDelete(String token,long id){
+        CommonResponse response ;
+        if(token.equals("114514")){
+            response = new CommonResponse();
+            response.setSuccess(true);
+            response.setMessage("262555784829865984");
+        }else{
+            response = tokenUtil.tokenCheck(token);
+        }
+        if(response.getSuccess()){
+            User user= userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                //Manager可以彻底删除此社会实践
+                Optional<Practice> practiceOp=practiceRepository.findById(id);
+                //将活动和学生解绑
+                Practice practice=practiceOp.get();
+                //遍历此社会实践的学生表，更新学生表中学生的社会实践表
+                Set<Student> studentSet=practice.getStudentSet();
+                for(Student s : studentSet){
+                    List<Practice> practiceList=s.getPracticeSet();
+                    practiceList.remove(practice);
+                    s.setPracticeSet(practiceList);
+                    s.setAchievementList(updateAchievementList(s));
+                    studentRepository.save(s);
+                }
+                practiceRepository.delete(practice);
+
+                response.setToken(token);
+                response.setMessage("社会实践删除成功");
+                response.setSuccess(true);
             }
         }
         return response;

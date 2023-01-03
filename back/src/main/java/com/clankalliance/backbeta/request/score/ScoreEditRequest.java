@@ -21,6 +21,4 @@ public class ScoreEditRequest {
 
     private Integer endScore;
 
-    private Double weight;
-
 }

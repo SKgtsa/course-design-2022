@@ -25,8 +25,9 @@
             <!-- 显示斑马纹和边框 -->
             <el-table-column label="课程名" prop="courseName" width="250" show-overflow-tooltip />
             <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
-            <el-table-column label="平时分数占总分权重" prop="weight" width="200" show-overflow-tooltip />
-            <el-table-column label="总得分" prop="endScore" width="160" show-overflow-tooltip />
+            <el-table-column label="平时分数占总分权重" prop="weight" width="100" show-overflow-tooltip />
+            <el-table-column label="期末得分" prop="endScore" width="140" show-overflow-tooltip />
+            <el-table-column label="总分" prop="finalScore" width="140" show-overflow-tooltip />
             <el-table-column label="排名" prop="rank" width="150" show-overflow-tooltip />
           </el-table>
         </div>
@@ -47,6 +48,10 @@ let tableData = reactive({
   arr:[],
 });
 const years = [
+  {
+    value:2019,
+    label:'2019',
+  },
   {
     value: 2020,
     label: '2020',
@@ -80,6 +85,12 @@ const check = async () => {
         localStorage.setItem('token', data.token);
         tableData.arr = data.content;
         messageSuccess("查询成功！")
+        let a = yearsValue.value;
+        let b = semesterValue.value;
+        yearsValue.value = null;
+        semesterValue.value = null;
+        yearsValue.value = a;
+        semesterValue.value = b;
         console.log(res)
         hideLoading();
       } else {

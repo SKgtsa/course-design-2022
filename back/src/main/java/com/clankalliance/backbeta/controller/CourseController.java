@@ -3,7 +3,6 @@ package com.clankalliance.backbeta.controller;
 
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
-import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.request.course.*;
 import com.clankalliance.backbeta.request.user.TokenCheckRequest;
@@ -76,7 +75,7 @@ public class CourseController {
     //保存课程
     @PostMapping("/save")
     public CommonResponse saveCourse(@RequestBody TeacherCourseSaveRequest request){
-        return courseService.handleTeacherSave(request.getToken(),request.getCourseId(),request.getName(),request.getWeekStart(),request.getWeekEnd(),request.getTime(),request.getCapacity(),request.getStudentClass(),request.getStudentSection(),request.getLocation(), request.getYear(), request.getSemester(),request.getCredit(),request.getDescription());
+        return courseService.handleTeacherSave(request.getToken(),request.getCourseId(),request.getName(),request.getWeekStart(),request.getWeekEnd(),request.getTime(),request.getCapacity(),request.getStudentClass(),request.getStudentSection(),request.getLocation(), request.getYear(), request.getSemester(),request.getCredit(),request.getDescription(),request.getWeight());
     }
 
     //删除课程
@@ -109,5 +108,34 @@ public class CourseController {
         return courseService.handleTeacherFindCourse(request.getToken(), request.getYear(), request.getSemester());
     }
 
+    @PostMapping("/managerFind")
+    public CommonResponse managerFind(@RequestBody CourseManagerFindRequest request){
+        return courseService.handleManagerFind(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/managerSave")
+    public CommonResponse managerSave(@RequestBody CourseManagerSaveRequest request){
+        return courseService.handleManagerSave(request.getToken(), request.getCourse());
+    }
+
+    @PostMapping("/managerDelete")
+    public CommonResponse managerDelete(@RequestBody CourseManagerDeleteRequest request){
+        return courseService.handleManagerDelete(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/managerFindStudent")
+    public CommonResponse managerFindStudent(@RequestBody CourseManagerFindRequest request){
+        return courseService.handleManagerFindStudent(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/managerRemoveStudent")
+    public CommonResponse managerRemoveStudent(@RequestBody ManagerRemoveStudentRequest request){
+        return courseService.handleManagerRemoveStudent(request.getToken(), request.getStudentId(),request.getCourseId());
+    }
+
+    @PostMapping("/managerAddStudent")
+    public CommonResponse managerAddStudent(@RequestBody EditCourseStudentRequest request){
+        return courseService.handleManagerAddStudent(request.getToken(),request.getCourseId(),request.getStudentNumber());
+    }
 
 }

@@ -1,7 +1,10 @@
 package com.clankalliance.backbeta.controller;
 
+import com.clankalliance.backbeta.request.practice.PracticeDeleteRequest;
+import com.clankalliance.backbeta.request.practice.PracticeManagerRequest;
 import com.clankalliance.backbeta.request.reward.RewardDeleteRequest;
 import com.clankalliance.backbeta.request.reward.RewardFindRequest;
+import com.clankalliance.backbeta.request.reward.RewardManagerRequest;
 import com.clankalliance.backbeta.request.reward.RewardSaveRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.RewardService;
@@ -32,5 +35,15 @@ public class RewardController {
     @PostMapping("/find")
     public CommonResponse find(@RequestBody RewardFindRequest request){
         return rewardService.handleFind(request.getToken(),request.getPageNum(),request.getPageSize());
+    }
+
+    @PostMapping("/managerFind")
+    public  CommonResponse ManagerFind(@RequestBody RewardManagerRequest request){
+        return rewardService.handleManagerFind(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/managerDelete")
+    public CommonResponse MangerDelete(@RequestBody RewardManagerRequest request){
+        return rewardService.handleManagerDelete(request.getToken(),request.getId());
     }
 }

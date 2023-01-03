@@ -1,9 +1,7 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Achievement;
-import com.clankalliance.backbeta.entity.Practice;
 import com.clankalliance.backbeta.entity.Score;
-import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
@@ -14,12 +12,13 @@ import com.clankalliance.backbeta.repository.CourseRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
-import com.clankalliance.backbeta.response.CourseResponseTarget;
+import com.clankalliance.backbeta.response.dataBody.CourseResponseTarget;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.service.UserService;
-import com.clankalliance.backbeta.utils.FindCourseStudentData;
+import com.clankalliance.backbeta.response.dataBody.FindCourseStudentData;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
+import org.openxmlformats.schemas.drawingml.x2006.main.CTOuterShadowEffect;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -51,9 +50,9 @@ public class CourseServiceImpl implements CourseService {
     @Resource
     private TeacherRepository teacherRepository;
 
-    private Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
+    private final Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
 
-    private Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
+    private final Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
 
     private List<Achievement> updateAchievementListCourse(Teacher teacher){
         Set<Course> courseSet = teacher.getCourseSet();
@@ -165,7 +164,7 @@ public class CourseServiceImpl implements CourseService {
         if(response.getSuccess()){
             //token验证成功
             User user = userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Teacher || user instanceof Manager){
+            if(user instanceof Teacher){
                 Optional<Student> sop=studentRepository.findByUserNumber(studentNumber);
                 if(sop.isEmpty()){
                     response.setSuccess(false);
@@ -219,9 +218,10 @@ public class CourseServiceImpl implements CourseService {
      * @param semester 授课学期
      * @param credit 学分
      * @param description 课程描述
+     * @param weight 权重(期末分占最终成绩的比例
      * @return
      */
-    public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description){
+    public CommonResponse handleTeacherSave(String token, long courseId, String name, Integer weekStart, Integer weekEnd, List<ClassTime> time,Integer capacity,List<String> studentClass,List<String> studentSection,String location,Integer year, String semester,Double credit,String description,Double weight){
         //CommonResponse response = tokenUtil.tokenCheck(token);
         CommonResponse response ;
         if(token.equals("114514")){
@@ -253,7 +253,7 @@ public class CourseServiceImpl implements CourseService {
                     //对没有id的ClassTime进行id的补充
                     t.setId(t.getSection() + (t.getWeekDay() - 1) * 5);
                 }
-                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,studentSet,teacher,scoreSet);
+                Course course=new Course(id,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,studentSet,teacher,scoreSet,weight);
                 courseRepository.save(course);
 
                 //在教师的课程表中加入课程
@@ -268,7 +268,7 @@ public class CourseServiceImpl implements CourseService {
             }else if(user instanceof Manager){
                 //管理员没有课程表，故只能修改
                 Course courseOld = courseRepository.findById(courseId).get();
-                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet());
+                Course course=new Course(courseId,name,weekStart,weekEnd,time,capacity,studentClass.toString(),studentSection.toString(),location,year,semester,credit,description,courseOld.getStudentSet(),courseOld.getTeacher(),courseOld.getScoreSet(),weight);
                 courseRepository.save(course);
                 response.setSuccess(true);
                 response.setMessage("保存成功");
@@ -485,6 +485,152 @@ public class CourseServiceImpl implements CourseService {
                 response.setContent(courseList);
                 response.setSuccess(true);
                 response.setMessage("教师课程表返回成功");
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerFind(String token,long id){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Course> courseOp=courseRepository.findById(id);
+                Course course=courseOp.get();
+                response.setSuccess(true);
+                response.setMessage("课程查找成功");
+                response.setContent(course);
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerSave(String token,Course course){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                courseRepository.save(course);
+                response.setSuccess(true);
+                response.setMessage("课程保存成功");
+                response.setToken(token);
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerDelete(String token,long id){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Course> courseOp=courseRepository.findById(id);
+                Course course=courseOp.get();
+                courseRepository.delete(course);
+                response.setSuccess(true);
+                response.setMessage("课程删除成功");
+                response.setToken(token);
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerFindStudent(String token, long id){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Course> courseOp=courseRepository.findById(id);
+                Course course=courseOp.get();
+                Set<Student> studentSet=course.getStudentSet();
+                List<FindCourseStudentData> result = new ArrayList<>();
+                for(Student s : studentSet){
+                    result.add(new FindCourseStudentData(s));
+                }
+
+                response.setSuccess(true);
+                response.setMessage("学生表返回成功");
+                response.setToken(token);
+                response.setContent(result);
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerRemoveStudent(String token, long courseId, long studentId){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            //token验证成功
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Student> sop=studentRepository.findUserById(studentId);
+                if(sop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("学生不存在");
+                    return response;
+                }
+                Student student=sop.get();
+                Optional<Course> cop=courseRepository.findById(courseId);
+                Course course =cop.get();
+                if(cop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("课程不存在");
+                    return response;
+                }
+                Set<Student> studentSet = course.getStudentSet();
+                if(studentSet.contains(student)){
+                    //课程的学生表中存在此学生，进行删除操作
+                    studentSet.remove(student);
+                    course.setStudentSet(studentSet);
+                    courseRepository.save(course);
+                    Set<Course> courseSet = student.getCourseSet();
+                    courseSet.remove(course);
+                    student.setCourseSet(courseSet);
+                    studentRepository.save(student);
+                    response.setSuccess(true);
+                    response.setMessage("成功踢出学生");
+                }else{
+                    //课程的学生表中无此学生，报错
+                    response.setSuccess(false);
+                    response.setMessage("该学生不在本课程中");
+                }
+            }
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleManagerAddStudent(String token, long courseId, long studentNumber){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Manager){
+                Optional<Student> sop=studentRepository.findByUserNumber(studentNumber);
+                Student student=sop.get();
+                Optional<Course> cop = courseRepository.findById(courseId); //检查课程是否存在
+                if(cop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("该课程不存在");
+                }
+                Course course=cop.get();
+                Set<Student> studentSet = course.getStudentSet();
+                studentSet.add(student);
+                course.setStudentSet(studentSet);
+                courseRepository.save(course);
+
+                Set<Course> courseSet = student.getCourseSet();
+                courseSet.add(course);
+                student.setCourseSet(courseSet);
+                studentRepository.save(student);
+
+                response.setSuccess(true);
+                response.setMessage("学生添加成功");
+                response.setToken(token);
             }
         }
         return response;

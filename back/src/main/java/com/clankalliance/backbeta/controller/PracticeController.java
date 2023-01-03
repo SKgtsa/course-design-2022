@@ -2,6 +2,7 @@ package com.clankalliance.backbeta.controller;
 
 import com.clankalliance.backbeta.request.practice.PracticeDeleteRequest;
 import com.clankalliance.backbeta.request.practice.PracticeFindRequest;
+import com.clankalliance.backbeta.request.practice.PracticeManagerRequest;
 import com.clankalliance.backbeta.request.practice.PracticeSaveRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.PracticeService;
@@ -32,5 +33,15 @@ public class PracticeController {
     @PostMapping("/find")
     public CommonResponse find(@RequestBody PracticeFindRequest request){
         return practiceService.handleFind(request.getToken(),request.getPageNum(),request.getPageSize());
+    }
+
+    @PostMapping("/managerFind")
+    public  CommonResponse ManagerFind(@RequestBody PracticeManagerRequest request){
+        return practiceService.handleManagerFind(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/managerDelete")
+    public CommonResponse MangerDelete(@RequestBody PracticeManagerRequest request){
+        return practiceService.handleManagerDelete(request.getToken(),request.getId());
     }
 }

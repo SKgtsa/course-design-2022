@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.utils;
+package com.clankalliance.backbeta.response.dataBody;
 
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class AverageUtil {
+public class AverageScoreData {
     private String courseName;
 
     private Double weight;
@@ -21,7 +21,7 @@ public class AverageUtil {
     private Long courseId;
 
 
-    public AverageUtil(String courseName,Double weight,Integer average,String passRate,Long courseId){
+    public AverageScoreData(String courseName, Double weight, Integer average, String passRate, Long courseId){
         this.courseName=courseName;
         this.weight=weight;
         this.average=average;

@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.entity;
+package com.clankalliance.backbeta.utils.ExcelListener.RegisterListener;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.AllArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterData {
+public class BatchRegisterData {
 
     @ExcelProperty("学工号")
     private String userNumber = "";//LoginName

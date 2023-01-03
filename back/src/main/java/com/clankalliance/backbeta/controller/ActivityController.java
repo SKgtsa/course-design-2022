@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.controller;
 
 import com.clankalliance.backbeta.request.activity.ActivityDeleteRequest;
 import com.clankalliance.backbeta.request.activity.ActivityFindRequest;
+import com.clankalliance.backbeta.request.activity.ActivityManagerRequest;
 import com.clankalliance.backbeta.request.activity.ActivitySaveRequest;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.ActivityService;
@@ -36,4 +37,13 @@ public class ActivityController {
         return activityService.handleFind(request.getToken(),request.getPageNum(),request.getPageSize());
     }
 
+    @PostMapping("/managerFind")
+    public  CommonResponse ManagerFind(@RequestBody ActivityManagerRequest request){
+        return activityService.handleManagerFind(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/managerDelete")
+    public CommonResponse MangerDelete(@RequestBody ActivityManagerRequest request){
+        return activityService.handleManagerDelete(request.getToken(),request.getId());
+    }
 }
