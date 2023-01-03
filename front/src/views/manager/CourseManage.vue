@@ -1048,7 +1048,7 @@ const handleClose = (key: string, keyPath: string[]) => {
                             font-size: 1.2vw;
                         }
 
-                        .delectButton {
+                        .deleteButton {
                             height: 6vh;
                             border: 0.1vw solid;
                         }
