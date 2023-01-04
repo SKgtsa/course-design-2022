@@ -4,7 +4,7 @@
     </div>
     <div class="rightWindow">
       <div class="mainCard">
-        <div class="head">
+        <div class="head" v-if="!mobile">
           <a class="title">成绩管理</a>
           <div class="selectPanel">
             <a class="selectLabel">学年:</a>
@@ -16,6 +16,24 @@
               <el-option v-for="item in semester" :key="item.value" :label="item.label" :value="item.value" />
             </el-select>
             <el-button type="primary" class="checkButton" @click="checkCourse"><a>查询</a></el-button>
+            <el-button type="primary" plain><a href="http://courseback.clankalliance.cn/inbuild/%E6%89%B9%E9%87%8F%E5%BD%95%E5%85%A5%E6%88%90%E7%BB%A9%E8%A1%A8%E6%A0%BC.xlsx"
+            style=" null!important;">上传模板下载</a></el-button>
+          </div>
+        </div>
+        <div class="headMobile" v-if="mobile">
+          <a class="titleMobile">成绩管理</a>
+          <div class="selectPanelMobile" style="padding-top: 1vh;">
+           <span style="padding-left: 6vw;padding-top: 1vh;"> <a class="selectLabelMobile">学年:</a>
+            <el-select v-model="yearsValue" placeholder="2019" class="selectMobile">
+              <el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select> </span>
+          <span style="padding-top: 2vh;padding-left: 6vw;"><a class="selectLabelMobile">学期:</a>
+            <el-select v-model="semesterValue" placeholder="春季学期" class="selectMobile">
+              <el-option v-for="item in semester" :key="item.value" :label="item.label" :value="item.value" />
+            </el-select></span>
+            <el-button type="primary" class="checkButtonMobile" @click="checkCourse"><a>查询</a></el-button>
+           
+            <a href="http://courseback.clankalliance.cn/inbuild/%E6%89%B9%E9%87%8F%E5%BD%95%E5%85%A5%E6%88%90%E7%BB%A9%E8%A1%A8%E6%A0%BC.xlsx" style="padding-left:60vw;">模板</a>
           </div>
         </div>
         <div class="tablePage">
@@ -23,23 +41,23 @@
             :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
             :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
             <!-- 显示斑马纹和边框 -->
-            <el-table-column label="课程号" prop="courseId" width="200" show-overflow-tooltip />
+            <el-table-column label="课程号" fixed="left" prop="courseId" width="160" show-overflow-tooltip />
             <el-table-column label="课程名" prop="courseName" width="200" show-overflow-tooltip />
             <el-table-column label="通过率" prop="passRate" width="150" show-overflow-tooltip />
             <el-table-column label="平均分" prop="average" width="150" show-overflow-tooltip />
             <el-table-column label="打分">
               <template #default="scope">
                 <el-button size="medium" @click="addScore(scope.row.courseId)" class="button"
-                  type="primary">创建成绩</el-button>
+                  type="primary">打分</el-button>
                 <!-- <el-button size="medium" @click="loadFile(scope.row.courseId)" type="primary">批量上传</el-button> -->
                 <!-- <el-button size="medium" @click="checkScore(scope.row)" class="button" type="primary">查看成绩</el-button> -->
                 <!--  <el-button size="medium" @click="editScore(scope.row.courseId)" class="button" type="primary">修改成绩</el-button> -->
               </template>
             </el-table-column>
             <el-table-column label="批量上传">
-              <el-upload ref="upload" class="upload-demo" :http-request="uploadFile" :limit="1" :auto-upload="false">
+              <el-upload ref="upload" :http-request="uploadFile" :limit="1" :auto-upload="false">
                 <template #trigger>
-                  <el-button type="primary">批量上传</el-button>
+                  <el-button type="primary">上传</el-button>
                 </template></el-upload>
             </el-table-column>
           </el-table>
@@ -142,6 +160,8 @@ import { ref } from 'vue'
 import { showLoading, hideLoading } from '@/utils/loading';
 import { ElMessageBox } from 'element-plus';
 import serviceFile from '@/request/indexFile';
+import { mobile } from '@/global/global';
+import router from '@/router';
 
 let upload = ref();
 let idCourse = ref();
@@ -232,6 +252,10 @@ const loadFile = (id) => {
   fileId.value = id;
 }
 
+/* const toExcel = ()=>{
+  router.push('');
+} */
+
 const uploadFile = async (f) => {
   await ElMessageBox.confirm(
     '如果某学生已经打分，该次上传将覆盖掉之前成绩，是否继续?',
@@ -243,21 +267,21 @@ const uploadFile = async (f) => {
     }
   ).then(() => {
     showLoading();
-    serviceFile.post('/api/score/batchScore', { token: localStorage.getItem('token'), id: fileId.value, excel: f.file }).then(res=>{
-      if(res.data.success){
+    serviceFile.post('/api/score/batchScore', { token: localStorage.getItem('token'), id: fileId.value, file: f.file }).then(res => {
+      if (res.data.success) {
         hideLoading();
-        localStorage.setItem('token',res.data.token);
+        localStorage.setItem('token', res.data.token);
         messageSuccess('上传成功！')
         checkCourse();
-      }else{
+      } else {
         hideLoading();
         messageError(res.data.message);
       }
     })
-    .catch(function(error){
-      hideLoading();
-      messageError("服务器开小差了呢")
-    })
+      .catch(function (error) {
+        hideLoading();
+        messageError("服务器开小差了呢")
+      })
   })
 }
 
@@ -433,7 +457,7 @@ const submitEditRow = async (row) => {
           display: flex;
           flex-direction: column;
           padding-left: 1.8vw;
-          font-size: 2vw;
+          font-size: 4vh;
           font-weight: 600;
         }
 
@@ -454,6 +478,49 @@ const submitEditRow = async (row) => {
           }
         }
 
+      }
+      .headMobile {
+     /*    height: 27vh; */
+        padding-left: 1.875vh;
+        padding-top: 2.5vh;
+
+        .titleMobile {
+          display: flex;
+          flex-direction: column;
+          font-size: 3.125vh;
+          font-weight: 600;
+          text-align: center;
+        }
+
+        .selectPanelMobile {
+          margin-top: 2vh;
+          display: flex;
+          flex-direction: column;
+
+          .spanSelect {
+            padding-top: 2vh;
+
+            .selectLabelMobile {
+              font-size: 2.5vh;
+              padding-left: 3vw;
+              display: flex;
+              flex-direction: row;
+            }
+
+            .selectMobile {
+              width: 50vw;
+              padding-left: 6vw;
+            }
+          }
+
+          .checkButtonMobile {
+            margin-top: 3vh;
+            margin-left:12vw ;
+            width: 35vw;
+          }
+
+          
+        }
       }
 
       .tablePage {
