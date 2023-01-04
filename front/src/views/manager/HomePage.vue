@@ -79,7 +79,7 @@
         </el-dialog>
       </el-header>
       <el-header v-if="mobile">
-        <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row" mode="horizontal"
+        <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row;box-shadow: 0 0 10px 0 #b9ccee;" mode="horizontal"
           :ellipsis="false">
           <a style="font-size: 5vh;color: #FFFFFF;font-weight: bold;line-height: 10vh">教学系统</a>
           <div class="flex-grow" />
@@ -116,19 +116,19 @@
                 <HomeFilled />
               </el-icon>
             </el-menu-item>
-            <el-menu-item index="/Manager/noticeView" @click="closeMenuDrawer">
+            <el-menu-item index="/Manager/Notice" @click="closeMenuDrawer">
               <template #title>通知管理</template>
               <el-icon>
                 <Document />
               </el-icon>
-            </el-menu-item> 
+            </el-menu-item>
             <el-menu-item index="/Manager/InfoManage" @click="closeMenuDrawer">
               <template #title>信息管理</template>
               <el-icon>
                 <Document />
               </el-icon>
-            </el-menu-item> 
-         
+            </el-menu-item>
+
             <el-menu-item index="/Manager/CourseManage" @click="closeMenuDrawer">
               <el-icon>
                 <DocumentChecked />
@@ -155,13 +155,13 @@
                 <el-icon>
                   <Document />
                 </el-icon>
-              </el-menu-item> 
+              </el-menu-item>
               <el-menu-item index="/Manager/InfoManage">
                 <template #title>信息管理</template>
                 <el-icon>
                   <Document />
                 </el-icon>
-              </el-menu-item> 
+              </el-menu-item>
               <el-menu-item index="/Manager/CourseManage">
                 <el-icon>
                   <DocumentChecked />

@@ -67,82 +67,76 @@ public class BlogServiceImpl implements BlogService {
     private Achievement LIKE = new Achievement(Long.parseLong("20"),"单篇博客收获点赞10个以上","高质量人类作家");
 
 
-    private List<Achievement> updateAchievementListCollect(User user){
+    private Set<Achievement> updateAchievementListCollect(User user){
         int collectNum;
-        List<Achievement> achievementList;
+        Set<Achievement> achievementSet;
         if(user instanceof Teacher){
             Teacher teacher = (Teacher)user;
             collectNum = teacher.getCollection().size();
-            achievementList = teacher.getAchievementList();
+            achievementSet = teacher.getAchievementSet();
         }else if(user instanceof Student){
             Student student = (Student)user;
             collectNum = student.getCollection().size();
-            achievementList = student.getAchievementList();
+            achievementSet = student.getAchievementSet();
         }else{
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         if(collectNum >= 50){
-            if(achievementList.contains(COLLECT_B)){
-                achievementList.remove(COLLECT_B);
-            }else if(achievementList.contains(COLLECT_C)){
-                achievementList.remove(COLLECT_C);
-            }
-            achievementList.add(COLLECT_A);
+            if(achievementSet.contains(COLLECT_B))
+                achievementSet.remove(COLLECT_B);
+            if(achievementSet.contains(COLLECT_C))
+                achievementSet.remove(COLLECT_C);
+            achievementSet.add(COLLECT_A);
         }else if(collectNum >= 30){
-            if(achievementList.contains(COLLECT_A)){
-                achievementList.remove(COLLECT_A);
-            }else if(achievementList.contains(COLLECT_C)){
-                achievementList.remove(COLLECT_C);
-            }
-            achievementList.add(COLLECT_B);
+            if(achievementSet.contains(COLLECT_A))
+                achievementSet.remove(COLLECT_A);
+            if(achievementSet.contains(COLLECT_C))
+                achievementSet.remove(COLLECT_C);
+            achievementSet.add(COLLECT_B);
         }else if(collectNum >= 5){
-            if(achievementList.contains(COLLECT_A)){
-                achievementList.remove(COLLECT_A);
-            }else if(achievementList.contains(COLLECT_B)){
-                achievementList.remove(COLLECT_B);
-            }
-            achievementList.add(COLLECT_C);
+            if(achievementSet.contains(COLLECT_A))
+                achievementSet.remove(COLLECT_A);
+            if(achievementSet.contains(COLLECT_B))
+                achievementSet.remove(COLLECT_B);
+            achievementSet.add(COLLECT_C);
         }
-        return achievementList;
+        return achievementSet;
     }
 
-    private List<Achievement> updateAchievementListWrite(User user){
+    private Set<Achievement> updateAchievementListWrite(User user){
         int writeNum;
-        List<Achievement> achievementList;
+        Set<Achievement> achievementSet;
         if(user instanceof Teacher){
             Teacher teacher = (Teacher)user;
             writeNum = teacher.getPostList().size();
-            achievementList = teacher.getAchievementList();
+            achievementSet = teacher.getAchievementSet();
         }else if(user instanceof Student){
             Student student = (Student)user;
             writeNum = student.getPostList().size();
-            achievementList = student.getAchievementList();
+            achievementSet = student.getAchievementSet();
         }else{
-            return new ArrayList<>();
+            return new HashSet<>();
         }
         if(writeNum >= 10){
-            if(achievementList.contains(WRITE_B)){
-                achievementList.remove(WRITE_B);
-            }else if(achievementList.contains(WRITE_C)){
-                achievementList.remove(WRITE_C);
-            }
-            achievementList.add(WRITE_A);
+            if(achievementSet.contains(WRITE_B))
+                achievementSet.remove(WRITE_B);
+            if(achievementSet.contains(WRITE_C))
+                achievementSet.remove(WRITE_C);
+            achievementSet.add(WRITE_A);
         }else if(writeNum >= 5){
-            if(achievementList.contains(WRITE_A)){
-                achievementList.remove(WRITE_A);
-            }else if(achievementList.contains(WRITE_C)){
-                achievementList.remove(WRITE_C);
-            }
-            achievementList.add(WRITE_B);
+            if(achievementSet.contains(WRITE_A))
+                achievementSet.remove(WRITE_A);
+            if(achievementSet.contains(WRITE_C))
+                achievementSet.remove(WRITE_C);
+            achievementSet.add(WRITE_B);
         }else if(writeNum >= 1){
-            if(achievementList.contains(WRITE_A)){
-                achievementList.remove(WRITE_A);
-            }else if(achievementList.contains(WRITE_B)){
-                achievementList.remove(WRITE_B);
-            }
-            achievementList.add(WRITE_C);
+            if(achievementSet.contains(WRITE_A))
+                achievementSet.remove(WRITE_A);
+            if(achievementSet.contains(WRITE_B))
+                achievementSet.remove(WRITE_B);
+            achievementSet.add(WRITE_C);
         }
-        return achievementList;
+        return achievementSet;
     }
 
     @Override
@@ -187,7 +181,7 @@ public class BlogServiceImpl implements BlogService {
     }
 
     @Override
-    public CommonResponse handleMine(String token, int length, int startIndex){
+    public CommonResponse handleMine(String token, int length, int startIndex, String keyWord){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -200,6 +194,8 @@ public class BlogServiceImpl implements BlogService {
             Student student = (Student) user;
             totalPost = student.getPostList();
         }
+        totalPost.stream().filter(post -> post.getHeading().contains(keyWord));
+        totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
         List<PostResponseTarget> resultList = new ArrayList<>();
@@ -214,12 +210,12 @@ public class BlogServiceImpl implements BlogService {
 
     //获取首页信息 所有人的帖子
     @Override
-    public CommonResponse handleMainPage(String token, int length, int startIndex){
+    public CommonResponse handleMainPage(String token, int length, int startIndex, String keyWord){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
         User user = userService.findById(Long.parseLong(response.getMessage()));
-        List<Post> totalPost = postRepository.findAll();
+        List<Post> totalPost = postRepository.findByHeading(keyWord);
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
@@ -235,7 +231,7 @@ public class BlogServiceImpl implements BlogService {
 
     //关注者的帖子 按时间顺序分页
     @Override
-    public CommonResponse handleLikePost(String token, int length, int startIndex){
+    public CommonResponse handleLikePost(String token, int length, int startIndex, String keyWord){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -258,6 +254,7 @@ public class BlogServiceImpl implements BlogService {
         for(Teacher t : friendT){
             totalPost.addAll(t.getPostList());
         }
+        totalPost.stream().filter(post -> post.getHeading().contains(keyWord));
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
@@ -272,7 +269,7 @@ public class BlogServiceImpl implements BlogService {
     }
     //收藏的帖子 按时间顺序分页
     @Override
-    public CommonResponse handleCollectPost(String token, int length, int startIndex){
+    public CommonResponse handleCollectPost(String token, int length, int startIndex, String keyWord){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -285,6 +282,7 @@ public class BlogServiceImpl implements BlogService {
             Student student = (Student) user;
             totalPost = student.getCollection();
         }
+        totalPost.stream().filter(post -> post.getHeading().contains(keyWord));
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
@@ -431,18 +429,18 @@ public class BlogServiceImpl implements BlogService {
                 User author = userService.findById(post.getUserId());
                 if(author instanceof Teacher){
                     Teacher teacher = (Teacher)author;
-                    List<Achievement> achievementList = teacher.getAchievementList();
-                    if(!achievementList.contains(LIKE)){
-                        achievementList.add(LIKE);
-                        teacher.setAchievementList(achievementList);
+                    Set<Achievement> achievementSet = teacher.getAchievementSet();
+                    if(!achievementSet.contains(LIKE)){
+                        achievementSet.add(LIKE);
+                        teacher.setAchievementSet(achievementSet);
                         teacherRepository.save(teacher);
                     }
                 }else if(author instanceof Student){
                     Student student = (Student) author;
-                    List<Achievement> achievementList = student.getAchievementList();
-                    if(!achievementList.contains(LIKE)){
-                        achievementList.add(LIKE);
-                        student.setAchievementList(achievementList);
+                    Set<Achievement> achievementSet = student.getAchievementSet();
+                    if(!achievementSet.contains(LIKE)){
+                        achievementSet.add(LIKE);
+                        student.setAchievementSet(achievementSet);
                         studentRepository.save(student);
                     }
                 }
@@ -529,9 +527,9 @@ public class BlogServiceImpl implements BlogService {
             User author = userService.findById(post.getUserId());
             if(author instanceof Student){
                 Student student = (Student) author;
-                List<Achievement> achievementList = student.getAchievementList();
+                Set<Achievement> achievementSet = student.getAchievementSet();
                 if(post.getLikeT().size() + post.getLikeS().size() >= 10){
-                    if(achievementList.contains(LIKE)){
+                    if(achievementSet.contains(LIKE)){
                         boolean valid = false;
                         for(Post p : student.getPostList()){
                             if(p.getLikeS().size() + p.getLikeT().size() >= 10){
@@ -540,19 +538,20 @@ public class BlogServiceImpl implements BlogService {
                             }
                         }
                         if(!valid){
-                            achievementList.remove(LIKE);
-                            student.setAchievementList(achievementList);
+                            achievementSet.remove(LIKE);
+                            student.setAchievementSet(achievementSet);
                         }
                     }
                 }
-                student.setAchievementList(updateAchievementListWrite(student));
-                student.setAchievementList(updateAchievementListCollect(student));
+                student.setAchievementSet(updateAchievementListWrite(student));
+                student.setAchievementSet(updateAchievementListCollect(student));
+                student.setAchievementSet(updateAchievementListWrite(student));
                 studentRepository.save(student);
             }else if(author instanceof Teacher){
                 Teacher teacher = (Teacher) author;
-                List<Achievement> achievementList = teacher.getAchievementList();
+                Set<Achievement> achievementSet = teacher.getAchievementSet();
                 if(post.getLikeT().size() + post.getLikeS().size() >= 10){
-                    if(achievementList.contains(LIKE)){
+                    if(achievementSet.contains(LIKE)){
                         boolean valid = false;
                         for(Post p : teacher.getPostList()){
                             if(p.getLikeS().size() + p.getLikeT().size() >= 10){
@@ -561,17 +560,16 @@ public class BlogServiceImpl implements BlogService {
                             }
                         }
                         if(!valid){
-                            achievementList.remove(LIKE);
-                            teacher.setAchievementList(achievementList);
+                            achievementSet.remove(LIKE);
+                            teacher.setAchievementSet(achievementSet);
                         }
                     }
                 }
-                teacher.setAchievementList(updateAchievementListWrite(teacher));
-                teacher.setAchievementList(updateAchievementListCollect(teacher));
+                teacher.setAchievementSet(updateAchievementListWrite(teacher));
+                teacher.setAchievementSet(updateAchievementListCollect(teacher));
+                teacher.setAchievementSet(updateAchievementListWrite(teacher));
                 teacherRepository.save(teacher);
             }
-
-
             //有权限 进行删除
             postRepository.delete(post);
             response.setMessage("操作成功");

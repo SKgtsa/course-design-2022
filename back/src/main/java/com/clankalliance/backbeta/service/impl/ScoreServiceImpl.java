@@ -60,7 +60,7 @@ public class ScoreServiceImpl implements ScoreService {
         return POINT_A;
     }
 
-    private List<Achievement> updateAchievementList(Student student){
+    private Set<Achievement> updateAchievementList(Student student){
         List<Score> scoreList = scoreRepository.findByStudentId(student.getId());
         Double point = 0.0;
         Double totalCredit = 0.0;
@@ -69,33 +69,33 @@ public class ScoreServiceImpl implements ScoreService {
             totalCredit += s.getCourse().getCredit();
         }
         Double pointResult = totalCredit.equals(0.0)? 0.0: point/totalCredit;
-        List<Achievement> achievementList = student.getAchievementList();
+        Set<Achievement> achievementSet = student.getAchievementSet();
         if(pointResult >= 4.0){
-            if(achievementList.contains(POINT_B)){
-                achievementList.remove(POINT_B);
-            }else if(achievementList.contains(POINT_C)){
-                achievementList.remove(POINT_C);
+            if(achievementSet.contains(POINT_B)){
+                achievementSet.remove(POINT_B);
+            }else if(achievementSet.contains(POINT_C)){
+                achievementSet.remove(POINT_C);
             }
-            achievementList.add(POINT_A);
-            if(achievementList.contains(activityService.getACTIVITY_A())){
-                achievementList.add(activityService.getACTIVITY_POINT());
+            achievementSet.add(POINT_A);
+            if(achievementSet.contains(activityService.getACTIVITY_A())){
+                achievementSet.add(activityService.getACTIVITY_POINT());
             }
         }else if(pointResult >= 3.8){
-            if(achievementList.contains(POINT_A)){
-                achievementList.remove(POINT_A);
-            }else if(achievementList.contains(POINT_C)){
-                achievementList.remove(POINT_C);
+            if(achievementSet.contains(POINT_A)){
+                achievementSet.remove(POINT_A);
+            }else if(achievementSet.contains(POINT_C)){
+                achievementSet.remove(POINT_C);
             }
-            achievementList.add(POINT_B);
+            achievementSet.add(POINT_B);
         }else if(pointResult >= 3.5){
-            if(achievementList.contains(POINT_A)){
-                achievementList.remove(POINT_A);
-            }else if(achievementList.contains(POINT_B)){
-                achievementList.remove(POINT_B);
+            if(achievementSet.contains(POINT_A)){
+                achievementSet.remove(POINT_A);
+            }else if(achievementSet.contains(POINT_B)){
+                achievementSet.remove(POINT_B);
             }
-            achievementList.add(POINT_C);
+            achievementSet.add(POINT_C);
         }
-        return achievementList;
+        return achievementSet;
     }
 
     /**
@@ -145,7 +145,7 @@ public class ScoreServiceImpl implements ScoreService {
             Set<Score> studentScoreSet = student.getScoreSet();
             studentScoreSet.add(score);
             student.setScoreSet(studentScoreSet);
-            student.setAchievementList(updateAchievementList(student));
+            student.setAchievementSet(updateAchievementList(student));
             studentRepository.save(student);
             //在课程的成绩表中加入成绩
             Set<Score> courseScoreSet = course.getScoreSet();
@@ -408,7 +408,7 @@ public class ScoreServiceImpl implements ScoreService {
                 Set<Score> studentScoreSet = student.getScoreSet();
                 studentScoreSet.add(score);
                 student.setScoreSet(studentScoreSet);
-                student.setAchievementList(updateAchievementList(student));
+                student.setAchievementSet(updateAchievementList(student));
                 studentRepository.save(student);
                 //在课程的成绩表中加入成绩
                 Set<Score> courseScoreSet = course.getScoreSet();
