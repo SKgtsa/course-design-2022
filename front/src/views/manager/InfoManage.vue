@@ -59,71 +59,71 @@
               <div v-if="characterIsStudent">
                 <el-form :model="userStudentForm" class="areaTextInput" ref="formData">
                   <el-form-item label="学号:" prop="userNumber">
-                    <el-input v-model="userStudentForm.userNumber"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.userNumber"></el-input>
                   </el-form-item>
                   <el-form-item label="Id:" prop="id">
-                    <el-input v-model="userStudentForm.id"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.id"></el-input>
                   </el-form-item>
                   <el-form-item label="姓名:" prop="name">
-                    <el-input v-model="userStudentForm.name"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.name"></el-input>
                   </el-form-item>
                   <el-form-item label="昵称:" prop="nickName">
-                    <el-input v-model="userStudentForm.nickName"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.nickName"></el-input>
                   </el-form-item>
                   <el-form-item label="性别:" prop="gender">
-                    <el-input v-model="userStudentForm.gender"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.gender"></el-input>
                   </el-form-item>
                   <el-form-item label="身份证号:" prop="idCardNumber">
-                    <el-input v-model="userStudentForm.idCardNumber"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.idCardNumber"></el-input>
                   </el-form-item>
                   <el-form-item label="班级:" prop="studentClass">
-                    <el-input v-model="userStudentForm.studentClass"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.studentClass"></el-input>
                   </el-form-item>
                   <el-form-item label="政治面貌:" prop="politicalAffiliation">
-                    <el-input v-model="userStudentForm.politicalAffiliation"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.politicalAffiliation"></el-input>
                   </el-form-item>
                   <el-form-item label="民族:" prop="ethnic">
-                    <el-input v-model="userStudentForm.ethnic"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.ethnic"></el-input>
                   </el-form-item>
                   <el-form-item label="邮箱:" prop="eMail">
-                    <el-input v-model="userStudentForm.eMail"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.eMail"></el-input>
                   </el-form-item>
                   <el-form-item label="电话:" prop="phone">
-                    <el-input v-model="userStudentForm.phone"></el-input>
+                    <el-input  disabled  v-model="userStudentForm.phone"></el-input>
                   </el-form-item>
                 </el-form>
               </div>
               <div v-else>
                 <el-form :model="userTeacherForm" class="areaTextInput" ref="formData">
                   <el-form-item label="工号:" prop="userNumber">
-                    <el-input v-model="userTeacherForm.userNumber"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.userNumber"></el-input>
                   </el-form-item>
                   <el-form-item label="Id:" prop="id">
-                    <el-input v-model="userTeacherForm.id"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.id"></el-input>
                   </el-form-item>
                   <el-form-item label="姓名:" prop="name">
-                    <el-input v-model="userTeacherForm.name"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.name"></el-input>
                   </el-form-item>
                   <el-form-item label="昵称:" prop="nickName">
-                    <el-input v-model="userTeacherForm.nickName"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.nickName"></el-input>
                   </el-form-item>
                   <el-form-item label="性别:" prop="gender">
-                    <el-input v-model="userTeacherForm.gender"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.gender"></el-input>
                   </el-form-item>
                   <el-form-item label="身份证号:" prop="idCardNumber">
-                    <el-input v-model="userTeacherForm.idCardNumber"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.idCardNumber"></el-input>
                   </el-form-item>
                   <el-form-item label="政治面貌:" prop="politicalAffiliation">
-                    <el-input v-model="userTeacherForm.politicalAffiliation"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.politicalAffiliation"></el-input>
                   </el-form-item>
                   <el-form-item label="民族:" prop="ethnic">
-                    <el-input v-model="userTeacherForm.ethnic"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.ethnic"></el-input>
                   </el-form-item>
                   <el-form-item label="邮箱:" prop="eMail">
-                    <el-input v-model="userTeacherForm.eMail"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.eMail"></el-input>
                   </el-form-item>
                   <el-form-item label="电话:" prop="phone">
-                    <el-input v-model="userTeacherForm.phone"></el-input>
+                    <el-input  disabled  v-model="userTeacherForm.phone"></el-input>
                   </el-form-item>
                 </el-form>
               </div>
