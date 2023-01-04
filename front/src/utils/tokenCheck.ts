@@ -1,7 +1,7 @@
 import {hideLoading, showLoading} from "@/utils/loading";
 import service from "@/request";
 import router from "@/router";
-import {getDefaultAvatarURL, setAvatarURL, setNickName, setUserId} from "@/global/global";
+import {getDefaultAvatarURL, setAvatarURL, setManager, setNickName, setUserId} from "@/global/global";
 import {ElMessage} from "element-plus";
 
 
@@ -48,6 +48,7 @@ export const tokenCheckWithUser = () => {
  * 若登录失效，调用此函数即可
  */
 export const loginFailed = () => {
+    setManager(false)
     localStorage.setItem('token',null);
     localStorage.setItem('avatarURL',getDefaultAvatarURL())
     localStorage.setItem('nickName','')

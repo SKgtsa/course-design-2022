@@ -93,7 +93,7 @@ public class BlogController {
     //还需要一个删评论的
     @PostMapping("/deleteComment")
     public CommonResponse search(@RequestBody CommonDeleteRequest request){
-        return blogService.handleDelete(request.getToken(), request.getId());
+        return blogService.handleDeleteComment(request.getToken(), request.getId());
     }
 
 }

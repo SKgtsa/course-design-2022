@@ -194,7 +194,8 @@ public class BlogServiceImpl implements BlogService {
             Student student = (Student) user;
             totalPost = student.getPostList();
         }
-        totalPost.stream().filter(post -> post.getHeading().contains(keyWord));
+        totalPost = totalPost.stream().filter(post -> post.getHeading().contains(keyWord))
+                .collect(Collectors.toList());
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
@@ -254,7 +255,7 @@ public class BlogServiceImpl implements BlogService {
         for(Teacher t : friendT){
             totalPost.addAll(t.getPostList());
         }
-        totalPost.stream().filter(post -> post.getHeading().contains(keyWord));
+        totalPost = totalPost.stream().filter(post -> post.getHeading().contains(keyWord)).collect(Collectors.toList());
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");
@@ -282,7 +283,7 @@ public class BlogServiceImpl implements BlogService {
             Student student = (Student) user;
             totalPost = student.getCollection();
         }
-        totalPost.stream().filter(post -> post.getHeading().contains(keyWord));
+        totalPost = totalPost.stream().filter(post -> post.getHeading().contains(keyWord)).collect(Collectors.toList());
         totalPost = totalPost.stream().sorted(Comparator.comparing(Post::getTime)).collect(Collectors.toList());
         Collections.reverse(totalPost);
         response.setMessage("查找成功");

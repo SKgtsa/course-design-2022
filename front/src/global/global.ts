@@ -38,3 +38,9 @@ export let setUserId = (userId) =>{
 export let getUserId=  ()=>{
     return localStorage.getItem('userId');
 }
+export let setManager = (manager) =>{
+    localStorage.setItem('manager',manager)
+}
+export let getManager=  ()=>{
+    return localStorage.getItem('manager');
+}

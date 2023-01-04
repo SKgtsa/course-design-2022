@@ -83,7 +83,7 @@
                   <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
                 </div>
                 <div class="bottomBottom">
-                  <el-button v-if="handleDeleteCheck(item)" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+                  <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
                   <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
                   <a class="likeNum">{{item.likeNum}}</a>
                   <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
@@ -182,6 +182,7 @@
                 <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="getBaseURL() + item.avatarURL" class="avatar"/></el-button>
                 <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
               </div>
+              <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisComment(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
             </div>
           </div>
         </div>
@@ -230,7 +231,7 @@ import service from "@/request";
 import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
-import {getBaseURL, getUserId, mobile} from "@/global/global";
+import {getBaseURL, getManager, getUserId, mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
 
 const handleDeleteCheck = (item: Post) => {
@@ -335,6 +336,33 @@ const updateAnnouncement = () => {
 
 updateAnnouncement();
 
+const deleteThisComment = (target: Comment, event: Event) => {
+  event.stopPropagation();
+  ElMessageBox.confirm('你确定要删除这条博客吗？','警告',{
+    type: "info",
+    cancelButtonText: '取消',
+    confirmButtonText: '确认'
+  }).then(() => {
+    showLoading();
+    console.log(target.id)
+    service.post('api/blog/deleteComment',{token: localStorage.getItem("token"), id: target.id}).then(res => {
+      const data = res.data;
+      console.log('删除成功收到回调')
+      console.log(res)
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        hideLoading();
+        jumpToDetail(pageData.target)
+      } else {
+        hideLoading();
+        loginFailed();
+      }
+    })
+  }).catch(() => {
+    console.log('取消操作')
+  })
+}
+
 const deleteThisPost = (target: Post, event: Event) => {
   event.stopPropagation();
   ElMessageBox.confirm('你确定要删除这条博客吗？','警告',{
@@ -403,6 +431,14 @@ interface Post{
   likeNum: number,
   like: boolean,
   collect: boolean;
+}
+
+interface Comment{
+  id: string,
+  content: string,
+  nickName: string,
+  avatarURL: string,
+  userId: string,
 }
 
 const likeThis = (target: Post, event: Event) => {
