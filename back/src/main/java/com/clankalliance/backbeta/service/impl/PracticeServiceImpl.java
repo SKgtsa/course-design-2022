@@ -7,6 +7,7 @@ import com.clankalliance.backbeta.entity.Reward;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.PracticeRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
@@ -256,16 +257,16 @@ public class PracticeServiceImpl implements PracticeService {
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
-                Optional<Practice> practiceOp=practiceRepository.findById(id);
-                if(practiceOp.isEmpty()){
-                    response.setMessage("对象不存在");
+                User target = userService.findById(id);
+                List<Practice> practiceList;
+                if(target instanceof Teacher || target instanceof Manager){
                     response.setSuccess(false);
-                    return response;
+                    response.setMessage("老师不具有社会实践");
                 }
-                Practice practice=practiceOp.get();
+                practiceList = ((Student) target).getPracticeSet();
                 response.setMessage("查找成功");
                 response.setSuccess(true);
-                response.setContent(practice);
+                response.setContent(practiceList);
             }else{
                 response.setSuccess(false);
                 response.setMessage("用户权限不足");

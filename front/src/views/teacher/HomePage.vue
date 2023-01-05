@@ -1,16 +1,21 @@
 <template>
   <div class="back">
     <el-container>
+      <!--桌面端的顶部操作栏-->
       <el-header class="el-header" v-if="!mobile">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
-          background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd"  router>
+          background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd" router>
+          <img src="../../assets/images/logo.png" alt="logo未加载">
           <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
-          <avatar-operate/>
+          <div class="nick">
+              <avatar-operate/>
+          </div>
         </el-menu>
       </el-header>
+      <!--移动端的顶部操作栏-->
       <el-header v-if="mobile">
-        <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row;box-shadow: 0 0 10px 0 #b9ccee;" mode="horizontal"
+        <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row" mode="horizontal"
           :ellipsis="false">
           <a style="font-size: 5vh;color: #FFFFFF;font-weight: bold;line-height: 10vh">教学系统</a>
           <div class="flex-grow" />
@@ -20,41 +25,50 @@
             </el-button>
           </div>
         </el-menu>
-        <!--移动端的右侧菜单-->
-        <el-drawer with-header="false" v-model="menuDrawerOpen" :direction="'rtl'" :size="'90%'" z-index="50">
-          <avatar-operate/>
-          <el-menu router default-active="/Manager/Main" active-text-color="#2d67fd" background-color="#e9eff9"
-            text-color="#3e5ca8" @open="handleOpen" @close="handleClose">
-            <manager-menu/>
-          </el-menu>
-        </el-drawer>
       </el-header>
       <el-container>
         <el-main class="mainWindow">
-          <div class="rightWindow">
-            <el-menu v-if="!mobile" router default-active="/Manager/Main" active-text-color="#2d67fd"
-              background-color="#f0f2ff" class="el-menu-vertical-demo asideMenu" text-color="#3e5ca8" @open="handleOpen"
-              @close="handleClose" :collapse="true">
-              <manager-menu/>
+          <!--桌面端的右侧导航栏-->
+          <div v-if="!mobile" class="rightWindow">
+            <el-menu router default-active="/Teacher/Main" active-text-color="#2d67fd" background-color="rgba(0,0,0,0)"
+              class="teacherRightMenu" text-color="#3e5ca8" @open="handleOpen" @close="handleClose"
+              :collapse="true">
+              <teacher-menu/>
             </el-menu>
           </div>
-          <div class="leftMenu">
+          <div class="leftMenu" :style="{
+            'width': `${mobile? '100%':'97%'}`
+          }">
             <router-view />
           </div>
         </el-main>
       </el-container>
     </el-container>
   </div>
+
+  <!--移动端的右侧菜单-->
+  <el-drawer with-header="false" v-model="menuDrawerOpen" :direction="'rtl'" :size="'90%'" z-index="50">
+    <avatar-operate/>
+    <!--菜单区域-->
+    <el-menu router default-active="/Teacher/Main" active-text-color="#2d67fd" background-color="#e9eff9"
+      text-color="#3e5ca8" @open="handleOpen" @close="handleClose">
+      <teacher-menu/>
+    </el-menu>
+  </el-drawer>
 </template>
 <script lang="ts" setup>
-import { ref} from 'vue'
+import { ref, reactive, toRefs } from 'vue'
 import {
-  menuDrawerOpen,
+  getAvatarURL,
+  getNickName,
+
   mobile
 } from '../../global/global';
 import { RouterView } from 'vue-router';
-import ManagerMenu from "@/components/NavMenu/ManagerMenu.vue";
+import TeacherMenu from "@/components/NavMenu/TeacherMenu.vue";
 import AvatarOperate from "@/components/AvatarOperate.vue";
+
+const menuDrawerOpen = ref(false);
 
 const openMenu = () => {
   menuDrawerOpen.value = true;
@@ -71,6 +85,9 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 </script>
 <style scoped lang='scss'>
+.teacherRightMenu{
+  width: 6.5vh;
+}
 .back {
   margin: 0;
   padding: 0;
@@ -117,7 +134,6 @@ const handleSelect = (key: string, keyPath: string[]) => {
 }
 
 .leftMenu {
-  width: 100%;
 }
 
 .asideMenu {
@@ -148,9 +164,10 @@ const handleSelect = (key: string, keyPath: string[]) => {
   margin-top: 0.25vh;
   margin-left: 0.25vh;
   width: 35vh;
-  /*  margin-top: 8vh;
-   margin-bottom: 8vh; */
+  /*  margin-top: 1vh;
+   margin-bottom: 1vh; */
 }
+
 .flex-grow {
   flex-grow: 1;
 }
@@ -164,6 +181,7 @@ img {
   padding-right: 0.625vh;
   margin: 1.25vh;
 }
+
 .dialogImg {
   /* padding-left: 20%; */
   justify-content: center;

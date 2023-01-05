@@ -268,16 +268,16 @@ public class ActivityServiceImpl implements ActivityService {
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
-                Optional<Activity> activityOp=activityRepository.findById(id);
-                if(activityOp.isEmpty()){
-                    response.setMessage("对象不存在");
+                User target = userService.findById(id);
+                List<Activity> activityList;
+                if(target instanceof Teacher || target instanceof Manager){
                     response.setSuccess(false);
-                }else{
-                    Activity activity=activityOp.get();
-                    response.setMessage("查找成功");
-                    response.setSuccess(true);
-                    response.setContent(activity);
+                    response.setMessage("老师不具有成果奖励");
                 }
+                activityList = ((Student) target).getActivity();
+                response.setMessage("查找成功");
+                response.setSuccess(true);
+                response.setContent(activityList);
             }else{
                 response.setSuccess(false);
                 response.setMessage("用户权限不足");

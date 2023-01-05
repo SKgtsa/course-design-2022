@@ -7,6 +7,7 @@ import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.RewardRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
@@ -251,16 +252,16 @@ public class RewardServiceImpl implements RewardService {
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
-                Optional<Reward> rewardOp=rewardRepository.findById(id);
-                if(rewardOp.isEmpty()){
-                    response.setMessage("对象不存在");
+                User target = userService.findById(id);
+                List<Reward> rewardList;
+                if(target instanceof Teacher || target instanceof Manager){
                     response.setSuccess(false);
-                    return response;
+                    response.setMessage("老师不具有成果奖励");
                 }
-                Reward reward=rewardOp.get();
+                rewardList = ((Student) target).getRewardSet();
                 response.setMessage("查找成功");
                 response.setSuccess(true);
-                response.setContent(reward);
+                response.setContent(rewardList);
             }else{
                 response.setSuccess(false);
                 response.setMessage("用户权限不足");

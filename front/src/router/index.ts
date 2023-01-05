@@ -76,44 +76,27 @@ const router = createRouter({
           component: () => import('../views/student/MainView.vue')
         },
         {
-          path: '/Student/AcademicManagement',
-          name: 'AcademicManagement',
-          component: () => import('../views/student/AcademicManagement.vue'),
-          children: [
-            {
-              path: '/Student/AcademicManagement/AMHome',
-              name: 'AMHome',
-              component: () => import('../views/student/AMHome.vue')
-            },
-            {
-              path: '/Student/AcademicManagement/StudentEvaluate',
-              name: 'StudentEvaluate',
-              component: () => import('../views/student/StudentEvaluate.vue')
-            },
-            {
-              path: '/Student/AcademicManagement/Practice',
-              name: 'Practice',
-              component: () => import('../views/student/PracticeView.vue')
-            },
-            {
-              path: '/Student/AcademicManagement/Activity',
-              name: 'Activity',
-              component: () => import('../views/student/ActivityView.vue')
-            },
+          path: '/Student/Practice',
+          name: 'Practice',
+          component: () => import('../views/student/PracticeView.vue')
+        },
+        {
+          path: '/Student/Activity',
+          name: 'Activity',
+          component: () => import('../views/student/ActivityView.vue')
+        },
 
-            {
-              path: '/Student/AcademicManagement/Reward',
-              name: 'Reward',
-              component: () => import('../views/student/RewardView.vue')
-            },
-          ]
+        {
+          path: '/Student/Reward',
+          name: 'Reward',
+          component: () => import('../views/student/RewardView.vue')
         },
       ]
     },
     {
       path: '/Teacher',
       name: 'TeacherHomePage',
-      component: () => import('../views/teacher/TeacherHomePage.vue'),
+      component: () => import('../views/teacher/HomePage.vue'),
       meta: {
         keepAlive: true // 需要缓存
       },
@@ -121,22 +104,22 @@ const router = createRouter({
         {
           path: '/Teacher/CourseManage',
           name: 'TeacherCourseManage',
-          component: () => import('../views/teacher/TeacherCourseManage.vue')
+          component: () => import('../views/teacher/CourseManage.vue')
         },
         {
           path: '/Teacher/Main',
           name: 'TeacherMain',
-          component: () => import('../views/teacher/TeacherMainView.vue')
+          component: () => import('../views/teacher/MainView.vue')
         },
         {
           path: '/Teacher/ScoreManage',
           name: 'TeacherScoreManage',
-          component: () => import('../views/teacher/TeacherScoreManage.vue')
+          component: () => import('../views/teacher/ScoreManage.vue')
         },
         {
           path: '/Teacher/SelfInformation',
           name: 'TeacherSelfInformation',
-          component: () => import('../views/teacher/TeacherSelfInformation.vue')
+          component: () => import('../views/teacher/SelfInformation.vue')
         },
       ]
     },

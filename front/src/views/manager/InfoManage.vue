@@ -1,36 +1,39 @@
 <template>
   <div class="content">
-    <div class="mainCard">
+    <div class="mainCard" :style="{
+      'width': `${mobile? '100%':'90%'}`,
+      'margin': `${mobile? '0 auto':'0 8%'}`
+    }">
       <div class="header">
         <div class="leftPanel">
           <a class="title">信息管理</a>
           <div class="searchOrigin">
-                        <span class="searchSpan">
-                            <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="15"
-                                      placeholder="输入学工号"/>
-                            <el-button type="submit" class="searchButton" @click="check">
-                                <el-icon class="icon">
-                                    <Search/>
-                                </el-icon>
-                            </el-button>
-                            <el-button type="danger" class="deleteButton" v-if="characterHasFound">
-                                <a class="deleteText">删除用户</a>
-                            </el-button>
-                        </span>
+            <span class="searchSpan">
+                <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="15"
+                          placeholder="输入学工号"/>
+                <el-button type="submit" class="searchButton" @click="check">
+                    <el-icon class="icon">
+                        <Search/>
+                    </el-icon>
+                </el-button>
+                <el-button type="danger" class="deleteButton" v-if="characterHasFound">
+                    <a class="deleteText">删除用户</a>
+                </el-button>
+            </span>
           </div>
         </div>
         <div class="rightPanel" v-if="characterHasFound">
           <div class="imgBoxLeft">
-            <el-image class="img" :src="userStudentForm.avatarURL" fit="cover">
+            <el-image class="img" :src="userIsTeacher? userTeacherForm.avatarURL:userStudentForm.avatarURL" fit="cover">
             </el-image>
           </div>
           <div class="imgBoxRight">
-            <el-image class="img" :src="userStudentForm.photoURL" fit="cover">
+            <el-image class="img" :src="userIsTeacher? userTeacherForm.photoURL:userStudentForm.photoURL" fit="cover">
             </el-image>
           </div>
         </div>
       </div>
-      <div class="main">
+      <div class="main" v-if="findUser">
         <div class="menu">
                     <span class="menuButtonSpan">
                         <el-button class="menuButton" @click="clickInformation">
@@ -52,7 +55,6 @@
                             <a>课外活动</a>
                         </el-button>
                     </span>
-
         </div>
         <div class="right">
           <el-scrollbar><div v-if="informationShow" class="information">
@@ -230,8 +232,11 @@ import {hideLoading, showLoading} from "@/utils/loading";
 import service from "@/request";
 import {messageError, messageSuccess, messageWarning} from "@/utils/message";
 import {ElMessageBox} from "element-plus";
-import {getBaseURL} from "@/global/global";
+import {getBaseURL, mobile} from "@/global/global";
+import {loginFailed} from "@/utils/tokenCheck";
 
+const userIsTeacher = ref(false)
+const findUser = ref(false)
 let currentPage = ref(1);
 let pageSize = ref(7);
 let pageCount = ref();
@@ -314,12 +319,6 @@ const handleCurrentChange = (current) => {
   loadPracticeTable() //再执行一次索要数据方法
   console.log(currentPage)
 }
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
 const clickPractice = () => {
   practiceShow.value = true;
   activityShow.value = false;
@@ -386,8 +385,11 @@ const checkUser = async (userNumber) => {   //查看个人信息
         userTeacherForm.politicalAffiliation = content.politicalAffiliation;
         userTeacherForm.eMail = content.eMail;
         userTeacherForm.userNumber = content.userNumber;
-        userTeacherForm.avatarURL = getBaseURL()+content.avatarURL;
-        userTeacherForm.photoURL = getBaseURL()+content.photoURL;
+        userTeacherForm.avatarURL = getBaseURL() + content.avatarURL;
+        userTeacherForm.photoURL = getBaseURL() + content.photoURL;
+        userIsTeacher.value = true;
+        console.log('查询用户为老师')
+        console.log(userTeacherForm)
       } else {
         characterIsStudent.value = true;
         userStudentForm.id = content.id;
@@ -404,18 +406,22 @@ const checkUser = async (userNumber) => {   //查看个人信息
         userStudentForm.politicalAffiliation = content.politicalAffiliation;
         userStudentForm.eMail = content.eMail;
         userStudentForm.userNumber = content.userNumber;
-        userStudentForm.avatarURL = getBaseURL()+content.avatarURL;
-        userStudentForm.photoURL = getBaseURL()+content.photoURL;
+        userStudentForm.avatarURL = getBaseURL() + content.avatarURL;
+        userStudentForm.photoURL = getBaseURL() + content.photoURL;
         userStudentForm.section = content.section;
+        userIsTeacher.value = false;
+        console.log('查询用户为学生')
+        console.log(userStudentForm)
       }
+      findUser.value = true;
     } else {
       hideLoading()
-      messageWarning(res.data.message)
+      loginFailed();
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
+        loginFailed();
         console.log(error)
       })
 }
@@ -426,13 +432,13 @@ const checkPractice = (row) => {   //查看单个的数据 一条一条赋值，
   practiceForm.id = row.id;
   practiceTypeOperation.value = 'check';
 }
-const loadPracticeTable = async () => {
+const loadPracticeTable = () => {
   showLoading();
-  await service.post('/api/practice/managerFind', {
+  console.log('更新practice')
+  console.log(userStudentForm)
+  service.post('/api/practice/managerFind', {
     token: localStorage.getItem("token"),
-    pageNum: currentPage.value,
-    pageSize: pageSize.value,
-    id: searchOrigin.value
+    id: userStudentForm.id
   }).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
@@ -447,14 +453,14 @@ const loadPracticeTable = async () => {
       practiceData.arr = array
       console.log(practiceData)
     } else {
+      console.log(res)
       hideLoading();
-      messageWarning(res.data.message)
+      loginFailed()
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+        loginFailed()
       })
 }
 const deletePractice = async (row) => {  //删  //异步不确定是否有问题
@@ -471,7 +477,7 @@ const deletePractice = async (row) => {  //删  //异步不确定是否有问题
         showLoading();
         service.post('/api/practice/managerDelete', {
           token: localStorage.getItem("token"),
-          practiceId: row.id
+          id: row.id
         }).then(res => {
           if (res.data.success) {
             hideLoading()
@@ -479,14 +485,14 @@ const deletePractice = async (row) => {  //删  //异步不确定是否有问题
             localStorage.setItem("token", res.data.token)
             loadPracticeTable() //重新加载现在表单中的数据
           } else {
+            console.log(res)
             hideLoading();
-            messageWarning(res.data.message)
+            loginFailed()
           }
         })
             .catch(function (error) {
               hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
+              loginFailed()
             })
       })
 }
@@ -512,7 +518,7 @@ const deleteReward = async (row) => {  //删  //异步不确定是否有问题
         showLoading();
         service.post('/api/reward/managerDelete', {
           token: localStorage.getItem("token"),
-          rewardId: row.id
+          id: row.id
         }).then(res => {
           if (res.data.success) {
             hideLoading()
@@ -520,14 +526,14 @@ const deleteReward = async (row) => {  //删  //异步不确定是否有问题
             localStorage.setItem("token", res.data.token)
             loadRewardTable() //重新加载现在表单中的数据
           } else {
+            console.log(res)
             hideLoading();
-            messageWarning(res.data.message)
+            loginFailed()
           }
         })
             .catch(function (error) {
               hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
+              loginFailed()
             })
       })
 }
@@ -535,9 +541,7 @@ const loadRewardTable = async () => {
   showLoading();
   await service.post('/api/reward/managerFind', {
     token: localStorage.getItem("token"),
-    pageNum: currentPage.value,
-    pageSize: pageSize.value,
-    id: searchOrigin.value
+    id: userStudentForm.id
   }).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
@@ -552,26 +556,23 @@ const loadRewardTable = async () => {
       rewardData.arr = array
       console.log(rewardData)
     } else {
+      console.log(res)
       hideLoading();
-      messageWarning(res.data.message)
+      loginFailed()
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+        loginFailed()
       })
 }
 // loadRewardTable() //进入默认执行
-const loadActivityTable = async () => {
+const loadActivityTable = () => {
   showLoading();
-  await service.post('/api/activity/managerFind', {
+  service.post('/api/activity/managerFind', {
     token: localStorage.getItem("token"),
-    pageNum: currentPage.value,
-    pageSize: pageSize.value,
-    id: searchOrigin.value
+    id: userStudentForm.id
   }).then(res => {
-    console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
       console.log('初始化返回的res')
@@ -584,14 +585,14 @@ const loadActivityTable = async () => {
       activityData.arr = array
       console.log(activityData)
     } else {
+      console.log(res)
       hideLoading();
-      messageWarning(res.data.message)
+      loginFailed()
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+        loginFailed()
       })
 }
 // loadActivityTable() //进入默认执行
@@ -604,8 +605,8 @@ const checkActivity = (row) => {   //查看单个的数据 一条一条赋值，
   activityForm.id = row.id;
   activityTypeOperation.value = 'check';
 }
-const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
-  await ElMessageBox.confirm(
+const deleteActivity = (row) => {  //删  //异步不确定是否有问题
+  ElMessageBox.confirm(
       '确认删除该条社会实践吗?',
       'Warning',
       {
@@ -626,14 +627,14 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
             localStorage.setItem("token", res.data.token)
             loadActivityTable() //重新加载现在表单中的数据
           } else {
+            console.log(res)
             hideLoading();
-            messageWarning(res.data.message)
+            loginFailed()
           }
         })
             .catch(function (error) {
               hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
+              loginFailed()
             })
       })
 }
@@ -743,11 +744,9 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
                 font-size: 1.6vw;
             }
         } */
+        background-color: black;
         .imgBoxLeft {
-          padding-left: 3vh;
-          padding-top: 3vh;
-          width: 12vw;
-          height: 25vh;
+          width: 50%;
           float: left;
           .img {
             height: 100%;
@@ -755,10 +754,7 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
           }
         }
         .imgBoxRight {
-          padding-right: 5vh;
-          padding-top: 3vh;
-          width: 12vw;
-          height: 25vh;
+          width: 50%;
           float: right;
           .img {
             height: 100%;

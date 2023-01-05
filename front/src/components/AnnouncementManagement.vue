@@ -1,7 +1,7 @@
 <template>
   <div class="main" :style="{
     'flex-direction': `${mobile? 'column':'row'}`,
-    'height': `${mobile? 'auto':'100vh'}`,
+    'height': `${mobile? 'auto':'93vh'}`,
     'padding-top': `${mobile? '3vh':'0'}`,
     'padding-bottom': `${mobile? '8vh':'0'}`,
   }">
