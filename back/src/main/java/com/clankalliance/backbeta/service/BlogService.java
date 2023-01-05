@@ -7,13 +7,13 @@ public interface BlogService {
 
     //发帖
     CommonResponse handleSubmit(String token, String heading, String content, MultipartFile topImage);
-    CommonResponse handleMine(String token, int length, int startIndex);
+    CommonResponse handleMine(String token, int length, int startIndex, String keyWord);
     //获取所有帖子 按时间顺序分页
-    CommonResponse handleMainPage(String token, int length, int startIndex);
+    CommonResponse handleMainPage(String token, int length, int startIndex, String keyWord);
     //获取关注者的帖子 按时间顺序分页
-    CommonResponse handleLikePost(String token, int length, int startIndex);
+    CommonResponse handleLikePost(String token, int length, int startIndex, String keyWord);
     //获取收藏的帖子 按时间顺序分页
-    CommonResponse handleCollectPost(String token, int length, int startIndex);
+    CommonResponse handleCollectPost(String token, int length, int startIndex, String keyWord);
     //查看个人主页 若登录状态失效则以游客模式
     CommonResponse handlePersonalPageData(String token, Long userId);
     //查看个人主页 博客更新方法

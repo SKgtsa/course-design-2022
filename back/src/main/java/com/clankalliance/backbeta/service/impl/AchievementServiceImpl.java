@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class AchievementServiceImpl implements AchievementService {
@@ -52,21 +53,21 @@ public class AchievementServiceImpl implements AchievementService {
             response.setSuccess(false);
             response.setMessage("该成就已内置");
         }else{
-            User user = userService.findById(Long.parseLong(response.getMessage()));
+            User user = userService.findById(userId);
             if(user instanceof Teacher || user instanceof Student){
                 Achievement achievement = new Achievement(snowFlake.nextId(), name, description);
                 achievementRepository.save(achievement);
                 if(user instanceof Teacher){
                     Teacher teacher = (Teacher) user;
-                    List<Achievement> achievementList = teacher.getAchievementList();
-                    achievementList.add(achievement);
-                    teacher.setAchievementList(achievementList);
+                    Set<Achievement> achievementSet = teacher.getAchievementSet();
+                    achievementSet.add(achievement);
+                    teacher.setAchievementSet(achievementSet);
                     teacherRepository.save(teacher);
                 }else if(user instanceof Student){
                     Student student = (Student) user;
-                    List<Achievement> achievementList = student.getAchievementList();
-                    achievementList.add(achievement);
-                    student.setAchievementList(achievementList);
+                    Set<Achievement> achievementSet = student.getAchievementSet();
+                    achievementSet.add(achievement);
+                    student.setAchievementSet(achievementSet);
                     studentRepository.save(student);
                 }
                 response.setMessage("评价成功");

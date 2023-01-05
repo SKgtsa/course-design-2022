@@ -45,33 +45,33 @@ public class PracticeServiceImpl implements PracticeService {
 
     private final Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
 
-    private List<Achievement> updateAchievementList(Student student){
+    private Set<Achievement> updateAchievementList(Student student){
         List<Practice> practiceList = student.getPracticeSet();
         int practiceNum = practiceList.size();
-        List<Achievement> achievementList = student.getAchievementList();
+        Set<Achievement> achievementSet = student.getAchievementSet();
         if(practiceNum >= 10){
-            if(achievementList.contains(PRACTICE_B)){
-                achievementList.remove(PRACTICE_B);
-            }else if(achievementList.contains(PRACTICE_C)){
-                achievementList.remove(PRACTICE_C);
+            if(achievementSet.contains(PRACTICE_B)){
+                achievementSet.remove(PRACTICE_B);
+            }else if(achievementSet.contains(PRACTICE_C)){
+                achievementSet.remove(PRACTICE_C);
             }
-            achievementList.add(PRACTICE_A);
+            achievementSet.add(PRACTICE_A);
         }else if(practiceNum >= 7){
-            if(achievementList.contains(PRACTICE_A)){
-                achievementList.remove(PRACTICE_A);
-            }else if(achievementList.contains(PRACTICE_C)){
-                achievementList.remove(PRACTICE_C);
+            if(achievementSet.contains(PRACTICE_A)){
+                achievementSet.remove(PRACTICE_A);
+            }else if(achievementSet.contains(PRACTICE_C)){
+                achievementSet.remove(PRACTICE_C);
             }
-            achievementList.add(PRACTICE_B);
+            achievementSet.add(PRACTICE_B);
         }else if(practiceNum >= 3){
-            if(achievementList.contains(PRACTICE_A)){
-                achievementList.remove(PRACTICE_A);
-            }else if(achievementList.contains(PRACTICE_B)){
-                achievementList.remove(PRACTICE_B);
+            if(achievementSet.contains(PRACTICE_A)){
+                achievementSet.remove(PRACTICE_A);
+            }else if(achievementSet.contains(PRACTICE_B)){
+                achievementSet.remove(PRACTICE_B);
             }
-            achievementList.add(PRACTICE_C);
+            achievementSet.add(PRACTICE_C);
         }
-        return achievementList;
+        return achievementSet;
     }
 
     /**
@@ -120,7 +120,7 @@ public class PracticeServiceImpl implements PracticeService {
                 List<Practice> practiceList=student.getPracticeSet();
                 practiceList.add(practice);
                 student.setPracticeSet(practiceList);
-                student.setAchievementList(updateAchievementList(student));
+                student.setAchievementSet(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -182,7 +182,7 @@ public class PracticeServiceImpl implements PracticeService {
                 if(studentSet.size() == 0){
                     practiceRepository.delete(practice);
                 }
-                student.setAchievementList(updateAchievementList(student));
+                student.setAchievementSet(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -302,7 +302,7 @@ public class PracticeServiceImpl implements PracticeService {
                     List<Practice> practiceList=s.getPracticeSet();
                     practiceList.remove(practice);
                     s.setPracticeSet(practiceList);
-                    s.setAchievementList(updateAchievementList(s));
+                    s.setAchievementSet(updateAchievementList(s));
                     studentRepository.save(s);
                 }
                 practiceRepository.delete(practice);

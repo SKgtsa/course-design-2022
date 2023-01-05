@@ -9,7 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class PersonalPageData {
 
     private String email;
 
-    private List<Achievement> achievementList;
+    private Set<Achievement> achievementList;
 
     private boolean follow;
 
@@ -39,7 +40,7 @@ public class PersonalPageData {
         name = user.getName();
         gender = user.getGender() ? "女":"男";
         email = user.getEMail();
-        achievementList = user instanceof Teacher? ((Teacher) user).getAchievementList():user instanceof Student? ((Student) user).getAchievementList():new ArrayList<>();
+        achievementList = user instanceof Teacher? ((Teacher) user).getAchievementSet():user instanceof Student? ((Student) user).getAchievementSet():new HashSet<>();
         this.follow = follow;
     }
 

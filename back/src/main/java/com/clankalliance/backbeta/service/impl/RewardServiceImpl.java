@@ -43,33 +43,33 @@ public class RewardServiceImpl implements RewardService {
 
     private final Achievement REWARD_A = new Achievement(Long.parseLong("9"),"成果奖励10项以上","奖金证书收割机");
 
-    private List<Achievement> updateAchievementList(Student student){
+    private Set<Achievement> updateAchievementList(Student student){
         List<Reward> rewardList = student.getRewardSet();
         int rewardNum = rewardList.size();
-        List<Achievement> achievementList = student.getAchievementList();
+        Set<Achievement> achievementSet = student.getAchievementSet();
         if(rewardNum >= 10){
-            if(achievementList.contains(REWARD_B)){
-                achievementList.remove(REWARD_B);
-            }else if(achievementList.contains(REWARD_C)){
-                achievementList.remove(REWARD_C);
+            if(achievementSet.contains(REWARD_B)){
+                achievementSet.remove(REWARD_B);
+            }else if(achievementSet.contains(REWARD_C)){
+                achievementSet.remove(REWARD_C);
             }
-            achievementList.add(REWARD_A);
+            achievementSet.add(REWARD_A);
         }else if(rewardNum >= 7){
-            if(achievementList.contains(REWARD_A)){
-                achievementList.remove(REWARD_A);
-            }else if(achievementList.contains(REWARD_C)){
-                achievementList.remove(REWARD_C);
+            if(achievementSet.contains(REWARD_A)){
+                achievementSet.remove(REWARD_A);
+            }else if(achievementSet.contains(REWARD_C)){
+                achievementSet.remove(REWARD_C);
             }
-            achievementList.add(REWARD_B);
+            achievementSet.add(REWARD_B);
         }else if(rewardNum >= 3){
-            if(achievementList.contains(REWARD_A)){
-                achievementList.remove(REWARD_A);
-            }else if(achievementList.contains(REWARD_B)){
-                achievementList.remove(REWARD_B);
+            if(achievementSet.contains(REWARD_A)){
+                achievementSet.remove(REWARD_A);
+            }else if(achievementSet.contains(REWARD_B)){
+                achievementSet.remove(REWARD_B);
             }
-            achievementList.add(REWARD_C);
+            achievementSet.add(REWARD_C);
         }
-        return achievementList;
+        return achievementSet;
     }
 
     /**
@@ -118,7 +118,7 @@ public class RewardServiceImpl implements RewardService {
                 List<Reward> rewardList=student.getRewardSet();
                 rewardList.add(reward);
                 student.setRewardSet(rewardList);
-                student.setAchievementList(updateAchievementList(student));
+                student.setAchievementSet(updateAchievementList(student));
                 studentRepository.save(student);
                 response.setSuccess(true);
                 response.setMessage("成果奖励创建成功");
@@ -177,7 +177,7 @@ public class RewardServiceImpl implements RewardService {
                 if(studentSet.size() == 0){
                     rewardRepository.delete(reward);
                 }
-                student.setAchievementList(updateAchievementList(student));
+                student.setAchievementSet(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -297,7 +297,7 @@ public class RewardServiceImpl implements RewardService {
                     List<Reward> rewardList=s.getRewardSet();
                     rewardList.remove(reward);
                     s.setRewardSet(rewardList);
-                    s.setAchievementList(updateAchievementList(s));
+                    s.setAchievementSet(updateAchievementList(s));
                     studentRepository.save(s);
                 }
                 rewardRepository.delete(reward);

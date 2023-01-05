@@ -27,12 +27,12 @@ public class BlogController {
 
     @PostMapping("/getMine")
     public CommonResponse getMine(@RequestBody MainRequest request){
-        return blogService.handleMine(request.getToken(), request.getLength(), request.getStartIndex());
+        return blogService.handleMine(request.getToken(), request.getLength(), request.getStartIndex(), request.getKeyWord());
     }
 
     @PostMapping("/getMain")
     public CommonResponse getMain(@RequestBody MainRequest request){
-        return blogService.handleMainPage(request.getToken(), request.getLength(), request.getStartIndex());
+        return blogService.handleMainPage(request.getToken(), request.getLength(), request.getStartIndex(), request.getKeyWord());
     }
 
     @PostMapping("/getPersonal")
@@ -47,12 +47,12 @@ public class BlogController {
 
     @PostMapping("/getLike")
     public CommonResponse getLike(@RequestBody MainRequest request){
-        return blogService.handleLikePost(request.getToken(), request.getLength(), request.getStartIndex());
+        return blogService.handleLikePost(request.getToken(), request.getLength(), request.getStartIndex(), request.getKeyWord());
     }
 
     @PostMapping("/getCollect")
     public CommonResponse getCollect(@RequestBody MainRequest request){
-        return blogService.handleCollectPost(request.getToken(), request.getLength(), request.getStartIndex());
+        return blogService.handleCollectPost(request.getToken(), request.getLength(), request.getStartIndex(), request.getKeyWord());
     }
 
     @PostMapping("/getDetail")
@@ -93,7 +93,7 @@ public class BlogController {
     //还需要一个删评论的
     @PostMapping("/deleteComment")
     public CommonResponse search(@RequestBody CommonDeleteRequest request){
-        return blogService.handleDelete(request.getToken(), request.getId());
+        return blogService.handleDeleteComment(request.getToken(), request.getId());
     }
 
 }

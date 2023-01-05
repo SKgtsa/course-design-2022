@@ -29,7 +29,7 @@ public class Teacher extends User {
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
-                achievementList = new ArrayList<>();
+                achievementSet = new HashSet<>();
         }
 
         public Teacher(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
@@ -37,7 +37,7 @@ public class Teacher extends User {
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
-                achievementList = new ArrayList<>();
+                achievementSet = new HashSet<>();
         }
 
         public Set<Course> getCourseSet() {
@@ -80,12 +80,12 @@ public class Teacher extends User {
                 this.collection = collection;
         }
 
-        public List<Achievement> getAchievementList() {
-                return achievementList;
+        public Set<Achievement> getAchievementSet() {
+                return achievementSet;
         }
 
-        public void setAchievementList(List<Achievement> achievementList) {
-                this.achievementList = achievementList;
+        public void setAchievementSet(Set<Achievement> achievementSet) {
+                this.achievementSet = achievementSet;
         }
 
         //删除老师会一并删除他的课程
@@ -112,6 +112,6 @@ public class Teacher extends User {
 
         @JsonIgnore
         @OneToMany
-        private List<Achievement> achievementList;
+        private Set<Achievement> achievementSet;
 
 }

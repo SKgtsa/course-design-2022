@@ -1,7 +1,7 @@
 <template>
   <div class="main" :style="{
     'flex-direction': `${mobile? 'column':'row'}`,
-    'height': `${mobile? 'auto':'100vh'}`,
+    'height': `${mobile? 'auto':'93vh'}`,
     'padding-top': `${mobile? '3vh':'0'}`,
     'padding-bottom': `${mobile? '8vh':'0'}`,
   }">
@@ -47,7 +47,9 @@
               'background-size':'cover',
               'height':'100%'
             }" @click="jumpToAnnouncementDetail(item)">
-              <a style="color: #FFFFFF;font-size: 4vh;padding-top: 1vh;padding-left: 2vw">{{item.heading}}</a>
+              <div style="width: 100%;height: 100%;border-radius: inherit;background-color: rgba(0,0,0,0.6);display: flex;vertical-align: bottom">
+                <a style="color: #FFFFFF;font-size: 4vh;margin: auto">{{item.heading}}</a>
+              </div>
             </div>
           </el-carousel-item>
         </el-carousel>
@@ -60,7 +62,11 @@
       <div class="operationCard" :style="{
         'width': `${mobile? '100%':'70vw'}`,
       }">
-        <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
+        <div class="searchArea">
+          <el-input v-model="pageData.input" style="font-size: 3vh;line-height: 3vh;height: 4vh"/>
+          <el-button @click="search" style="height: 4vh;width: 20%">搜索</el-button>
+        </div>
+        <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 90%;">
           <div v-for="(item,index) in pageData.postList"   :key="index"  style="padding-top: 2vh">
             <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
               <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
@@ -70,18 +76,17 @@
                     <div class="bottomLeft">
                       <a>{{item.time}}</a>
                     </div>
-                    <div class="bottomRight">
-                      <div class="bottomTop">
-                        <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
-                        <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
-                      </div>
-                      <div class="bottomBottom">
-                        <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
-                        <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
-                        <a class="likeNum">{{item.likeNum}}</a>
-                      </div>
-                    </div>
                   </div>
+                </div>
+                <div class="bottomTop">
+                  <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
+                  <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
+                </div>
+                <div class="bottomBottom">
+                  <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+                  <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                  <a class="likeNum">{{item.likeNum}}</a>
+                  <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
                 </div>
               </div>
             </div>
@@ -169,15 +174,19 @@
         <el-button @click="commentSubmit">提交</el-button>
       </div>
       <div class="comment">
-        <div v-for="(item,index) in pageData.targetContent.commentList" class="commentCard">
-          <div v-html="item.content" class="commentContent"/>
-          <div class="commentTool">
-            <div class="userInfoArea">
-              <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="getBaseURL() + item.avatarURL" class="avatar"/></el-button>
-              <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
+        <div  v-for="(item,index) in pageData.targetContent.commentList" class="commentCardArea">
+          <div class="commentCard">
+            <div v-html="item.content" class="commentContent"/>
+            <div class="commentTool">
+              <div class="userInfoArea">
+                <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="getBaseURL() + item.avatarURL" class="avatar"/></el-button>
+                <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
+              </div>
+              <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisComment(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </el-dialog>
@@ -222,8 +231,19 @@ import service from "@/request";
 import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
-import {getBaseURL, mobile} from "@/global/global";
+import {getBaseURL, getManager, getUserId, mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
+
+const handleDeleteCheck = (item: Post) => {
+  console.log(item.userId)
+  console.log(getUserId())
+  if(item.userId == getUserId()){
+    return true;
+  }else{
+    return false;
+  }
+}
+
 const blog = ref('')
 const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
@@ -250,6 +270,8 @@ const showDetail = ref(false);
 
 const showAnnouncementDetail = ref(false)
 
+console.log(getUserId())
+
 const pageData  = reactive({
   postList:[],
   target: {
@@ -271,13 +293,23 @@ const pageData  = reactive({
     pictureUrl:'',
     heading:'',
     content: '',
-  }
+  },
+  keyWord: '',
+  input: '',
 })
 
 interface Announcement{
   id: string,
   pictureUrl:string,
   heading:string,
+}
+
+const search = () => {
+  pageData.keyWord = pageData.input;
+  startIndex.value = 0;
+  loadOver.value = false;
+  pageData.postList = [];
+  refresh();
 }
 
 const updateAnnouncement = () => {
@@ -303,6 +335,63 @@ const updateAnnouncement = () => {
 }
 
 updateAnnouncement();
+
+const deleteThisComment = (target: Comment, event: Event) => {
+  event.stopPropagation();
+  ElMessageBox.confirm('你确定要删除这条博客吗？','警告',{
+    type: "info",
+    cancelButtonText: '取消',
+    confirmButtonText: '确认'
+  }).then(() => {
+    showLoading();
+    console.log(target.id)
+    service.post('api/blog/deleteComment',{token: localStorage.getItem("token"), id: target.id}).then(res => {
+      const data = res.data;
+      console.log('删除成功收到回调')
+      console.log(res)
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        hideLoading();
+        jumpToDetail(pageData.target)
+      } else {
+        hideLoading();
+        loginFailed();
+      }
+    })
+  }).catch(() => {
+    console.log('取消操作')
+  })
+}
+
+const deleteThisPost = (target: Post, event: Event) => {
+  event.stopPropagation();
+  ElMessageBox.confirm('你确定要删除这条博客吗？','警告',{
+    type: "info",
+    cancelButtonText: '取消',
+    confirmButtonText: '确认'
+  }).then(() => {
+    showLoading();
+    service.post('api/blog/delete',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
+      const data = res.data;
+      console.log('删除成功收到回调')
+      console.log(res)
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        hideLoading();
+        pageData.keyWord = '';
+        pageData.postList = [];
+        startIndex.value = 0;
+        loadOver.value = false;
+        refresh();
+      } else {
+        hideLoading();
+        loginFailed();
+      }
+    })
+  }).catch(() => {
+    console.log('取消操作')
+  })
+}
 
 
 const jumpToAnnouncementDetail = (item: Announcement) => {
@@ -342,6 +431,14 @@ interface Post{
   likeNum: number,
   like: boolean,
   collect: boolean;
+}
+
+interface Comment{
+  id: string,
+  content: string,
+  nickName: string,
+  avatarURL: string,
+  userId: string,
 }
 
 const likeThis = (target: Post, event: Event) => {
@@ -438,6 +535,7 @@ const handleMenuOpen = (key: string, keyPath: string[]) => {
       targetURL.value = 'api/blog/getCollect';
       break;
   }
+  pageData.keyWord = '';
   startIndex.value = 0;
   loadOver.value = false;
   pageData.postList = [];
@@ -646,7 +744,8 @@ const refresh = () => {
     }else{
       showLoading();
       requesting.value = true;
-      service.post(targetURL.value,{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value}).then(res => {
+      console.log(pageData.keyWord)
+      service.post(targetURL.value,{token: localStorage.getItem("token"), length: length, startIndex: startIndex.value, keyWord: pageData.keyWord}).then(res => {
         const data = res.data;
         console.log('开始refresh')
         console.log(res)
@@ -708,6 +807,7 @@ const submit = () => {
         localStorage.setItem('token', data.token)
         drawerOpen.value = false;
         hideLoading();
+        pageData.keyWord = '';
         loadOver.value = false;
         pageData.postList = [];
         startIndex.value = 0;
@@ -763,6 +863,16 @@ const getContent = (v: string) => {
 </script>
 
 <style scoped lang="scss">
+.searchArea{
+  display: flex;
+  flex-direction: row;
+  padding-top: 2vh;
+  padding-left: 2vw;
+  padding-right: 2vw;
+}
+.commentCardArea{
+  padding-top: 1.5vh;
+}
 .leftMenu{
   border-style: none;
 }
@@ -814,7 +924,9 @@ const getContent = (v: string) => {
 }
 .likeNum{
   font-weight: bold;
-  font-size: 2vw;
+  font-size: 3.5vh;
+  line-height: 3.5vh;
+  width: 3vh;
 }
 .cardBackground{
   z-index: 1;
@@ -855,20 +967,22 @@ const getContent = (v: string) => {
   margin: 0 0;
 }
 .bottomTop{
-  width: 30vw;
+  width: 100%;
   flex-direction: row-reverse;
   display: flex;
 }
 .likeCollectButton{
-  width: 3vw;
+  width: 4vh;
   background-color: rgba(0,0,0,0);
   border-style: none;
+  color: #FFFFFF;
+  font-size: 3vh;
 }
 .likeCollectImage{
-  width: 3vw;
+  width: 4vh;
 }
 .bottomBottom{
-  width: 30vw;
+  width: 100%;
   flex-direction: row-reverse;
   display: flex;
 }
@@ -915,7 +1029,7 @@ const getContent = (v: string) => {
       display: flex;
       flex-direction: row-reverse;
       .noticeCard {
-        background-color: #FFFFFF;
+        background-color: #222;
         background-position: center;
         width: 95%;
         height: 100%;
@@ -931,7 +1045,7 @@ const getContent = (v: string) => {
     .operationCard {
       border-radius: 2vh;
       background-color: #FFFFFF;
-      height: 80vh;
+      height: 90vh;
       box-shadow: 0 0 10px 0 #b9ccee;
     }
 

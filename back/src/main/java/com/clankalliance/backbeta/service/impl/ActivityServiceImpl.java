@@ -61,36 +61,36 @@ public class ActivityServiceImpl implements ActivityService {
         return ACTIVITY_A;
     }
 
-    private List<Achievement> updateAchievementList(Student student){
+    private Set<Achievement> updateAchievementList(Student student){
         List<Activity> rewardList = student.getActivity();
         int activityNum = rewardList.size();
-        List<Achievement> achievementList = student.getAchievementList();
+        Set<Achievement> achievementSet = student.getAchievementSet();
         if(activityNum >= 10){
-            if(achievementList.contains(ACTIVITY_B)){
-                achievementList.remove(ACTIVITY_B);
-            }else if(achievementList.contains(ACTIVITY_C)){
-                achievementList.remove(ACTIVITY_C);
+            if(achievementSet.contains(ACTIVITY_B)){
+                achievementSet.remove(ACTIVITY_B);
+            }else if(achievementSet.contains(ACTIVITY_C)){
+                achievementSet.remove(ACTIVITY_C);
             }
-            achievementList.add(ACTIVITY_A);
-            if(achievementList.contains(scoreService.getPOINT_A())){
-                achievementList.add(ACTIVITY_POINT);
+            achievementSet.add(ACTIVITY_A);
+            if(achievementSet.contains(scoreService.getPOINT_A())){
+                achievementSet.add(ACTIVITY_POINT);
             }
         }else if(activityNum >= 7){
-            if(achievementList.contains(ACTIVITY_A)){
-                achievementList.remove(ACTIVITY_A);
-            }else if(achievementList.contains(ACTIVITY_C)){
-                achievementList.remove(ACTIVITY_C);
+            if(achievementSet.contains(ACTIVITY_A)){
+                achievementSet.remove(ACTIVITY_A);
+            }else if(achievementSet.contains(ACTIVITY_C)){
+                achievementSet.remove(ACTIVITY_C);
             }
-            achievementList.add(ACTIVITY_B);
+            achievementSet.add(ACTIVITY_B);
         }else if(activityNum >= 3){
-            if(achievementList.contains(ACTIVITY_A)){
-                achievementList.remove(ACTIVITY_A);
-            }else if(achievementList.contains(ACTIVITY_B)){
-                achievementList.remove(ACTIVITY_B);
+            if(achievementSet.contains(ACTIVITY_A)){
+                achievementSet.remove(ACTIVITY_A);
+            }else if(achievementSet.contains(ACTIVITY_B)){
+                achievementSet.remove(ACTIVITY_B);
             }
-            achievementList.add(ACTIVITY_C);
+            achievementSet.add(ACTIVITY_C);
         }
-        return achievementList;
+        return achievementSet;
     }
 
 
@@ -134,7 +134,7 @@ public class ActivityServiceImpl implements ActivityService {
                 List<Activity> activityList=student.getActivity();
                 activityList.add(activity);
                 student.setActivity(activityList);
-                student.setAchievementList(updateAchievementList(student));
+                student.setAchievementSet(updateAchievementList(student));
                 studentRepository.save(student);
 
                 response.setSuccess(true);
@@ -193,7 +193,7 @@ public class ActivityServiceImpl implements ActivityService {
                     activityList.remove(activity);
                     student.setActivity(activityList);
                     activityRepository.delete(activity);
-                    student.setAchievementList(updateAchievementList(student));
+                    student.setAchievementSet(updateAchievementList(student));
                     studentRepository.save(student);
 
                     response.setMessage("课程删除成功");
@@ -311,7 +311,7 @@ public class ActivityServiceImpl implements ActivityService {
                     activityList.remove(activity);
                     student.setActivity(activityList);
                     activityRepository.delete(activity);
-                    student.setAchievementList(updateAchievementList(student));
+                    student.setAchievementSet(updateAchievementList(student));
                     studentRepository.save(student);
 
                     response.setMessage("课程删除成功");

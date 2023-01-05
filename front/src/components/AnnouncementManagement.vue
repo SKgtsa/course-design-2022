@@ -17,12 +17,10 @@
           'height': `${mobile? '10vh':'10vh'}`,
           'margin': `${mobile? 'auto':'0'}`,
         }">
-          <div class="buttonBox">
-            <el-button class="writeButton" @click="writeAnnouncement">
-              <el-image />
-              <a>发布通知</a>
-            </el-button>
-          </div>
+          <el-button class="writeButton" @click="writeAnnouncement">
+            <el-image />
+            <a><el-icon><EditPen /></el-icon>发布通知</a>
+          </el-button>
         </div>
       </div>
     </div>
@@ -35,17 +33,14 @@
       }">
         <div  class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
           <div v-for="(item,index) in pageData.announcementList"   :key="index"  style="padding-top: 2vh">
-            <div class="postBox" :style="{ 'background-image': `url(${item.pictureUrl})` }">
+            <div class="announcementBox" :style="{ 'background-image': `url(${item.pictureUrl})` }">
               <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToAnnouncementDetail(item)">
                 <div class="cardContent" >
                   <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
-                  <div class="postBoxBottom">
-                    <div class="bottomRight">
-                      <div class="bottomBottom">
-                        <el-button class="deleteButton" @click="deleteThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
-                        <a class="likeNum">{{item.likeNum}}</a>
-                      </div>
-                    </div>
+                </div>
+                <div class="announcementBoxBottom">
+                  <div class="bottom">
+                    <el-button class="deleteButton" @click="deleteThis(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
                   </div>
                 </div>
               </div>
@@ -197,7 +192,6 @@ const updateAnnouncement = () => {
       pageData.announcementList = data.content;
       hideLoading();
       requesting.value = false;
-      refresh();
     }else{
       hideLoading();
       loginFailed();
@@ -235,47 +229,30 @@ const jumpToAnnouncementDetail = (item: Announcement) => {
 const disabled = ref(false)
 const uploadRef = ref();
 
-const jumpToDetail = (target: Announcement) => {
-  console.log('jumpToDetail()')
-  console.log(target)
-  pageData.target = target;
-  showLoading();
-  service.post('api/blog/getDetail',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
-    const data = res.data;
-    console.log('获取正文成功')
-    console.log(res)
-    if (data.success) {
-      let content = data.content;
-      content.content = content.content.toString().replace('<img',"<img style='max-width:100%;height:auto;'")
-      pageData.targetContent = content;
-      localStorage.setItem('token', data.token)
-      hideLoading();
-    } else {
-      hideLoading();
-      loginFailed();
-    }
-    showDetail.value = true;
-  })
-}
-
 const deleteThis = (target: Announcement, event: Event) => {
   event.stopPropagation();
-  console.log('likeThis()')
-  console.log(target)
-  showLoading();
-  service.post('api/announcement/delete',{token: localStorage.getItem("token"), id: target.id}).then(res => {
-    const data = res.data;
-    console.log('收藏成功收到回调')
-    console.log(res)
-    if (data.success) {
-      localStorage.setItem('token', data.token)
-      hideLoading();
-      pageData.announcementList = [];
-      updateAnnouncement();
-    } else {
-      hideLoading();
-      loginFailed();
-    }
+  ElMessageBox.confirm('你确定要删除这条通知吗？','警告',{
+    type: "info",
+    cancelButtonText: '取消',
+    confirmButtonText: '确认'
+  }).then(() => {
+    showLoading();
+    service.post('api/announcement/delete',{token: localStorage.getItem("token"), id: target.id}).then(res => {
+      const data = res.data;
+      console.log('删除成功收到回调')
+      console.log(res)
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        hideLoading();
+        pageData.announcementList = [];
+        updateAnnouncement();
+      } else {
+        hideLoading();
+        loginFailed();
+      }
+    })
+  }).catch(() => {
+    console.log('取消操作')
   })
 }
 const getFile = (item) => {
@@ -554,7 +531,7 @@ const getContent = (v: string) => {
 .listArea{
 
 }
-.postBox{
+.announcementBox{
   z-index: 5;
   border-radius: 2vw;
   width: 95%;
@@ -563,20 +540,23 @@ const getContent = (v: string) => {
   background-size: cover;
   background-position: center;
   color: #FFF;
-
+  min-height: 20vh;
 }
 .boxContainer{
   border-radius: 2vw;
   padding: 1vw;
+  height: 100%;
 }
 .cardContent{
   flex-direction: column;
   display: flex;
+  height: 100%;
+  min-height: 15vh;
 }
-.postBoxBottom{
-  flex-direction: row;
+.announcementBoxBottom{
+  flex-direction: column-reverse;
   display: flex;
-  width: 58vw;
+  width: 100%;
 }
 .bottomLeft{
   width: 29vw;
@@ -594,14 +574,17 @@ const getContent = (v: string) => {
   width: 3vw;
   background-color: rgba(0,0,0,0);
   border-style: none;
+  color: #FFFFFF;
+  font-size: 3vh;
 }
 .likeCollectImage{
   width: 3vw;
 }
-.bottomBottom{
-  width: 30vw;
+.bottom{
+  width: inherit;
   flex-direction: row-reverse;
   display: flex;
+  height: inherit;
 }
 .main {
   display: flex;
@@ -662,7 +645,7 @@ const getContent = (v: string) => {
     .operationCard {
       border-radius: 2vh;
       background-color: #FFFFFF;
-      height: 80vh;
+      height: 90vh;
       box-shadow: 0 0 10px 0 #b9ccee;
     }
 

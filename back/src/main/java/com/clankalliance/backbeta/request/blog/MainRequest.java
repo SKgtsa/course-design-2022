@@ -14,5 +14,7 @@ public class MainRequest {
     private int length;
     private int startIndex;
     private Long userId;
+    //搜索关键字
+    private String keyWord;
 
 }

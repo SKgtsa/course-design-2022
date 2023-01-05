@@ -51,9 +51,33 @@
         'margin': `${mobile? '3% 4%':'5% 0'}`,
         'height': `${mobile? 20:50}vh`
       }">
-        <a style="font-size: 3vh;font-weight: bold;padding: 2vw;color: #555">称号</a>
-        <div v-for="(item,index) in pageData.data.achievementList" class="achievement">
-          <a>{{item.name}}</a>
+        <a style="font-size: 3vh;font-weight: bold;padding: 1.5vw;color: #555">称号</a>
+        <div style="width: 100%">
+          <div v-for="(item,index) in pageData.data.achievementList" class="achievement">
+            <div class="achievementArea">
+              <el-tooltip
+              placement="top"
+              :content="`${item.description}`"
+              >
+                <a :style="{
+                'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`
+                }" class="achievement"
+                >
+                  <a >{{item.name}}</a>
+                </a>
+              </el-tooltip>
+
+            </div>
+          </div>
+          <div class="achievement">
+            <div class="achievementArea">
+              <el-button :style="{
+            'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`
+            }" class="achievement" @click="openEvaluate" v-if="login">
+                <a><el-icon><Plus /></el-icon></a>
+              </el-button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -75,18 +99,17 @@
                     <div class="bottomLeft">
                       <a>{{item.time}}</a>
                     </div>
-                    <div class="bottomRight">
-                      <div class="bottomTop">
-                        <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
-                        <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
-                      </div>
-                      <div class="bottomBottom" v-if="login">
-                        <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
-                        <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
-                        <a class="likeNum">{{item.likeNum}}</a>
-                      </div>
-                    </div>
                   </div>
+                </div>
+                <div class="bottomTop">
+                  <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
+                  <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
+                </div>
+                <div class="bottomBottom">
+                  <el-button v-if="handleDeleteCheck(item)" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+                  <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                  <a class="likeNum">{{item.likeNum}}</a>
+                  <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
                 </div>
               </div>
             </div>
@@ -135,6 +158,22 @@
       </div>
     </div>
   </el-dialog>
+  <el-drawer
+    v-model="openEvaluateDrawer"
+    title="学生互评"
+    :direction="'ttb'"
+    :before-close="handleDrawerClose"
+    >
+    <el-form :model="evaluateForm">
+      <el-form-item label="称号">
+        <el-input v-model="evaluateForm.name"/>
+      </el-form-item>
+      <el-form-item label="描述">
+        <el-input v-model="evaluateForm.description"/>
+      </el-form-item>
+    </el-form>
+    <el-button @click="submitEvaluate">提交</el-button>
+  </el-drawer>
 </template>
 
 <script lang="ts" setup>
@@ -150,12 +189,12 @@ import "tinymce/plugins/image"
 import "tinymce/plugins/link"
 import router from "@/router";
 import service from "@/request";
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 import {hideLoading, showLoading} from "@/utils/loading";
 import {reactive, ref} from "vue";
 import {defineEmits, onMounted, watch} from "@vue/runtime-core";
 import {loginFailed} from "@/utils/tokenCheck";
-import {getBaseURL} from "@/global/global";
+import {getBaseURL, getUserId} from "@/global/global";
 import {mobile} from "@/global/global";
 
 
@@ -173,6 +212,65 @@ const login = ref(false);
 const emits = defineEmits(["getContent"])
 const commentContent = ref("")
 const commentEditorId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
+
+const openEvaluateDrawer = ref(false)
+
+const openEvaluate = () => {
+  console.log('openEvaluate')
+  openEvaluateDrawer.value = true;
+}
+
+const submitEvaluate = () => {
+  showLoading();
+  evaluateForm.userId = userId.toString();
+  evaluateForm.token = localStorage.getItem('token');
+  service.post('api/achievement/evaluate',evaluateForm).then(res => {
+    const data = res.data;
+    console.log('评价成功收到回调')
+    console.log(res)
+    if (data.success) {
+      localStorage.setItem('token', data.token)
+      hideLoading();
+      init();
+    } else {
+      hideLoading();
+      loginFailed();
+    }
+  })
+}
+
+const handleDrawerClose = () => {
+  ElMessageBox.confirm('你确定要取消评价吗？','提示',{
+    type: "info",
+    cancelButtonText: '取消',
+    confirmButtonText: '确认'
+  }).then(() => {
+    openEvaluateDrawer.value = false;
+  }).catch(() => {
+    console.log('取消操作')
+  })
+}
+
+const evaluateForm = reactive({
+  name: '',
+  description: '',
+  userId: '',
+  token: ''
+})
+
+const handleDeleteCheck = (item: Post) => {
+  console.log(item.userId)
+  console.log(getUserId())
+  if(item.userId == getUserId()){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+const baseColorSet = [
+  '#23a35d','#85B8CB','#1D6A96','#245a74','#a92939','#ebba11','#631F16'
+]
 
 const props = defineProps({
   value: {
@@ -306,6 +404,34 @@ const pageData = reactive({
   showDetail: false
 })
 
+const deleteThisPost = (target: Post, event: Event) => {
+  event.stopPropagation();
+  ElMessageBox.confirm('你确定要删除这条博客吗？','警告',{
+    type: "info",
+    cancelButtonText: '取消',
+    confirmButtonText: '确认'
+  }).then(() => {
+    showLoading();
+    service.post('api/blog/delete',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
+      const data = res.data;
+      console.log('删除成功收到回调')
+      console.log(res)
+      if (data.success) {
+        localStorage.setItem('token', data.token)
+        hideLoading();
+        pageData.postList = [];
+        pageData.startIndex = 0;
+        pageData.loadOver = false;
+        refresh();
+      } else {
+        hideLoading();
+        loginFailed();
+      }
+    })
+  }).catch(() => {
+    console.log('取消操作')
+  })
+}
 
 const subscribe = () => {
   showLoading();
@@ -558,6 +684,19 @@ const commentSubmit = () => {
 .achievementCard{
   background-color: #FFFFFF;
   border-radius: 2vw;
+  display: flex;
+  flex-direction: column;
+}
+.achievement{
+  color: #FFFFFF;
+  border-radius: 1vh;
+  font-size: 2.5vh;
+  width: auto;
+  padding: 0.3vh;
+  display: inline-block;
+}
+.achievementArea{
+  padding: 0.5vh;
 }
 .rightArea{
   display: flex;
@@ -623,8 +762,9 @@ const commentSubmit = () => {
 }
 .likeNum{
   font-weight: bold;
-  font-size: 3vh;
-  padding-top: 0.2vh;
+  font-size: 3.5vh;
+  line-height: 3.5vh;
+  width: 3vh;
 }
 
 .boxContainer{
@@ -647,20 +787,22 @@ const commentSubmit = () => {
   width: 50%;
 }
 .bottomTop{
-  width: 30vw;
+  width: 100%;
   flex-direction: row-reverse;
   display: flex;
 }
 .likeCollectButton{
-  width: 3vw;
+  width: 4vh;
   background-color: rgba(0,0,0,0);
   border-style: none;
+  color: #FFFFFF;
+  font-size: 3vh;
 }
 .likeCollectImage{
-  width: 3vw;
+  width: 4vh;
 }
 .bottomBottom{
-  width: 30vw;
+  width: 100%;
   flex-direction: row-reverse;
   display: flex;
 }

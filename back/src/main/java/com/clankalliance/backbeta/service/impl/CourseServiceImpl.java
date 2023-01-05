@@ -55,22 +55,25 @@ public class CourseServiceImpl implements CourseService {
 
     private final Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
 
-    private List<Achievement> updateAchievementListCourse(Teacher teacher){
+    private Set<Achievement> updateAchievementListCourse(Teacher teacher){
         Set<Course> courseSet = teacher.getCourseSet();
         int courseNum = courseSet.size();
-        List<Achievement> achievementList = teacher.getAchievementList();
+        Set<Achievement> achievementSet = teacher.getAchievementSet();
         if(courseNum >= 25){
-            if(achievementList.contains(COURSE_A)){
-                achievementList.remove(COURSE_A);
-            }
-            achievementList.add(COURSE_B);
+            if(achievementSet.contains(COURSE_A))
+                achievementSet.remove(COURSE_A);
+            achievementSet.add(COURSE_B);
         }else if(courseNum >= 10){
-            if(achievementList.contains(COURSE_B)){
-                achievementList.remove(COURSE_B);
-            }
-            achievementList.add(COURSE_A);
+            if(achievementSet.contains(COURSE_B))
+                achievementSet.remove(COURSE_B);
+            achievementSet.add(COURSE_A);
+        }else{
+            if(achievementSet.contains(COURSE_A))
+                achievementSet.remove(COURSE_A);
+            if(achievementSet.contains(COURSE_B))
+                achievementSet.remove(COURSE_B);
         }
-        return achievementList;
+        return achievementSet;
     }
 
 
@@ -261,7 +264,7 @@ public class CourseServiceImpl implements CourseService {
                 Set<Course> teacherCourseSet = teacher.getCourseSet();
                 teacherCourseSet.add(course);
                 teacher.setCourseSet(teacherCourseSet);
-                teacher.setAchievementList(updateAchievementListCourse(teacher));
+                teacher.setAchievementSet(updateAchievementListCourse(teacher));
                 //保存
                 teacherRepository.save(teacher);
                 response.setSuccess(true);
@@ -319,7 +322,7 @@ public class CourseServiceImpl implements CourseService {
                     response.setMessage("课程删除成功");
                 }
                 Teacher teacher = course.getTeacher();
-                teacher.setAchievementList(updateAchievementListCourse(teacher));
+                teacher.setAchievementSet(updateAchievementListCourse(teacher));
                 teacherRepository.save(teacher);
             }
         }
@@ -551,7 +554,10 @@ public class CourseServiceImpl implements CourseService {
             if(user instanceof Manager){
                 Optional<Course> courseOp=courseRepository.findById(id);
                 Course course=courseOp.get();
+                Teacher teacher = course.getTeacher();
                 courseRepository.delete(course);
+                teacher.setAchievementSet(updateAchievementListCourse(teacher));
+                teacherRepository.save(teacher);
                 response.setSuccess(true);
                 response.setMessage("课程删除成功");
             }else{

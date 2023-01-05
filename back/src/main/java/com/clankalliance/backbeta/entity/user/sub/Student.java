@@ -36,7 +36,7 @@ public class Student extends User {
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
                 collection = new ArrayList<>();
-                achievementList = new ArrayList<>();
+                achievementSet = new HashSet<>();
                 section = null;
         }
 
@@ -48,7 +48,7 @@ public class Student extends User {
                 practiceSet = new ArrayList<>();
                 rewardSet = new ArrayList<>();
                 collection = new ArrayList<>();
-                achievementList = new ArrayList<>();
+                achievementSet = new HashSet<>();
                 this.section = section;
         }
 
@@ -132,12 +132,12 @@ public class Student extends User {
                 this.collection = collection;
         }
 
-        public List<Achievement> getAchievementList() {
-                return achievementList;
+        public Set<Achievement> getAchievementSet() {
+                return achievementSet;
         }
 
-        public void setAchievementList(List<Achievement> achievementList) {
-                this.achievementList = achievementList;
+        public void setAchievementSet(Set<Achievement> achievementSet) {
+                this.achievementSet = achievementSet;
         }
 
         //学生届次
@@ -182,6 +182,6 @@ public class Student extends User {
 
         @JsonIgnore
         @OneToMany
-        private List<Achievement> achievementList;
+        private Set<Achievement> achievementSet;
 
 }
