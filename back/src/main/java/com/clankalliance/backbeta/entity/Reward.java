@@ -3,6 +3,8 @@ package com.clankalliance.backbeta.entity;
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,7 +23,7 @@ import java.util.Set;
 public class Reward {
 
     @Id
-    @JsonIgnore
+    @JsonSerialize(using= ToStringSerializer.class)
     private long id;
 
     private String name;

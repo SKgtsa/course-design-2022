@@ -1,21 +1,36 @@
 <template>
   <div class="mainArea">
-    <div class="leftWindow">
-    </div>
-    <div class="rightWindow">
-      <div class="mainCard" v-if="!mobile">
+    <div class="mainWindow" :style="{
+      'padding-top': `${mobile? 5:1}vh`
+    }">
+      <div class="mainCard" :style="{
+        'width': `${mobile? 100:80}%`,
+      }">
         <div class="head">
           <a class="title">成绩查询</a>
-          <div class="selectPanel">
-            <span style="display: flex;flex-dirction:row"> <a class="selectLabel">学年:</a>
-              <el-select v-model="yearsValue" placeholder="2020" class="select">
-                <el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.value" />
-              </el-select> </span>
-            <span> <a class="selectLabel">学期:</a>
-              <el-select v-model="semesterValue" placeholder="春季学期" class="select">
-                <el-option v-for="item in semester" :key="item.value" :label="item.label" :value="item.value" />
-              </el-select> </span>
-            <el-button type="primary" class="checkButton" @click="check"><a>查询</a></el-button>
+          <div class="selectPanel" :style="{
+            'flex-direction': `${mobile? 'column':'row'}`
+          }">
+            <div class="selectGroup" :style="{
+              'width': `${mobile? 100:60}%`
+            }">
+              <span style="display: flex;flex-dirction:row"> <a class="selectLabel">学年:</a>
+                <el-select v-model="yearsValue" placeholder="2020" class="select">
+                  <el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </span>
+              <span> <a class="selectLabel">学期:</a>
+                <el-select v-model="semesterValue" placeholder="春季学期" class="select">
+                  <el-option v-for="item in semester" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+              </span>
+            </div>
+            <el-button type="primary" class="checkButton"  @click="check" :style="{
+              'width': `${mobile? 100:30}%`,
+              'margin-top': `${mobile? '2vh':'0'}`
+            }">
+              <a>查询</a>
+            </el-button>
           </div>
         </div>
         <div class="tablePage">
@@ -23,40 +38,11 @@
             :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
             :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
             <!-- 显示斑马纹和边框 -->
-            <el-table-column label="课程名" prop="courseName" width="220" show-overflow-tooltip />
+            <el-table-column fixed="left" label="课程名" prop="courseName" min-width="200" show-overflow-tooltip />
             <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
             <el-table-column label="平时分数占总分权重" prop="weight" width="100" show-overflow-tooltip />
             <el-table-column label="期末得分" prop="endScore" width="140" show-overflow-tooltip />
             <el-table-column label="总分" prop="finalScore" width="140" show-overflow-tooltip />
-            <el-table-column label="排名" prop="rank" width="150" show-overflow-tooltip />
-          </el-table>
-        </div>
-      </div>
-      <div class="mainCard" v-if="mobile">
-        <div class="headMobile">
-          <a class="titleMobile">成绩查询</a>
-          <div class="selectPanelMobile">
-            <span style="display: flex;flex-dirction:row" class="spanSelect"> <a class="selectLabelMobile">学年:</a>
-              <el-select v-model="yearsValue" placeholder="2020" class="selectMobile">
-                <el-option v-for="item in years" :key="item.value" :label="item.label" :value="item.value" />
-              </el-select> </span>
-            <span style="display: flex; flex-dirction:row" class="spanSelect"><a class="selectLabelMobile">学期:</a>
-              <el-select v-model="semesterValue" placeholder="春季学期" class="selectMobile">
-                <el-option v-for="item in semester" :key="item.value" :label="item.label" :value="item.value" />
-              </el-select> </span>
-            <el-button type="primary" class="checkButtonMobile" @click="check"><a>查询</a></el-button>
-          </div>
-        </div>
-        <div class="tablePageMobile">
-          <el-table :data="tableData.arr" stripe size="large" class="scoreTable"
-            :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
-            :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
-            <!-- 显示斑马纹和边框 -->
-            <el-table-column label="课程名" prop="courseName" width="150" show-overflow-tooltip />
-            <el-table-column label="总分" prop="finalScore" width="120" show-overflow-tooltip />
-            <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
-            <el-table-column label="平时分数占总分权重" prop="weight" width="100" show-overflow-tooltip />
-            <el-table-column label="期末得分" prop="endScore" width="140" show-overflow-tooltip />
             <el-table-column label="排名" prop="rank" width="150" show-overflow-tooltip />
           </el-table>
         </div>
@@ -142,105 +128,45 @@ const check = async () => {
   display: flex;
   flex-direction: row;
   width: 100%;
-  height: 100vh;
+  height: 93vh;
 
-  .leftWindow {
+  .mainWindow {
     display: flex;
-    width: 5vw;
-  }
-
-  .rightWindow {
-    padding-left: 2vw;
-    padding-top: 1vh;
-    display: flex;
-
+    width: 100%;
     .mainCard {
       display: flex;
       flex-direction: column;
       background-color: #FFFFFF;
-      margin-top: 4vh;
-      margin-left: 2vw;
-      width: 80vw;
       height: 90vh;
-      border-radius: 1vw;
+      border-radius: 3vh;
       box-shadow: 0 0 1.25vh 0 #b9ccee;
-
+      margin: 0 auto;
       .head {
         height: 20vh;
         padding-left: 1.875vh;
         padding-top: 2.5vh;
-
         .title {
           display: flex;
           flex-direction: column;
           padding-left: 3.125vh;
-          font-size: 3.125vh;
+          font-size: 4vh;
           font-weight: 600;
+          color: #0a8ce2;
         }
 
         .selectPanel {
           margin-top: 3.75vh;
           display: flex;
-          flex-direction: row;
-
-          .selectLabel {
-            font-size: 2.5vh;
-            padding-right: 1.25vh;
-            padding-left: 3.75vh;
-          }
-
+          width: 95%;
           .select {
             width: 14vw;
           }
 
           .checkButton {
-            margin-left: 3.75vh;
             font-size: 2vh;
+            margin: auto;
+            height: 5vh;
           }
-        }
-      }
-
-      .headMobile {
-     /*    height: 27vh; */
-        padding-left: 1.875vh;
-        padding-top: 2.5vh;
-
-        .titleMobile {
-          display: flex;
-          flex-direction: column;
-          font-size: 3.125vh;
-          font-weight: 600;
-          text-align: center;
-        }
-
-        .selectPanelMobile {
-          margin-top: 2vh;
-          display: flex;
-          flex-direction: column;
-
-          .spanSelect {
-            padding-top: 2vh;
-
-            .selectLabelMobile {
-              font-size: 2.5vh;
-              padding-left: 3vw;
-              display: flex;
-              flex-direction: row;
-            }
-
-            .selectMobile {
-              width: 50vw;
-              padding-left: 6vw;
-            }
-          }
-
-          .checkButtonMobile {
-            margin-top: 3vh;
-            margin-left:20vw ;
-            width: 40vw;
-          }
-
-          
         }
       }
       .tablePageMobile {
@@ -248,23 +174,29 @@ const check = async () => {
             height: 50vh;
             width: 60vw;
           }
-
-
       .tablePage {
         display: flex;
         flex-direction: column;
-        padding-left: 3vw;
         margin-top: 1.25vh;
-        height: 60vh;
-        width: 70vw;
-
+        height: 70%;
+        width: 100%;
         .scoreTable {
           border-top: 0.0625vh solid;
           border-bottom: 0.0625vh solid;
+          width: 95%;
+          margin: 0 auto;
         }
       }
     }
   }
 }
+.selectGroup{
+  display: flex;
+  flex-direction: row;
+}
+.selectLabel {
+  font-size: 2.5vh;
+  padding-right: 1.25vh;
+  padding-left: 3.75vh;
+}
 </style>
-  

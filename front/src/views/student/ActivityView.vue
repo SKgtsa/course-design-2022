@@ -1,8 +1,13 @@
 <template>
-  <div class="content">
-    <div class="pageContent">
+  <div class="content" :style="{
+    'padding-top': `${mobile? '5':'2'}vh`,
+    'height': `${mobile? 'auto':'91vh'}`
+  }">
+    <div class="pageContent" :style="{
+      'width': `${mobile? 100:80}%`,
+    }">
       <div class="title">
-        社会实践
+        课外活动
         <el-button class="addButton" @click="add">添加</el-button>
       </div>
       <!-- 表格数据显示 -->
@@ -10,9 +15,9 @@
         :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
         <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
-        <el-table-column label="标题" prop="name" width="400" show-overflow-tooltip />
-        <el-table-column label="描述" prop="description" width="300" show-overflow-tooltip></el-table-column>
-        <el-table-column width="300" label="操作">
+        <el-table-column label="标题" fixed="left"  prop="name" width="250" show-overflow-tooltip />
+        <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
+        <el-table-column width="300" fixed="right" label="操作">
           <template #default="scope">
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
             <el-button size="medium" @click="handleEdit(scope.row)" class="button">编辑</el-button>
@@ -28,7 +33,7 @@
       </div>
     </div>
     <!--  增改弹出框 -->
-    <el-dialog v-model="centerDialogVisible" width="45%" draggable="true">
+    <el-dialog v-model="centerDialogVisible" :width="`${mobile? '90%':'45%'}`" draggable="true">
       <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
         <el-form-item label="日期" prop="date">
           <el-input v-if="typeOperation === 'edit'" v-model="editForm.date">{{ editForm.date }}
@@ -59,7 +64,7 @@
       </div>
     </el-dialog>
     <!-- 查看弹出框 -->
-    <el-dialog v-model="centerDialogVisibleCheck" width="45%" draggable="true">
+    <el-dialog v-model="centerDialogVisibleCheck" :width="`${mobile? '90%':'45%'}`" draggable="true">
       <el-form :model="editForm" class="areaTextInput">
         <el-form-item label="日期" prop="date">
           <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>
@@ -83,6 +88,7 @@ import { showLoading, hideLoading } from '../../utils/loading'
 import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import {mobile} from "@/global/global";
 
 let tableData = reactive({
   arr: [],
@@ -323,20 +329,19 @@ const handleCurrentChange = (current) => {
 .content {
   width: 100%;
   height: 100%;
-  background-image: url("../../assets/images/activity.jpg");
   background-size: cover;
   background-attachment: fixed;
   background-position: center center;
   background-repeat: repeat;
 
   .pageContent {
-    width: 70vw;
-    height: 70vh;
     border-radius: 3vw;
     padding-left: 2vw;
     padding-top: 3vh;
     padding-right: 2vw;
-
+    background-color: #FFFFFF;
+    box-shadow: 0 0 1.25vh 0 #b9ccee;
+    margin: 0 auto;
     .addButton {
       width: 10vw;
       height: 5vh;
@@ -349,34 +354,12 @@ const handleCurrentChange = (current) => {
     }
 
     ::v-deep .el-table th {
-      //更改table 头部背景
-      background-color: rgba(19, 69, 193, 0.867);
-      color: #f2dc19;
-      /*  color: '#fff';
-      background-color: '#0a3370'; */
       font-weight: 700;
     }
-
-    ::v-deep .el-table {
-      //表格边框
-      border: solid 0.125vh #922eef;
-      // box-sizing: border-box;
-    }
-
-    ::v-deep .el-table tr {
-      //内部的单元行
-      background-color: rgb(174, 233, 246);
-    }
-
-
-    ::v-deep .el-table tbody tr:hover>td {
-      background: #40b3dc !important;
-    }
-
-    .activityTable {
+    .practiceTable {
       border: 0.25vh solid;
-      width: 63vw;
-
+      width: 100%;
+      height: 90%;
       .button {
         width: 6vh;
         height: 3.75vh;
@@ -387,7 +370,7 @@ const handleCurrentChange = (current) => {
 
 
 
-.activityDialog {
+.practiceDialog {
   width: 37.5vh !important;
   height: 75vh !important;
 }

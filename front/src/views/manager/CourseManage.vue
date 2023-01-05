@@ -1,59 +1,78 @@
 <template>
-  <div class="content">
-    <div class="mainCard">
+  <div class="content" :style="{
+    'padding-top': `${mobile? 5:1}vh`,
+    'min-height': `${mobile? '84vh':'0'}`,
+    'height': `${mobile? 'auto':'92vh'}`,
+    'padding-bottom' : `${mobile? '4vh':'0'}`
+  }">
+    <div class="mainCard" :style="{
+      'width': `${mobile? 100:80}%`,
+      'height': `${mobile? 'auto':'95%'}`
+    }">
       <div class="header">
         <div class="leftPanel">
           <a class="title">课程管理</a>
           <div class="search">
-                        <span class="searchSpan">
-                            <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="30"
-                                      placeholder="输入课程号"/>
-                            <el-button type="submit" class="searchButton" @click="check">
-                                <el-icon class="icon">
-                                    <Search/>
-                                </el-icon>
-                            </el-button>
-                            <el-button v-if="isShow" type="danger" class="deleteButton" @click="delectCourse">
-                                <a class="deleteText">删除课程</a>
-                            </el-button>
-                        </span>
+            <span class="searchSpan">
+              <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="30"
+                placeholder="输入课程号"/>
+              <el-button type="submit" class="searchButton" @click="check">
+                <el-icon class="icon">
+                  <Search/>
+                </el-icon>
+              </el-button>
+              <el-button v-if="isShow" type="danger" class="deleteButton" @click="delectCourse">
+                <a class="deleteText">删除课程</a>
+              </el-button>
+            </span>
           </div>
         </div>
       </div>
-      <div class="divider" v-if="isShow"></div>
-      <div class="main"> <!-- " -->
-        <div class="menu" v-if="isShow">
-                    <span class="menuButtonSpan">
-                        <el-button class="menuButton" @click="changeInfo">
-                            <a>课程信息</a>
-                        </el-button>
-                    </span>
-          <span class="menuButtonSpan">
-                        <el-button class="menuButton" @click="changeSelect">
-                            <a>选课管理</a>
-                        </el-button>
-                    </span>
-          <span class="menuButtonSpan">
-                        <el-button class="menuButton" @click="changeScore">
-                            <a>成绩管理</a>
-                        </el-button>
-                    </span>
+      <div class="main"  v-if="isShow" :style="{
+        'flex-direction': `${mobile? 'column':'row'}`
+      }"> <!-- " -->
+        <div class="menu" :style="{
+          'width': `${mobile? 100:20}%`,
+          'flex-direction': `${mobile? 'row':'column'}`
+        }">
+          <span :style="{
+            'width':`${mobile? 33:100}%`
+          }">
+            <el-button class="menuButton" @click="changeInfo">
+              <a>课程信息</a>
+            </el-button>
+          </span>
+          <span :style="{
+            'width':`${mobile? 33:100}%`
+          }">
+            <el-button class="menuButton" @click="changeSelect">
+              <a>选课管理</a>
+            </el-button>
+          </span>
+          <span :style="{
+            'width':`${mobile? 34:100}%`
+          }">
+            <el-button class="menuButton" @click="changeScore">
+              <a>成绩管理</a>
+            </el-button>
+          </span>
         </div>
-        <div class="menuDivider"></div>
-        <div class="infoBox" v-if="isShow">
+        <div class="infoBox" :style="{
+          'width': `${mobile? 100:80}%`
+        }">
           <el-scrollbar v-if="typeShow == 'info' && isShow">
             <el-form :model="editForm" ref="formCourseData" :rules="rulesEditForm" label-width="auto"
-                     label-position="right" class="infoForm">
-                            <span style="display:flex;flex-dirction:row">
-                                <el-form-item label="课程名:" prop="name">
-                                    <el-input style="width:20vw" v-model="editForm.name" maxlength="15">{{
-                                        editForm.name
-                                      }}</el-input>
-                                </el-form-item>
-                                <el-button type="primary" @click="sumbitEditRow" class="submitButton">
-                                    <a>提交</a>
-                                </el-button>
-                            </span>
+               label-position="right" class="infoForm">
+                  <span style="display:flex;flex-dirction:row">
+                    <el-form-item label="课程名:" prop="name">
+                      <el-input style="width:20vw" v-model="editForm.name" maxlength="15">{{
+                          editForm.name
+                        }}</el-input>
+                  </el-form-item>
+                  <el-button type="primary" @click="sumbitEditRow" class="submitButton">
+                      <a>提交</a>
+                    </el-button>
+                  </span>
               <el-form-item label="简介:" prop="description">
                 <el-input type="textarea" maxlength="50" rows="3" v-model="editForm.description">{{
                     editForm.description
@@ -61,38 +80,38 @@
                 </el-input>
               </el-form-item>
               <span style="display:flex;flex-direction: row;">
-                                <el-form-item label="开课周:" prop="weekStart">
-                                    <el-select v-model="editForm.weekStart" placeholder="开课周">
-                                        <el-option v-for="item in weekStartOptions" :key="item.value"
-                                                   :label="item.label" :value="item.value"/>
-                                    </el-select>
-                                </el-form-item>
+                  <el-form-item label="开课周:" prop="weekStart">
+                      <el-select v-model="editForm.weekStart" placeholder="开课周">
+                          <el-option v-for="item in weekStartOptions" :key="item.value"
+                                     :label="item.label" :value="item.value"/>
+                      </el-select>
+                  </el-form-item>
 
-                                <el-form-item label="结课周:" prop="weekEnd">
-                                    <el-select v-model="editForm.weekEnd" placeholder="结课周">
-                                        <el-option v-for="item in weekEndOptions" :key="item.value" :label="item.label"
-                                                   :value="item.value"/>
-                                    </el-select>
-                                </el-form-item>
-                            </span>
+                  <el-form-item label="结课周:" prop="weekEnd">
+                      <el-select v-model="editForm.weekEnd" placeholder="结课周">
+                          <el-option v-for="item in weekEndOptions" :key="item.value" :label="item.label"
+                                     :value="item.value"/>
+                      </el-select>
+                  </el-form-item>
+              </span>
               <el-form-item label="上课时间:" prop="time">
                 <el-cascader v-model="editForm.time" :options="time" :props="mul" clearable
                              placeholder="上课时间"/>
               </el-form-item>
               <span style="display:flex;flex-direction: row;">
-                                <el-form-item label="学年:" prop="year">
-                                    <el-select v-model="editForm.year" placeholder="2020">
-                                        <el-option v-for="item in yearOptions" :key="item.value" :label="item.label"
-                                                   :value="item.value"/>
-                                    </el-select>
-                                </el-form-item>
-                                <el-form-item label="学期:" prop="semester">
-                                    <el-select v-model="editForm.semester" placeholder="春季学期">
-                                        <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
-                                                   :value="item.value"/>
-                                    </el-select>
-                                </el-form-item>
-                            </span>
+                  <el-form-item label="学年:" prop="year">
+                      <el-select v-model="editForm.year" placeholder="2020">
+                          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label"
+                                     :value="item.value"/>
+                      </el-select>
+                  </el-form-item>
+                  <el-form-item label="学期:" prop="semester">
+                      <el-select v-model="editForm.semester" placeholder="春季学期">
+                          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
+                                     :value="item.value"/>
+                      </el-select>
+                  </el-form-item>
+              </span>
 
               <el-form-item label="授课地点:" prop="location">
                 <el-input style="width:15vw" v-model="editForm.location" maxlength="30">{{
@@ -204,10 +223,9 @@
 import service from '@/request';
 import {hideLoading, showLoading} from '@/utils/loading';
 import {messageError, messageSuccess, messageWarning} from '@/utils/message';
-import {hide} from '@popperjs/core';
 import {ElMessageBox} from 'element-plus';
 import {reactive, ref} from 'vue';
-
+import {mobile} from "@/global/global";
 
 let idCourse = ref();
 let isShow = ref(false);
@@ -619,7 +637,7 @@ let editForm = reactive({
   weight: '',
 });
 
-/* 
+/*
 264769460420874240 */
 //输入课程号，得到token,为editForm附上初值
 const checkCourse = async (id) => {
@@ -925,54 +943,39 @@ console.log(editForm)
 </script>
 <style lang="scss" scoped>
 .content {
-  height: 100vh;
-  width: 90vw;
-
+  width: 100%;
   .mainCard {
     display: flex;
     flex-direction: column;
     background-color: #FFFFFF;
-    margin-top: 4vh;
-    margin-left: 9vw;
-    width: 80vw;
-    height: 95.1vh;
+    margin: auto;
     border-radius: 1vw;
     box-shadow: 0 0 1.25vh 0 #b9ccee;
-
     .header {
-      height: 35vh;
+      height: 23vh;
       width: 100%;
-      /*  background-color: rgb(232, 245, 247); */
       display: flex;
       flex-direction: row;
-
-
       .leftPanel {
-        width: 50vw;
-        height: 30vh;
+        height: 20vh;
         display: flex;
         flex-direction: column;
-
         .title {
-          padding-top: 5vh;
-          padding-left: 5vw;
-          font-size: 2.5vw;
+          padding-top: 2vh;
+          padding-left: 2vw;
+          font-size: 4vh;
           color: #1a91f3;
           font-weight: 600;
         }
-
         .search {
           display: flex;
-
           .searchSpan {
             display: flex;
             flex-direction: row;
             width: 45vw;
             padding-top: 5vh;
             padding-left: 5vw;
-
             .searchTerm {
-
               width: 40vw;
               border: 0.2vw solid #00B4CC;
               border-right: none;
@@ -983,11 +986,9 @@ console.log(editForm)
               color: #9DBFAF;
               font-size: 1.2vw;
             }
-
             .searchTerm:focus {
               color: #00B4CC;
             }
-
             .searchButton {
               width: 5vw;
               height: 6vh;
@@ -999,7 +1000,6 @@ console.log(editForm)
               cursor: pointer;
               font-size: 1.2vw;
             }
-
             .deleteButton {
               height: 6vh;
               border: 0.1vw solid;
@@ -1007,79 +1007,29 @@ console.log(editForm)
           }
         }
       }
-
-      .rightPanel {
-        width: 30vw;
-        height: 30vh;
-
-        /*         .nameBox {
-            .name {
-                font-size: 1.6vw;
-            }
-        } */
-        .imgBox {
-          padding-left: 8vw;
-          padding-top: 3vh;
-          width: 15vw;
-          height: 25vh;
-
-          .img {
-            height: 100%;
-            width: 100%;
-          }
-        }
-
-      }
     }
-
-    .divider {
-      height: 0.1vh;
-      width: 80vw;
-      background-color: rgb(151, 151, 185);
-    }
-
     .main {
-      height: 65vh;
-      width: 80vw;
-      /*    background-color: bisque; */
+      height: 70%;
+      width: 100%;
       display: flex;
-      flex-direction: row;
-
       .menu {
-        width: 15vw;
-        height: 65vh;
-        background-color: rgb(255, 255, 255);
-
-        .menuButtonSpan {
-          width: 15vw;
-        }
+        height: 100%;
+        display: flex;
 
         .menuButton {
-          width: 15vw;
+          width: 100%;
           height: 6vh;
           font-size: 1vw;
           font-weight: 550;
           line-height: 4vh;
         }
       }
-
-      .menuDivider {
-        height: 65vh;
-        width: 0.05vw;
-        background-color: rgb(164, 175, 199);
-      }
-
       .infoBox {
-        width: 65vw;
-        height: 65vh;
-
+        height: 100%;
+        border-radius: 3vh;
         .infoForm {
-          padding-top: 5vh;
-          padding-left: 3vw;
-          padding-right: 4vw;
-          padding-bottom: 3vw;
+          padding: 1vh 2vw 0 2vw;
         }
-
         .submitButton {
           width: 9vw;
           height: 4vh;
