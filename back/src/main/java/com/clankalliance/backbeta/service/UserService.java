@@ -3,7 +3,9 @@ package com.clankalliance.backbeta.service;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.response.CommonResponse;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 public interface UserService {
 
@@ -42,4 +44,8 @@ public interface UserService {
 
     CommonResponse handleManagerDelete(String token, long id);
 
+    //后台准备个人简历所需要的各类数据组成的段落数据
+    CommonResponse getStudentIntroduceData(String token);
+
+    ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(String token);
 }

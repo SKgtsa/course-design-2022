@@ -6,11 +6,15 @@ import com.clankalliance.backbeta.service.AvatarService;
 import com.clankalliance.backbeta.service.ExcelService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.Map;
 
 
 @CrossOrigin
@@ -121,6 +125,18 @@ public class UserController {
     @PostMapping("/managerDelete")
     public CommonResponse handleManagerDelete(@RequestBody UserManagerDeleteRequest request){
         return userService.handleManagerDelete(request.getToken(), request.getId());
+    }
+
+    //  学生个人简历页面
+    //在系统在主界面内点击个人简历，后台准备个人简历所需要的各类数据组成的段落数据，在前端显示
+    @PostMapping("/getStudentIntroduceData")
+    public CommonResponse getStudentIntroduceData(@RequestBody TokenCheckRequest request) {
+        return userService.getStudentIntroduceData(request.getToken());
+    }
+
+    @PostMapping("/getStudentIntroducePdf")
+    public ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(@RequestBody TokenCheckRequest request){
+        return userService.getStudentIntroducePdf(request.getToken());
     }
 
 }

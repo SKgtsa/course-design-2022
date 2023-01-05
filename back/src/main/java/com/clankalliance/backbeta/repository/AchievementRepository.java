@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.repository;
 
 import com.clankalliance.backbeta.entity.Achievement;
+import com.clankalliance.backbeta.entity.Score;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

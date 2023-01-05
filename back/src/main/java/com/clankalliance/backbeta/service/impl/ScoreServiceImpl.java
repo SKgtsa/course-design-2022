@@ -235,7 +235,7 @@ public class ScoreServiceImpl implements ScoreService {
                         int total=0;
                         int studentNum=studentCourseSet.size();
                         int passStudent=0;
-                        double weight=0;
+                        double weight=0.0;
                         long courseId=c.getId();
                         for(Student s : studentCourseSet){
                             long studentId=s.getId();

@@ -9,6 +9,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepositor
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
+import com.clankalliance.backbeta.service.IntroduceService;
 import com.clankalliance.backbeta.service.TencentSmsService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.SnowFlake;
@@ -16,11 +17,19 @@ import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;
 import com.clankalliance.backbeta.utils.StatusManipulateUtils.StatusNode;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import com.openhtmltopdf.extend.FSSupplier;
+import com.openhtmltopdf.extend.impl.FSDefaultCacheStore;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 import javax.annotation.Resource;
+import java.io.InputStream;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.RecursiveTask;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,6 +44,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private IntroduceService introduceService;
 
     @Resource
     private StudentRepository studentRepository;
@@ -53,6 +65,11 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private SnowFlake snowFlake;
+
+    @Resource
+    private ResourceLoader resourceLoader;
+
+    private FSDefaultCacheStore fSDefaultCacheStore = new FSDefaultCacheStore();
 
 
     public String getDEFAULT_AVATAR_URL() {
@@ -442,5 +459,64 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    //后台准备个人简历所需要的各类数据组成的段落数据
+    @Override
+    public CommonResponse getStudentIntroduceData(String token){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student=(Student) user;
+                long studentId=student.getId();
+                Map data = introduceService.getIntroduceDataMap(studentId);
+                response.setContent(data);  //返回前端个人简历数据
+            }
+        }
+        return response;
+    }
+
+    public ResponseEntity<StreamingResponseBody> getPdfDataFromHtml(String htmlContent) {
+        try {
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.withHtmlContent(htmlContent, null);
+            builder.useFastMode();
+            builder.useCacheStore(PdfRendererBuilder.CacheStore.PDF_FONT_METRICS, fSDefaultCacheStore);
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:font/SourceHanSansSC-Regular.ttf");
+            InputStream fontInput = resource.getInputStream();
+            builder.useFont(new FSSupplier<InputStream>() {
+                @Override
+                public InputStream supply() {
+                    return fontInput;
+                }
+            }, "SourceHanSansSC");
+            StreamingResponseBody stream = outputStream -> {
+                builder.toStream(outputStream);
+                builder.run();
+            };
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(stream);
+
+        }
+        catch (Exception e) {
+            return  ResponseEntity.internalServerError().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(String token) {
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(response.getSuccess()){
+            User user = userService.findById(Long.parseLong(response.getMessage()));
+            if(user instanceof Student){
+                Student student=(Student) user;
+                long studentId=student.getId();
+                String content=introduceService.getHtmlCount(studentId);
+                return getPdfDataFromHtml(content);
+            }
+        }
+        return null;
+    }
 
 }
