@@ -521,6 +521,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
 .logo {
   font-weight: bold;
   font-size: 3.5vh;
+
 }
 
 img {

@@ -27,6 +27,10 @@ const router = createRouter({
       path: '/personalPage',
       name: 'personal',
       component: () => import('../views/Blog/BlogPersonalView.vue')
+    },{
+      path: '/JiangMuzi',
+      name: 'JiangMuziPersonalPage',
+      component: () => import('../views/JiangMuziPersonalPage.vue')
     },
     /*     {
           path: '/',
