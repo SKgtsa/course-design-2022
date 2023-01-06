@@ -6,7 +6,7 @@
         <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
           status-icon>
           <el-form-item label="学工号:" prop="userNumber">
-            <el-input v-model="formData.userNumber" maxlength="15" />
+            <el-input v-model="formData.userNumber" maxlength="16" />
           </el-form-item>
           <el-form-item label="姓名:" prop="name">
             <el-input v-model="formData.name" style="width:10vw" maxlength="10"/>
