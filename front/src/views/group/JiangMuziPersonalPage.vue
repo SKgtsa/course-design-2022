@@ -1,7 +1,7 @@
 <template >
   <div class="mainPage">
     <el-header class="el-header">
-      <img class="logo" src="../assets/JiangImages/在哲logo.png">
+      <img class="logo" src="../../assets/JiangImages/在哲logo.png">
       <div class="title">
         <a class="titleFont">HomePage</a>
       </div>
@@ -25,16 +25,16 @@
       <el-carousel :interval="4000" indicator-position="outside" pause-on-hover arrow="never" type="card"
                    class="carousel">
         <el-carousel-item class="carouselPage">
-          <img class="carouselPhoto" src="../assets/JiangImages/权益中心合照.jpg">
+          <img class="carouselPhoto" src="../../assets/JiangImages/权益中心合照.jpg">
         </el-carousel-item>
         <el-carousel-item class="carouselPage">
-          <img class="carouselPhoto" src="../assets/JiangImages/权益中心合照.jpg">
+          <img class="carouselPhoto" src="../../assets/JiangImages/权益中心合照.jpg">
         </el-carousel-item>
         <el-carousel-item class="carouselPage">
-          <img class="carouselPhoto" src="../assets/JiangImages/权益中心合照.jpg">
+          <img class="carouselPhoto" src="../../assets/JiangImages/权益中心合照.jpg">
         </el-carousel-item>
         <el-carousel-item class="carouselPage">
-          <img class="carouselPhoto" src="../assets/JiangImages/权益中心合照.jpg">
+          <img class="carouselPhoto" src="../../assets/JiangImages/权益中心合照.jpg">
         </el-carousel-item>
       </el-carousel>
     </div>
