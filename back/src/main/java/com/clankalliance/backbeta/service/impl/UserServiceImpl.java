@@ -528,4 +528,34 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    @Override
+    public CommonResponse findPasswordPhone(Long userNumber, Long phone){
+        CommonResponse response = new CommonResponse<>();
+        User user = findByUserNumber(userNumber);
+        if(user == null || user.getPhone() != phone){
+            response.setSuccess(false);
+            response.setMessage("用户不存在或用户与手机不符");
+        }else{
+            ManipulateUtil.updateStatus(user.getId());
+            String code = ManipulateUtil.endNode.getVerifyCode();
+            tencentSmsService.sendSms("" + phone,code);
+            response.setMessage("发送成功");
+            response.setSuccess(true);
+
+        }
+        return response;
+    }
+
+    @Override
+    public CommonResponse findPasswordCode(Long phone ,String code, String password){
+        CommonResponse<Object,User> response = tokenUtil.phoneCodeCheck(phone,code);
+        if(!response.getSuccess())
+            return response;
+        User user = response.getUser();
+        password = DigestUtils.sha1Hex(password.getBytes());
+        user.setPassword(password);
+        response.setMessage("修改成功");
+        return response;
+    }
+
 }

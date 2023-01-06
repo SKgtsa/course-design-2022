@@ -53,9 +53,14 @@ public class TokenUtil {
                 response.setToken(ManipulateUtil.endNode.getToken());
                 response.setMessage("登陆成功");
                 response.setUser(user);
+                response.setNeedSupplement(false);
                 if(user instanceof Student){
+                    if(user.getNickName() == "默认昵称")
+                        response.setNeedSupplement(true);
                     response.setCharacter(0);
                 }else if(user instanceof Teacher){
+                    if(((Teacher) user).getResearchDirection() == null)
+                        response.setNeedSupplement(true);
                     response.setCharacter(1);
                 }else{
                     response.setCharacter(2);

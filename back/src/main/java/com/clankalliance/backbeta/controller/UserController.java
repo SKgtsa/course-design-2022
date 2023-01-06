@@ -145,4 +145,14 @@ public class UserController {
         return userService.getStudentIntroducePdf(request.getToken());
     }
 
+    @PostMapping("/findPasswordPhone")
+    public CommonResponse findPasswordPhone(@RequestBody FindPasswordRequest request){
+        return userService.findPasswordPhone(request.getUserNumber(),request.getPhone());
+    }
+
+    @PostMapping("/findPasswordCode")
+    public CommonResponse findPasswordCode(@RequestBody FindPasswordRequest request){
+        return userService.findPasswordCode(request.getPhone(), request.getCode(), request.getPassword());
+    }
+
 }

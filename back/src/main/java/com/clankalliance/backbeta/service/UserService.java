@@ -51,4 +51,8 @@ public interface UserService {
     ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(String token);
 
     CommonResponse handleSaveResearchDirection(String token,String researchDirection);
+
+    CommonResponse findPasswordPhone(Long userNumber, Long phone);
+
+    CommonResponse findPasswordCode(Long phone ,String code, String password);
 }
