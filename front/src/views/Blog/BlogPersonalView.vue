@@ -42,6 +42,7 @@
           <a>{{pageData.data.identity}}</a>
           <a>{{pageData.data.eMail}}</a>
         </div>
+        <el-button v-if="userId.toString() === getUserId.toString()" @click="showEdit" ><el-icon><Edit /></el-icon></el-button>
         <el-button v-if="login" @click="subscribe" class="subscribeButton" :style="{
           'width':`${mobile? 'auto':'20vw'}`,
         }"> {{pageData.data.follow? '已关注':'关注'}} </el-button>
@@ -212,12 +213,16 @@ const login = ref(false);
 const emits = defineEmits(["getContent"])
 const commentContent = ref("")
 const commentEditorId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
-
+const showEditWindow = ref(false);
 const openEvaluateDrawer = ref(false)
 
 const openEvaluate = () => {
   console.log('openEvaluate')
   openEvaluateDrawer.value = true;
+}
+
+const showEdit = () => {
+  showEditWindow.value = true;
 }
 
 const submitEvaluate = () => {

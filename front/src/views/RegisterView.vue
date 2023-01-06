@@ -240,7 +240,11 @@ const register = async () => {
           hideLoading();
           messageSuccess('注册成功！')
           localStorage.setItem('token', data.token);
-          router.push('/Login')
+          if(data.needSupplement){
+            router.push('/InfoFillIn')
+          }else{
+            router.push('/Login')
+          }
         } else {
           hideLoading();
           messageError(data.message)

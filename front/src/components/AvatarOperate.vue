@@ -121,7 +121,7 @@
     await nickData.value.validate((valid) => {
       if (valid) {
         showLoading();
-        service.post('/api/user/editBlogInfo', { token: localStorage.getItem('token'), nickName: nickNameData.nickName }).then((res) => {
+        service.post('/api/user/editNickName', { token: localStorage.getItem('token'), nickName: nickNameData.nickName }).then((res) => {
           let data = res.data;
           if (data.success) {
             hideLoading();

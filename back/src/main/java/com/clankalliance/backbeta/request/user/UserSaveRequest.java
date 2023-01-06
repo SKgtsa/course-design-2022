@@ -60,11 +60,9 @@ public class UserSaveRequest {
     //电子邮箱
     private String email;
 
-    //头像url
-    private String avatarURL;
+    private String researchDirection;
 
-    //照片url
-    private String photoURL;
+    private String section;
 
     private String token;
 }

@@ -138,7 +138,6 @@ const submitPwd = async (formEl: FormInstance | undefined) => {
         console.log(res)
         const data = res.data;
         if (data.success) {
-          hideLoading();
           console.log(login_data.password, login_data.userNumber)
           localStorage.setItem("token", data.token)
           let url = getBaseURL() + data.user.avatarURL;
@@ -146,9 +145,14 @@ const submitPwd = async (formEl: FormInstance | undefined) => {
           setUserId(data.user.id);
           setNickName(data.user.nickName);
           setAvatarURL(url);
+          hideLoading();
           /*       localStorage.setItem("userName", data.user.name) */
           messageSuccess(data.message)
-          identityJump(data.character)
+          if(data.needSupplement){
+            router.push('/InfoFillIn')
+          }else{
+            identityJump(data.character)
+          }
         } else {
           hideLoading();
           console.log('!data.success')

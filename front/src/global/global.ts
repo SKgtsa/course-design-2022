@@ -1,6 +1,7 @@
 //全局变量
 
 import {ref} from "vue";
+//切换本地或云上后端
 const baseURL = ref('http://courseback.clankalliance.cn')
 // const baseURL = ref('http://localhost:5174')
 

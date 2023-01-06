@@ -78,12 +78,12 @@ public class UserController {
     //aaa
     @PostMapping("/editInfo")
     public CommonResponse handleEditInfo(@RequestBody UserSaveRequest request){
-        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation());
+        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation(), request.getResearchDirection(), request.getSection());
     }
 
-    @PostMapping("/editBlogInfo")
-    public CommonResponse handleEditBlogInfo(@RequestBody BlogInfoSaveRequest request){
-        return userService.handleSaveBlogInfo(request.getToken(),request.getNickName());
+    @PostMapping("/editNickName")
+    public CommonResponse handleEditNickName(@RequestBody BlogInfoSaveRequest request){
+        return userService.handleSaveNickName(request.getToken(),request.getNickName());
     }
 
     @PostMapping("/changeAvatar")
@@ -98,6 +98,11 @@ public class UserController {
                                              // 路径变量 解决前后端不一致
                                              @RequestParam("photo") MultipartFile photo, @RequestParam("token") String token){
         return avatarService.handleSavePhoto(photo,token);
+    }
+
+    @PostMapping("/changeResearchDirection")
+    public CommonResponse handleChangeResearchDirection(@RequestBody ChangeResearchDirectionRequest request){
+        return userService.handleSaveResearchDirection(request.getToken(),request.getResearchDirection());
     }
 
     //批量注册

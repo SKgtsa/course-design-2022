@@ -154,6 +154,11 @@ public class UserServiceImpl implements UserService {
         response.setUser(user);
         if(user instanceof Student){
             response.setCharacter(0);
+            if(user.getNickName() == "默认昵称"){
+                response.setNeedSupplement(true);
+            }else{
+                response.setNeedSupplement(false);
+            }
             response.setNeedSupplement(false);
         }else if(user instanceof Teacher){
             response.setCharacter(1);
@@ -290,8 +295,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation){
+    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
         User user = findById(Long.parseLong(response.getMessage()));
         if(user instanceof Manager){
             user = findById(id);
@@ -317,8 +324,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CommonResponse handleSaveBlogInfo(String token,String nickName){
+    public CommonResponse handleSaveNickName(String token,String nickName){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
         User user = findById(Long.parseLong(response.getMessage()));
         user.setNickName(nickName);
         try{
@@ -499,6 +508,24 @@ public class UserServiceImpl implements UserService {
             }
         }
         return null;
+    }
+
+    @Override
+    public CommonResponse handleSaveResearchDirection(String token,String researchDirection){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = findById(Long.parseLong(response.getMessage()));
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            teacher.setResearchDirection(researchDirection);
+            teacherRepository.save(teacher);
+            response.setMessage("保存成功");
+        }else{
+            response.setSuccess(false);
+            response.setMessage("出现错误");
+        }
+        return response;
     }
 
 }

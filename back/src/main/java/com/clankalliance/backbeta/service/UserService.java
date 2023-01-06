@@ -31,9 +31,9 @@ public interface UserService {
 
     CommonResponse handleGetInfo(String token);
 
-    CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation);
+    CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section);
 
-    CommonResponse handleSaveBlogInfo(String token,String nickName);
+    CommonResponse handleSaveNickName(String token,String nickName);
 
     boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName, String section);
 
@@ -49,4 +49,6 @@ public interface UserService {
     CommonResponse getStudentIntroduceData(String token);
 
     ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(String token);
+
+    CommonResponse handleSaveResearchDirection(String token,String researchDirection);
 }

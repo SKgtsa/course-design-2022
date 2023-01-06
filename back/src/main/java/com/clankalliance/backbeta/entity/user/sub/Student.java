@@ -55,12 +55,10 @@ public class Student extends User {
         }
 
         public void UpdateInfo(UserRequestTarget target){
-                super.setAvatarURL(target.getAvatarURL());
                 super.setEthnic(target.getEthnic());
                 super.setName(target.getName());
                 super.setNickName(target.getNickName());
                 super.setEMail(target.getEMail());
-                super.setPhotoURL(target.getPhotoURL());
                 super.setGender(target.getGender());
                 super.setUserNumber(target.getUserNumber());
                 super.setPhone(target.getPhone());
