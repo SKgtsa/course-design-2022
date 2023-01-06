@@ -4,6 +4,7 @@ import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
@@ -30,14 +31,31 @@ public class Teacher extends User {
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
                 achievementSet = new HashSet<>();
+                researchDirection = null;
         }
 
-        public Teacher(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
-                super(id,userNumber,nickName,name,password,phone,gradeClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
+        public void UpdateInfo(UserRequestTarget target){
+                super.setAvatarURL(target.getAvatarURL());
+                super.setEthnic(target.getEthnic());
+                super.setName(target.getName());
+                super.setNickName(target.getNickName());
+                super.setEMail(target.getEMail());
+                super.setPhotoURL(target.getPhotoURL());
+                super.setGender(target.getGender());
+                super.setUserNumber(target.getUserNumber());
+                super.setPhone(target.getPhone());
+                super.setPoliticalAffiliation(target.getPoliticalAffiliation());
+                super.setIdCardNumber(target.getIdCardNumber());
+                researchDirection = target.getResearchDirection();
+        }
+
+        public Teacher(long id,long userNumber,String name,String password,long phone,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
+                super(id,userNumber,nickName,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
                 achievementSet = new HashSet<>();
+                researchDirection = null;
         }
 
         public Set<Course> getCourseSet() {
@@ -88,6 +106,14 @@ public class Teacher extends User {
                 this.achievementSet = achievementSet;
         }
 
+        public String getResearchDirection() {
+                return researchDirection;
+        }
+
+        public void setResearchDirection(String researchDirection) {
+                this.researchDirection = researchDirection;
+        }
+
         //删除老师会一并删除他的课程
         @JsonIgnore
         @OneToMany
@@ -113,5 +139,7 @@ public class Teacher extends User {
         @JsonIgnore
         @OneToMany
         private Set<Achievement> achievementSet;
+
+        private String researchDirection;
 
 }

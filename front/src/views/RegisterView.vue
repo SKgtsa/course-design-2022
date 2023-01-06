@@ -195,7 +195,7 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
     }
   }
 }
-/* validator: validatepassword, 
+/* validator: validatepassword,
 validator: validateName
 validator: validateEMail
 validator: validatePhone
@@ -232,7 +232,7 @@ const register = async () => {
         phone: formData.phone, userNumber: formData.userNumber,
         password: formData.password, name: formData.name, idCardNumber: formData.idCardNumber,
         gender: formData.gender, ethnic: formData.ethnic, politicalAffiliation: formData.politicalAffiliation,
-        eMail: formData.eMail, nickName: formData.nickName, identity: formData.identity, code: formData.code
+        email: formData.eMail, nickName: formData.nickName, identity: formData.identity, code: formData.code
       }).then(res => {
         const data = res.data;
         console.log(data);

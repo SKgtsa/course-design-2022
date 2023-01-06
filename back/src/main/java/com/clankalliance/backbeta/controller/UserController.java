@@ -75,6 +75,7 @@ public class UserController {
         return userService.handleGetInfo(request.getToken());
     }
 
+    //aaa
     @PostMapping("/editInfo")
     public CommonResponse handleEditInfo(@RequestBody UserSaveRequest request){
         return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation());
@@ -116,7 +117,7 @@ public class UserController {
     public CommonResponse handleManagerFind(@RequestBody UserManagerFindRequest request){
         return userService.handleManagerFind(request.getToken(),request.getUserNumber());
     }
-
+    //
     @PostMapping("/managerSave")
     public CommonResponse handleManagerSave(@RequestBody UserManagerSaveRequest request){
         return userService.handleManagerSave(request.getToken(), request.getUser());

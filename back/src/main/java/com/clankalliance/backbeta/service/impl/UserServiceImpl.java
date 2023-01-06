@@ -8,6 +8,7 @@ import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
+import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.IntroduceService;
 import com.clankalliance.backbeta.service.TencentSmsService;
@@ -153,15 +154,21 @@ public class UserServiceImpl implements UserService {
         response.setUser(user);
         if(user instanceof Student){
             response.setCharacter(0);
+            response.setNeedSupplement(false);
         }else if(user instanceof Teacher){
             response.setCharacter(1);
+            if(((Teacher) user).getResearchDirection() == null){
+                response.setNeedSupplement(true);
+            }else{
+                response.setNeedSupplement(false);
+            }
         }else{
             response.setCharacter(2);
+            response.setNeedSupplement(false);
         }
+
         return response;
     }
-
-    //存在bug: 保存时数据库条目不全 email接收有问题
 
     @Override
     public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName) {
@@ -190,15 +197,11 @@ public class UserServiceImpl implements UserService {
         }
         long id = snowFlake.nextId();
         switch (identity){
-            //取消了学生注册的功能
-//            case 0:
-//                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
-//                break;
             case 1:
-                user = new Teacher(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
+                user = new Teacher(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
             case 2:
-                user = new Manager(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
+                user = new Manager(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
         }
         try{
@@ -214,10 +217,13 @@ public class UserServiceImpl implements UserService {
         response.setUser(user);
         if(user instanceof Student){
             response.setCharacter(0);
+            response.setNeedSupplement(false);
         }else if(user instanceof Teacher){
             response.setCharacter(1);
+            response.setNeedSupplement(true);
         }else{
             response.setCharacter(2);
+            response.setNeedSupplement(false);
         }
         response.setToken(ManipulateUtil.endNode.getToken());
         System.out.println(response);
@@ -341,14 +347,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse handleChangePassword(String token, String passWord){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");//xzy
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = findById(Long.parseLong(response.getMessage()));
             String oldPassword=user.getPassword();
@@ -367,14 +366,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse handleManagerFind(String token, long userNumber){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");//xzy
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -400,22 +392,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CommonResponse handleManagerSave(String token,User user){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+    public CommonResponse handleManagerSave(String token, UserRequestTarget user){
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User currentUser = userService.findById(Long.parseLong(response.getMessage()));
+            User targetUser = userService.findById(user.getId());
             if(currentUser instanceof Manager){
-                if(user instanceof Student){
-                    studentRepository.save((Student) user);
-                }else if(user instanceof Teacher){
-                    teacherRepository.save((Teacher) user);
+                if(targetUser instanceof Student){
+                    Student student = (Student)targetUser;
+
+                    studentRepository.save((Student) targetUser);
+                }else if(targetUser instanceof Teacher){
+                    Teacher teacher = (Teacher)targetUser;
+
+                    teacherRepository.save((Teacher) targetUser);
                 }
                 response.setSuccess(true);
                 response.setMessage("用户保存成功");
@@ -429,14 +419,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public CommonResponse handleManagerDelete(String token, long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -468,7 +451,7 @@ public class UserServiceImpl implements UserService {
             if(user instanceof Student){
                 Student student=(Student) user;
                 long studentId=student.getId();
-                Map data = introduceService.getIntroduceDataMap(studentId);
+                Map data = introduceService.getIntroduceDataMap(student);
                 response.setContent(data);  //返回前端个人简历数据
             }
         }
@@ -481,7 +464,7 @@ public class UserServiceImpl implements UserService {
             builder.withHtmlContent(htmlContent, null);
             builder.useFastMode();
             builder.useCacheStore(PdfRendererBuilder.CacheStore.PDF_FONT_METRICS, fSDefaultCacheStore);
-            org.springframework.core.io.Resource resource = resourceLoader.getResource("classpath:font/SourceHanSansSC-Regular.ttf");
+            org.springframework.core.io.Resource resource = resourceLoader.getResource("/static/inBuild/SmileySans-Oblique.otf");
             InputStream fontInput = resource.getInputStream();
             builder.useFont(new FSSupplier<InputStream>() {
                 @Override
@@ -511,8 +494,7 @@ public class UserServiceImpl implements UserService {
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
-                long studentId=student.getId();
-                String content=introduceService.getHtmlCount(studentId);
+                String content=introduceService.getHtmlCount(student);
                 return getPdfDataFromHtml(content);
             }
         }

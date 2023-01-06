@@ -31,17 +31,11 @@ const router = createRouter({
       path: '/JiangMuzi',
       name: 'JiangMuziPersonalPage',
       component: () => import('../views/JiangMuziPersonalPage.vue')
+    },{
+      path: '/InfoFillIn',
+      name: 'InfoFillInPage',
+      component: () => import('../views/InfoFillView.vue')
     },
-    /*     {
-          path: '/',
-          name: 'home',
-          component: () => import('../views/AboutView.vue')
-        }, */
-    // {
-    //     path: '/CourseSelect',
-    //     name: 'CourseSelect',
-    //     component: () => import('../views/student/CourseSelect.vue')
-    // },
     {
       path: '/Main',
       name: 'main',

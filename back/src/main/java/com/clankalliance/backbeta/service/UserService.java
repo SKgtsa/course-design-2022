@@ -2,6 +2,7 @@ package com.clankalliance.backbeta.service;
 
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.clankalliance.backbeta.response.CommonResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,7 +41,7 @@ public interface UserService {
 
     CommonResponse handleManagerFind(String token, long userNumber);
 
-    CommonResponse handleManagerSave(String token, User user);
+    CommonResponse handleManagerSave(String token, UserRequestTarget user);
 
     CommonResponse handleManagerDelete(String token, long id);
 

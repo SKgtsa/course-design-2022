@@ -26,4 +26,6 @@ public class CommonResponse<T1,T2> {
 
     private Integer totalPage;
 
+    private boolean needSupplement;
+
 }

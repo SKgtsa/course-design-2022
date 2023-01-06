@@ -27,48 +27,12 @@ import java.util.*;
 
 @Service
 public class IntroduceServiceImpl implements IntroduceService {
-
-    @Resource
-    private TokenUtil tokenUtil;
-
-    @Resource
-    private IntroduceService introduceService;
-
-    @Resource
-    private StudentRepository studentRepository;
-
-    @Resource
-    private TeacherRepository teacherRepository;
-
-    @Resource
-    private ManagerRepository managerRepository;
-
-    @Resource
-    private UserRepository userRepository;
     @Resource
     private ScoreRepository scoreRepository;
 
-    @Resource
-    private CourseRepository courseRepository;
-    @Resource
-    private ActivityRepository activityRepository;
-
-    @Resource
-    private PracticeRepository practiceRepository;
-
-    @Resource
-    private RewardRepository rewardRepository;
-
-    @Resource
-    private AchievementRepository achievementRepository;
-
-
     //绩点获取方法
     //用于内部计算
-    public Double getPointByStudentIdReturnDouble(long studentId,ScoreRepository scoreRepository){
-        Optional<Student> studentOp=studentRepository.findUserById(studentId);
-        Student student=studentOp.get();
-        List<Score> scoreList = scoreRepository.findByStudentId(student.getId());
+    public Double getPointByStudentIdReturnDouble(List<Score> scoreList){
         if(scoreList.isEmpty()){
             return 0.0;
         }else{
@@ -87,12 +51,10 @@ public class IntroduceServiceImpl implements IntroduceService {
         }
     }
 
-    public String getHtmlCount(long id){
-        Optional<Student> studentOptional=studentRepository.findUserById(id);
-        Student student=studentOptional.get();
+    public String getHtmlCount(Student student){
         String studentName =student.getName();
         long telephoneNum =student.getPhone();
-        String birthday=student.getIdCardNumber().substring(6,13);
+        String birthday=student.getIdCardNumber().substring(6,14);
         Boolean gender=student.getGender();
         String sex;
         if(gender){
@@ -103,10 +65,10 @@ public class IntroduceServiceImpl implements IntroduceService {
         long studentNum=student.getUserNumber();
         String politicalAppearance=student.getPoliticalAffiliation();
         Double creditSum=0.0;
-        Double doublePoint=getPointByStudentIdReturnDouble(id,scoreRepository);
+        Double doublePoint=getPointByStudentIdReturnDouble(student.getScoreSet().stream().toList());
         String point = doublePoint.toString();
-        List<Score> scoreList=scoreRepository.findByStudentId(id);
-        List<Activity> activityList=activityRepository.findByStudentId(id);
+        List<Score> scoreList = student.getScoreSet().stream().toList();
+        List<Activity> activityList = student.getActivity();
         List<Practice> practiceList=student.getPracticeSet();
         List<Reward> rewardList=student.getRewardSet();
         Set<Achievement> achievementSet=student.getAchievementSet();
@@ -345,16 +307,10 @@ public class IntroduceServiceImpl implements IntroduceService {
         return content;
     }
     //个人简历信息数据准备方法  根据自己的数据的希望展示的内容拼接成字符串，放在Map对象里， attachList可以方多段内容，具体内容由个人决定
-    public Map getIntroduceDataMap(long studentId){
-        if (studentId == 0) {//这里好像没起到什么作用但是至少后台不发生空指针异常了
-            Map data = new HashMap();
-            data.put("myName","请前往学生管理选择学生");
-            data.put("overview","暂无学生信息");
-            return data;
-        }
+    public Map getIntroduceDataMap(Student student){
         Map data = new HashMap();
         String html = "";
-        html = getHtmlCount(studentId);
+        html = getHtmlCount(student);
         if(html.length()> 0) {
             data.put("html", html);
             return data;
