@@ -42,7 +42,7 @@
           <a>{{ pageData.data.eMail }}</a>
         </div>
         <span style="display: flex;flex-dirction:row">
-          <el-button v-if="userId.toString() === getUserId.toString()" class="subscribeButton" :style="{
+          <el-button v-if="userId.toString() === getUserId().toString()" class="subscribeButton" :style="{
             'width': `${mobile ? 'auto' : '13vw'}`
           }" @click="checkInfo">个人信息</el-button>
           <el-button v-if="login" @click="subscribe" class="subscribeButton" :style="{
@@ -128,6 +128,7 @@
       </div>
     </div>
   </div>
+  <!--博客正文页-->
   <el-dialog v-model="pageData.showDetail" :width="mobile ? '90%' : '80%'" modal-append-to-body=false>
     <div :style="{
       'background-image': `url(${pageData.target.topImageURL})`,
@@ -174,9 +175,9 @@
     </el-form>
     <el-button @click="submitEvaluate">提交</el-button>
   </el-drawer>
-  <el-dialog v-model="infoDialog" title="" :width="mobile ? '90%' : '40%'">
+  <el-dialog v-model="infoDialog" title="" :width="`${mobile ? 90 : 40}%`">
     <el-form :model="information" class="areaTextInput" ref="formData" label-position="right" label-width="auto" :rules="rules">
-      <el-form-item label="头像">
+      <el-form-item label="照片">
         <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
           :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
           <img v-if="information.photoURL" class="avatar" :src="information.photoURL" />
@@ -197,13 +198,13 @@
       <el-form-item label="身份证号:" prop="idCardNumber">
         <span>{{ information.idCardNumber }}</span>
       </el-form-item>
-      <el-form-item label="研究方向:" prop="phone">
+      <el-form-item label="研究方向:" prop="phone"  v-if="identity == 1">
         <el-input v-model="information.researchDirection" maxlength="11">{{ information.phone }}</el-input>
       </el-form-item>
-      <el-form-item label="班级:" prop="studentClass">
+      <el-form-item label="班级:" prop="studentClass" v-if="identity == 0">
         <span>{{ information.studentClass }}</span>
       </el-form-item>
-      <el-form-item label="年级:" prop="section">
+      <el-form-item label="年级:" prop="section" v-if="identity == 0">
         <span>{{ information.section }}</span>
       </el-form-item>
       <el-form-item label="政治面貌:" prop="politicalAffiliation">
@@ -254,8 +255,8 @@ import { getBaseURL, getUserId } from "@/global/global";
 import { mobile } from "@/global/global";
 import serviceFile from '@/request/indexFile'
 import { messageError, messageSuccess } from '@/utils/message'
-import SelfInformation from '../student/SelfInformation.vue'
 
+let identity = ref(0)
 
 let infoDialog = ref(false);
 let isEdit = ref(false);
@@ -273,7 +274,7 @@ let information = reactive({
   researchDirection: '',
   idCardNumber: null,
   photoURL: '',
-  avatarURL:'', 
+  avatarURL:'',
   nickName: '',
   id: '',
 });
@@ -289,40 +290,51 @@ console.log(router)
 
 
 const loadInformationData = async () => {   //查看个人信息
+  console.log('进入loadInformationData')
+  pageData.requesting = true;
   showLoading();
   service.post('/api/user/myInfo', { token: localStorage.getItem("token") }).then(res => {
+    console.log(res);
     if (res.data.success) {
-      console.log(res);
       const data = res.data;
       let content = data.user;
-      console.log(content)
+      console.log(content);
+      if(content.studentClass != undefined){
+        identity.value = 0;
+      }else if(content.researchDirection != undefined){
+        identity.value = 1;
+      }else{
+        identity.value = 2;
+      }
       information.name = content.name;
       information.email = content.email;
       information.phone = content.phone;
       if (content.gender == false) { information.gender = '男'; }
       else information.gender = '女';
-      information.ethnic = content.ethnic,
-      information.politicalAffiliation = content.politicalAffiliation,
-      information.userNumber = content.userNumber,
-      information.studentClass = content.studentClass,
-      information.nickName = content.nickName,
-      information.researchDirection = content.researchDirection,
-      information.section = content.section,
+      information.ethnic = content.ethnic;
+      information.politicalAffiliation = content.politicalAffiliation;
+      information.userNumber = content.userNumber;
+      information.studentClass = content.studentClass;
+      information.nickName = content.nickName;
+      information.researchDirection = content.researchDirection;
+      information.section = content.section;
       information.idCardNumber = content.idCardNumber;
-      let url = getBaseURL() + content.photoURL;
-      information.photoURL = url,
-      url = getBaseURL() + content.avatarURL;
-      information.avatarURL = url,
-        information.id = content.id,
-        localStorage.setItem('token', data.token)
+      information.photoURL = getBaseURL() + content.photoURL;
+      information.avatarURL = getBaseURL() + content.avatarUR;
+      information.id = content.id;
+      localStorage.setItem('token', data.token)
+      console.log(information)
+      pageData.requesting = false;
       hideLoading()
     } else {
+      pageData.requesting = false;
       hideLoading()
       messageError(res.data.message)
     }
   })
     .catch(function (error) {
       hideLoading();
+      pageData.requesting = false;
       messageError("服务器开小差了呢");
       console.log(error)
     })
@@ -352,7 +364,7 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
   }
 }
 const rules = reactive({
-  
+
 
   eMail: [{validator: validateEMail, trigger: 'blur' }],
   phone: [{ validator: validatePhone, trigger: 'blur' }],
@@ -364,6 +376,7 @@ const rules = reactive({
 const sumbitEditRow = async () => {
   await formData.value.validate((valid) => {
     if (valid) {
+      pageData.requesting = true;
       showLoading();
       service.post('/api/user/editInfo', {
         token: localStorage.getItem("token"), //这个修改信息，绑定的值
@@ -380,16 +393,19 @@ const sumbitEditRow = async () => {
           let data = res.data;
           localStorage.setItem('token', data.token)
           hideLoading();
+          pageData.requesting = false;
           loadInformationData()
           messageSuccess(data.message)
         } else {
           hideLoading()
+          pageData.requesting = false;
           messageError(res.data.message)
         }
       })
         .catch(function (error) {
           messageError("服务器开小差了呢")
           hideLoading();
+          pageData.requesting = false;
           console.log(error)
         })
     } else {
@@ -399,25 +415,30 @@ const sumbitEditRow = async () => {
 }
 
 let uploadImg = async (f) => {
+  pageData.requesting = true;
   showLoading();
-  await serviceFile.post('/api/user/changePhoto', { photo: f.file, token: localStorage.getItem('token') }).then(res => {
+  serviceFile.post('/api/user/changePhoto', { photo: f.file, token: localStorage.getItem('token') }).then(res => {
     let data = res.data;
     console.log(res)
     if (data.success) {
-      hideLoading();
       localStorage.setItem('token', data.token);
-      information.photoURL = getBaseURL() + data.content;
-      messageSuccess("更换成功！")
+      let url = getBaseURL() + data.content;
+      console.log(url);
+      hideLoading();
+      pageData.requesting = false;
+      loadInformationData()
     } else {
       hideLoading();
+      pageData.requesting = false;
       messageError(data.message)
     }
   })
-    .catch(function (error) {
-      hideLoading();
-      messageError("服务器开小差了呢");
-      console.log(error)
-    })
+      .catch(function (error) {
+        hideLoading();
+        pageData.requesting = false;
+        messageError("服务器开小差了呢");
+        console.log(error)
+      })
 }
 let beforeAvatarUpload = (file) => {
   const isLt2M = (file.size / 1024 / 1024) < 2
@@ -448,6 +469,7 @@ const openEvaluate = () => {
 
 const submitEvaluate = () => {
   showLoading();
+  pageData.requesting = true;
   evaluateForm.userId = userId.toString();
   evaluateForm.token = localStorage.getItem('token');
   service.post('api/achievement/evaluate', evaluateForm).then(res => {
@@ -457,9 +479,11 @@ const submitEvaluate = () => {
     if (data.success) {
       localStorage.setItem('token', data.token)
       hideLoading();
+      pageData.requesting = false;
       init();
     } else {
       hideLoading();
+      pageData.requesting = false;
       loginFailed();
     }
   })
@@ -638,6 +662,7 @@ const deleteThisPost = (target: Post, event: Event) => {
     confirmButtonText: '确认'
   }).then(() => {
     showLoading();
+    pageData.requesting = true;
     service.post('api/blog/delete', { token: localStorage.getItem("token"), blogId: target.id }).then(res => {
       const data = res.data;
       console.log('删除成功收到回调')
@@ -651,6 +676,7 @@ const deleteThisPost = (target: Post, event: Event) => {
         refresh();
       } else {
         hideLoading();
+        pageData.requesting = false;
         loginFailed();
       }
     })
@@ -661,6 +687,7 @@ const deleteThisPost = (target: Post, event: Event) => {
 
 const subscribe = () => {
   showLoading();
+  pageData.requesting = true;
   service.post('api/blog/subscribe', { token: localStorage.getItem("token"), userId: userId }).then(res => {
     let data = res.data;
     if (data.success) {
@@ -670,6 +697,7 @@ const subscribe = () => {
       loginFailed()
     }
     localStorage.setItem('token', data.token)
+    pageData.requesting = false;
     hideLoading();
   })
 }
@@ -754,6 +782,7 @@ const likeThis = (target: Post, event: Event) => {
   event.stopPropagation();
   console.log('likeThis()')
   console.log(target)
+  pageData.requesting = true;
   showLoading();
   service.post('api/blog/like', { token: localStorage.getItem("token"), blogId: target.id }).then(res => {
     const data = res.data;
@@ -772,6 +801,7 @@ const likeThis = (target: Post, event: Event) => {
       loginFailed()
     }
     hideLoading();
+    pageData.requesting = false;
   })
 }
 
@@ -779,6 +809,7 @@ const collectThis = (target: Post, event: Event) => {
   event.stopPropagation();
   console.log('likeThis()')
   console.log(target)
+  pageData.requesting = true;
   showLoading();
   service.post('api/blog/collect', { token: localStorage.getItem("token"), blogId: target.id }).then(res => {
     const data = res.data;
@@ -791,6 +822,7 @@ const collectThis = (target: Post, event: Event) => {
       loginFailed()
     }
     hideLoading();
+    pageData.requesting = false;
   })
 }
 
@@ -798,6 +830,7 @@ const jumpToDetail = (target: Post) => {
   console.log('jumpToDetail()')
   console.log(target)
   pageData.target = target;
+  pageData.requesting = true;
   showLoading();
   service.post('api/blog/getDetail', { token: localStorage.getItem("token"), blogId: target.id }).then(res => {
     const data = res.data;
@@ -811,6 +844,7 @@ const jumpToDetail = (target: Post) => {
     localStorage.setItem('token', data.token)
     hideLoading();
     pageData.showDetail = true;
+    pageData.requesting = false;
   })
 }
 

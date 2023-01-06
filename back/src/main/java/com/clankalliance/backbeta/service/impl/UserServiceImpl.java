@@ -554,6 +554,7 @@ public class UserServiceImpl implements UserService {
         User user = response.getUser();
         password = DigestUtils.sha1Hex(password.getBytes());
         user.setPassword(password);
+        userRepository.save(user);
         response.setMessage("修改成功");
         return response;
     }
