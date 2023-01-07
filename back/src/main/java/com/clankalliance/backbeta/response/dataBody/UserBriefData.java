@@ -9,17 +9,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserBriefData {
-
-    private String nickName;
-
     private String name;
 
     private Long id;
 
+    private String photoURL;
+
     public UserBriefData(Student student){
-        nickName = student.getNickName();
         name = student.getName();
         id = student.getId();
+        photoURL = student.getPhotoURL();
     }
 
 }

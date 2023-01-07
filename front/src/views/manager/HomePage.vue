@@ -39,7 +39,9 @@
             </el-menu>
           </div>
           <div class="leftMenu">
-            <router-view />
+            <transition name="el-zoom-in-bottom">
+              <router-view v-if="showRouter"/>
+            </transition>
           </div>
         </el-main>
       </el-container>
@@ -47,10 +49,9 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref} from 'vue'
 import {
   menuDrawerOpen,
-  mobile
+  mobile, showRouter
 } from '../../global/global';
 import { RouterView } from 'vue-router';
 import ManagerMenu from "@/components/NavMenu/ManagerMenu.vue";

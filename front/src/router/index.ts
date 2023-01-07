@@ -82,12 +82,14 @@ const router = createRouter({
           path: '/Student/Activity',
           name: 'Activity',
           component: () => import('../views/student/ActivityView.vue')
-        },
-
-        {
+        }, {
           path: '/Student/Reward',
           name: 'Reward',
           component: () => import('../views/student/RewardView.vue')
+        },{
+          path: '/Student/Classmate',
+          name: 'Classmate',
+          component: () => import('../views/student/ClassmateView.vue')
         },
       ]
     },
@@ -156,13 +158,16 @@ const router = createRouter({
 //导入nprogress 为了路由跳转有进度条
 import NProgress from 'nprogress/nprogress.js'
 import 'nprogress/nprogress.css'
+import {showRouter} from "@/global/global";
 
 router.beforeEach(async (to, from, next) => {
   /* console.log('进入beforeEach函数') */
+  showRouter.value = false;
   NProgress.start();
   next()
 })
 router.afterEach((to, from) => {
   NProgress.done();
+  showRouter.value = true;
 })
 export default router

@@ -48,7 +48,9 @@
             </el-menu>
           </div>
           <div class="leftMenu">
-            <router-view />
+            <transition name="el-zoom-in-bottom">
+              <router-view v-if="showRouter"/>
+            </transition>
           </div>
         </el-main>
       </el-container>
@@ -56,16 +58,14 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref } from 'vue'
 import {
-  getNickName,
-    mobile
+  getNickName, menuDrawerOpen,
+  mobile, showRouter
 } from '../../global/global';
 import { RouterView } from 'vue-router';
 import StudentMenu from "@/components/NavMenu/StudentMenu.vue";
 import AvatarOperate from "@/components/AvatarOperate.vue";
 
-const menuDrawerOpen = ref(false);
 
 const openMenu = () => {
   menuDrawerOpen.value = true;

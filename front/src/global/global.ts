@@ -10,6 +10,7 @@ export const windowWidth = ref(0)
 export const windowHeight = ref(0)
 export const mobile = ref(false)
 export const menuDrawerOpen = ref(false);
+export const showRouter = ref(true);
 
 export let getNickName = () =>{
       return localStorage.getItem('nickName')

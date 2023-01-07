@@ -39,7 +39,9 @@
           <div class="leftMenu" :style="{
             'width': `${mobile? '100%':'97%'}`
           }">
-            <router-view />
+            <transition name="el-zoom-in-bottom">
+              <router-view v-if="showRouter"/>
+            </transition>
           </div>
         </el-main>
       </el-container>
@@ -57,18 +59,14 @@
   </el-drawer>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, toRefs } from 'vue'
-import {
-  getAvatarURL,
-  getNickName,
 
-  mobile
+import {
+   menuDrawerOpen,
+  mobile, showRouter
 } from '../../global/global';
 import { RouterView } from 'vue-router';
 import TeacherMenu from "@/components/NavMenu/TeacherMenu.vue";
 import AvatarOperate from "@/components/AvatarOperate.vue";
-
-const menuDrawerOpen = ref(false);
 
 const openMenu = () => {
   menuDrawerOpen.value = true;

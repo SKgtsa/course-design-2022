@@ -35,6 +35,12 @@
     </el-icon>
     <template #title>成果奖励</template>
   </el-menu-item>
+  <el-menu-item index="/Student/Classmate"  @click="closeMenu">
+    <el-icon class="menuButton">
+      <UserFilled />
+    </el-icon>
+    <template #title>我的同学</template>
+  </el-menu-item>
 </template>
 
 <script lang="ts" setup>

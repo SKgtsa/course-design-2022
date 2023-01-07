@@ -44,7 +44,7 @@ public class PersonalPageData {
         email = user.getEMail();
         achievementList = user instanceof Teacher? ((Teacher) user).getAchievementSet():user instanceof Student? ((Student) user).getAchievementSet():new HashSet<>();
         this.follow = follow;
-        if(user instanceof Student && ((Student) user).getEvaluateNum() < 5){
+        if(user instanceof Student && ((Student) user).getEvaluateNum() != null && ((Student) user).getEvaluateNum() < 5){
             evaluateEnough = false;
         }else{
             evaluateEnough = true;
