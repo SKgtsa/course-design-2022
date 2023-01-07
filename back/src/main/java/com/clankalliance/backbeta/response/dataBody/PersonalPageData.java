@@ -33,6 +33,8 @@ public class PersonalPageData {
 
     private boolean follow;
 
+    private boolean evaluateEnough;
+
     public PersonalPageData(User user,boolean follow){
         avatarURL = user.getAvatarURL();
         identity = user instanceof Teacher? "老师":user instanceof Student? "学生":"管理员";
@@ -42,6 +44,11 @@ public class PersonalPageData {
         email = user.getEMail();
         achievementList = user instanceof Teacher? ((Teacher) user).getAchievementSet():user instanceof Student? ((Student) user).getAchievementSet():new HashSet<>();
         this.follow = follow;
+        if(user instanceof Student && ((Student) user).getEvaluateNum() < 5){
+            evaluateEnough = false;
+        }else{
+            evaluateEnough = true;
+        }
     }
 
 }

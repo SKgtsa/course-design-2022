@@ -3,6 +3,7 @@ package com.clankalliance.backbeta.entity.user.sub;
 import com.clankalliance.backbeta.entity.Achievement;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.Course;
+import com.clankalliance.backbeta.entity.publications.Publication;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,6 +31,7 @@ public class Teacher extends User {
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
+                publicationList = new ArrayList<>();
                 achievementSet = new HashSet<>();
                 researchDirection = null;
         }
@@ -53,6 +55,7 @@ public class Teacher extends User {
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
                 achievementSet = new HashSet<>();
+                publicationList = new ArrayList<>();
                 researchDirection = null;
         }
 
@@ -104,6 +107,14 @@ public class Teacher extends User {
                 this.achievementSet = achievementSet;
         }
 
+        public List<Publication> getPublicationList() {
+                return publicationList;
+        }
+
+        public void setPublicationList(List<Publication> publicationList) {
+                this.publicationList = publicationList;
+        }
+
         public String getResearchDirection() {
                 return researchDirection;
         }
@@ -137,6 +148,10 @@ public class Teacher extends User {
         @JsonIgnore
         @OneToMany
         private Set<Achievement> achievementSet;
+
+        @JsonIgnore
+        @OneToMany
+        private List<Publication> publicationList;
 
         private String researchDirection;
 

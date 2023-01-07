@@ -133,18 +133,6 @@ public class UserController {
         return userService.handleManagerDelete(request.getToken(), request.getId());
     }
 
-    //  学生个人简历页面
-    //在系统在主界面内点击个人简历，后台准备个人简历所需要的各类数据组成的段落数据，在前端显示
-    @PostMapping("/getStudentIntroduceData")
-    public CommonResponse getStudentIntroduceData(@RequestBody TokenCheckRequest request) {
-        return userService.getStudentIntroduceData(request.getToken());
-    }
-
-    @PostMapping("/getStudentIntroducePdf")
-    public ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(@RequestBody TokenCheckRequest request){
-        return userService.getStudentIntroducePdf(request.getToken());
-    }
-
     @PostMapping("/findPasswordPhone")
     public CommonResponse findPasswordPhone(@RequestBody FindPasswordRequest request){
         return userService.findPasswordPhone(request.getUserNumber(),request.getPhone());
@@ -153,6 +141,11 @@ public class UserController {
     @PostMapping("/findPasswordCode")
     public CommonResponse findPasswordCode(@RequestBody FindPasswordRequest request){
         return userService.findPasswordCode(request.getPhone(), request.getCode(), request.getPassword());
+    }
+
+    @PostMapping("/findClassmate")
+    public CommonResponse findClassmate(@RequestBody TokenCheckRequest request){
+        return userService.findClassmate(request.getToken());
     }
 
 }

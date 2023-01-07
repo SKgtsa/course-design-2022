@@ -671,4 +671,25 @@ public class CourseServiceImpl implements CourseService {
         }
         return response;
     }
+
+    @Override
+    public CommonResponse handlePersonalFind(long userId){
+        User user = userService.findById(userId);
+        CommonResponse response = new CommonResponse<>();
+        if(user == null || !(user instanceof Teacher)){
+            response.setSuccess(false);
+            response.setMessage("查找失败");
+            return response;
+        }
+        Teacher teacher = (Teacher) user;
+        Set<Course> courseSet = teacher.getCourseSet();
+        Set<String> courseName = new HashSet<>();
+        for(Course c : courseSet){
+            courseName.add(c.getName());
+        }
+        response.setContent(courseSet);
+        response.setSuccess(true);
+        response.setMessage("查找成功");
+        return response;
+    }
 }

@@ -10,7 +10,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepositor
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.clankalliance.backbeta.response.CommonResponse;
-import com.clankalliance.backbeta.service.IntroduceService;
+import com.clankalliance.backbeta.response.dataBody.UserBriefData;
 import com.clankalliance.backbeta.service.TencentSmsService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.SnowFlake;
@@ -18,18 +18,11 @@ import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;
 import com.clankalliance.backbeta.utils.StatusManipulateUtils.StatusNode;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import com.openhtmltopdf.extend.FSSupplier;
-import com.openhtmltopdf.extend.impl.FSDefaultCacheStore;
-import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
 
 import javax.annotation.Resource;
-import java.io.InputStream;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -45,9 +38,6 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserService userService;
-
-    @Resource
-    private IntroduceService introduceService;
 
     @Resource
     private StudentRepository studentRepository;
@@ -66,12 +56,6 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private SnowFlake snowFlake;
-
-    @Resource
-    private ResourceLoader resourceLoader;
-
-    private FSDefaultCacheStore fSDefaultCacheStore = new FSDefaultCacheStore();
-
 
     public String getDEFAULT_AVATAR_URL() {
         return DEFAULT_AVATAR_URL;
@@ -451,65 +435,6 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    //后台准备个人简历所需要的各类数据组成的段落数据
-    @Override
-    public CommonResponse getStudentIntroduceData(String token){
-        CommonResponse response = tokenUtil.tokenCheck(token);
-        if(response.getSuccess()){
-            User user = userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Student){
-                Student student=(Student) user;
-                long studentId=student.getId();
-                Map data = introduceService.getIntroduceDataMap(student);
-                response.setContent(data);  //返回前端个人简历数据
-            }
-        }
-        return response;
-    }
-
-    public ResponseEntity<StreamingResponseBody> getPdfDataFromHtml(String htmlContent) {
-        try {
-            PdfRendererBuilder builder = new PdfRendererBuilder();
-            builder.withHtmlContent(htmlContent, null);
-            builder.useFastMode();
-            builder.useCacheStore(PdfRendererBuilder.CacheStore.PDF_FONT_METRICS, fSDefaultCacheStore);
-            org.springframework.core.io.Resource resource = resourceLoader.getResource("/static/inBuild/SmileySans-Oblique.otf");
-            InputStream fontInput = resource.getInputStream();
-            builder.useFont(new FSSupplier<InputStream>() {
-                @Override
-                public InputStream supply() {
-                    return fontInput;
-                }
-            }, "SourceHanSansSC");
-            StreamingResponseBody stream = outputStream -> {
-                builder.toStream(outputStream);
-                builder.run();
-            };
-
-            return ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_PDF)
-                    .body(stream);
-
-        }
-        catch (Exception e) {
-            return  ResponseEntity.internalServerError().build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(String token) {
-        CommonResponse response = tokenUtil.tokenCheck(token);
-        if(response.getSuccess()){
-            User user = userService.findById(Long.parseLong(response.getMessage()));
-            if(user instanceof Student){
-                Student student=(Student) user;
-                String content=introduceService.getHtmlCount(student);
-                return getPdfDataFromHtml(content);
-            }
-        }
-        return null;
-    }
-
     @Override
     public CommonResponse handleSaveResearchDirection(String token,String researchDirection){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -556,6 +481,28 @@ public class UserServiceImpl implements UserService {
         user.setPassword(password);
         userRepository.save(user);
         response.setMessage("修改成功");
+        return response;
+    }
+
+    @Override
+    public CommonResponse findClassmate(String token){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        if(user == null || !(user instanceof Student)){
+            response.setMessage("用户不存在或用户不是学生");
+            response.setSuccess(false);
+        }else {
+            Student student = (Student)user;
+            List<Student> studentList = studentRepository.findUserByStudentClass(student.getStudentClass());
+            List<UserBriefData> dataList = new ArrayList<>();
+            for(Student s: studentList)
+                dataList.add(new UserBriefData(s));
+            response.setContent(dataList);
+            response.setSuccess(true);
+            response.setMessage("查找成功");
+        }
         return response;
     }
 

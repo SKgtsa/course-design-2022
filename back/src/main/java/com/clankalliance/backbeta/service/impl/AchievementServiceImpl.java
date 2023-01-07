@@ -53,21 +53,27 @@ public class AchievementServiceImpl implements AchievementService {
             response.setSuccess(false);
             response.setMessage("该成就已内置");
         }else{
-            User user = userService.findById(userId);
-            if(user instanceof Teacher || user instanceof Student){
+            User target = userService.findById(userId);
+            if(target instanceof Teacher || target instanceof Student){
                 Achievement achievement = new Achievement(snowFlake.nextId(), name, description);
                 achievementRepository.save(achievement);
-                if(user instanceof Teacher){
-                    Teacher teacher = (Teacher) user;
+                if(target instanceof Teacher){
+                    Teacher teacher = (Teacher) target;
                     Set<Achievement> achievementSet = teacher.getAchievementSet();
                     achievementSet.add(achievement);
                     teacher.setAchievementSet(achievementSet);
                     teacherRepository.save(teacher);
-                }else if(user instanceof Student){
-                    Student student = (Student) user;
+                }else if(target instanceof Student){
+                    Student student = (Student) target;
                     Set<Achievement> achievementSet = student.getAchievementSet();
                     achievementSet.add(achievement);
                     student.setAchievementSet(achievementSet);
+                    studentRepository.save(student);
+                }
+                User user = userService.findById(Long.parseLong(response.getMessage()));
+                if(user instanceof Student){
+                    Student student = (Student) user;
+                    student.setEvaluateNum(student.getEvaluateNum() + 1);
                     studentRepository.save(student);
                 }
                 response.setMessage("评价成功");

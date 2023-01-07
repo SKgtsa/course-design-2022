@@ -45,14 +45,11 @@ public interface UserService {
 
     CommonResponse handleManagerDelete(String token, long id);
 
-    //后台准备个人简历所需要的各类数据组成的段落数据
-    CommonResponse getStudentIntroduceData(String token);
-
-    ResponseEntity<StreamingResponseBody> getStudentIntroducePdf(String token);
-
     CommonResponse handleSaveResearchDirection(String token,String researchDirection);
 
     CommonResponse findPasswordPhone(Long userNumber, Long phone);
 
     CommonResponse findPasswordCode(Long phone ,String code, String password);
+
+    CommonResponse findClassmate(String token);
 }

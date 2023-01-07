@@ -39,6 +39,7 @@ public class Student extends User {
                 collection = new ArrayList<>();
                 achievementSet = new HashSet<>();
                 section = null;
+                evaluateNum = 0;
         }
 
         public Student(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL,String section){
@@ -164,6 +165,14 @@ public class Student extends User {
                 this.studentClass = studentClass;
         }
 
+        public Integer getEvaluateNum() {
+                return evaluateNum;
+        }
+
+        public void setEvaluateNum(Integer evaluateNum) {
+                this.evaluateNum = evaluateNum;
+        }
+
         private String studentClass;
 
         //学生届次
@@ -209,5 +218,7 @@ public class Student extends User {
         @JsonIgnore
         @OneToMany
         private Set<Achievement> achievementSet;
+
+        private Integer evaluateNum;
 
 }

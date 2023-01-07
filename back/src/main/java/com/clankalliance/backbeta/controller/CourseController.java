@@ -138,4 +138,9 @@ public class CourseController {
         return courseService.handleManagerAddStudent(request.getToken(),request.getCourseId(),request.getStudentNumber());
     }
 
+    @PostMapping("/teacherPersonalFind")
+    public CommonResponse teacherPersonalFind(@RequestBody TeacherPersonalFindRequest request){
+        return courseService.handlePersonalFind(request.getId());
+    }
+
 }

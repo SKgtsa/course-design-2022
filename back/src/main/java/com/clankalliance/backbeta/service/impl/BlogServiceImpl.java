@@ -147,6 +147,7 @@ public class BlogServiceImpl implements BlogService {
         User user = userService.findById(Long.parseLong(response.getMessage()));
         Date date = new Date();
         SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy年MM月dd日 hh时mm分");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));;
         Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), dateFormat.format(date), generalUploadService.upload(topImage), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
 
         if(! (user instanceof Manager)){
