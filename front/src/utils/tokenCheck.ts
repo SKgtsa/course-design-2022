@@ -52,6 +52,7 @@ export const loginFailed = () => {
     localStorage.setItem('token',null);
     localStorage.setItem('avatarURL',getDefaultAvatarURL())
     localStorage.setItem('nickName','')
+    localStorage.setItem('userId',null)
     ElMessage({
         message: '登录失效',
         type: 'error'

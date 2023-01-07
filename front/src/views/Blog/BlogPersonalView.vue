@@ -42,7 +42,7 @@
           <a>{{ pageData.data.eMail }}</a>
         </div>
         <span style="display: flex;flex-dirction:row">
-          <el-button v-if="userId.toString() === getUserId().toString()" class="subscribeButton" :style="{
+          <el-button v-if="getUserId() &&  userId.toString() === getUserId().toString()" class="subscribeButton" :style="{
             'width': `${mobile ? 'auto' : '13vw'}`
           }" @click="checkInfo">个人信息</el-button>
           <el-button v-if="login" @click="subscribe" class="subscribeButton" :style="{
