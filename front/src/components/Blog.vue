@@ -43,7 +43,7 @@
         <el-carousel class="noticeCard"
                      :direction="`${mobile? 'horizontal':'vertical'}`"
                      :autoplay="true"
-                     v-touch:swipe.left="left" v-touch:swipe.right="right"
+                     v-touch:swipe.left="right" v-touch:swipe.right="left"
                      ref="carousel"
         >
           <el-carousel-item v-for="(item,index) in pageData.announcementList" :key="item">

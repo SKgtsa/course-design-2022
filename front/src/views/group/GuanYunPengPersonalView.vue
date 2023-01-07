@@ -1,5 +1,5 @@
 <template>
-  <div class="touchBox" v-touch:swipe.left="left" v-touch:swipe.right="right">
+  <div class="touchBox" v-touch:swipe.left="right" v-touch:swipe.right="left">
     <el-carousel
         indicator-position="none"
         :autoplay="false"

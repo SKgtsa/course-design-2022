@@ -9,10 +9,10 @@
             <el-input v-model="formData.userNumber" maxlength="16" />
           </el-form-item>
           <el-form-item label="姓名:" prop="name">
-            <el-input v-model="formData.name" style="width:10vw" maxlength="10"/>
+            <el-input v-model="formData.name"  maxlength="10"/>
           </el-form-item>
           <el-form-item label="用户名:" prop="nickName">
-            <el-input v-model="formData.nickName"  style="width:10vw" maxlength="8"/>
+            <el-input v-model="formData.nickName" maxlength="8"/>
           </el-form-item>
           <el-form-item label="身份:" prop="identity">
             <el-select v-model="formData.identity" placeholder="选择身份">
@@ -37,7 +37,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="民族:" prop="ethnic"  >
-            <el-input v-model="formData.ethnic" style="width:10vw" maxlength="8"/>
+            <el-input v-model="formData.ethnic"  maxlength="8"/>
           </el-form-item>
           <el-form-item label="邮箱:" prop="eMail">
             <el-input v-model="formData.eMail"  maxlength="20"/>
@@ -283,7 +283,6 @@ const register = async () => {
 }
 
 .registerForm {
-  width: 30%;
   height: 95%;
   align-items: center;
   position: absolute;
