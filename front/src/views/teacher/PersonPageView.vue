@@ -260,7 +260,7 @@ import { messageError } from '@/utils/message'
   //封面图片
   let topImage = null;
   //切换refresh方法的url
-  const targetURL = ref('api/publication/getPersonalPublication ')
+  const targetURL = ref('/api/publication/getPersonalPublication ')
   //若为true,代表已经到底
   const loadOver = ref(false);
   //若为true,展示博客正文
@@ -514,7 +514,7 @@ const login = ref(false);
     console.log(target)
     pageData.target = target;
     showLoading();
-    service.post('api/publication/getDetail',{token: localStorage.getItem("token"), blogId: target.id}).then(res => {
+    service.post('api/publication/getDetail',{token: localStorage.getItem("token"), publicationId: target.id}).then(res => {
       const data = res.data;
       console.log('获取正文成功')
       console.log(res)
