@@ -11,7 +11,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepositor
 import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.response.dataBody.UserBriefData;
-import com.clankalliance.backbeta.service.TencentSmsService;
+import com.clankalliance.backbeta.service.TencentService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;
@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Resource
-    private TencentSmsService tencentSmsService;
+    private TencentService tencentService;
 
     @Resource
     private SnowFlake snowFlake;
@@ -114,11 +114,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CommonResponse handleLogin(long userNumber,String password) {
+    public CommonResponse handleLogin(long userNumber,String password,String ticket,String randstr) {
         /*
         增加nickName,avatarURL,character 0Teacher 1Student 2Manager
          */
         CommonResponse  response = new CommonResponse<>();
+        if(!tencentService.getTencentCaptchaResult(ticket, randstr)){
+            response.setSuccess(false);
+            response.setMessage("人机验证不通过");
+            return response;
+        }
         response.setSuccess(false);
         password = DigestUtils.sha1Hex(password);
         User user = findByUserNumber(userNumber);
@@ -226,7 +231,7 @@ public class UserServiceImpl implements UserService {
         if(user != null){
             ManipulateUtil.updateStatus(user.getId());
             String code = ManipulateUtil.endNode.getVerifyCode();
-            tencentSmsService.sendSms("" + phone,code);
+            tencentService.sendSms("" + phone,code);
             response.setSuccess(true);
             response.setMessage("已发送验证码");
         }else{
@@ -254,7 +259,7 @@ public class UserServiceImpl implements UserService {
             long tempId = phone;
             ManipulateUtil.updateStatus(tempId);
             String code = ManipulateUtil.endNode.getVerifyCode();
-            tencentSmsService.sendSms("" + phone,code);
+            tencentService.sendSms("" + phone,code);
             response.setSuccess(true);
             response.setMessage("已发送验证码");
         }
@@ -463,7 +468,7 @@ public class UserServiceImpl implements UserService {
         }else{
             ManipulateUtil.updateStatus(user.getId());
             String code = ManipulateUtil.endNode.getVerifyCode();
-            tencentSmsService.sendSms("" + phone,code);
+            tencentService.sendSms("" + phone,code);
             response.setMessage("发送成功");
             response.setSuccess(true);
 

@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping("/login")
     public CommonResponse login(@RequestBody UserLoginRequest request){
-        return userService.handleLogin(request.getUserNumber(), request.getPassword());
+        return userService.handleLogin(request.getUserNumber(), request.getPassword(),request.getTicket(),request.getRandstr());
     }
 
     @PostMapping("/register")

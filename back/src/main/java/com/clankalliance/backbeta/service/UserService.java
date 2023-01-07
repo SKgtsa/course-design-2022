@@ -14,7 +14,7 @@ public interface UserService {
 
     String getDEFAULT_PHOTO_URL();
 
-    CommonResponse handleLogin(long userNumber,String password);
+    CommonResponse handleLogin(long userNumber,String password,String ticket,String randstr);
 
     CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName);
     CommonResponse handlePhoneLogin(long phone);

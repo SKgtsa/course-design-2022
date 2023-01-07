@@ -115,6 +115,8 @@ import { mobile } from "@/global/global";
 const login_data = reactive({
   userNumber: '',
   password: '',
+  ticket: '',
+  randstr: ''
 })
 const loginFormPwd = ref();
 const loginFormPhone = ref();
@@ -167,42 +169,51 @@ const sendCode = async () => {
     })
 }
 
-const submitPwd = async (formEl: FormInstance | undefined) => {
+const submitPwd = (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await loginFormPwd.value.validate((valid) => {
+  loginFormPwd.value.validate((valid) => {
     if (valid) {
-      showLoading();
-      service.post('/api/user/login', login_data).then(res => {
-        console.log(res)
-        const data = res.data;
-        if (data.success) {
-          console.log(login_data.password, login_data.userNumber)
-          localStorage.setItem("token", data.token)
-          let url = getBaseURL() + data.user.avatarURL;
-          console.log(localStorage.getItem('token'))
-          setUserId(data.user.id);
-          setNickName(data.user.nickName);
-          setAvatarURL(url);
-          hideLoading();
-          /*       localStorage.setItem("userName", data.user.name) */
-          messageSuccess(data.message)
-          if(data.needSupplement){
-            router.push('/InfoFillIn')
-          }else{
-            identityJump(data.character)
+      console.log('检验通过');
+      (window as any).captcha
+      const captcha = new (window as any).TencentCaptcha('198139954', function (res){
+        console.log('进入验证')
+        showLoading();
+        login_data.randstr = res.randstr;
+        login_data.ticket = res.ticket;
+        service.post('/api/user/login', login_data).then(res => {
+          console.log(res)
+          const data = res.data;
+          if (data.success) {
+            console.log(login_data.password, login_data.userNumber)
+            localStorage.setItem("token", data.token)
+            let url = getBaseURL() + data.user.avatarURL;
+            console.log(localStorage.getItem('token'))
+            setUserId(data.user.id);
+            setNickName(data.user.nickName);
+            setAvatarURL(url);
+            hideLoading();
+            /*       localStorage.setItem("userName", data.user.name) */
+            messageSuccess(data.message)
+            if(data.needSupplement){
+              router.push('/InfoFillIn')
+            }else{
+              identityJump(data.character)
+            }
+          } else {
+            hideLoading();
+            console.log('!data.success')
+            messageError(data.message)
           }
-        } else {
-          hideLoading();
-          console.log('!data.success')
-          messageError(data.message)
-        }
-      })
-        .catch(function (error) {
-          hideLoading();
-          messageError("服务器开小差了呢");
-          console.log(error)
         })
+          .catch(function (error) {
+            hideLoading();
+            messageError("服务器开小差了呢");
+            console.log(error)
+          })
+      })
+      captcha.show();
     } else {
+      console.log('检验失败')
       messageError("请填写正确的用户名和密码！")
     }
   })

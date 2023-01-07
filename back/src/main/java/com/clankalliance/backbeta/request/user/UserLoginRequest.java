@@ -14,4 +14,8 @@ public class UserLoginRequest {
     private long userNumber;
 
     private String password;
+
+    private String randstr;
+
+    private String ticket;
 }
