@@ -31,6 +31,11 @@ const router = createRouter({
       name: 'GuanYunPengPersonalPage',
       component: () => import('../views/group/GuanYunPengPersonalView.vue')
     },{
+      path:'/PengShuaihao',
+      name:'PengShuaihaoPersonalPage',
+      component:() =>import('../views/group/PengShuaihaoPersonView.vue')
+    }
+    ,{
       path: '/InfoFillIn',
       name: 'InfoFillInPage',
       component: () => import('../views/InfoFillView.vue')
@@ -112,7 +117,7 @@ const router = createRouter({
         {
           path: '/Teacher/SelfInformation',
           name: 'TeacherSelfInformation',
-          component: () => import('../views/teacher/SelfInformation.vue')
+          component: () => import('../views/teacher/PersonPageView.vue')
         },
       ]
     },
