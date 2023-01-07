@@ -1,5 +1,4 @@
 <template>
-
   <div :style="{
     'padding-top': `${mobile? '0':'1.5vh'}`,
     'padding-right': `${mobile? '0':'1vw'}`,
@@ -36,7 +35,7 @@
         }">{{ getNickName() }}</a>
   </div>
   <!-- 修改昵称弹出框 -->
-  <el-dialog v-model="dialogVisibleName" width="20vw">
+  <el-dialog v-model="dialogVisibleName" :width="`${mobile? 90:40}%`">
     <el-form :model="nickNameData" :rules="nickNameRules" ref="nickData">
       <el-form-item label="昵称" prop="nickName">
         <el-input v-model="nickNameData.nickName" maxlength="8">{{ getNickName() }}</el-input>
@@ -52,21 +51,14 @@
     </div>
   </el-dialog>
   <!-- 修改头像弹出框 -->
-  <el-dialog v-model="dialogVisibleImg" style=" width: 50vh!important;height: 37.5vh!important;">
-    <section>
-      <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
-                 :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
-        <img v-if="getAvatarURL()" class="avatar" :src="getAvatarURL()" />
-        <el-icon v-else class="avatar-uploader-icon">
-          <Plus />
-        </el-icon>
-        <div class="head-img">
-        </div>
-      </el-upload>
-    </section>
+  <el-dialog v-model="dialogVisibleImg" width="30vh">
+    <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
+               :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
+      <img v-if="getAvatarURL()" class="avatar" :src="getAvatarURL()" />
+    </el-upload>
   </el-dialog>
   <!-- 修改密码弹出框 -->
-  <el-dialog v-model="dialogVisiblePwd" width="25vw">
+  <el-dialog v-model="dialogVisiblePwd" :width="`${mobile? 90:40}%`" >
     <!-- 没有校验的时候显示，就是密码不正确或者没有执行找回密码操作的时候 -->
     <div>
       <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData">
@@ -277,6 +269,16 @@
   flex-direction: row;
   height: 7.5vh;
   flex-direction: row-reverse;
+}
+
+.avatar-uploader{
+
+}
+.avatar{
+  width: 20vh;
+  height: 20vh;
+  border-radius: 20vh;
+  margin:auto;
 }
 .nickName{
   font-weight: bold;

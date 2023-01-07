@@ -8,12 +8,15 @@ import 'element-plus/dist/index.css'
 import './assets/main.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import qs from 'qs'
+import Vue3TouchEvents from "vue3-touch-events";
 
 const app = createApp(App)
 app.config.globalProperties.$qs = qs
 app.use(router)
 
 app.use(ElementPlus)
+
+app.use(Vue3TouchEvents)
 
 app.mount('#app')
 

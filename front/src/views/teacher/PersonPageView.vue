@@ -190,7 +190,8 @@ import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
 import {getBaseURL, getUserId, mobile} from "@/global/global";
-
+let userId = router.currentRoute.value.query.userId as String;
+console.log(userId)
 const blog = ref('')
 const showUpload = ref(true);
 //博客列表陈列分页用
@@ -240,8 +241,7 @@ const pageData  = reactive({
   },
   input: '',
 })
-let userId = router.currentRoute.value.query.userId as String;
-console.log(userId)
+
 const hasUser = ref(true)
 
 if (userId == undefined)

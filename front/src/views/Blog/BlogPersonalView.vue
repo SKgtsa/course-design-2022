@@ -56,7 +56,7 @@
         'height': `${mobile ? 20 : 50}vh`
       }">
         <a style="font-size: 3vh;font-weight: bold;padding: 1.5vw;color: #555">称号</a>
-        <div style="width: 100%">
+        <div style="width: 100%" v-if="pageData.data.evaluateEnough">
           <div v-for="(item, index) in pageData.data.achievementList" class="achievement">
             <div class="achievementArea">
               <el-tooltip placement="top" :content="`${item.description}`">
@@ -77,6 +77,21 @@
                 <a><el-icon>
                     <Plus />
                   </el-icon></a>
+              </el-button>
+            </div>
+          </div>
+        </div>
+        <div style="width: 100%" v-if="!pageData.data.evaluateEnough">
+          <div style="font-size: 3vh;font-weight: bold;padding: 1.5vw;color: #555">对五位同学评价之后才能查看自己的称号</div>
+          <a style="font-size: 2vh;font-weight: bold;padding: 1.5vw;color: #555">评论方式:在你想留下评论的学生的主页点击</a>
+          <div class="achievement">
+            <div class="achievementArea">
+              <el-button :style="{
+                'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`
+              }" class="achievement" v-if="login">
+                <a><el-icon>
+                  <Plus />
+                </el-icon></a>
               </el-button>
             </div>
           </div>
@@ -600,14 +615,6 @@ watch(
 onMounted(() => {
   tinymce.init({})
 })
-
-
-
-interface Achievement {
-  name: String,
-  description: String
-}
-
 interface Post {
   id: string,
   heading: string,
@@ -631,6 +638,7 @@ const pageData = reactive({
     eMail: '',
     achievementList: [],
     follow: false,
+    evaluateEnough: false,
   },
   startIndex: 0,
   length: 5,

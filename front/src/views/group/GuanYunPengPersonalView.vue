@@ -1,5 +1,5 @@
 <template>
-  <div id="touchBox" class="touchBox">
+  <div class="touchBox" v-touch:swipe.left="left" v-touch:swipe.right="right">
     <el-carousel
         indicator-position="none"
         :autoplay="false"
@@ -9,9 +9,7 @@
         ref="carousel"
         @wheel="handleScroll"
         @change="handleCarouselChange"
-
     >
-
       <el-carousel-item style="height: 100vh">
         <div class="page" :style="{
         'height': '100vh',
@@ -213,7 +211,6 @@ const openEvaluate = () => {
   openEvaluateDrawer.value = true;
 }
 
-
 const props = defineProps({
   value: {
     type: String,
@@ -355,63 +352,8 @@ const handleScroll = (res) => {
 
 //在onMounted中初始化编辑器
 onMounted(() => {
-  document.getElementById('touchBox').addEventListener(
-      'touchstart',
-      function (e) {
-        state.startX = `${e.touches[0].pageX}`;
-        state.startY = `${e.touches[0].pageY}`;
-        console.log('开始触摸 x:' + state.startX + ' y:' + state.startY)
-        e.stopPropagation();
-      },
-      false
-  );
-  document.getElementById('touchBox').addEventListener(
-      'touchend',
-      function (e) {
-        let endX, endY;
-        endX = e.changedTouches[0].pageX;
-        endY = e.changedTouches[0].pageY;
-        let direction = getDirection(state.startX, state.startY, endX, endY);
-        e.stopPropagation();
-        console.log('direction', direction)
-      },
-      false
-  );
   tinymce.init({})
 })
-
-//获得角度
-const getAngle = (angx, angy) => {
-  return (Math.atan2(angy, angx) * 180) / Math.PI;
-};
-
-
-
-const getDirection = (startX, startY, endX, endY) => {
-  let angX = endX - startX;
-  let angY = endY - startY;
-  let result = 0;
-  if (Math.abs(angX) < 2 && Math.abs(angY) < 2) {
-    console.log('==>点击了一下');
-    return result;
-  }
-  let angle = getAngle(angX, angY);
-    console.log('角度', angle);
-  if (angle < 0 && -90 < angle) {
-    console.log('往【右上】滑动1', angle);
-  } else if (angle < -90 && -180 < angle) {
-    console.log('往【左上】滑动2', angle);
-  } else if (angle < 90 && 0 < angle) {
-    console.log('往【右下】滑动0', angle);
-  } else {
-    console.log('往【左下】滑动0', angle);
-  }
-  return result;
-};
-
-
-
-
 interface Post{
   id: string,
   heading: string,
@@ -424,7 +366,6 @@ interface Post{
   like: boolean,
   collect: boolean;
 }
-
 const pageData = reactive({
   data: {
     avatarURL : '',
@@ -456,7 +397,6 @@ const pageData = reactive({
   targetContent: {content: '',commentList: []},
   showDetail: false
 })
-
 const refresh = () => {
   if(!pageData.requesting){
     if(pageData.loadOver){
@@ -528,9 +468,7 @@ const init = () => {
   }
 
 }
-
 init();
-
 const jumpToDetail = (target: Post) => {
   console.log('jumpToDetail()')
   console.log(target)
@@ -550,7 +488,6 @@ const jumpToDetail = (target: Post) => {
     pageData.showDetail = true;
   })
 }
-
 const jumpToPersonal = (userId : string, event: Event) => {
   console.log('jumpToPersonal()')
   event.stopPropagation();
@@ -559,7 +496,6 @@ const jumpToPersonal = (userId : string, event: Event) => {
     query: {userId: userId}
   })
 }
-
 const commentSubmit = () => {
   showLoading();
   if(commentContent.value.length == 0){
@@ -590,8 +526,6 @@ const commentSubmit = () => {
   }
   console.log(commentContent.value);
 }
-
-
 </script>
 
 <style scoped>
