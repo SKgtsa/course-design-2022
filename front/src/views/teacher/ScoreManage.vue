@@ -57,7 +57,7 @@
           <el-table-column fixed="left" label="课程名" prop="courseName"  width="150" show-overflow-tooltip />
           <el-table-column label="课程号" prop="courseId"  show-overflow-tooltip />
           <el-table-column label="通过率" prop="passRate"  show-overflow-tooltip />
-          <el-table-column fixed="right" label="平均分" prop="average"  show-overflow-tooltip />
+          <el-table-column label="平均分" prop="average"  show-overflow-tooltip />
           <el-table-column fixed="right" label="打分">
             <template #default="scope">
               <el-button size="medium" @click="addScore(scope.row.courseId)" class="button"
