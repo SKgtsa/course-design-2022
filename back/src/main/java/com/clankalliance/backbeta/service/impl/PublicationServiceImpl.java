@@ -46,7 +46,7 @@ public class PublicationServiceImpl implements PublicationService {
             return response;
         User user = userService.findById(Long.parseLong(response.getMessage()));
         Publication publication = new Publication(UUID.randomUUID().toString(),heading,content, generalUploadService.upload(topImage),Long.parseLong(response.getMessage()));
-        if(! (user instanceof Manager)){
+        if(user instanceof Teacher){
             try{
                 publicationRepository.save(publication);
             }catch (Exception e){
@@ -54,7 +54,6 @@ public class PublicationServiceImpl implements PublicationService {
                 response.setSuccess(false);
                 return response;
             }
-        }else if(user instanceof Teacher){
             Teacher teacher = (Teacher) user;
             List<Publication> publicationList = teacher.getPublicationList();
             publicationList.add(publication);

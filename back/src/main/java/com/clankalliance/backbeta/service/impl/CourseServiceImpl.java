@@ -687,7 +687,7 @@ public class CourseServiceImpl implements CourseService {
         for(Course c : courseSet){
             courseName.add(c.getName());
         }
-        response.setContent(courseSet);
+        response.setContent(courseName);
         response.setSuccess(true);
         response.setMessage("查找成功");
         return response;

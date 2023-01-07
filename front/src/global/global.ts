@@ -2,8 +2,8 @@
 
 import {ref} from "vue";
 //切换本地或云上后端
-const baseURL = ref('http://courseback.clankalliance.cn')
-// const baseURL = ref('http://localhost:5174')
+// const baseURL = ref('http://courseback.clankalliance.cn')
+const baseURL = ref('http://localhost:5174')
 
 const defaultAvatarURL = ref('http://courseback.clankalliance.cn/inbuild/default.png')
 export const windowWidth = ref(0)

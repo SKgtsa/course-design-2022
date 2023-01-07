@@ -1,6 +1,6 @@
 <template>
   <el-menu-item index="/Teacher/Main"   @click="closeMenu">
-    <template #title>我的主页</template>
+    <template #title>首页</template>
     <el-icon class="menuButton">
       <HomeFilled />
     </el-icon>
@@ -17,10 +17,16 @@
       <HomeFilled />
     </el-icon>
   </el-menu-item>
+  <el-menu-item :index=" '/Teacher/SelfInformation?userId=' + getUserId()" @click="closeMenu">
+    <template #title>教师主页</template>
+    <el-icon class="menuButton">
+      <Avatar />
+    </el-icon>
+  </el-menu-item>
 </template>
 
 <script lang="ts" setup>
-import {menuDrawerOpen} from "@/global/global";
+import {getUserId, menuDrawerOpen} from "@/global/global";
 
 const closeMenu = () => {
   menuDrawerOpen.value = false;

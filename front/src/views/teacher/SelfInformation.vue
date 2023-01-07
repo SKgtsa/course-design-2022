@@ -66,8 +66,6 @@
       </el-form-item>
     </el-form>
   </el-dialog>
-
-
   <!-- 修改个人信息 -->
   <el-dialog v-model="centerDialogVisibleInf" width="30%">
     <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
@@ -94,9 +92,14 @@ import service from '@/request';
 import { messageWarning, messageError, messageInfo, messageSuccess } from '@/utils/message';
 import { reactive, ref } from "vue";
 import { showLoading, hideLoading } from '@/utils/loading';
-import TEditor from '../../components/TEditor.vue'
 import serviceFile from '@/request/indexFile';
 import {getBaseURL} from "@/global/global";
+import router from "@/router";
+
+//页面接收参数
+let userId = router.currentRoute.value.query.userId as String;
+console.log(userId)
+
 //变量
 //控制查看，更改信息弹出框
 let centerDialogVisibleInf = ref(false);
@@ -201,10 +204,11 @@ let rulesEditForm = reactive({
 //函数
 
 const loadInformationData = async () => {   //查看个人信息
+  console.log('进入loadInformationData')
   showLoading();
   service.post('/api/user/myInfo', { token: localStorage.getItem("token") }).then(res => {
+    console.log(res);
     if (res.data.success) {
-      console.log(res);
       const data = res.data;
       let content = data.user;
       console.log(content)
@@ -213,21 +217,20 @@ const loadInformationData = async () => {   //查看个人信息
       information.phone = content.phone;
       if (content.gender == false) { information.gender = '男'; }
       else information.gender = '女';
-      information.ethnic = content.ethnic,
-        information.politicalAffiliation = content.politicalAffiliation,
-        information.userNumber = content.userNumber,
-        information.password = content.password,
-        information.studentClass = content.studentClass,
-        information.idCardNumber = content.idCardNumber;
+      information.ethnic = content.ethnic;
+      information.politicalAffiliation = content.politicalAffiliation;
+      information.userNumber = content.userNumber;
+      information.password = content.password;
+      information.studentClass = content.studentClass;
+      information.idCardNumber = content.idCardNumber;
       let url = getBaseURL() + content.photoURL;
-      information.photoURL = url,
-        information.id = content.id,
-        localStorage.setItem('token', data.token)
+      information.photoURL = url;
+      information.id = content.id;
+      localStorage.setItem('token', data.token)
       tableData.arr[0].value = information.name;
       tableData.arr[1].value = information.gender;
       tableData.arr[2].value = information.email;
       tableData.arr[3].value = information.phone;
-
       isLoad.value = true;
       console.log(tableData)
       hideLoading()

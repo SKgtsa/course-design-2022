@@ -259,7 +259,6 @@ import { messageError, messageSuccess } from '@/utils/message'
 let identity = ref(0)
 
 let infoDialog = ref(false);
-let isEdit = ref(false);
 let formData = ref();
 let information = reactive({
   name: '',

@@ -1,6 +1,6 @@
 <template>
   <el-menu-item index="/Student/Main">
-    <template #title>我的主页</template>
+    <template #title>首页</template>
     <el-icon class="menuButton">
       <HomeFilled />
     </el-icon>

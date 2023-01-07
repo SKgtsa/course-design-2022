@@ -90,6 +90,7 @@ const handleSelect = (key: string, keyPath: string[]) => {
   margin: 0;
   padding: 0;
   background-color: #f0f2ff;
+  min-height: 100vh;
 }
 
 .menuButton {
