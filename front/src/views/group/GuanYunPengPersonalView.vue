@@ -1,123 +1,121 @@
 <template>
-  <v-touch v-on:swipeleft="left" v-on:swiperight="right" class="wrapper v-touch" tag="div">
-    <div id="touchBox" class="touchBox">
-      <el-carousel
-          indicator-position="none"
-          :autoplay="false"
-          arrow="never"
-          :loop="false"
-          class="carouselWindow"
-          ref="carousel"
-          @wheel="handleScroll"
-          @change="handleCarouselChange"
+  <div id="touchBox" class="touchBox">
+    <el-carousel
+        indicator-position="none"
+        :autoplay="false"
+        arrow="never"
+        :loop="false"
+        class="carouselWindow"
+        ref="carousel"
+        @wheel="handleScroll"
+        @change="handleCarouselChange"
 
-      >
+    >
 
-        <el-carousel-item style="height: 100vh">
-          <div class="page" :style="{
-          'height': '100vh',
-          'width': `${mobile? 'auto':'100vw'}`,
-        }" >
-            <transition name="el-fade-in-linear">
-              <div class="FirstInfoCard" :style="{
-            'width': `${mobile? 95:60}%`
-          }" v-if="showA">
-                <div class="upperInfo">
-                  <div class="infoAvatar"><el-image class="infoAvatarImage" :src="getBaseURL() + pageData.data.avatarURL"/></div>
-                  <div class="infoName"><a class="name">{{ pageData.data.name }}</a></div>
-                </div>
-                <div class="bottomButton">
-                  <div class="pageDescription">
-                    <a style="font-size: 2.5vh;color: #2b3b4e;font-weight: 600">很荣幸您能访问我的网站。我喜欢软件开发，希望将来也能成为技术大牛。</a>
-                    <a style="text-align: right;font-size: 6vh;color: #333333;font-weight: bold" >项目经历:</a>
-                    <a style="font-size: 3vh;color: #333333;font-weight: bold;text-align: right;">可使用滚轮</a>
-                  </div>
-                  <el-button class="startButton"><el-icon style="color: #FFFFFF;font-size: 10vh"><ArrowRightBold /></el-icon></el-button>
-                </div>
+      <el-carousel-item style="height: 100vh">
+        <div class="page" :style="{
+        'height': '100vh',
+        'width': `${mobile? 'auto':'100vw'}`,
+      }" >
+          <transition name="el-fade-in-linear">
+            <div class="FirstInfoCard" :style="{
+          'width': `${mobile? 95:60}%`
+        }" v-if="showA">
+              <div class="upperInfo">
+                <div class="infoAvatar"><el-image class="infoAvatarImage" :src="getBaseURL() + pageData.data.avatarURL"/></div>
+                <div class="infoName"><a class="name">{{ pageData.data.name }}</a></div>
               </div>
+              <div class="bottomButton">
+                <div class="pageDescription">
+                  <a style="font-size: 2.5vh;color: #2b3b4e;font-weight: 600">很荣幸您能访问我的网站。我喜欢软件开发，希望将来也能成为技术大牛。</a>
+                  <a style="text-align: right;font-size: 6vh;color: #333333;font-weight: bold" >项目经历:</a>
+                  <a style="font-size: 3vh;color: #333333;font-weight: bold;text-align: right;">可使用滚轮</a>
+                </div>
+                <el-button class="startButton"><el-icon style="color: #FFFFFF;font-size: 10vh"><ArrowRightBold /></el-icon></el-button>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </el-carousel-item>
+      <el-carousel-item style="height: 100vh">
+        <!--博客的个人页面-->
+        <div class="page" :style="{
+        'height': '100vh',
+        'width': `${mobile? 'auto':'100vw'}`,
+      }" >
+          <div class="mainArea">
+            <transition name="el-zoom-in-top">
+              <a class="title" v-if="showBA">Web课设用博客系统</a>
             </transition>
-          </div>
-        </el-carousel-item>
-        <el-carousel-item style="height: 100vh">
-          <!--博客的个人页面-->
-          <div class="page" :style="{
-          'height': '100vh',
-          'width': `${mobile? 'auto':'100vw'}`,
-        }" >
-            <div class="mainArea">
-              <transition name="el-zoom-in-top">
-                <a class="title" v-if="showBA">Web课设用博客系统</a>
-              </transition>
-              <transition name="el-fade-in-linear">
-                <div v-infinite-scroll="refresh" v-if="showBB" class="listArea" style="overflow: auto;height: 85vh;padding-top: 2vh" :style="{
-              'width': `${mobile? 95:60}%`
-            }">
-                  <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 2vh">
-                    <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
-                      <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
-                        <div class="cardContent" >
-                          <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
-                          <div class="postBoxBottom">
-                            <div class="bottomLeft">
-                              <a>{{item.time}}</a>
-                            </div>
+            <transition name="el-fade-in-linear">
+              <div v-infinite-scroll="refresh" v-if="showBB" class="listArea" style="overflow: auto;height: 85vh;padding-top: 2vh" :style="{
+            'width': `${mobile? 95:60}%`
+          }">
+                <div v-for="(item,index) in pageData.postList"  :key="index"  style="padding-top: 2vh">
+                  <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
+                    <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
+                      <div class="cardContent" >
+                        <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
+                        <div class="postBoxBottom">
+                          <div class="bottomLeft">
+                            <a>{{item.time}}</a>
                           </div>
                         </div>
-                        <div class="bottomTop">
-                          <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
-                          <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
-                        </div>
+                      </div>
+                      <div class="bottomTop">
+                        <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
+                        <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
                       </div>
                     </div>
                   </div>
                 </div>
-              </transition>
-            </div>
+              </div>
+            </transition>
           </div>
-        </el-carousel-item>
-        <el-carousel-item style="height: 100vh">
-          <div class="page" :style="{
-          'height': '100vh',
-          'width': `${mobile? 'auto':'100vw'}`,
-        }" >
-            <div class="mainArea">
-              <transition name="el-zoom-in-top">
-                <a class="title" v-if="showCA">童智训练同步小程序</a>
-              </transition>
-              <transition name="el-fade-in-linear">
-                <div  v-if="showCB" :style="{
-              'width': `${mobile? 95:60}%`,
-              'flex-direction': `${mobile? 'column': 'row'}`,
-              'margin': `${mobile? '0 auto':'auto'}`
-            }" class="littleProgramMain">
-                  <el-image src="http://courseback.clankalliance.cn/inbuild/SKgtsa/2.jpg" class="littleProgramImage" :style="{
-                'width': `${mobile? '30vh':'40%'}`
-              }"/>
-                  <div :style="{
-                'width': `${mobile? '100%':'60%'}`,
-                'display':'flex',
-                'flex-direction': 'row'
-              }">
-                    <div style="margin: auto">
-                      <a class="littleProgramDescription">基于微信原生实现，通过蓝牙与训练设备连接并同步数据至数据库，起到训练的监督作用。</a>
-                    </div>
+        </div>
+      </el-carousel-item>
+      <el-carousel-item style="height: 100vh">
+        <div class="page" :style="{
+        'height': '100vh',
+        'width': `${mobile? 'auto':'100vw'}`,
+      }" >
+          <div class="mainArea">
+            <transition name="el-zoom-in-top">
+              <a class="title" v-if="showCA">童智训练同步小程序</a>
+            </transition>
+            <transition name="el-fade-in-linear">
+              <div  v-if="showCB" :style="{
+            'width': `${mobile? 95:60}%`,
+            'flex-direction': `${mobile? 'column': 'row'}`,
+            'margin': `${mobile? '0 auto':'auto'}`
+          }" class="littleProgramMain">
+                <el-image src="http://courseback.clankalliance.cn/inbuild/SKgtsa/2.jpg" class="littleProgramImage" :style="{
+              'width': `${mobile? '30vh':'40%'}`
+            }"/>
+                <div :style="{
+              'width': `${mobile? '100%':'60%'}`,
+              'display':'flex',
+              'flex-direction': 'row'
+            }">
+                  <div style="margin: auto">
+                    <a class="littleProgramDescription">基于微信原生实现，通过蓝牙与训练设备连接并同步数据至数据库，起到训练的监督作用。</a>
                   </div>
                 </div>
-              </transition>
-            </div>
+              </div>
+            </transition>
           </div>
-        </el-carousel-item>
-        <el-carousel-item style="height: 100vh">
-          <div class="page" :style="{
-          'height': '100vh',
-          'width': `${mobile? 'auto':'100vw'}`,
-        }" >
-            <a style="margin: auto;font-size: 6vh;font-weight: bold;color: #FFFFFF">Have a nice day</a>
-          </div>
-        </el-carousel-item>
-      </el-carousel>
-    </div>
-  </v-touch>
+        </div>
+      </el-carousel-item>
+      <el-carousel-item style="height: 100vh">
+        <div class="page" :style="{
+        'height': '100vh',
+        'width': `${mobile? 'auto':'100vw'}`,
+      }" >
+          <a style="margin: auto;font-size: 6vh;font-weight: bold;color: #FFFFFF">Have a nice day</a>
+        </div>
+      </el-carousel-item>
+    </el-carousel>
+  </div>
   <el-dialog
       v-model="pageData.showDetail"
       :width="mobile? '90%':'80%'"
