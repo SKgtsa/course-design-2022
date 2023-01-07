@@ -4,16 +4,16 @@
 
     <div>
       <img class="img" src="../assets/images/logo.png" alt="未加载">
-      <a class="topText">山大教务系统</a>
+      <a class="topText">教务系统</a>
     </div>
     <div class="middleWindow">
       <div class="loginWindow"> <!-- 登录界面哪个窗口 -->
         <div class="switchButtonDiv">
           <el-button class="switchButton switchButtonLeft" color="rgba(30,30,30,0.8)" type="success"
             @click="toUserNumber">
-            学号登录</el-button>
+            <a style="font-size:2vh;">学号登录</a></el-button>
           <el-button class="switchButton switchButtonRight" color="rgba(30,30,30,0.8)" type="success"
-            @click="toPhone">短信登录</el-button>
+            @click="toPhone"><a style="font-size:2vh;">短信登录</a></el-button>
         </div>
         <el-form v-if="loginType == 'userNumber'" ref="loginFormPwd" :model="login_data" class="loginPage_form"
           :label-width="0" label-position="left" :rules="rulesPwd" status-icon>
@@ -29,11 +29,11 @@
           <a  class="findPwd" @click="findPwd">忘记密码?</a>
           <el-form-item>
             <el-button type="success" @click="submitPwd" class="loginPageEl-botton buttonLogin"
-              color="rgb(51,126,204,0.3)">登录</el-button>
+              color="rgb(51,126,204,0.3)"><a style="font-size:2vh;">登录</a></el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" color="rgb(51,126,204,0.3)" class="loginPageEl-botton"
-              @click="toRegister">注册</el-button>
+              @click="toRegister"><a style="font-size:2vh;">注册</a></el-button>
           </el-form-item>
         </el-form>
         <el-form v-if="loginType == 'phone'" ref="loginFormPhone" :model="login_data_phone" class="loginPage_form"
@@ -50,7 +50,7 @@
               </el-col>
               <el-col :span="8">
                 <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
-                  <span v-show="show">获取验证码</span>
+                  <span v-show="show"><a style="font-size:2vh;">发送</a></span>
                   <span v-show="!show" class="count">{{ count }} s</span>
                 </el-button>
               </el-col>
@@ -59,11 +59,11 @@
           <a  class="findPwd" @click="findPwd">忘记密码?</a>
           <el-form-item>
             <el-button type="success" @click="submitPhone" class="loginPageEl-botton buttonLogin"
-              color="rgb(51,126,204,0.3)">登录</el-button>
+              color="rgb(51,126,204,0.3)"><a style="font-size:2vh;">登录</a></el-button>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" class="loginPageEl-botton" color="rgb(51,126,204,0.3)"
-              @click="toRegister">注册</el-button>
+              @click="toRegister"><a style="font-size:2vh;">注册</a></el-button>
           </el-form-item>
         </el-form>
         <el-dialog title="" v-model="dialogFindPwd" :width="mobile ? '90%' : '30%'">
@@ -430,7 +430,7 @@ const findPwdRules = reactive({
 
 .loginWindow {
   width: 45vh;
-  height: 55vh;
+  height: 60vh;
   background-color: rgba(30, 30, 30, 0.8);
   border-radius: 2vw;
   padding-top: 0vh;
