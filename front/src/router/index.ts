@@ -151,6 +151,11 @@ const router = createRouter({
           name: 'ManagerNotice',
           component: () => import('../views/manager/NoticeView.vue'),
         },
+        {
+          path: '/Manager/CourseTime',
+          name: 'ManagerCourseTime',
+          component: () => import('../views/manager/CourseTime.vue'),
+        },
       ]
     }
   ]

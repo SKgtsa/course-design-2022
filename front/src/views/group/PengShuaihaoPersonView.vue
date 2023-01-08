@@ -2,8 +2,10 @@
     <div class="container">
       <div class="header">
         <div class="titleBox">
-          <img class="chineseImg" src='http://courseback.clankalliance.cn/inidividual/烟火一格.png' />
-          <img class="englishImg" src='http://courseback.clankalliance.cn/inidividual/烟火一格英语.png' />
+          <img class="chineseImg" v-if="!mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格.png' />
+          <img class="englishImg" v-if="!mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格英语.png' />
+          <img class="chineseImg" style="width:60%" v-if="mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格.png' />
+          <img class="englishImg" style="width:60%" v-if="mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格英语.png' />
         </div>
         <div class="imgBox">
         </div>
@@ -11,57 +13,95 @@
       <div class="menuBox">
         <el-menu class="menu" default-active="/PengShuaihao" mode="horizontal" background-color="#545c64" text-color="#fff"
           active-text-color="#ffd04b" @select="handleSelect">
-          <el-menu-item index="/PengShuaihao">首页</el-menu-item>
-          
+          <el-menu-item index="/PengShuaihao"><span @click="toMain">首页</span></el-menu-item>
+          <el-menu-item index="1">
+            <span @click="showLake">大明湖
+          </span></el-menu-item>
+          <el-menu-item index="2">
+            <span @click="showHouse">洪家楼
+          </span></el-menu-item>
+          <el-menu-item index="3">
+            <span @click="showLeave">红叶谷
+          </span></el-menu-item>
+          <el-menu-item index="4">
+            <span @click="showBaotu">趵突泉
+          </span></el-menu-item>
+   <!--        <el-menu-item index="5">
+            <span @click="checkInfo">关于作者
+          </span></el-menu-item> -->
         </el-menu>
-      </div>
-      <div class="main">
-        <div class="carouselBox" v-if="!isMenu">
-          <el-carousel class="carouselPage" height="100%" interval="4000">
+      </div>         <!-- :style="{'height':`${mobile? '40vh': '70vh'}`}" -->
+      <div class="main" :style="{'padding-left':`${mobile?'0':'10vw'}`,'padding-right':`${mobile?'0':'10vw'}`}">
+        <div class="carouselBox" :style="{
+          'height':`${mobile? '50vh': '70vh'}`,
+          'width':`${mobile? '100vw': '100%'}`,
+          }" v-if="!isMenu">
+          <el-carousel ref="carousel" v-touch:swipe.left="right" v-touch:swipe.right="left" class="carouselPage" height="100%" interval="4000">
             <el-carousel-item class="carouselItem">
-              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/inidividual/横屏3.jpg' />
+              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/static/inbuild/psh/横屏3.jpg' />
             </el-carousel-item>
             <el-carousel-item class="carouselItem">
-              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/inidividual/横屏2.jpg' />
+              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/static/inbuild/psh/横屏2.jpg' />
             </el-carousel-item>
             <el-carousel-item class="carouselItem">
-              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/inidividual/雪景.jpg' />
+              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/static/inbuild/psh/雪景.jpg' />
             </el-carousel-item>
           </el-carousel>
         </div>
-        <div class="content" v-if="!isMenu">
-          <div class="tourDiv">
-            <img src="http://courseback.clankalliance.cn/inidividual/导游.jpg" class="tour">
+        <div class="content" v-if="!isMenu" :style="{'height':`${mobile? '120vh': '80vh'}`}">
+          <div v-if="!mobile" class="tourDiv">
+            <img  src="http://courseback.clankalliance.cn/static/inbuild/psh/导游.jpg" class="tour">
           </div>
-          <el-scrollbar style="height:80vh" class="contentSrollbar">
-            <div class="cardBox">
+          <el-scrollbar v-if="!mobile" class="contentSrollbar">
+            <div class="cardBox" v-if="!mobile">
               <el-card class="card" @click="showBaotu">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/inidividual/趵突泉.jpg">
+                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg">
                 <span class="cardText">趵突泉</span>
               </el-card>
               <el-card class="card" @click="showHouse">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/inidividual/洪家楼.jpg">
+                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg">
                 <span class="cardText">洪家楼</span>
               </el-card>
             </div>
-            <div class="cardBox">
+            <div class="cardBox" v-if="!mobile">
               <el-card class="card" @click="showLake">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/inidividual/大明湖.png">
+                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png">
                 <span class="cardText">大明湖</span>
               </el-card>
               <el-card class="card" @click="showLeave">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/inidividual/
-  红叶谷.jpeg">
+                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg">
                 <span class="cardText">红叶谷</span>
               </el-card>
             </div>
           </el-scrollbar>
+            <div v-if="mobile" style="width:100vw;height: 120vh;padding-left: 8vw;">
+              <a class="mobileTitle">景致</a>
+            <el-scrollbar style="height:110vh;">
+              <el-card class="cardMobile" @click="showBaotu" >
+                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg">
+                <span class="cardText">趵突泉</span>
+              </el-card>
+              <el-card class="cardMobile" @click="showHouse">
+                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg">
+                <span class="cardText">洪家楼</span>
+              </el-card>
+              <el-card class="cardMobile" @click="showLake">
+                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png">
+                <span class="cardText">大明湖</span>
+              </el-card>
+              <el-card class="cardMobile" @click="showLeave">
+                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg">
+                <span class="cardText">红叶谷</span>
+              </el-card>
+            </el-scrollbar>
+            </div>
+          
         </div>
         <div class="carouselBox" v-if="isMenu">
-          <img v-if="attractions == 'Baotu'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/inidividual/趵突泉.jpg"/>
-          <img v-if="attractions == 'lake'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/inidividual/大明湖.png"/>
-          <img v-if="attractions == 'leave'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/inidividual/红叶谷.jpeg"/>
-          <img v-if="attractions == 'house'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/inidividual/洪家楼.jpg"/>
+          <img v-if="attractions == 'Baotu'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg"/>
+          <img v-if="attractions == 'lake'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png"/>
+          <img v-if="attractions == 'leave'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg"/>
+          <img v-if="attractions == 'house'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg"/>
         </div>
   
         <div class="contentAttraction" v-if="isMenu">
@@ -477,19 +517,36 @@
           </div>
         </div>
       </div>
-      <div class="footer">
+      <div class="footer" v-if="isMenu||!mobile">
         <h3 class="copyright">@版权所有:信步书史</h3>
       </div>
+    <!--   <div class="footer" style="padding-top:0;margin-top:0" v-if="mobile">
+        <h3 class="copyright">@版权所有:信步书史</h3>
+      </div> -->
     </div>
   </template>
   <script lang="ts" setup>
   import { mobile } from '@/global/global';
   import router from '@/router';
+import { messageSuccess } from '@/utils/message';
   import { ref } from 'vue';
   
   const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
   }
+
+/*   const checkInfo = () =>{
+    messageSuccess('感谢你发现了我!')
+  } */
+  let carousel = ref(null)
+
+  const left = () => {
+  carousel.value.prev();
+}
+
+  const right = () => {
+  carousel.value.next();
+}
   const showLake = () => {
     isMenu.value = true;
     attractions.value = 'lake';
@@ -554,7 +611,7 @@
         width: 60%;
         overflow: hidden;
         background-size: 100% 100%;
-        background-image: linear-gradient(to right, #FFFFFF, transparent), url('http://courseback.clankalliance.cn/inidividual/散步.jpg');
+        background-image: linear-gradient(to right, #FFFFFF, transparent), url('http://courseback.clankalliance.cn/static/inbuild/psh/散步.jpg');
         background-repeat: no-repeat;
       }
     }
@@ -573,8 +630,8 @@
     .main {
       background-color: rgb(247, 249, 235);
       height: 190vh;
-      padding-left: 10vw;
-      padding-right: 10vw;
+ /*      padding-left: 10vw;
+      padding-right: 10vw; */
   
       .carouselBox {
     /*     background-color: coral; */
@@ -601,7 +658,7 @@
   
         .imgIntroductionBox {
           /* background-color: aqua; */
-          background-image: url('http://courseback.clankalliance.cn/inidividual/济南.jpg');
+          background-image: url('http://courseback.clankalliance.cn/static/inbuild/psh/济南.jpg');
           background-size: 100% 100%;
           background-repeat: no-repeat;
           margin-left: 3vw;
@@ -676,7 +733,6 @@
             cursor: pointer;
             text-align: center;
             box-shadow: 0.1vw 0.1vw 0.1vw 0.1vw rgba(0, 0, 0, 0.2);
-  
             .cardButton {
               border-radius: 2vh;
               margin: 0 !important;
@@ -703,7 +759,32 @@
             transition: all 0.1s ease-in-out !important;
           }
         }
-  
+        .mobileTitle{
+          font-size: 8vw;
+          font-weight: 550;
+          padding-left: 30vw;
+          color: chocolate;
+        }
+        .cardMobile{
+          /*   margin-left: 5vw; */
+            --el-card-padding: 0 !important;
+            height: 38vh;
+            width: 80vw;
+            border-radius: 2vh;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 4vh;
+            box-shadow: 0.1vw 0.1vw 0.1vw 0.1vw rgba(0, 0, 0, 0.2);
+            }
+            .cardMobile:hover {
+            box-shadow: 0.5vw 0.5vw 0.5vw 0.5vw rgba(48, 55, 66, 0.15) !important;
+            transition: all 0.1s ease-in-out !important;
+          }
+            .cardImgMobile {
+              height: 33vh;
+              width: 80vw;
+            }
+            
   
   
       }

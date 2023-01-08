@@ -111,7 +111,7 @@
           </div>
 
           <div class="selectTable">
-            <el-table :data="pageData.courseList" height="550" :header-cell-style="{ 'text-align': 'center' }" border>
+            <el-table v-if="isShowTable" :data="pageData.courseList" height="550" :header-cell-style="{ 'text-align': 'center' }" border>
               <el-table-column prop="name" label="课程名称" align="center" width="150"  fixed="left" />
               <el-table-column prop="teacherName" label="教师姓名" align="center" width="120" />
               <el-table-column prop="description" label="课程描述" align="center" />
@@ -333,7 +333,23 @@ const handleCourseTime = () => {
 //后端发给我一个已经选课的数组，我绑定到myCourse里，然后执行checkCourseTime来
 //拼接课表,所以那个查看已选课程信息的按钮绑定的函数还是viewDetails,在这个函数中调用
 //checkCourseTime方法
+let time = ref('');
+const formatDate = ()=>{
+    var date = new Date()
+      var year = date.getFullYear()
+      var month = date.getMonth() + 1 < 10 ? 
+                    '0' + (date.getMonth() + 1) : date.getMonth()+ 1
+      var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
+      var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
+       var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
+       var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
+      return year + '-' +month + '-' + day
+}
+
+
+let isShowTable = ref(false);
 const courseSelected = () => {
+  time.value = formatDate()
   showLoading()
   console.log('进入courseSelected方法')
     service.post('/api/course/findCourseList', { token: localStorage.getItem('token') }).then(res => {
@@ -343,6 +359,11 @@ const courseSelected = () => {
         hideLoading();
         localStorage.setItem('token', data.token);
         pageData.myCourse = data.content;
+        if(time.value>=data.user.startTime&&time.value<=data.user.endTime){
+          isShowTable.value = true;
+        }else{
+          isShowTable.value = false;
+        }
         console.log(pageData);
         handleCourseTime();
       } else {

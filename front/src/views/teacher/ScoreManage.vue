@@ -58,16 +58,16 @@
           <el-table-column label="课程号" prop="courseId"  show-overflow-tooltip />
           <el-table-column label="通过率" prop="passRate"  show-overflow-tooltip />
           <el-table-column label="平均分" prop="average"  show-overflow-tooltip />
-          <el-table-column fixed="right" label="打分">
+          <el-table-column label="打分">
             <template #default="scope">
               <el-button size="medium" @click="addScore(scope.row.courseId)" class="button"
                 type="primary">打分</el-button>
             </template>
           </el-table-column>
           <el-table-column label="批量上传">
-            <el-upload ref="upload" :http-request="uploadFile" :limit="1" :auto-upload="false">
-              <template #trigger>
-                <el-button type="primary">上传</el-button>
+            <el-upload ref="upload" :http-request="uploadFile" :limit="1" :auto-upload="true">
+              <template #default="scope">
+                <el-button type="primary" @click="getId(scope.row.courseId)">上传</el-button>
               </template></el-upload>
           </el-table-column>
         </el-table>
@@ -82,7 +82,7 @@
           max-height="400">
           <el-table-column label="姓名" prop="studentName" width="120" show-overflow-tooltip />
           <el-table-column label="学号" width="140" prop="studentNumber" show-overflow-tooltip />
-          <el-table-column>
+          <el-table-column label="平时成绩" show-overflow-tooltip>
             <template #default="scope">
               <el-input v-model="scope.row.dailyScore" placeholder="请输入平时成绩" maxlength="3" type="number"></el-input>
             </template>
@@ -190,6 +190,12 @@ let tableData = reactive({
   arr: [],
 })
 
+let id = ref('');
+const getId = (courseId) =>{
+  id.value = courseId;
+  console.log(id.value)
+}
+
 const download = () => {
   window.location.href = 'http://courseback.clankalliance.cn/inbuild/%E6%89%B9%E9%87%8F%E5%BD%95%E5%85%A5%E6%88%90%E7%BB%A9%E8%A1%A8%E6%A0%BC.xlsx';
 }
@@ -259,9 +265,12 @@ const uploadFile = async (f) => {
     }
   ).then(() => {
     showLoading();
-    serviceFile.post('/api/score/batchScore', { token: localStorage.getItem('token'), id: fileId.value, file: f.file }).then(res => {
+    console.log(f.file);
+    console.log(id.value)
+    serviceFile.post('/api/score/batchScore', { token: localStorage.getItem('token'),file: f.file,courseId:id.value }).then(res => {
       if (res.data.success) {
         hideLoading();
+       /*  upload.clearFiles(); */
         localStorage.setItem('token', res.data.token);
         messageSuccess('上传成功！')
         checkCourse();
