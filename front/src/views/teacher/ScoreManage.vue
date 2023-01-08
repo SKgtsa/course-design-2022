@@ -160,12 +160,12 @@ let idCourse = ref();
 let addDialogVisible = ref();
 let checkDialogVisible = ref();
 let editDialogVisible = ref();
-let yearsValue = ref();
+let yearsValue = ref(2019);
 let pageCount = ref(1);//查看选课学生给的总页数
 let pageNum = ref(1);
 let pageSize = ref(20);
 let courseIdSave = ref();
-let semesterValue = ref();
+let semesterValue = ref('春季学期');
 let formScoreData = ref();//改增校验绑定的空form
 /* let addForm = reactive({
   arr: [{

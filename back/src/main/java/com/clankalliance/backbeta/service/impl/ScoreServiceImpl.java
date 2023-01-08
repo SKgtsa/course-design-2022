@@ -347,12 +347,27 @@ public class ScoreServiceImpl implements ScoreService {
         if(sop.isEmpty())
             return false;
         Student student = sop.get();
-
-        Score score = new Score(snowFlake.nextId(),dailyScore,endScore,student,course);
-        try{
-            scoreRepository.save(score);
-        }catch (Exception e){
-            return false;
+        Optional<Score> scoreOptional = scoreRepository.findByCourseStudentId(courseId,student.getId());
+        Score score = new Score();
+        if(scoreOptional.isPresent()){
+            score.setDailyScore(dailyScore);
+            score.setEndScore(endScore);
+            try{
+                scoreRepository.save(score);
+            }catch (Exception e){
+                return false;
+            }
+        }else{
+            score = new Score(snowFlake.nextId(),dailyScore,endScore,student,course);
+            try{
+                scoreRepository.save(score);
+            }catch (Exception e){
+                return false;
+            }
+            Set<Score> scoreSet = student.getScoreSet();
+            scoreSet.add(score);
+            student.setScoreSet(scoreSet);
+            studentRepository.save(student);
         }
         return true;
     }

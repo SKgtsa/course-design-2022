@@ -3,8 +3,10 @@ package com.clankalliance.backbeta.service.impl;
 import com.alibaba.excel.EasyExcel;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.ExcelService;
+import com.clankalliance.backbeta.service.ScoreService;
 import com.clankalliance.backbeta.utils.ExcelListener.RegisterListener.BatchRegisterData;
 import com.clankalliance.backbeta.utils.ExcelListener.RegisterListener.RegisterListener;
+import com.clankalliance.backbeta.utils.ExcelListener.ScoreListener.BatchScoreData;
 import com.clankalliance.backbeta.utils.ExcelListener.ScoreListener.ScoreListener;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.io.File;
 @Service
 public class ExcelServiceImpl implements ExcelService {
 
+    @Resource
+    private ScoreService scoreService;
 
     @Resource
     private TokenUtil tokenUtil;
@@ -69,9 +73,9 @@ public class ExcelServiceImpl implements ExcelService {
             return response;
         }
         ScoreListener scoreListener = new ScoreListener();
-        scoreListener.setCourseId(courseId);
+        scoreListener.init(courseId);
         try{
-            EasyExcel.read(temp, BatchRegisterData.class,scoreListener).sheet().doRead();
+            EasyExcel.read(temp, BatchScoreData.class,scoreListener).sheet().doRead();
         }catch(Exception e){
             response.setMessage("创建失败 请检查表格");
             return response;

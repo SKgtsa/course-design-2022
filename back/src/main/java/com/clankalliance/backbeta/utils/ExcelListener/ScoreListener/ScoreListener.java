@@ -15,8 +15,6 @@ public class ScoreListener extends AnalysisEventListener<BatchScoreData> {
     private static ScoreListener listener;
     //获取默认头像及照片
 
-
-
     private Long courseId;
 
     @Resource
@@ -45,7 +43,7 @@ public class ScoreListener extends AnalysisEventListener<BatchScoreData> {
         System.out.println("所有数据解析完成");
     }
 
-    public void setCourseId(Long courseId){
+    public void init(Long courseId){
         this.courseId = courseId;
     }
 }

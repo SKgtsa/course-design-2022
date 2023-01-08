@@ -32,7 +32,6 @@
             z-index="50"
         >
           <avatar-operate/>
-          <a class="nickNameMobile">{{ getNickName() }}</a>
           <el-menu router default-active="/Student/Main" active-text-color="#2d67fd" background-color="#e9eff9" text-color="#3e5ca8" @open="handleOpen" @close="handleClose">
             <student-menu/>
           </el-menu>
