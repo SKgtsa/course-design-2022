@@ -13,6 +13,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepositor
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.RewardService;
 import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.AntiInjection;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 import com.clankalliance.backbeta.utils.SnowFlake;
@@ -84,14 +85,7 @@ public class RewardServiceImpl implements RewardService {
      */
     @Override
     public CommonResponse handleSave(String token, long id,String name,String description){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//学生
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -199,14 +193,7 @@ public class RewardServiceImpl implements RewardService {
      */
     @Override
     public CommonResponse handleFind(String token,Integer pageNum,Integer pageSize){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//259887250475716608
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -239,16 +226,15 @@ public class RewardServiceImpl implements RewardService {
         return response;
     }
 
+    /**
+     * 管理员查找对应成果奖励
+     * @param token 用户令牌
+     * @param id 奖励id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerFind(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("259887250475716608");//Manager
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -270,16 +256,15 @@ public class RewardServiceImpl implements RewardService {
         return response;
     }
 
+    /**
+     * 管理员删除奖励
+     * @param token 用户令牌
+     * @param id 奖励id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerDelete(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){

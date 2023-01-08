@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {mobile, windowHeight, windowWidth} from "@/global/global";
+import {mobile, showGlobalRouter, windowHeight, windowWidth} from "@/global/global";
 
 const getWindowResize = function () {
   windowWidth.value = window.innerWidth;
@@ -20,7 +20,7 @@ window.addEventListener('resize',getWindowResize)
 </script>
 
 <template>
-          <router-view/>
+          <router-view v-if="showGlobalRouter" />
 </template>
 
 <style scoped>

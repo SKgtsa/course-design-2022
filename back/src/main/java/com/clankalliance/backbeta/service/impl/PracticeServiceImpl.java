@@ -15,6 +15,7 @@ import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepositor
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.PracticeService;
 import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.AntiInjection;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 import com.clankalliance.backbeta.utils.SnowFlake;
@@ -46,6 +47,11 @@ public class PracticeServiceImpl implements PracticeService {
 
     private final Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
 
+    /**
+     * 更新学生成绩 返回更新后的成绩表
+     * @param student 目标学生
+     * @return
+     */
     private Set<Achievement> updateAchievementList(Student student){
         List<Practice> practiceList = student.getPracticeSet();
         int practiceNum = practiceList.size();
@@ -86,13 +92,11 @@ public class PracticeServiceImpl implements PracticeService {
      */
     @Override
     public CommonResponse handleSave(String token, long id,String name,String description){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//学生
-        }else{
-            response = tokenUtil.tokenCheck(token);
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(AntiInjection.containsSqlInjection(description)){
+            response.setSuccess(false);
+            response.setMessage("参数不合法");
+            return response;
         }
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
@@ -151,14 +155,7 @@ public class PracticeServiceImpl implements PracticeService {
      */
     @Override
     public CommonResponse handleDelete(String token, long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -204,14 +201,7 @@ public class PracticeServiceImpl implements PracticeService {
      */
     @Override
     public CommonResponse handleFind(String token,Integer pageNum,Integer pageSize){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//学生
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -244,16 +234,15 @@ public class PracticeServiceImpl implements PracticeService {
         return response;
     }
 
+    /**
+     * 管理员根据用户id查找该用户的所有社会实践
+     * @param token 用户令牌
+     * @param id 目标用户id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerFind(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("259887250475716608");//Manager
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -275,16 +264,15 @@ public class PracticeServiceImpl implements PracticeService {
         return response;
     }
 
+    /**
+     * 管理员删除社会实践
+     * @param token 用户令牌
+     * @param id 社会实践id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerDelete(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){

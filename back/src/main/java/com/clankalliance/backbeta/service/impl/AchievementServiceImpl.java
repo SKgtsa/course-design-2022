@@ -42,6 +42,14 @@ public class AchievementServiceImpl implements AchievementService {
     private TokenUtil tokenUtil;
 
 
+    /**
+     * 学生互评 给学生留下评价
+     * @param token 用户令牌
+     * @param userId 目标用户id
+     * @param name 评价名称
+     * @param description 评价描述
+     * @return
+     */
     @Override
     public CommonResponse handleEvaluate(String token, Long userId, String name, String description){
         CommonResponse response = tokenUtil.tokenCheck(token);

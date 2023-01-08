@@ -10,8 +10,10 @@ export const windowWidth = ref(0)
 export const windowHeight = ref(0)
 export const mobile = ref(false)
 export const menuDrawerOpen = ref(false);
+//展示各个主页中的router
 export const showRouter = ref(true);
-
+//展示app.vue中的router
+export const showGlobalRouter = ref(true);
 export let getNickName = () =>{
       return localStorage.getItem('nickName')
 }

@@ -257,14 +257,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public CommonResponse handleManagerFind(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("259887250475716608");//Manager
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -288,14 +281,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public CommonResponse handleManagerDelete(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//Manager身份
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){

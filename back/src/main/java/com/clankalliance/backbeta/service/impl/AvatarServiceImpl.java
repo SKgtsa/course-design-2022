@@ -1,6 +1,11 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.entity.user.sub.Manager;
+import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.clankalliance.backbeta.repository.blogRepository.PostRepository;
 import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.service.AvatarService;
@@ -26,6 +31,9 @@ public class AvatarServiceImpl implements AvatarService {
 
     @Resource
     private UserRepository userRepository;
+
+    @Resource
+    private PostRepository postRepository;
 
     // 设置上传文件的最大值
     public static final int AVATAR_MAX_SIZE = 10*1024*1024;
@@ -59,12 +67,10 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     public CommonResponse handleSave(MultipartFile file, String token){
         System.out.println("intoAvatarProcess");
-
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess()){
             return response;
         }
-
         // 文件是否为空
         if (file.isEmpty()) {
             System.out.println("文件为空");
@@ -111,10 +117,26 @@ public class AvatarServiceImpl implements AvatarService {
         String avatar = "/static/avatar/" + filename;
 
         User user = userService.findById(Long.valueOf(response.getMessage()));
+        File oldAvatar = new File(System.getProperty("user.dir") + user.getAvatarURL());
+        try {
+            oldAvatar.delete();
+        }
+        catch (Exception e) {
+            System.out.println("文件状态异常或文件读写异常");
+        }
         user.setAvatarURL(avatar);
+        if(!(user instanceof Manager)){
+            List<Post> postList = new ArrayList<>();
+            if(user instanceof Teacher)
+                postList = ((Teacher) user).getPostList();
+            if(user instanceof Student)
+                postList = ((Student) user).getPostList();
+            for(Post p : postList){
+                p.setAvatarUrl(avatar);
+                postRepository.save(p);
+            }
+        }
         userRepository.save(user);
-
-
         // 返回用户头像的路径给前端，将来用于头像的展示使用
         System.out.println("内容保存至" + avatar);
         response.setSuccess(true);
@@ -125,12 +147,10 @@ public class AvatarServiceImpl implements AvatarService {
     @Override
     public CommonResponse handleSavePhoto(MultipartFile file, String token){
         System.out.println("intoPhotoProcess");
-
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess()){
             return response;
         }
-
         // 文件是否为空
         if (file.isEmpty()) {
             System.out.println("文件为空");
@@ -171,20 +191,24 @@ public class AvatarServiceImpl implements AvatarService {
         catch (Exception e) {
             System.out.println("文件状态异常或文件读写异常");
         }
-
-
         // 返回头像的路径/upload/test.png
-        String avatar = "/static/photo/" + filename;
-
+        String photo = "/static/photo/" + filename;
         User user = userService.findById(Long.valueOf(response.getMessage()));
-        user.setPhotoURL(avatar);
+        File oldPhoto = new File(System.getProperty("user.dir") + user.getAvatarURL());
+        try {
+            oldPhoto.delete();
+        }
+        catch (Exception e) {
+            System.out.println("文件状态异常或文件读写异常");
+        }
+        user.setPhotoURL(photo);
         userRepository.save(user);
 
 
         // 返回用户头像的路径给前端，将来用于头像的展示使用
-        System.out.println("内容保存至" + avatar);
+        System.out.println("内容保存至" + photo);
         response.setSuccess(true);
-        response.setContent(avatar);
+        response.setContent(photo);
         return response;
     }
 

@@ -12,11 +12,13 @@ import com.clankalliance.backbeta.response.dataBody.TeacherPersonalPageData;
 import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.PublicationService;
 import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.AntiInjection;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -39,6 +41,14 @@ public class PublicationServiceImpl implements PublicationService {
     private GeneralUploadService generalUploadService;
 
 
+    /**
+     * 老师提交新的论文
+     * @param token 用户令牌
+     * @param heading 论文标题
+     * @param content 论文内容
+     * @param topImage 论文封面
+     * @return
+     */
     @Override
     public CommonResponse handleSubmit(String token, String heading, String content, MultipartFile topImage){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -68,7 +78,13 @@ public class PublicationServiceImpl implements PublicationService {
         return response;
     }
 
-    //查看个人主页 若登录状态失效则以游客模式
+
+    /**
+     * 查看个人主页 若登录状态失效则以游客模式
+     * @param token
+     * @param userId
+     * @return
+     */
     @Override
     public CommonResponse handlePersonalPageData(String token, Long userId){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -90,7 +106,17 @@ public class PublicationServiceImpl implements PublicationService {
         response.setMessage("查找成功");
         return response;
     }
-    //查看个人主页 论文更新方法
+
+
+    /**
+     * 查看个人主页 论文更新方法
+     * 前端为无限列表，所以没有严格页码
+     * @param token 用户令牌
+     * @param length 页长
+     * @param startIndex 列表中本页开始的索引
+     * @param userId 用户id
+     * @return
+     */
     @Override
     public CommonResponse handlePersonalPagePublication(String token, int length, int startIndex,Long userId){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -119,10 +145,21 @@ public class PublicationServiceImpl implements PublicationService {
         return response;
     }
 
-    //查看详细文章 前端传来token和文章id 获取全文
+
+    /**
+     * 查看详细文章 获取全文
+     * @param token 用户令牌
+     * @param publicationId 论文id
+     * @return
+     */
     @Override
     public CommonResponse handleDetailPage(String token,String publicationId){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        if(AntiInjection.containsSqlInjection(publicationId)){
+            response.setSuccess(false);
+            response.setMessage("参数不合法");
+            return response;
+        }
         Optional<Publication> pop = publicationRepository.findById(publicationId);
         if(pop.isEmpty()){
             response.setSuccess(false);
@@ -136,12 +173,23 @@ public class PublicationServiceImpl implements PublicationService {
         }
     }
 
+    /**
+     * 删除论文
+     * @param token 用户令牌
+     * @param publicationId 论文id
+     * @return
+     */
     @Override
     //管理员任意删除，其他角色删除自己的
     public CommonResponse handleDelete(String token, String publicationId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
+        if(AntiInjection.containsSqlInjection(publicationId)){
+            response.setSuccess(false);
+            response.setMessage("参数不合法");
+            return response;
+        }
         User user = userService.findById(Long.parseLong(response.getMessage()));
         Optional<Publication> pop = publicationRepository.findById(publicationId);
         if(pop.isEmpty()){
@@ -163,6 +211,12 @@ public class PublicationServiceImpl implements PublicationService {
                     return response;
                 }
             }//有权限 进行删除
+            try{
+                File topImage = new File(publication.getTopImageURL());
+                topImage.delete();
+            }catch (Exception e){
+                System.out.println("删除出错 删除对象：" + publication.getTopImageURL());
+            }
             publicationRepository.delete(publication);
             response.setMessage("操作成功");
             return response;

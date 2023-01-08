@@ -1,9 +1,11 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.clankalliance.backbeta.repository.blogRepository.PostRepository;
 import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
@@ -53,6 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private TencentService tencentService;
+
+    @Resource
+    private PostRepository postRepository;
 
     @Resource
     private SnowFlake snowFlake;
@@ -164,8 +169,24 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 注册方法
+     * @param identity 身份 1:老师 2:管理员
+     * @param code 手机验证码
+     * @param phone 手机
+     * @param userNumber 学工号
+     * @param password 密码
+     * @param name 姓名
+     * @param idCardNumber 身份证号
+     * @param gender 性别
+     * @param ethnic 民族
+     * @param politicalAffiliation 政治面貌
+     * @param eMail 电子邮箱
+     * @param nickName 昵称
+     * @return
+     */
     @Override
-    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName) {
+    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName) {
         password = DigestUtils.sha1Hex(password.getBytes());
         CommonResponse  response = new CommonResponse();
         User user = findByUserNumber(userNumber);
@@ -224,6 +245,11 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 手机登录 发送验证码方法
+     * @param phone 手机号
+     * @return
+     */
     @Override
     public CommonResponse handlePhoneLogin(long phone){
         CommonResponse response = new CommonResponse();
@@ -241,11 +267,22 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 手机登录 验证验证码 生成token
+     * @param phone 手机号
+     * @param code 验证码
+     * @return
+     */
     @Override
     public CommonResponse handleCodeLogin(long phone, String code){
         return tokenUtil.phoneCodeCheck(phone,code);
     }
 
+    /**
+     * 注册时发送验证码
+     * @param phone 手机号
+     * @return
+     */
     @Override
     public CommonResponse handlePhoneRegister(long phone){
         CommonResponse response = new CommonResponse();
@@ -266,6 +303,11 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 获取用户信息
+     * @param token
+     * @return
+     */
     @Override
     public CommonResponse handleGetInfo(String token){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -283,6 +325,19 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 编辑用户信息
+     * @param token 用戶令牌
+     * @param name 用戶姓名
+     * @param id 用戶id
+     * @param userNumber 学工号
+     * @param ethnic 民族
+     * @param eMail 电子邮箱
+     * @param politicalAffiliation 政治面貌
+     * @param researchDirection 科研方向
+     * @param section 学生届次
+     * @return
+     */
     @Override
     public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -312,6 +367,12 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 修改昵称
+     * @param token 用户令牌
+     * @param nickName 新昵称
+     * @return
+     */
     @Override
     public CommonResponse handleSaveNickName(String token,String nickName){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -326,11 +387,38 @@ public class UserServiceImpl implements UserService {
             response.setMessage("保存失败");
             return response;
         }
+        if(!(user instanceof Manager)){
+            List<Post> postList = new ArrayList<>();
+            if(user instanceof Teacher)
+                postList = ((Teacher) user).getPostList();
+            if(user instanceof Student)
+                postList = ((Student) user).getPostList();
+            for(Post p : postList){
+                p.setNickName(nickName);
+                postRepository.save(p);
+            }
+        }
         response.setMessage("保存成功");
         return response;
     }
 
 
+    /**
+     * 批量注册时保存每个用户的方法
+     * @param userNumber 学工号
+     * @param name 姓名
+     * @param password 密码
+     * @param phone 手机号码
+     * @param studentClass 学生班级
+     * @param idCardNumber 身份证号
+     * @param gender 性别 男:false 女:true
+     * @param ethnic 民族
+     * @param politicalAffiliation 政治面貌
+     * @param eMail 电子邮箱
+     * @param nickName 昵称
+     * @param section 届次
+     * @return
+     */
     @Override
     public boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName, String section){
         password = DigestUtils.sha1Hex(password.getBytes());
@@ -343,6 +431,12 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * 修改密码
+     * @param token 用户令牌
+     * @param passWord 新密码
+     * @return
+     */
     @Override
     public CommonResponse handleChangePassword(String token, String passWord){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -362,6 +456,12 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 管理员查找用户
+     * @param token 用户令牌
+     * @param userNumber 目标用户的学工号
+     * @return
+     */
     @Override
     public CommonResponse handleManagerFind(String token, long userNumber){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -389,6 +489,12 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 管理员保存用户信息
+     * @param token 用户令牌
+     * @param user 用户信息
+     * @return
+     */
     @Override
     public CommonResponse handleManagerSave(String token, UserRequestTarget user){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -396,14 +502,20 @@ public class UserServiceImpl implements UserService {
             User currentUser = userService.findById(Long.parseLong(response.getMessage()));
             User targetUser = userService.findById(user.getId());
             if(currentUser instanceof Manager){
+                List<Post> postList = new ArrayList<>();
                 if(targetUser instanceof Student){
                     Student student = (Student)targetUser;
-
-                    studentRepository.save((Student) targetUser);
+                    postList = student.getPostList();
+                    studentRepository.save(student);
                 }else if(targetUser instanceof Teacher){
                     Teacher teacher = (Teacher)targetUser;
-
-                    teacherRepository.save((Teacher) targetUser);
+                    postList = teacher.getPostList();
+                    teacherRepository.save(teacher);
+                }
+                for(Post p : postList){
+                    p.setNickName(targetUser.getNickName());
+                    p.setNickName(targetUser.getNickName());
+                    postRepository.save(p);
                 }
                 response.setSuccess(true);
                 response.setMessage("用户保存成功");
@@ -415,6 +527,12 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 管理员删除用户
+     * @param token 用户令牌
+     * @param id 目标用户id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerDelete(String token, long id){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -440,6 +558,12 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 修改科研方向
+     * @param token 用户令牌
+     * @param researchDirection 科研方向
+     * @return
+     */
     @Override
     public CommonResponse handleSaveResearchDirection(String token,String researchDirection){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -458,6 +582,12 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 通过手机找回密码 发送验证码
+     * @param userNumber 学工号
+     * @param phone 电话号码
+     * @return
+     */
     @Override
     public CommonResponse findPasswordPhone(Long userNumber, Long phone){
         CommonResponse response = new CommonResponse<>();
@@ -476,6 +606,13 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 验证手机验证码并修改密码
+     * @param phone 电话号码
+     * @param code 验证码
+     * @param password 新密码
+     * @return
+     */
     @Override
     public CommonResponse findPasswordCode(Long phone ,String code, String password){
         CommonResponse<Object,User> response = tokenUtil.phoneCodeCheck(phone,code);
@@ -489,6 +626,11 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 查找同班同学
+     * @param token 用户令牌
+     * @return
+     */
     @Override
     public CommonResponse findClassmate(String token){
         CommonResponse response = tokenUtil.tokenCheck(token);

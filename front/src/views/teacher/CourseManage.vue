@@ -682,24 +682,6 @@ let tableData = reactive(
     arr: []
   }
 )
-/* let studentData = reactive([
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-]) */
 const handleChange = (value) => {
   console.log(value)
 }
@@ -745,14 +727,6 @@ let editForm = reactive({
   courseId: '',
   weight: '',
 });
-/* let studentForm = reactive({
-  token: '',
-  studentNumber: '',
-  courseId: '',
-  name: '',
-  id: '',
-});
- */
 const loadCourseTable = async () => {
   showLoading();
   await service.post('/api/course/teacherFind', { token: localStorage.getItem("token"), semester: semesterValue.value, year: yearsValue.value }).then(res => {

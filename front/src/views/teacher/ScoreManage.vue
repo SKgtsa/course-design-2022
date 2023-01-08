@@ -248,10 +248,6 @@ const loadFile = (id) => {
   fileId.value = id;
 }
 
-/* const toExcel = ()=>{
-  router.push('');
-} */
-
 const uploadFile = async (f) => {
   await ElMessageBox.confirm(
     '如果某学生已经打分，该次上传将覆盖掉之前成绩，是否继续?',

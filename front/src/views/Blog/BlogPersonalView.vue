@@ -73,7 +73,7 @@
             <div class="achievementArea">
               <el-button :style="{
                 'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`
-              }" class="achievement" @click="openEvaluate" v-if="login">
+              }" class="achievement" @click="openEvaluate" v-if="login && userId != getUserId()">
                 <a><el-icon>
                     <Plus />
                   </el-icon></a>

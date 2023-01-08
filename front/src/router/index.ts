@@ -159,15 +159,21 @@ const router = createRouter({
 import NProgress from 'nprogress/nprogress.js'
 import 'nprogress/nprogress.css'
 import {showRouter} from "@/global/global";
+import {reload} from "@/utils/reloadRouter";
 
 router.beforeEach(async (to, from, next) => {
   /* console.log('进入beforeEach函数') */
+  if(from.path === '/Login'){
+    reload()
+  }
   showRouter.value = false;
   NProgress.start();
   next()
 })
 router.afterEach((to, from) => {
   NProgress.done();
-  showRouter.value = true;
+  setTimeout(() => {
+    showRouter.value = true;
+  },300)
 })
 export default router
