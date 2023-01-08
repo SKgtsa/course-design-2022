@@ -1,6 +1,7 @@
 package com.clankalliance.backbeta.service.impl;
 
 import com.clankalliance.backbeta.entity.Achievement;
+import com.clankalliance.backbeta.entity.CourseSelectTime;
 import com.clankalliance.backbeta.entity.Score;
 import com.clankalliance.backbeta.entity.course.ClassTime;
 import com.clankalliance.backbeta.entity.course.Course;
@@ -9,6 +10,7 @@ import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
 import com.clankalliance.backbeta.repository.CourseRepository;
+import com.clankalliance.backbeta.repository.CourseSelectTimeRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
 import com.clankalliance.backbeta.request.course.CourseRequestData;
@@ -23,6 +25,7 @@ import com.clankalliance.backbeta.utils.TokenUtil;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTOuterShadowEffect;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.ArrayList;
@@ -51,6 +54,27 @@ public class CourseServiceImpl implements CourseService {
 
     @Resource
     private TeacherRepository teacherRepository;
+
+    private Date courseSelectStartTime;
+
+    private Date courseSelectEndTime;
+
+    @Resource
+    private CourseSelectTimeRepository courseSelectTimeRepository;
+
+    @PostConstruct
+    public void init(){
+        Optional<CourseSelectTime> top = courseSelectTimeRepository.findById(1);
+        CourseSelectTime time;
+        if(top.isEmpty()){
+            time = new CourseSelectTime(1,new Date(),new Date());
+            courseSelectTimeRepository.save(time);
+        }else{
+            time = top.get();
+        }
+        courseSelectStartTime = time.getStartTime();
+        courseSelectEndTime = time.getEndTime();
+    }
 
     private final Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
 
@@ -337,14 +361,7 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleFindCourseList(String token){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("257545660272873472");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
@@ -356,10 +373,10 @@ public class CourseServiceImpl implements CourseService {
                 response.setSuccess(false);
                 response.setMessage("权限错误");
             }
+            response.setUser(new CourseSelectTime(1,courseSelectStartTime,courseSelectEndTime));
         }
         return response;
     }
-
 
     /**
      * 选课时用来返回所有课程
@@ -471,6 +488,13 @@ public class CourseServiceImpl implements CourseService {
         return response;
     }
 
+    /**
+     * 老师按照年份 学期来筛选自己的课程
+     * @param token 用户令牌
+     * @param year 开课年份
+     * @param semester 开课学期
+     * @return
+     */
     @Override
     public CommonResponse handleTeacherFindCourse(String token, Integer year, String semester){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -689,6 +713,25 @@ public class CourseServiceImpl implements CourseService {
         response.setContent(courseName);
         response.setSuccess(true);
         response.setMessage("查找成功");
+        return response;
+    }
+
+    @Override
+    public CommonResponse handleEditCourseSelectTime(String token, Date startTime,Date endTime){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        if(!(userService.findById(Long.parseLong(response.getMessage())) instanceof Manager)){
+            response.setSuccess(false);
+            response.setMessage("权限不足");
+            return response;
+        }
+        CourseSelectTime courseSelectTime = new CourseSelectTime(1,startTime,endTime);
+        courseSelectTimeRepository.save(courseSelectTime);
+        courseSelectStartTime = startTime;
+        courseSelectEndTime = endTime;
+        response.setSuccess(true);
+        response.setMessage("保存成功");
         return response;
     }
 }

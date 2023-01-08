@@ -644,21 +644,21 @@ const commentSubmit = () => {
   background-size: cover;
 }
 .avatarButton{
-  width: 5vw;
-  height: 5vw;
-  border-radius: 2.5vw;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
+
 }
 .avatar{
-  width: 5vw;
-  height: 5vw;
-  border-radius: 2.5vw;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
   position: center;
-  size: auto;
 }
 .nickName{
-  line-height: 4vw;
+  line-height: 4vh;
   font-weight: bold;
-  font-size: 3vw;
+  font-size: 3vh;
 }
 .boxContainer{
   border-radius: 2vw;

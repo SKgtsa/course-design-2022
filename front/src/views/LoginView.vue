@@ -1,110 +1,130 @@
 
 <template xmlns="http://www.w3.org/1999/html">
   <div class="loginContainer">
-
-    <div>
-      <img class="img" src="../assets/images/logo.png" alt="未加载">
-      <a class="topText">教务系统</a>
-    </div>
-    <div class="middleWindow">
-      <div class="loginWindow"> <!-- 登录界面哪个窗口 -->
-        <div class="switchButtonDiv">
-          <el-button class="switchButton switchButtonLeft" color="rgba(30,30,30,0.8)" type="success"
-            @click="toUserNumber">
-            <a style="font-size:2vh;">学号登录</a></el-button>
-          <el-button class="switchButton switchButtonRight" color="rgba(30,30,30,0.8)" type="success"
-            @click="toPhone"><a style="font-size:2vh;">短信登录</a></el-button>
+    <transition name="el-fade-in-linear">
+      <div class="cover" v-if="showCover">
+        <div class="topWindow">
+          <img class="img" src="../assets/images/logo.png" alt="未加载">
+          <a class="topText">教务系统</a>
         </div>
-        <el-form v-if="loginType == 'userNumber'" ref="loginFormPwd" :model="login_data" class="loginPage_form"
-          :label-width="0" label-position="left" :rules="rulesPwd" status-icon>
-          <el-form-item class="loginPageFormText" label="" prop="userNumber">
-            <el-input :prefix-icon="User" class="loginPage_form_input" id="username" v-model="login_data.userNumber"
-              maxlength="15" placeholder="请输入学工号"></el-input>
-          </el-form-item>
-          <el-form-item class="loginPageFormText" label="" prop="password">
-            <el-input :prefix-icon="Lock" class="loginPage_form_input" type="password" id="pwd"
-              v-model="login_data.password" placeholder="请输入密码" maxlength="16" />
-            <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
-          </el-form-item>
-          <a  class="findPwd" @click="findPwd">忘记密码?</a>
-          <el-form-item>
-            <el-button type="success" @click="submitPwd" class="loginPageEl-botton buttonLogin"
-              color="rgb(51,126,204,0.3)"><a style="font-size:2vh;">登录</a></el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" color="rgb(51,126,204,0.3)" class="loginPageEl-botton"
-              @click="toRegister"><a style="font-size:2vh;">注册</a></el-button>
-          </el-form-item>
-        </el-form>
-        <el-form v-if="loginType == 'phone'" ref="loginFormPhone" :model="login_data_phone" class="loginPage_form"
-          :label-width="0" label-position="left" :rules="rulesCaptcha" status-icon>
-          <el-form-item class="loginPageFormText" label="" prop="userPhone">
-            <el-input :prefix-icon="User" class="loginPage_form_input" id="userPhone"
-              v-model="login_data_phone.userPhone" placeholder="请输入手机号" maxlength="11"></el-input>
-          </el-form-item>
-          <el-form-item class="loginPageFormText" label="" prop="captcha">
-            <el-row>
-              <el-col :span="16">
-                <el-input :prefix-icon="Message" class="loginPage_form_input captchaInput" id="captcha" maxlength="5"
-                  v-model="login_data_phone.captcha" placeholder="请输入验证码" />
-              </el-col>
-              <el-col :span="8">
-                <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
-                  <span v-show="show"><a style="font-size:2vh;">发送</a></span>
-                  <span v-show="!show" class="count">{{ count }} s</span>
-                </el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <a  class="findPwd" @click="findPwd">忘记密码?</a>
-          <el-form-item>
-            <el-button type="success" @click="submitPhone" class="loginPageEl-botton buttonLogin"
-              color="rgb(51,126,204,0.3)"><a style="font-size:2vh;">登录</a></el-button>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" class="loginPageEl-botton" color="rgb(51,126,204,0.3)"
-              @click="toRegister"><a style="font-size:2vh;">注册</a></el-button>
-          </el-form-item>
-        </el-form>
-        <el-dialog title="" v-model="dialogFindPwd" :width="mobile ? '90%' : '30%'">
-          <el-form :model="findPwdData" ref="findData" :rules="findPwdRules" label-position="right" label-width="auto">
-            <el-form-item label="学工号" prop="userNumber" placeholder="请输入学工号">
-              <el-input v-model="findPwdData.userNumber" placeholder="" maxlength="30"></el-input>
-            </el-form-item>
-            <el-form-item class="loginPageFormText" label="手机号" prop="phone">
-              <el-input v-model="findPwdData.phone" placeholder="请输入手机号" maxlength="11"></el-input>
-            </el-form-item>
-            <el-form-item class="loginPageFormText" label="验证码" prop="code">
-              <el-row>
-                <el-col :span="16">
-                  <el-input style="height:6vh ;" maxlength="5"
-                    v-model="findPwdData.code" placeholder="请输入验证码" />
-                </el-col>
-                <el-col :span="8">
-                  <el-button type="success" class="captchaButton" @click="submitFindCode" :disabled="!show">
-                    <span v-show="show">获取验证码</span>
-                    <span v-show="!show" class="count">{{ count }} s</span>
-                  </el-button>
-                </el-col>
-              </el-row>
-            </el-form-item>
-            <el-form-item label="新密码" prop="password">
-              <el-input v-model="findPwdData.password" placeholder="" maxlength="16"></el-input>
-            </el-form-item>
-          </el-form>
-          <el-button @click="submitFindPwd">提交</el-button>
-        </el-dialog>
+        <div :style="{
+          'padding-right': `${mobile? '0':'5vh'}`
+        }">
+          <transition name="el-fade-in">
+            <div class="loginWindow" v-if="showWindow" :style="{
+              'width': `${mobile? '90vw':'50vh'}`,
+              'float': `${mobile? 'none':'right'}`,
+              'margin': `${mobile? '0 auto':'0'}`
+            }"> <!-- 登录界面哪个窗口 -->
+                    <div class="switchButtonDiv">
+                      <el-button class="switchButton" type="success" :style="{
+                  'background-color': `${loginType === 'userNumber'? '#FFF':'#0a8ce2'}`,
+                  'color': `${loginType === 'userNumber'? '#555':'#FFF'}`,
+                }"
+                                 @click="toUserNumber">
+                        <a>学号登录</a></el-button>
+                      <el-button class="switchButton" type="success" :style="{
+                  'background-color': `${loginType === 'phone'? '#FFF':'#0a8ce2'}`,
+                  'color': `${loginType === 'phone'? '#555':'#FFF'}`
+                }"
+                                 @click="toPhone"><a>短信登录</a></el-button>
+                    </div>
+                    <div class="formCard" :style="{
+                'border-top-right-radius': `${loginType === 'userNumber'? '3vh':'0'}`,
+                'border-top-left-radius': `${loginType === 'phone'? '3vh':'0'}`,
+              }">
+                      <el-form v-if="loginType === 'userNumber'" ref="loginFormPwd" :model="login_data" class="loginPage_form"
+                               :label-width="0" label-position="left" :rules="rulesPwd" status-icon>
+                        <el-form-item class="loginPageFormText" label="" prop="userNumber">
+                          <el-input :prefix-icon="User" class="loginPage_form_input" id="username" v-model="login_data.userNumber"
+                                    maxlength="15" placeholder="请输入学工号"></el-input>
+                        </el-form-item>
+                        <el-form-item class="loginPageFormText" label="" prop="password">
+                          <el-input :prefix-icon="Lock" class="loginPage_form_input" type="password" id="pwd"
+                                    v-model="login_data.password" placeholder="请输入密码" maxlength="16" />
+                          <!-- maxlength设置了最大长度,可能要alerget提醒一下 -->
+                        </el-form-item>
+                        <a  class="findPwd" @click="findPwd">忘记密码?</a>
+                        <el-form-item>
+                          <el-button type="primary" @click="submitPwd" class="loginPageEl-botton buttonLogin"
+                                     color="#0a8ce2"><a style="font-size:2vh;">登录</a></el-button>
+                        </el-form-item>
+                        <el-form-item>
+                          <el-button   class="loginPageEl-botton"
+                                     @click="toRegister"><a style="font-size:2vh;">注册</a></el-button>
+                        </el-form-item>
+                      </el-form>
+                      <el-form v-if="loginType === 'phone'" ref="loginFormPhone" :model="login_data_phone" class="loginPage_form"
+                               :label-width="0" label-position="left" :rules="rulesCaptcha" status-icon>
+                        <el-form-item class="loginPageFormText" label="" prop="userPhone">
+                          <el-input :prefix-icon="User" class="loginPage_form_input" id="userPhone"
+                                    v-model="login_data_phone.userPhone" placeholder="请输入手机号" maxlength="11"></el-input>
+                        </el-form-item>
+                        <el-form-item class="loginPageFormText" label="" prop="captcha">
+                          <el-row>
+                            <el-col :span="16">
+                              <el-input :prefix-icon="Message" class="loginPage_form_input captchaInput" id="captcha" maxlength="5"
+                                        v-model="login_data_phone.captcha" placeholder="请输入验证码" />
+                            </el-col>
+                            <el-col :span="8">
+                              <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
+                                <span v-show="show"><a style="font-size:2vh;">发送</a></span>
+                                <span v-show="!show" class="count">{{ count }} s</span>
+                              </el-button>
+                            </el-col>
+                          </el-row>
+                        </el-form-item>
+                        <a  class="findPwd" @click="findPwd">忘记密码?</a>
+                        <el-form-item>
+                          <el-button type="primary" @click="submitPwd" class="loginPageEl-botton buttonLogin"
+                                     color="#0a8ce2"><a style="font-size:2vh;">登录</a></el-button>
+                        </el-form-item>
+                        <el-form-item>
+                          <el-button class="loginPageEl-botton"
+                                     @click="toRegister"><a style="font-size:2vh;">注册</a></el-button>
+                        </el-form-item>
+                      </el-form>
+                    </div>
+                  </div>
+          </transition>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
+  <el-dialog title="" v-model="dialogFindPwd" :width="mobile ? '90%' : '30%'">
+    <el-form :model="findPwdData" ref="findData" :rules="findPwdRules" label-position="right" label-width="auto">
+      <el-form-item label="学工号" prop="userNumber" placeholder="请输入学工号">
+        <el-input v-model="findPwdData.userNumber" placeholder="" maxlength="30"></el-input>
+      </el-form-item>
+      <el-form-item class="loginPageFormText" label="手机号" prop="phone">
+        <el-input v-model="findPwdData.phone" placeholder="请输入手机号" maxlength="11"></el-input>
+      </el-form-item>
+      <el-form-item class="loginPageFormText" label="验证码" prop="code">
+        <el-row>
+          <el-col :span="16">
+            <el-input style="height:6vh ;" maxlength="5"
+                      v-model="findPwdData.code" placeholder="请输入验证码" />
+          </el-col>
+          <el-col :span="8">
+            <el-button type="success" class="captchaButton" @click="submitFindCode" :disabled="!show">
+              <span v-show="show">获取验证码</span>
+              <span v-show="!show" class="count">{{ count }} s</span>
+            </el-button>
+          </el-col>
+        </el-row>
+      </el-form-item>
+      <el-form-item label="新密码" prop="password">
+        <el-input v-model="findPwdData.password" placeholder="" maxlength="16"></el-input>
+      </el-form-item>
+    </el-form>
+    <el-button @click="submitFindPwd">提交</el-button>
+  </el-dialog>
 </template>
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
 import router from "@/router";
 import type { FormInstance } from "element-plus";
-import { ElMessage } from "element-plus";
-import axios from "axios";
 import service from "@/request";
 import { Lock, User, Message, Phone } from '@element-plus/icons-vue';
 import { messageError, messageSuccess } from "@/utils/message";
@@ -112,6 +132,14 @@ import { hideLoading, showLoading } from "@/utils/loading";
 import { getBaseURL, setAvatarURL, setNickName, setUserId } from "@/global/global";
 import { identityJump } from "@/utils/identityJump";
 import { mobile } from "@/global/global";
+const showCover = ref(false);
+const showWindow = ref(false);
+setTimeout(() => {
+  showCover.value = true;
+  setTimeout(() => {
+    showWindow.value = true;
+  },700)
+},300)
 const login_data = reactive({
   userNumber: '',
   password: '',
@@ -321,7 +349,13 @@ const findPwd = () => {
 }
 
 const toRegister = () => {
-  router.push('/Register')
+  showWindow.value=false;
+  setTimeout(() => {
+    showCover.value = false;
+    setTimeout(() => {
+      router.push('/Register')
+    },500)
+  },200)
 }
 var loginType = ref('userNumber');   //写成ref就获取到了，响应式
 const toUserNumber = () => {
@@ -391,14 +425,6 @@ const findPwdRules = reactive({
 </script>
 
 <style scoped>
-.header {
-  display: none !important;
-}
-
-.aside {
-  display: none !important;
-}
-
 .loginContainer {
   background-image: url("../assets/images/LoginPageBackground.jpg");
   background-size: cover;
@@ -409,44 +435,48 @@ const findPwdRules = reactive({
   margin: 0;
   width: 100vw;
   height: 100vh !important;
-
+  display: flex;
+  flex-direction: column;
 }
-
+.cover{
+  height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+.topWindow{
+  height: 15vh;
+  display: flex;
+}
 .topText {
   font-family: 微软雅黑;
-  /*height: 20vh;*/
   text-align: left;
   font-size: 6vh;
   color: #ffffff;
   font-weight: bolder;
-  margin-bottom: 3vh;
-
+  margin: auto 0;
 }
-
-.middleWindow {
-  height: 60vh;
-  text-align: center;
-}
-
 .loginWindow {
-  width: 45vh;
   height: 60vh;
-  background-color: rgba(30, 30, 30, 0.8);
-  border-radius: 2vw;
+  background-color: #0a8ce2;
+  border-radius: 3vh;
   padding-top: 0vh;
-  position: absolute;
-  right: 10vw;
   box-shadow: 0.25vh 0.625vh 2.125vh 0.25vh rgba(21, 40, 46, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+.formCard{
+  background-color: #FFFFFF;
+  height: 100%;
+  border-radius: 3vh;
 
 }
-
 .loginPage_form {
   margin-top: 10vh;
   height: 70%;
   width: 80%;
-  text-align: center;
+  text-align: right;
   margin-left: 10%;
   margin-right: 10%;
+
 }
 
 .loginPage_form_input {
@@ -465,42 +495,21 @@ const findPwdRules = reactive({
   color: black;
 }
 
-.bottomText {
-  height: 20vh;
-  text-align: center;
-}
-
 .switchButtonDiv {
-  position: absolute;
-  top: 0vh;
   width: 100%;
   display: flex;
-  height: 6vh;
+  height: 7vh;
 }
 
 .switchButton {
   height: 100%;
   width: 50%;
-  float: left;
-  padding: 0vh;
-  margin-left: 0vh !important;
-  border-bottom-color: rgb(255, 255, 255);
-  border-width: 0.25vh;
-  border-style: double;
+  margin-left: 0;
+  border-style: none;
+  font-size: 3vh;
+  border-radius: 3vh 3vh 0 0;
   /* background-color: rgb(0,0,150,0.5) */
-  ;
-}
 
-.switchButtonDiv>>>.el-button-bg-color {
-  color: #a0cfff;
-}
-
-.switchButtonLeft {
-  border-radius: 2vw 0 0 0;
-}
-
-.switchButtonRight {
-  border-radius: 0 2vw 0 0;
 }
 
 .loginPageEl-botton {
@@ -542,8 +551,8 @@ const findPwdRules = reactive({
 }
 .findPwd{
   color: #318eeb;
-  font-size: 1.1vw;
-  padding-left: 12vw;
+  font-size: 2vh;
+  margin: 0 5%;
 }
 .findPwd:hover{
   cursor: pointer;
@@ -560,9 +569,9 @@ const findPwdRules = reactive({
 }
 
 .img {
-  height: 10vh !important;
-  padding-left: 5vh;
-  padding-right: 3vh;
-  padding-top: 3vh;
+  width: 10vh;
+  height: 10vh;
+  margin: auto 0;
+  padding-left: 2vh;
 }
 </style>

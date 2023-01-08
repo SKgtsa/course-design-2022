@@ -2,7 +2,9 @@ package com.clankalliance.backbeta.controller;
 
 
 
+import com.clankalliance.backbeta.entity.CourseSelectTime;
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.clankalliance.backbeta.repository.CourseSelectTimeRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.request.course.*;
 import com.clankalliance.backbeta.request.user.TokenCheckRequest;
@@ -11,7 +13,10 @@ import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 
 @CrossOrigin
@@ -141,6 +146,22 @@ public class CourseController {
     @PostMapping("/teacherPersonalFind")
     public CommonResponse teacherPersonalFind(@RequestBody TeacherPersonalFindRequest request){
         return courseService.handlePersonalFind(request.getId());
+    }
+
+    @PostMapping("/saveCourseSelectTime")
+    public CommonResponse saveCourseSelectTime(@RequestBody SetCourseSelectTimeRequest request){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Date startTime,endTime;
+        try{
+            startTime = dateFormat.parse(request.getStartTime());
+            endTime = dateFormat.parse(request.getEndTime());
+        }catch (Exception e){
+            CommonResponse response = new CommonResponse<>();
+            response.setSuccess(false);
+            response.setMessage("格式错误");
+            return response;
+        }
+        return courseService.handleEditCourseSelectTime(request.getToken(),startTime,endTime);
     }
 
 }

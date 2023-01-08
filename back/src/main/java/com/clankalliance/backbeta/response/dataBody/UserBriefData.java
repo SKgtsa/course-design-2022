@@ -1,6 +1,8 @@
 package com.clankalliance.backbeta.response.dataBody;
 
 import com.clankalliance.backbeta.entity.user.sub.Student;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class UserBriefData {
     private String name;
 
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
     private String photoURL;

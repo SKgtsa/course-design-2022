@@ -1,97 +1,99 @@
 <template>
-  <div class="main" :style="{
+  <transition name="el-zoom-in-bottom">
+    <div class="main" :style="{
     'flex-direction': `${mobile? 'column':'row'}`,
     'height': `${mobile? 'auto':'93vh'}`,
     'padding-top': `${mobile? '3vh':'0'}`,
     'padding-bottom': `${mobile? '8vh':'0'}`,
-  }">
-    <div class="leftWindow" :style="{
+  }" v-if="initOver">
+      <div class="leftWindow" :style="{
       'flex-direction': `${mobile? 'column-reverse':'column'}`,
       'padding-left': `${mobile? '0':'1vw'}`,
       'margin': `${mobile? '0':'0 1%'}`
     }">
-      <div class="panel" :style="{
+        <div class="panel" :style="{
         'padding-bottom': `${mobile? '2vh':'0'}`
       }">
-        <div class="panelCard" :style="{
+          <div class="panelCard" :style="{
           'height': `${mobile? 'auto':'40vh'}`,
           'margin': `${mobile? 'auto':'0'}`,
         }">
-          <div class="buttonBox">
-            <el-button class="writeButton" @click="writeBlog">
-              <el-image />
-              <a>写博客</a>
-            </el-button>
-            <el-menu
-              default-active="1"
-              class="leftMenu"
-              @select="handleMenuOpen"
-              :mode="`${mobile? 'horizontal':'vertical'}`"
+            <div class="buttonBox">
+              <el-button class="writeButton" @click="writeBlog">
+                <el-image />
+                <a>写博客</a>
+              </el-button>
+              <el-menu
+                  default-active="1"
+                  class="leftMenu"
+                  @select="handleMenuOpen"
+                  :mode="`${mobile? 'horizontal':'vertical'}`"
               >
-              <el-menu-item index="1">广场</el-menu-item>
-              <el-menu-item index="2">我的关注</el-menu-item>
-              <el-menu-item index="3">我的博客</el-menu-item>
-              <el-menu-item index="4">我的收藏</el-menu-item>
-            </el-menu>
+                <el-menu-item index="1">广场</el-menu-item>
+                <el-menu-item index="2">我的关注</el-menu-item>
+                <el-menu-item index="3">我的博客</el-menu-item>
+                <el-menu-item index="4">我的收藏</el-menu-item>
+              </el-menu>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="notice" :style="{
+        <div class="notice" :style="{
         'margin': `${mobile? '0':'0'}`,
         'width': `${mobile? '100%':'auto'}`
       }">
-        <el-carousel class="noticeCard"
-                     :direction="`${mobile? 'horizontal':'vertical'}`"
-                     :autoplay="true"
-                     v-touch:swipe.left="right" v-touch:swipe.right="left"
-                     ref="carousel"
-        >
-          <el-carousel-item v-for="(item,index) in pageData.announcementList" :key="item">
-            <div :style="{
+          <el-carousel class="noticeCard"
+                       :direction="`${mobile? 'horizontal':'vertical'}`"
+                       :autoplay="true"
+                       v-touch:swipe.left="right" v-touch:swipe.right="left"
+                       ref="carousel"
+          >
+            <el-carousel-item v-for="(item,index) in pageData.announcementList" :key="item">
+              <div :style="{
               'background-image': `url(${item.pictureUrl})`,
               'background-size':'cover',
               'height':'100%'
             }" @click="jumpToAnnouncementDetail(item)">
-              <div style="width: 100%;height: 100%;border-radius: inherit;background-color: rgba(0,0,0,0.6);display: flex;vertical-align: bottom">
-                <a style="color: #FFFFFF;font-size: 4vh;margin: auto">{{item.heading}}</a>
+                <div style="width: 100%;height: 100%;border-radius: inherit;background-color: rgba(0,0,0,0.6);display: flex;vertical-align: bottom">
+                  <a style="color: #FFFFFF;font-size: 4vh;margin: auto">{{item.heading}}</a>
+                </div>
               </div>
-            </div>
-          </el-carousel-item>
-        </el-carousel>
+            </el-carousel-item>
+          </el-carousel>
+        </div>
       </div>
-    </div>
-    <div class="rightWindow"  :style="{
+      <div class="rightWindow"  :style="{
         'padding-right':`${mobile? 0:'0.2vw'}`,
         'width':`${mobile? 'auto': '70vw'}`
       }">
-      <div class="operationCard" :style="{
+        <div class="operationCard" :style="{
         'width': `${mobile? '100%':'70vw'}`,
       }">
-        <div class="searchArea">
-          <el-input v-model="pageData.input" style="font-size: 3vh;line-height: 3vh;height: 4vh"/>
-          <el-button @click="search" style="height: 4vh;width: 20%">搜索</el-button>
-        </div>
-        <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 90%;">
-          <div v-for="(item,index) in pageData.postList"   :key="index"  style="padding-top: 2vh">
-            <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
-              <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
-                <div class="cardContent" >
-                  <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
-                  <div class="postBoxBottom">
-                    <div class="bottomLeft">
-                      <a>{{item.time}}</a>
+          <div class="searchArea">
+            <el-input v-model="pageData.input" style="font-size: 3vh;line-height: 3vh;height: 4vh"/>
+            <el-button @click="search" style="height: 4vh;width: 20%">搜索</el-button>
+          </div>
+          <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 90%;">
+            <div v-for="(item,index) in pageData.postList"   :key="index"  style="padding-top: 2vh">
+              <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
+                <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
+                  <div class="cardContent" >
+                    <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
+                    <div class="postBoxBottom">
+                      <div class="bottomLeft">
+                        <a>{{item.time}}</a>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="bottomTop">
-                  <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
-                  <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
-                </div>
-                <div class="bottomBottom">
-                  <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
-                  <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
-                  <a class="likeNum">{{item.likeNum}}</a>
-                  <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
+                  <div class="bottomTop">
+                    <el-button class="avatarButton" @click="jumpToPersonal(item.userId, $event)"><el-image :src="item.avatarURL" class="avatar"/></el-button>
+                    <a class="nickName" @click="jumpToPersonal(item.userId, $event)">{{item.nickName}}</a>
+                  </div>
+                  <div class="bottomBottom">
+                    <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+                    <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                    <a class="likeNum">{{item.likeNum}}</a>
+                    <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -99,7 +101,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </transition>
   <!--弹出框 写博客-->
   <el-drawer
       with-header="false"
@@ -248,6 +250,7 @@ const handleDeleteCheck = (item: Post) => {
     return false;
   }
 }
+const initOver = ref(false);
 
 const blog = ref('')
 const imageList = [
@@ -779,6 +782,8 @@ const refresh = () => {
             loadOver.value = true;
           }
           localStorage.setItem('token', data.token)
+          if(!initOver.value)
+            initOver.value = true;
           hideLoading();
         } else {
           hideLoading();
@@ -921,21 +926,21 @@ const getContent = (v: string) => {
   height: 4vh;
 }
 .avatarButton{
-  width: 5vw;
-  height: 5vw;
-  border-radius: 2.5vw;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
+
 }
 .avatar{
-  width: 5vw;
-  height: 5vw;
-  border-radius: 2.5vw;
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
   position: center;
-  size: auto;
 }
 .nickName{
-  line-height: 4vw;
+  line-height: 4vh;
   font-weight: bold;
-  font-size: 3vw;
+  font-size: 3vh;
 }
 .likeNum{
   font-weight: bold;

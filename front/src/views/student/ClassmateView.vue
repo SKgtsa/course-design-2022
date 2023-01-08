@@ -11,7 +11,7 @@
           <div class="studentCardArea">
             <el-button class="studentCard" @click="jumpToPersonal(item)">
               <div class="leftArea">
-                <el-image :src="getBaseURL + item.photoURL" class="photo"/>
+                <el-image :src="getBaseURL() + item.photoURL" class="photo"/>
               </div>
               <a class="name">{{item.name}}</a>
             </el-button>

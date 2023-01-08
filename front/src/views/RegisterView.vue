@@ -1,72 +1,78 @@
 
 <template>
   <div class="pageBackground">
-    <div class="registerForm">
-      <div class="registerFormContent">
-        <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
-          status-icon>
-          <el-form-item label="学工号:" prop="userNumber">
-            <el-input v-model="formData.userNumber" maxlength="16" />
-          </el-form-item>
-          <el-form-item label="姓名:" prop="name">
-            <el-input v-model="formData.name"  maxlength="10"/>
-          </el-form-item>
-          <el-form-item label="用户名:" prop="nickName">
-            <el-input v-model="formData.nickName" maxlength="8"/>
-          </el-form-item>
-          <el-form-item label="身份:" prop="identity">
-            <el-select v-model="formData.identity" placeholder="选择身份">
-              <el-option label="老师" value="1" />
-              <el-option label="管理员" value="2" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="身份证号:" prop="idCardNumber">
-            <el-input v-model="formData.idCardNumber"  maxlength="18"/>
-          </el-form-item>
-          <el-form-item label="性别:" prop="gender">
-            <el-radio-group v-model="formData.gender">
-              <el-radio :label="false">男</el-radio> <!-- 不确定是不是这么绑定，传false和true -->
-              <el-radio :label="true">女</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="政治面貌:" prop="politicalAffiliation">
-            <el-select v-model="formData.politicalAffiliation" placeholder="选择政治面貌">
-              <el-option label="群众" value="群众" />
-              <el-option label="共青团员" value="共青团员" />
-              <el-option label="共产党员" value="共产党员" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="民族:" prop="ethnic"  >
-            <el-input v-model="formData.ethnic"  maxlength="8"/>
-          </el-form-item>
-          <el-form-item label="邮箱:" prop="eMail">
-            <el-input v-model="formData.eMail"  maxlength="20"/>
-          </el-form-item>
-          <el-form-item label="手机号:" prop="phone">
-            <el-input v-model="formData.phone" placeholder="请输入手机号"/>
-          </el-form-item>
-          <el-form-item class="loginPageFormText" label="验证码:" prop="code">
-            <el-row>
-              <el-col :span="16">
-                <el-input v-model="formData.code" class="captchaInput" id="code" placeholder="请输入验证码" maxlength="5"/>
-              </el-col>
-              <el-col :span="8">
-                <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
-                  <span v-show="show">获取验证码</span>
-                  <span v-show="!show" class="count">{{ count }} s</span>
-                </el-button>
-              </el-col>
-            </el-row>
-          </el-form-item>
-          <el-form-item label="密码:" prop="password">
-            <el-input v-model="formData.password" type="password" show-password  maxlength="16"/>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" class="registerPageEl-botton" @click="register">注册</el-button>
-          </el-form-item>
-        </el-form>
+    <transition name="el-fade-in-linear">
+      <div class="cover" v-if="showCover">
+        <transition name="el-fade-in">
+          <div class="registerForm" v-if="showWindow">
+            <div class="registerFormContent">
+              <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
+                       status-icon>
+                <el-form-item label="学工号:" prop="userNumber">
+                  <el-input v-model="formData.userNumber" maxlength="16" />
+                </el-form-item>
+                <el-form-item label="姓名:" prop="name">
+                  <el-input v-model="formData.name"  maxlength="10"/>
+                </el-form-item>
+                <el-form-item label="用户名:" prop="nickName">
+                  <el-input v-model="formData.nickName" maxlength="8"/>
+                </el-form-item>
+                <el-form-item label="身份:" prop="identity">
+                  <el-select v-model="formData.identity" placeholder="选择身份">
+                    <el-option label="老师" value="1" />
+                    <el-option label="管理员" value="2" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="身份证号:" prop="idCardNumber">
+                  <el-input v-model="formData.idCardNumber"  maxlength="18"/>
+                </el-form-item>
+                <el-form-item label="性别:" prop="gender">
+                  <el-radio-group v-model="formData.gender">
+                    <el-radio :label="false">男</el-radio> <!-- 不确定是不是这么绑定，传false和true -->
+                    <el-radio :label="true">女</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item label="政治面貌:" prop="politicalAffiliation">
+                  <el-select v-model="formData.politicalAffiliation" placeholder="选择政治面貌">
+                    <el-option label="群众" value="群众" />
+                    <el-option label="共青团员" value="共青团员" />
+                    <el-option label="共产党员" value="共产党员" />
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="民族:" prop="ethnic"  >
+                  <el-input v-model="formData.ethnic"  maxlength="8"/>
+                </el-form-item>
+                <el-form-item label="邮箱:" prop="eMail">
+                  <el-input v-model="formData.eMail"  maxlength="20"/>
+                </el-form-item>
+                <el-form-item label="手机号:" prop="phone">
+                  <el-input v-model="formData.phone" placeholder="请输入手机号"/>
+                </el-form-item>
+                <el-form-item class="loginPageFormText" label="验证码:" prop="code">
+                  <el-row>
+                    <el-col :span="16">
+                      <el-input v-model="formData.code" class="captchaInput" id="code" placeholder="请输入验证码" maxlength="5"/>
+                    </el-col>
+                    <el-col :span="8">
+                      <el-button type="success" class="captchaButton" @click="sendCode" :disabled="!show">
+                        <span v-show="show">获取验证码</span>
+                        <span v-show="!show" class="count">{{ count }} s</span>
+                      </el-button>
+                    </el-col>
+                  </el-row>
+                </el-form-item>
+                <el-form-item label="密码:" prop="password">
+                  <el-input v-model="formData.password" type="password" show-password  maxlength="16"/>
+                </el-form-item>
+                <el-form-item>
+                  <el-button type="primary" class="registerPageEl-botton" color="#318eeb" @click="register">注册</el-button>
+                </el-form-item>
+              </el-form>
+            </div>
+          </div>
+        </transition>
       </div>
-    </div>
+    </transition>
   </div>
 </template>
 <script lang="ts" setup>
@@ -84,7 +90,8 @@ const registerForm = ref()
 let show = ref(true);
 let count = ref();
 let timer = reactive(null);
-
+const showCover = ref(false);
+const showWindow = ref(false);
 const formData = reactive({   /* 学号，电话，姓名，身份证号，密码，性别，政治面貌，民族，邮箱，电话*/
   phone: '',//电话
   userNumber: '',//学号
@@ -99,6 +106,12 @@ const formData = reactive({   /* 学号，电话，姓名，身份证号，密�
   identity: '', //身份
   code: '', //验证码
 })
+setTimeout(() => {
+  showCover.value = true;
+  setTimeout(() => {
+    showWindow.value = true;
+  },700)
+},300)
 const sendCode = async () => {
   showLoading();
   await service.post('/api/user/registerPhone',{ phone: formData.phone }).then(res => {
@@ -220,7 +233,6 @@ const rules = reactive({
   { max: 8, message: '长度请不要超过8位', trigger: 'blur' }]
 })
 
-
 const register = async () => {
   console.log(formData)
   await registerForm.value.validate((valid) => {    //registerForm是上面表单ref绑定的值
@@ -241,9 +253,21 @@ const register = async () => {
           messageSuccess('注册成功！')
           localStorage.setItem('token', data.token);
           if(data.needSupplement){
-            router.push('/InfoFillIn')
+            showWindow.value = false;
+            setTimeout(() => {
+              showCover.value = false;
+              setTimeout(() => {
+                router.push('/InfoFillIn')
+              },300)
+            },400)
           }else{
-            router.push('/Login')
+            showWindow.value = false;
+            setTimeout(() => {
+              showCover.value = false;
+              setTimeout(() => {
+                router.push('/Login')
+              },300)
+            },400)
           }
         } else {
           hideLoading();
@@ -283,14 +307,17 @@ const register = async () => {
 }
 
 .registerForm {
-  height: 95%;
-  align-items: center;
-  position: absolute;
-  top: 3%;
-  background: #c9c4ce96;
-  bottom: 20%;
+  background: #FFF;
+  border-radius: 3vh;
+  margin: auto;
+  padding-bottom: 3vh;
 }
-
+.cover{
+  background-color: rgba(0,0,0,0.4);
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
 .registerFormContent {
   width: 80%;
   margin-left: 5%;
@@ -302,13 +329,7 @@ const register = async () => {
 
 .registerPageEl-botton {
   width: 100%;
-  background-color: rgba(51, 126, 204, 0.3);
   /* text-align: center; */
-  margin-top: 1.25vh;
-  margin-left: 3.125vh;
-  margin-right: 3.125vh;
-  line-height: 6.25vh;
-  border-radius: 4.375vh;
 }
 
 .captchaInput {

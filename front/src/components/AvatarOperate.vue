@@ -90,6 +90,7 @@
   import service from "@/request";
   import {messageError, messageSuccess} from "@/utils/message";
   import serviceFile from "@/request/indexFile";
+  import {reload} from "@/utils/reloadRouter";
   let nickData = ref();
 
 
@@ -120,6 +121,7 @@
             localStorage.setItem('token', data.token);
             setNickName(nickNameData.nickName);
             messageSuccess("修改成功！");
+            reload()
           } else {
             hideLoading();
             messageError(data.message);
@@ -202,7 +204,7 @@
         let url = getBaseURL() + data.content;
         console.log(url);
         localStorage.setItem('avatarURL', url);
-
+        reload()
         messageSuccess("更换成功！")
       } else {
         hideLoading();

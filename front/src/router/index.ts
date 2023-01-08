@@ -163,7 +163,7 @@ import {reload} from "@/utils/reloadRouter";
 
 router.beforeEach(async (to, from, next) => {
   /* console.log('进入beforeEach函数') */
-  if(from.path === '/Login'){
+  if(from.path === '/login' || from.path === '/register'){
     reload()
   }
   showRouter.value = false;

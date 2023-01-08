@@ -53,10 +53,10 @@
       <div class="achievementCard" :style="{
         'width': `${mobile ? 90 : 25}vw`,
         'margin': `${mobile ? '3% 4%' : '5% 0'}`,
-        'height': `${mobile ? 20 : 50}vh`
+        'height': `${mobile ? 'auto' : '50vh'}`
       }">
         <a style="font-size: 3vh;font-weight: bold;padding: 1.5vw;color: #555">称号</a>
-        <div style="width: 100%" v-if="pageData.data.evaluateEnough">
+        <div style="width: 100%" v-if="getUserId() != userId || pageData.data.evaluateEnough || !login">
           <div v-for="(item, index) in pageData.data.achievementList" class="achievement">
             <div class="achievementArea">
               <el-tooltip placement="top" :content="`${item.description}`">
@@ -73,7 +73,7 @@
             <div class="achievementArea">
               <el-button :style="{
                 'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`
-              }" class="achievement" @click="openEvaluate" v-if="login && userId != getUserId()">
+              }" class="achievement" @click="openEvaluate" v-if="login && userId !== getUserId()">
                 <a><el-icon>
                     <Plus />
                   </el-icon></a>
@@ -81,9 +81,9 @@
             </div>
           </div>
         </div>
-        <div style="width: 100%" v-if="!pageData.data.evaluateEnough">
+        <div style="width: 100%" v-if="getUserId() === userId && !pageData.data.evaluateEnough && login">
           <div style="font-size: 3vh;font-weight: bold;padding: 1.5vw;color: #555">对五位同学评价之后才能查看自己的称号</div>
-          <a style="font-size: 2vh;font-weight: bold;padding: 1.5vw;color: #555">评论方式:在你想留下评论的学生的主页点击</a>
+          <a style="font-size: 2vh;font-weight: bold;padding: 1.5vw;color: #555">评论方式:在你想留下评论的同学的主页点击</a>
           <div class="achievement">
             <div class="achievementArea">
               <el-button :style="{
@@ -1030,24 +1030,22 @@ const commentSubmit = () => {
   background-size: cover;
 }
 
-.avatarButton {
-  width: 5vw;
-  height: 5vw;
-  border-radius: 2.5vw;
-}
+.avatarButton{
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
 
-.avatar {
-  width: 5vw;
-  height: 5vw;
-  border-radius: 2.5vw;
+}
+.avatar{
+  width: 5vh;
+  height: 5vh;
+  border-radius: 2.5vh;
   position: center;
-  size: auto;
 }
-
-.nickName {
-  line-height: 4vw;
+.nickName{
+  line-height: 4vh;
   font-weight: bold;
-  font-size: 3vw;
+  font-size: 3vh;
 }
 
 .likeNum {

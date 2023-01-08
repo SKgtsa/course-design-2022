@@ -1,17 +1,17 @@
 <template>
-  <el-menu-item index="/Student/Main">
+  <el-menu-item index="/Student/Main"  @click="closeMenu">
     <template #title>首页</template>
     <el-icon class="menuButton">
       <HomeFilled />
     </el-icon>
   </el-menu-item>
-  <el-menu-item index="/Student/CourseSelect">
+  <el-menu-item index="/Student/CourseSelect"  @click="closeMenu">
     <template #title>选课指南</template>
     <el-icon class="menuButton">
       <Document />
     </el-icon>
   </el-menu-item>
-  <el-menu-item index="/Student/ScoreManage">
+  <el-menu-item index="/Student/ScoreManage"  @click="closeMenu">
     <el-icon class="menuButton">
       <DocumentChecked />
     </el-icon>

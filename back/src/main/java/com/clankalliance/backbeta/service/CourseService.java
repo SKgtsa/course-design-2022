@@ -6,6 +6,7 @@ import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.request.course.CourseRequestData;
 import com.clankalliance.backbeta.response.CommonResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public interface CourseService {
@@ -41,4 +42,6 @@ public interface CourseService {
     CommonResponse handleManagerAddStudent(String token, long courseId, long studentNumber);
 
     CommonResponse handlePersonalFind(long userId);
+
+    CommonResponse handleEditCourseSelectTime(String token, Date startTime, Date endTime);
 }
