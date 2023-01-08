@@ -17,6 +17,7 @@ import com.clankalliance.backbeta.response.dataBody.CourseResponseTarget;
 import com.clankalliance.backbeta.service.CourseService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.response.dataBody.FindCourseStudentData;
+import com.clankalliance.backbeta.utils.AntiInjection;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.openxmlformats.schemas.drawingml.x2006.main.CTOuterShadowEffect;
@@ -472,13 +473,11 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CommonResponse handleTeacherFindCourse(String token, Integer year, String semester){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262478737566732288");//教师
-        }else{
-            response = tokenUtil.tokenCheck(token);
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(AntiInjection.containsSqlInjection(semester)){
+            response.setSuccess(false);
+            response.setMessage("参数不合法");
+            return response;
         }
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
@@ -669,6 +668,27 @@ public class CourseServiceImpl implements CourseService {
                 response.setMessage("用户权限不足");
             }
         }
+        return response;
+    }
+
+    @Override
+    public CommonResponse handlePersonalFind(long userId){
+        User user = userService.findById(userId);
+        CommonResponse response = new CommonResponse<>();
+        if(user == null || !(user instanceof Teacher)){
+            response.setSuccess(false);
+            response.setMessage("查找失败");
+            return response;
+        }
+        Teacher teacher = (Teacher) user;
+        Set<Course> courseSet = teacher.getCourseSet();
+        Set<String> courseName = new HashSet<>();
+        for(Course c : courseSet){
+            courseName.add(c.getName());
+        }
+        response.setContent(courseName);
+        response.setSuccess(true);
+        response.setMessage("查找成功");
         return response;
     }
 }

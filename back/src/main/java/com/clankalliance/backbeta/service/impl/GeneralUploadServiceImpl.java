@@ -28,7 +28,6 @@ public class GeneralUploadServiceImpl implements GeneralUploadService {
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
-
         // 文件是否为空
         if (file.isEmpty()) {
             System.out.println("文件为空");
@@ -61,7 +60,6 @@ public class GeneralUploadServiceImpl implements GeneralUploadService {
         suffix = originalFilename.substring(index);
         // 随机生成前缀名并拼接
         String filename = UUID.randomUUID().toString().toUpperCase() + suffix;
-
         File dest = new File(dir, filename); // 是一个空文件
         // 参数file中数据写入到这个空文件中
         try {

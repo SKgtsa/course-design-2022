@@ -40,7 +40,12 @@
         'margin': `${mobile? '0':'0'}`,
         'width': `${mobile? '100%':'auto'}`
       }">
-        <el-carousel class="noticeCard" :direction="`${mobile? 'horizontal':'vertical'}`" :autoplay="true">
+        <el-carousel class="noticeCard"
+                     :direction="`${mobile? 'horizontal':'vertical'}`"
+                     :autoplay="true"
+                     v-touch:swipe.left="right" v-touch:swipe.right="left"
+                     ref="carousel"
+        >
           <el-carousel-item v-for="(item,index) in pageData.announcementList" :key="item">
             <div :style="{
               'background-image': `url(${item.pictureUrl})`,
@@ -271,6 +276,16 @@ const showDetail = ref(false);
 const showAnnouncementDetail = ref(false)
 
 console.log(getUserId())
+
+let carousel = ref(null)
+
+const left = () => {
+  carousel.value.prev();
+}
+
+const right = () => {
+  carousel.value.next();
+}
 
 const pageData  = reactive({
   postList:[],

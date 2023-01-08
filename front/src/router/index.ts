@@ -14,11 +14,6 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue')
     },
     {
-      path: '/test',
-      name: 'test',
-      component: () => import('../views/test.vue')
-    },
-    {
       path: '/Register',
       name: 'Register',
       component: () => import('../views/RegisterView.vue')
@@ -30,18 +25,21 @@ const router = createRouter({
     },{
       path: '/JiangMuzi',
       name: 'JiangMuziPersonalPage',
-      component: () => import('../views/JiangMuziPersonalPage.vue')
+      component: () => import('../views/group/JiangMuziPersonalPage.vue')
+    }, {
+      path: '/GuanYunPeng',
+      name: 'GuanYunPengPersonalPage',
+      component: () => import('../views/group/GuanYunPengPersonalView.vue')
+    },{
+      path:'/PengShuaihao',
+      name:'PengShuaihaoPersonalPage',
+      component:() =>import('../views/group/PengShuaihaoPersonView.vue')
+    }
+    ,{
+      path: '/InfoFillIn',
+      name: 'InfoFillInPage',
+      component: () => import('../views/InfoFillView.vue')
     },
-    /*     {
-          path: '/',
-          name: 'home',
-          component: () => import('../views/AboutView.vue')
-        }, */
-    // {
-    //     path: '/CourseSelect',
-    //     name: 'CourseSelect',
-    //     component: () => import('../views/student/CourseSelect.vue')
-    // },
     {
       path: '/Main',
       name: 'main',
@@ -76,44 +74,29 @@ const router = createRouter({
           component: () => import('../views/student/MainView.vue')
         },
         {
-          path: '/Student/AcademicManagement',
-          name: 'AcademicManagement',
-          component: () => import('../views/student/AcademicManagement.vue'),
-          children: [
-            {
-              path: '/Student/AcademicManagement/AMHome',
-              name: 'AMHome',
-              component: () => import('../views/student/AMHome.vue')
-            },
-            {
-              path: '/Student/AcademicManagement/StudentEvaluate',
-              name: 'StudentEvaluate',
-              component: () => import('../views/student/StudentEvaluate.vue')
-            },
-            {
-              path: '/Student/AcademicManagement/Practice',
-              name: 'Practice',
-              component: () => import('../views/student/PracticeView.vue')
-            },
-            {
-              path: '/Student/AcademicManagement/Activity',
-              name: 'Activity',
-              component: () => import('../views/student/ActivityView.vue')
-            },
-
-            {
-              path: '/Student/AcademicManagement/Reward',
-              name: 'Reward',
-              component: () => import('../views/student/RewardView.vue')
-            },
-          ]
+          path: '/Student/Practice',
+          name: 'Practice',
+          component: () => import('../views/student/PracticeView.vue')
+        },
+        {
+          path: '/Student/Activity',
+          name: 'Activity',
+          component: () => import('../views/student/ActivityView.vue')
+        }, {
+          path: '/Student/Reward',
+          name: 'Reward',
+          component: () => import('../views/student/RewardView.vue')
+        },{
+          path: '/Student/Classmate',
+          name: 'Classmate',
+          component: () => import('../views/student/ClassmateView.vue')
         },
       ]
     },
     {
       path: '/Teacher',
       name: 'TeacherHomePage',
-      component: () => import('../views/teacher/TeacherHomePage.vue'),
+      component: () => import('../views/teacher/HomePage.vue'),
       meta: {
         keepAlive: true // 需要缓存
       },
@@ -121,22 +104,22 @@ const router = createRouter({
         {
           path: '/Teacher/CourseManage',
           name: 'TeacherCourseManage',
-          component: () => import('../views/teacher/TeacherCourseManage.vue')
+          component: () => import('../views/teacher/CourseManage.vue')
         },
         {
           path: '/Teacher/Main',
           name: 'TeacherMain',
-          component: () => import('../views/teacher/TeacherMainView.vue')
+          component: () => import('../views/teacher/MainView.vue')
         },
         {
           path: '/Teacher/ScoreManage',
           name: 'TeacherScoreManage',
-          component: () => import('../views/teacher/TeacherScoreManage.vue')
+          component: () => import('../views/teacher/ScoreManage.vue')
         },
         {
           path: '/Teacher/SelfInformation',
           name: 'TeacherSelfInformation',
-          component: () => import('../views/teacher/TeacherSelfInformation.vue')
+          component: () => import('../views/teacher/PersonPageView.vue')
         },
       ]
     },
@@ -175,13 +158,22 @@ const router = createRouter({
 //导入nprogress 为了路由跳转有进度条
 import NProgress from 'nprogress/nprogress.js'
 import 'nprogress/nprogress.css'
+import {showRouter} from "@/global/global";
+import {reload} from "@/utils/reloadRouter";
 
 router.beforeEach(async (to, from, next) => {
   /* console.log('进入beforeEach函数') */
+  if(from.path === '/Login'){
+    reload()
+  }
+  showRouter.value = false;
   NProgress.start();
   next()
 })
 router.afterEach((to, from) => {
   NProgress.done();
+  setTimeout(() => {
+    showRouter.value = true;
+  },300)
 })
 export default router

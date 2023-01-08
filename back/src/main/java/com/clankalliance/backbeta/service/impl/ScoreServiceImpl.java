@@ -21,6 +21,7 @@ import com.clankalliance.backbeta.utils.*;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.PreparedStatement;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -60,6 +61,11 @@ public class ScoreServiceImpl implements ScoreService {
         return POINT_A;
     }
 
+    /**
+     * 传入学生对象 对学生的成就列表进行更新，并返回成就列表
+     * @param student 目标学生
+     * @return
+     */
     private Set<Achievement> updateAchievementList(Student student){
         List<Score> scoreList = scoreRepository.findByStudentId(student.getId());
         Double point = 0.0;
@@ -169,6 +175,11 @@ public class ScoreServiceImpl implements ScoreService {
      */
     public CommonResponse handleFind(String token, Integer Year, String  Semester){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        if(AntiInjection.containsSqlInjection(Semester)){
+            response.setSuccess(false);
+            response.setMessage("参数不合法");
+            return response;
+        }
         if(response.getSuccess()){
             //token验证成功
             User user = userService.findById(Long.parseLong(response.getMessage()));
@@ -181,6 +192,7 @@ public class ScoreServiceImpl implements ScoreService {
                 for(Course c : courseSet){
                     if(c.getSemester().equals(Semester) && c.getYear().equals(Year)){
                         long courseId=c.getId();
+
                         Optional<Score> scoreOp=scoreRepository.findByTime(studentId,courseId,Year,Semester);
                         if(scoreOp.isPresent()){
                             Score score=scoreOp.get();
@@ -235,7 +247,7 @@ public class ScoreServiceImpl implements ScoreService {
                         int total=0;
                         int studentNum=studentCourseSet.size();
                         int passStudent=0;
-                        double weight=0;
+                        double weight=0.0;
                         long courseId=c.getId();
                         for(Student s : studentCourseSet){
                             long studentId=s.getId();
@@ -274,6 +286,12 @@ public class ScoreServiceImpl implements ScoreService {
         return response;
     }
 
+    /**
+     * 验证用户身份 找到课程 并返回该课程所有学生及成绩
+     * @param token 用户令牌
+     * @param courseId 课程id
+     * @return
+     */
     public CommonResponse handleFindDetail(String token,long courseId){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
@@ -312,6 +330,14 @@ public class ScoreServiceImpl implements ScoreService {
         return response;
     }
 
+    /**
+     * 批量录入成绩时对每个成绩录入的方法
+     * @param dailyScore 平时分
+     * @param endScore 期末分
+     * @param studentNumber 学生学号
+     * @param courseId 课程id
+     * @return
+     */
     public boolean handleBatchScore(Integer dailyScore, Integer endScore, Long studentNumber, Long courseId){
         Optional<Course> cop = courseRepository.findById(courseId);
         if(cop.isEmpty())
@@ -331,6 +357,12 @@ public class ScoreServiceImpl implements ScoreService {
         return true;
     }
 
+    /**
+     * 管理员查找课程所有成绩
+     * @param token 用户令牌
+     * @param courseId 课程id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerFind(String token, long courseId){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -372,6 +404,16 @@ public class ScoreServiceImpl implements ScoreService {
         }
         return response;
     }
+
+    /**
+     * 管理员修改成绩
+     * @param token 用户令牌
+     * @param courseId 课程id
+     * @param studentId 学生id
+     * @param dailyScore 平时分
+     * @param endScore 期末分
+     * @return
+     */
     @Override
     public CommonResponse handleManagerSave(String token, long courseId, long studentId, Integer dailyScore, Integer endScore){
         CommonResponse response = tokenUtil.tokenCheck(token);

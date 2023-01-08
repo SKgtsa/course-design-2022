@@ -1,132 +1,165 @@
 <template>
-  <div class="content">
-    <div class="mainCard">
-      <div class="header">
-        <div class="leftPanel">
+  <div class="content" :style="{
+    'padding-top': `${mobile? '4.5':'0.5'}vh`
+  }">
+    <div class="mainCard" :style="{
+      'width': `${mobile? '100%':'90%'}`,
+      'margin': `${mobile? '0 auto':'0 8%'}`
+    }">
+      <div class="header" :style="{
+        'flex-direction': `${mobile? 'column':'row'}`
+      }">
+        <div class="leftPanel" :style="{
+          'width': `${mobile? '100%':'60%'}`
+        }">
           <a class="title">信息管理</a>
           <div class="searchOrigin">
-                        <span class="searchSpan">
-                            <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="15"
-                                      placeholder="输入学工号"/>
-                            <el-button type="submit" class="searchButton" @click="check">
-                                <el-icon class="icon">
-                                    <Search/>
-                                </el-icon>
-                            </el-button>
-                            <el-button type="danger" class="deleteButton" v-if="characterHasFound">
-                                <a class="deleteText">删除用户</a>
-                            </el-button>
-                        </span>
+            <span class="searchSpan">
+                <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="15"
+                          placeholder="输入学工号"/>
+                <el-button type="submit" class="searchButton" @click="check">
+                    <el-icon class="icon">
+                        <Search/>
+                    </el-icon>
+                </el-button>
+                <el-button type="danger" class="deleteButton" v-if="characterHasFound">
+                    <a class="deleteText">删除用户</a>
+                </el-button>
+            </span>
           </div>
         </div>
-        <div class="rightPanel" v-if="characterHasFound">
-          <div class="imgBoxLeft">
-            <el-image class="img" :src="userStudentForm.avatarURL" fit="cover">
+        <div class="rightPanel" v-if="characterHasFound" :style="{
+          'width': `${mobile? '100%':'40%'}`
+        }">
+          <div class="imgBox">
+            <el-image class="img" :src="userIsTeacher? userTeacherForm.avatarURL:userStudentForm.avatarURL" fit="cover">
             </el-image>
           </div>
-          <div class="imgBoxRight">
-            <el-image class="img" :src="userStudentForm.photoURL" fit="cover">
+          <div class="imgBox">
+            <el-image class="img" :src="userIsTeacher? userTeacherForm.photoURL:userStudentForm.photoURL" fit="cover">
             </el-image>
           </div>
         </div>
       </div>
-      <div class="main">
-        <div class="menu">
-                    <span class="menuButtonSpan">
-                        <el-button class="menuButton" @click="clickInformation">
-                            <a>个人信息</a>
-                        </el-button>
-                    </span>
-          <span class="menuButtonSpan" v-if="characterIsStudent">
-                        <el-button class="menuButton" @click="clickPractice">
-                            <a>社会实践</a>
-                        </el-button>
-                    </span>
-          <span class="menuButtonSpan" v-if="characterIsStudent">
-                        <el-button class="menuButton" @click="clickReward">
-                            <a>成果奖励</a>
-                        </el-button>
-                    </span>
-          <span class="menuButtonSpan" v-if="characterIsStudent">
-                        <el-button class="menuButton" @click="clickActivity">
-                            <a>课外活动</a>
-                        </el-button>
-                    </span>
-
+    </div>
+    <div class="operationArea" :style="{
+      'margin':`${mobile? '0':'0 8%'}`
+    }" v-if="findUser">
+      <div class="bottomCard" :style="{
+        'flex-direction': `${mobile? 'column':'row'}`,
+        'width': `${mobile? 100:90}%`,
+      }">
+        <div class="selectCard" :style="{
+        'width': `${mobile? 100:20}%`
+      }">
+          <div class="menu"  :style="{
+        'flex-direction': `${mobile? 'row':'column'}`,
+      }">
+        <span class="menuButtonSpan" :style="{
+            'width':`${mobile && !userIsTeacher? 25:100}%`
+          }" >
+          <el-button class="menuButton" @click="clickInformation">
+            <a>个人信息</a>
+          </el-button>
+        </span>
+            <span class="menuButtonSpan" :style="{
+            'width':`${mobile? 25:100}%`
+          }"  v-if="characterIsStudent">
+            <el-button class="menuButton" @click="clickPractice">
+              <a>社会实践</a>
+            </el-button>
+          </span>
+            <span class="menuButtonSpan" :style="{
+            'width':`${mobile? 25:100}%`
+          }"  v-if="characterIsStudent">
+            <el-button class="menuButton" @click="clickReward">
+              <a>成果奖励</a>
+            </el-button>
+          </span>
+            <span class="menuButtonSpan"  :style="{
+            'width':`${mobile? 25:100}%`
+          }" v-if="characterIsStudent">
+            <el-button class="menuButton" @click="clickActivity">
+              <a>课外活动</a>
+            </el-button>
+          </span>
+          </div>
         </div>
-        <div class="right">
+        <div class="operationCard" :style="{
+        'width': `${mobile? 100:80}%`
+      }">
           <el-scrollbar><div v-if="informationShow" class="information">
-              <div v-if="characterIsStudent">
-                <el-form :model="userStudentForm" class="areaTextInput" ref="formData">
-                  <el-form-item label="学号:" prop="userNumber">
-                    <el-input  readonly  v-model="userStudentForm.userNumber"></el-input>
-                  </el-form-item>
-                  <el-form-item label="Id:" prop="id">
-                    <el-input  readonly  v-model="userStudentForm.id"></el-input>
-                  </el-form-item>
-                  <el-form-item label="姓名:" prop="name">
-                    <el-input  readonly  v-model="userStudentForm.name"></el-input>
-                  </el-form-item>
-                  <el-form-item label="昵称:" prop="nickName">
-                    <el-input  readonly  v-model="userStudentForm.nickName"></el-input>
-                  </el-form-item>
-                  <el-form-item label="性别:" prop="gender">
-                    <el-input  readonly  v-model="userStudentForm.gender"></el-input>
-                  </el-form-item>
-                  <el-form-item label="身份证号:" prop="idCardNumber">
-                    <el-input  readonly  v-model="userStudentForm.idCardNumber"></el-input>
-                  </el-form-item>
-                  <el-form-item label="班级:" prop="studentClass">
-                    <el-input  readonly  v-model="userStudentForm.studentClass"></el-input>
-                  </el-form-item>
-                  <el-form-item label="政治面貌:" prop="politicalAffiliation">
-                    <el-input  readonly  v-model="userStudentForm.politicalAffiliation"></el-input>
-                  </el-form-item>
-                  <el-form-item label="民族:" prop="ethnic">
-                    <el-input  readonly  v-model="userStudentForm.ethnic"></el-input>
-                  </el-form-item>
-                  <el-form-item label="邮箱:" prop="eMail">
-                    <el-input  readonly  v-model="userStudentForm.eMail"></el-input>
-                  </el-form-item>
-                  <el-form-item label="电话:" prop="phone">
-                    <el-input  readonly  v-model="userStudentForm.phone"></el-input>
-                  </el-form-item>
-                </el-form>
-              </div>
-              <div v-else>
-                <el-form :model="userTeacherForm" class="areaTextInput" ref="formData">
-                  <el-form-item label="工号:" prop="userNumber">
-                    <el-input  readonly  v-model="userTeacherForm.userNumber"></el-input>
-                  </el-form-item>
-                  <el-form-item label="Id:" prop="id">
-                    <el-input  readonly  v-model="userTeacherForm.id"></el-input>
-                  </el-form-item>
-                  <el-form-item label="姓名:" prop="name">
-                    <el-input  readonly  v-model="userTeacherForm.name"></el-input>
-                  </el-form-item>
-                  <el-form-item label="昵称:" prop="nickName">
-                    <el-input  readonly  v-model="userTeacherForm.nickName"></el-input>
-                  </el-form-item>
-                  <el-form-item label="性别:" prop="gender">
-                    <el-input  readonly  v-model="userTeacherForm.gender"></el-input>
-                  </el-form-item>
-                  <el-form-item label="身份证号:" prop="idCardNumber">
-                    <el-input  readonly  v-model="userTeacherForm.idCardNumber"></el-input>
-                  </el-form-item>
-                  <el-form-item label="政治面貌:" prop="politicalAffiliation">
-                    <el-input  readonly  v-model="userTeacherForm.politicalAffiliation"></el-input>
-                  </el-form-item>
-                  <el-form-item label="民族:" prop="ethnic">
-                    <el-input  readonly  v-model="userTeacherForm.ethnic"></el-input>
-                  </el-form-item>
-                  <el-form-item label="邮箱:" prop="eMail">
-                    <el-input  readonly  v-model="userTeacherForm.eMail"></el-input>
-                  </el-form-item>
-                  <el-form-item label="电话:" prop="phone">
-                    <el-input  readonly  v-model="userTeacherForm.phone"></el-input>
-                  </el-form-item>
-                </el-form>
-              </div>
+            <div v-if="characterIsStudent">
+              <el-form :model="userStudentForm" class="areaTextInput" ref="formData">
+                <el-form-item label="学号:" prop="userNumber">
+                  <el-input  readonly  v-model="userStudentForm.userNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="Id:" prop="id">
+                  <el-input  readonly  v-model="userStudentForm.id"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名:" prop="name">
+                  <el-input  readonly  v-model="userStudentForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="昵称:" prop="nickName">
+                  <el-input  readonly  v-model="userStudentForm.nickName"></el-input>
+                </el-form-item>
+                <el-form-item label="性别:" prop="gender">
+                  <el-input  readonly  v-model="userStudentForm.gender"></el-input>
+                </el-form-item>
+                <el-form-item label="身份证号:" prop="idCardNumber">
+                  <el-input  readonly  v-model="userStudentForm.idCardNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="班级:" prop="studentClass">
+                  <el-input  readonly  v-model="userStudentForm.studentClass"></el-input>
+                </el-form-item>
+                <el-form-item label="政治面貌:" prop="politicalAffiliation">
+                  <el-input  readonly  v-model="userStudentForm.politicalAffiliation"></el-input>
+                </el-form-item>
+                <el-form-item label="民族:" prop="ethnic">
+                  <el-input  readonly  v-model="userStudentForm.ethnic"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱:" prop="eMail">
+                  <el-input  readonly  v-model="userStudentForm.eMail"></el-input>
+                </el-form-item>
+                <el-form-item label="电话:" prop="phone">
+                  <el-input  readonly  v-model="userStudentForm.phone"></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
+            <div v-else>
+              <el-form :model="userTeacherForm" class="areaTextInput" ref="formData">
+                <el-form-item label="工号:" prop="userNumber">
+                  <el-input  readonly  v-model="userTeacherForm.userNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="Id:" prop="id">
+                  <el-input  readonly  v-model="userTeacherForm.id"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名:" prop="name">
+                  <el-input  readonly  v-model="userTeacherForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="昵称:" prop="nickName">
+                  <el-input  readonly  v-model="userTeacherForm.nickName"></el-input>
+                </el-form-item>
+                <el-form-item label="性别:" prop="gender">
+                  <el-input  readonly  v-model="userTeacherForm.gender"></el-input>
+                </el-form-item>
+                <el-form-item label="身份证号:" prop="idCardNumber">
+                  <el-input  readonly  v-model="userTeacherForm.idCardNumber"></el-input>
+                </el-form-item>
+                <el-form-item label="政治面貌:" prop="politicalAffiliation">
+                  <el-input  readonly  v-model="userTeacherForm.politicalAffiliation"></el-input>
+                </el-form-item>
+                <el-form-item label="民族:" prop="ethnic">
+                  <el-input  readonly  v-model="userTeacherForm.ethnic"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱:" prop="eMail">
+                  <el-input  readonly  v-model="userTeacherForm.eMail"></el-input>
+                </el-form-item>
+                <el-form-item label="电话:" prop="phone">
+                  <el-input  readonly  v-model="userTeacherForm.phone"></el-input>
+                </el-form-item>
+              </el-form>
+            </div>
           </div></el-scrollbar>
           <div v-if="practiceShow">
             <el-scrollbar>
@@ -228,10 +261,13 @@
 import {reactive, ref} from 'vue';
 import {hideLoading, showLoading} from "@/utils/loading";
 import service from "@/request";
-import {messageError, messageSuccess, messageWarning} from "@/utils/message";
+import { messageSuccess} from "@/utils/message";
 import {ElMessageBox} from "element-plus";
-import {getBaseURL} from "@/global/global";
+import {getBaseURL, mobile} from "@/global/global";
+import {loginFailed} from "@/utils/tokenCheck";
 
+const userIsTeacher = ref(false)
+const findUser = ref(false)
 let currentPage = ref(1);
 let pageSize = ref(7);
 let pageCount = ref();
@@ -314,12 +350,6 @@ const handleCurrentChange = (current) => {
   loadPracticeTable() //再执行一次索要数据方法
   console.log(currentPage)
 }
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath)
-}
 const clickPractice = () => {
   practiceShow.value = true;
   activityShow.value = false;
@@ -386,8 +416,11 @@ const checkUser = async (userNumber) => {   //查看个人信息
         userTeacherForm.politicalAffiliation = content.politicalAffiliation;
         userTeacherForm.eMail = content.eMail;
         userTeacherForm.userNumber = content.userNumber;
-        userTeacherForm.avatarURL = getBaseURL()+content.avatarURL;
-        userTeacherForm.photoURL = getBaseURL()+content.photoURL;
+        userTeacherForm.avatarURL = getBaseURL() + content.avatarURL;
+        userTeacherForm.photoURL = getBaseURL() + content.photoURL;
+        userIsTeacher.value = true;
+        console.log('查询用户为老师')
+        console.log(userTeacherForm)
       } else {
         characterIsStudent.value = true;
         userStudentForm.id = content.id;
@@ -404,18 +437,22 @@ const checkUser = async (userNumber) => {   //查看个人信息
         userStudentForm.politicalAffiliation = content.politicalAffiliation;
         userStudentForm.eMail = content.eMail;
         userStudentForm.userNumber = content.userNumber;
-        userStudentForm.avatarURL = getBaseURL()+content.avatarURL;
-        userStudentForm.photoURL = getBaseURL()+content.photoURL;
+        userStudentForm.avatarURL = getBaseURL() + content.avatarURL;
+        userStudentForm.photoURL = getBaseURL() + content.photoURL;
         userStudentForm.section = content.section;
+        userIsTeacher.value = false;
+        console.log('查询用户为学生')
+        console.log(userStudentForm)
       }
+      findUser.value = true;
     } else {
       hideLoading()
-      messageWarning(res.data.message)
+      loginFailed();
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
+        loginFailed();
         console.log(error)
       })
 }
@@ -426,13 +463,13 @@ const checkPractice = (row) => {   //查看单个的数据 一条一条赋值，
   practiceForm.id = row.id;
   practiceTypeOperation.value = 'check';
 }
-const loadPracticeTable = async () => {
+const loadPracticeTable = () => {
   showLoading();
-  await service.post('/api/practice/managerFind', {
+  console.log('更新practice')
+  console.log(userStudentForm)
+  service.post('/api/practice/managerFind', {
     token: localStorage.getItem("token"),
-    pageNum: currentPage.value,
-    pageSize: pageSize.value,
-    id: searchOrigin.value
+    id: userStudentForm.id
   }).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
@@ -447,14 +484,14 @@ const loadPracticeTable = async () => {
       practiceData.arr = array
       console.log(practiceData)
     } else {
+      console.log(res)
       hideLoading();
-      messageWarning(res.data.message)
+      loginFailed()
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+        loginFailed()
       })
 }
 const deletePractice = async (row) => {  //删  //异步不确定是否有问题
@@ -471,7 +508,7 @@ const deletePractice = async (row) => {  //删  //异步不确定是否有问题
         showLoading();
         service.post('/api/practice/managerDelete', {
           token: localStorage.getItem("token"),
-          practiceId: row.id
+          id: row.id
         }).then(res => {
           if (res.data.success) {
             hideLoading()
@@ -479,14 +516,14 @@ const deletePractice = async (row) => {  //删  //异步不确定是否有问题
             localStorage.setItem("token", res.data.token)
             loadPracticeTable() //重新加载现在表单中的数据
           } else {
+            console.log(res)
             hideLoading();
-            messageWarning(res.data.message)
+            loginFailed()
           }
         })
             .catch(function (error) {
               hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
+              loginFailed()
             })
       })
 }
@@ -512,7 +549,7 @@ const deleteReward = async (row) => {  //删  //异步不确定是否有问题
         showLoading();
         service.post('/api/reward/managerDelete', {
           token: localStorage.getItem("token"),
-          rewardId: row.id
+          id: row.id
         }).then(res => {
           if (res.data.success) {
             hideLoading()
@@ -520,14 +557,14 @@ const deleteReward = async (row) => {  //删  //异步不确定是否有问题
             localStorage.setItem("token", res.data.token)
             loadRewardTable() //重新加载现在表单中的数据
           } else {
+            console.log(res)
             hideLoading();
-            messageWarning(res.data.message)
+            loginFailed()
           }
         })
             .catch(function (error) {
               hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
+              loginFailed()
             })
       })
 }
@@ -535,9 +572,7 @@ const loadRewardTable = async () => {
   showLoading();
   await service.post('/api/reward/managerFind', {
     token: localStorage.getItem("token"),
-    pageNum: currentPage.value,
-    pageSize: pageSize.value,
-    id: searchOrigin.value
+    id: userStudentForm.id
   }).then(res => {
     console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
@@ -552,26 +587,23 @@ const loadRewardTable = async () => {
       rewardData.arr = array
       console.log(rewardData)
     } else {
+      console.log(res)
       hideLoading();
-      messageWarning(res.data.message)
+      loginFailed()
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+        loginFailed()
       })
 }
 // loadRewardTable() //进入默认执行
-const loadActivityTable = async () => {
+const loadActivityTable = () => {
   showLoading();
-  await service.post('/api/activity/managerFind', {
+  service.post('/api/activity/managerFind', {
     token: localStorage.getItem("token"),
-    pageNum: currentPage.value,
-    pageSize: pageSize.value,
-    id: searchOrigin.value
+    id: userStudentForm.id
   }).then(res => {
-    console.log(currentPage.value, pageSize.value)
     if (res.data.success) {
       hideLoading();
       console.log('初始化返回的res')
@@ -584,14 +616,14 @@ const loadActivityTable = async () => {
       activityData.arr = array
       console.log(activityData)
     } else {
+      console.log(res)
       hideLoading();
-      messageWarning(res.data.message)
+      loginFailed()
     }
   })
       .catch(function (error) {
         hideLoading();
-        messageError("服务器开小差了呢");
-        console.log(error)
+        loginFailed()
       })
 }
 // loadActivityTable() //进入默认执行
@@ -604,8 +636,8 @@ const checkActivity = (row) => {   //查看单个的数据 一条一条赋值，
   activityForm.id = row.id;
   activityTypeOperation.value = 'check';
 }
-const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
-  await ElMessageBox.confirm(
+const deleteActivity = (row) => {  //删  //异步不确定是否有问题
+  ElMessageBox.confirm(
       '确认删除该条社会实践吗?',
       'Warning',
       {
@@ -626,19 +658,38 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
             localStorage.setItem("token", res.data.token)
             loadActivityTable() //重新加载现在表单中的数据
           } else {
+            console.log(res)
             hideLoading();
-            messageWarning(res.data.message)
+            loginFailed()
           }
         })
             .catch(function (error) {
               hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
+              loginFailed()
             })
       })
 }
 </script>
 <style lang="scss" scoped>
+.operationArea{
+  padding-top: 1vh;
+  display: flex;
+  width: 100%;
+}
+.bottomCard{
+  background-color: #FFFFFF;
+  border-radius: 3vh;
+  display: flex;
+  width: 100%;
+}
+.selectCard{
+  border-radius: 2vh;
+  background-color: #FFFFFF;
+}
+.operationCard{
+  background-color: #FFFFFF;
+  border-radius: 2vh;
+}
 .right {
   float: right;
   width: 65vw;
@@ -650,56 +701,63 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
   //border-radius: 1vh;
 }
 
-.content {
-  height: 100vh;
-  width: 90vw;
+.menu{
+  display: flex;
+  width: 100%;
+  padding-top: 2vh;
+}
+.menuButton{
+  width: 100%;
+  font-size: 1vw;
+  font-weight: 550;
+  line-height: 4vh;
+  height: 6vh;
+}
 
+.main {
+  width: 100%;
+  display: flex;
+  background-color: black;
+}
+
+.content {
+  height: 93vh;
+  width: 100%;
   .mainCard {
+    min-height: 25vh;
     display: flex;
     flex-direction: column;
-    background-color: #FFFFFF;
-    margin-top: 4vh;
-    margin-left: 9vw;
-    width: 80vw;
-    height: 95vh;
+    background-color: #FFF;
     border-radius: 1vw;
     box-shadow: 0 0 1.25vh 0 #b9ccee;
-
     .header {
-      height: 35vh;
       width: 100%;
-      background-color: rgb(232, 245, 247);
+      height: 100%;
       display: flex;
-      flex-direction: row;
-
-
       .leftPanel {
-        width: 50vw;
-        height: 30vh;
+        width: 60%;
+        height: 100%;
         display: flex;
         flex-direction: column;
 
         .title {
-          padding-top: 5vh;
-          padding-left: 5vw;
-          font-size: 2.5vw;
+          padding-top: 2vh;
+          padding-left: 3vw;
+          font-size: 4vh;
           color: #1a91f3;
           font-weight: 600;
         }
-
         .searchOrigin {
           display: flex;
-
           .searchSpan {
             display: flex;
             flex-direction: row;
-            width: 45vw;
-            padding-top: 5vh;
-            padding-left: 5vw;
-
+            padding-top: 3vh;
+            padding-left: 4vw;
+            width: 90%;
+            margin: auto;
             .searchTerm {
-
-              width: 40vw;
+              width: 100%;
               border: 0.2vw solid #00B4CC;
               border-right: none;
               height: 6vh;
@@ -735,31 +793,17 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
       }
 
       .rightPanel {
-        width: 30vw;
-        height: 30vh;
-
-        /*         .nameBox {
-            .name {
-                font-size: 1.6vw;
-            }
-        } */
-        .imgBoxLeft {
-          padding-left: 3vh;
-          padding-top: 3vh;
-          width: 12vw;
-          height: 25vh;
-          float: left;
-          .img {
-            height: 100%;
-            width: 100%;
-          }
-        }
-        .imgBoxRight {
-          padding-right: 5vh;
-          padding-top: 3vh;
-          width: 12vw;
-          height: 25vh;
-          float: right;
+        width: 40%;
+        height: 100%;
+        display: flex;
+        flex-direction: row;
+        padding-top: 2vh;
+        padding-bottom: 2vh;
+        .imgBox {
+          width: 35%;
+          height: 70%;
+          margin: auto;
+          box-shadow: 0 0 1.25vh 0 #b9ccee;
           .img {
             height: 100%;
             width: 100%;
@@ -769,31 +813,7 @@ const deleteActivity = async (row) => {  //删  //异步不确定是否有问题
       }
     }
 
-    .main {
-      height: 65vh;
-      width: 80vw;
-      background-color: bisque;
-      display: flex;
 
-      .menu {
-        width: 15vw;
-        height: 65vh;
-        background-color: rgb(255, 255, 255);
-        float: left;
-
-        .menuButtonSpan {
-          width: 15vw;
-        }
-
-        .menuButton {
-          width: 15vw;
-          height: 6vh;
-          font-size: 1vw;
-          font-weight: 550;
-          line-height: 4vh;
-        }
-      }
-    }
 
 
     /*Resize the wrap to see the searchOrigin bar change!*/

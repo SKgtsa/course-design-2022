@@ -4,6 +4,7 @@ import com.clankalliance.backbeta.entity.*;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
+import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -38,10 +39,11 @@ public class Student extends User {
                 collection = new ArrayList<>();
                 achievementSet = new HashSet<>();
                 section = null;
+                evaluateNum = 0;
         }
 
         public Student(long id,long userNumber,String name,String password,long phone,String gradeClass,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL,String section){
-                super(id,userNumber,nickName,name,password,phone,gradeClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
+                super(id,userNumber,nickName,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
                 courseSet = new HashSet<>();
                 scoreSet = new HashSet<>();
                 activity = new ArrayList<>();
@@ -50,6 +52,21 @@ public class Student extends User {
                 collection = new ArrayList<>();
                 achievementSet = new HashSet<>();
                 this.section = section;
+                this.studentClass = gradeClass;
+        }
+
+        public void UpdateInfo(UserRequestTarget target){
+                super.setEthnic(target.getEthnic());
+                super.setName(target.getName());
+                super.setNickName(target.getNickName());
+                super.setEMail(target.getEMail());
+                super.setGender(target.getGender());
+                super.setUserNumber(target.getUserNumber());
+                super.setPhone(target.getPhone());
+                super.setPoliticalAffiliation(target.getPoliticalAffiliation());
+                super.setIdCardNumber(target.getIdCardNumber());
+                studentClass = target.getStudentClass();
+                section = target.getSection();
         }
 
         public String getSection() {
@@ -140,6 +157,24 @@ public class Student extends User {
                 this.achievementSet = achievementSet;
         }
 
+        public String getStudentClass() {
+                return studentClass;
+        }
+
+        public void setStudentClass(String studentClass) {
+                this.studentClass = studentClass;
+        }
+
+        public Integer getEvaluateNum() {
+                return evaluateNum;
+        }
+
+        public void setEvaluateNum(Integer evaluateNum) {
+                this.evaluateNum = evaluateNum;
+        }
+
+        private String studentClass;
+
         //学生届次
         private String section;
 
@@ -183,5 +218,7 @@ public class Student extends User {
         @JsonIgnore
         @OneToMany
         private Set<Achievement> achievementSet;
+
+        private Integer evaluateNum;
 
 }

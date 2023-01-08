@@ -1,11 +1,11 @@
 <template>
   <div class="content" :style="{
-  'padding-top': `${mobile ? '5vh' : '1vh'}`,
-  'height': `${mobile ? '90vh' : '100vh'}`
-}">
+    'padding-top': `${mobile ? '5vh' : '1vh'}`,
+    'height': `${mobile ? '90vh' : '100vh'}`
+  }">
     <div class="pageContent" :style="{
-  'width': `${mobile ? '100%' : '80vw'}`
-}">
+      'width': `${mobile ? '100%' : '80vw'}`
+    }">
       <!-- :row-key="record=>record.id" -->
       <div class="titleBox">
         <a style="font-size: 6vh;
@@ -33,15 +33,17 @@
         </el-button>
       </div>
       <div class="checkBox" v-if="mobile">
-        <span style="display: flex;flex-direction: row;"><a class="selectLabel" style="font-size:3.1vw;line-height: 4vh;">学年:</a>
-        <el-select style="width:30vw;height:auto" v-model="yearsValue" placeholder="学年">
-          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-        <a class=" selectLabel" style="padding-left:8vw;font-size: 3.1vw;line-height: 4vh;">学期:</a>
-        <el-select style="width:30vw" v-model="semesterValue" placeholder="学期：">
-          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
-            :value="item.value"></el-option>
-        </el-select>
+        <span style="display: flex;flex-direction: row;"><a class="selectLabel"
+            style="font-size:3.1vw;line-height: 4vh;">学年:</a>
+          <el-select style="width:30vw;height:auto" v-model="yearsValue" placeholder="学年">
+            <el-option v-for="item in yearOptions" :key="item.value" :label="item.label"
+              :value="item.value"></el-option>
+          </el-select>
+          <a class=" selectLabel" style="padding-left:8vw;font-size: 3.1vw;line-height: 4vh;">学期:</a>
+          <el-select style="width:30vw" v-model="semesterValue" placeholder="学期：">
+            <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
+              :value="item.value"></el-option>
+          </el-select>
         </span>
         <el-button
           style="margin-left: 30vw;margin-top: 3vh;width: 20vh;height:6vh;background-color: rgba(211,227,253,0.9);color: rgba(4,30,73);border-radius: 1vw;"
@@ -61,8 +63,8 @@
           <template #default="time">
             <p v-for="(item, index) in time.row.time">
               星期{{ time.row.time[index].weekDay }}的第{{
-    time.row.time[index].section
-}}大节
+                time.row.time[index].section
+              }}大节
             </p>
           </template>
         </el-table-column>
@@ -88,8 +90,8 @@
       label-position="right">
       <el-form-item label="课程名:" prop="name">
         <el-input v-if="typeOperation === 'edit'" style="width:20vw" v-model="editForm.name" maxlength="15">{{
-    editForm.name
-}}</el-input>
+          editForm.name
+        }}</el-input>
         <el-input v-if="typeOperation === 'add'" style="width:20vw" v-model="editForm.name" maxlength="15"></el-input>
       </el-form-item>
 
@@ -139,50 +141,54 @@
         </el-form-item>
       </span>
       <el-form-item label="学年:" prop="year" v-if="mobile">
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="2020">
-            <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.year" placeholder="2020">
-            <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="学期:" prop="semester">
-          <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
-            <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-          <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="春季学期">
-            <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
+        <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="2020">
+          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-if="typeOperation === 'edit'" v-model="editForm.year" placeholder="2020">
+          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="学期:" prop="semester">
+        <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
+          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="春季学期">
+          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+      </el-form-item>
 
 
       <el-form-item label="授课地点:" prop="location">
         <el-input v-if="typeOperation === 'edit'" style="width:15vw" v-model="editForm.location" maxlength="30">{{
-    editForm.location
-}}</el-input>
+          editForm.location
+        }}</el-input>
         <el-input v-if="typeOperation === 'add'" style="width:15vw" v-model="editForm.location"
           maxlength="30"></el-input>
       </el-form-item>
       <el-form-item label="平时分权重:" prop="weight">
         <el-input v-if="typeOperation === 'edit'" type="number" maxlength="4" style="width:15vw" placeholder="0.3"
           v-model="editForm.weight">{{ editForm.weight }}</el-input>
-        <el-input v-if="typeOperation === 'add'" type="number"  maxlength="4" style="width:15vw" placeholder="0.3"
+        <el-input v-if="typeOperation === 'add'" type="number" maxlength="4" style="width:15vw" placeholder="0.3"
           v-model="editForm.weight"></el-input>
       </el-form-item>
       <span style="display:flex;flex-direction:row">
         <el-form-item label="课容量:" prop="capacity">
-          <el-input v-if="typeOperation === 'edit'" style="width:19vw" v-model="editForm.capacity" maxlength="5" type="number">{{
-    editForm.capacity
-}}</el-input>
-          <el-input v-if="typeOperation === 'add'" style="width:19vw" v-model="editForm.capacity" maxlength="5" type="number"> </el-input>
+          <el-input v-if="typeOperation === 'edit'" style="width:19vw" v-model="editForm.capacity" maxlength="5"
+            type="number">{{
+              editForm.capacity
+            }}</el-input>
+          <el-input v-if="typeOperation === 'add'" style="width:19vw" v-model="editForm.capacity" maxlength="5"
+            type="number"> </el-input>
         </el-form-item>
       </span>
       <el-form-item label="学分:" prop="credit">
-          <el-input v-if="typeOperation === 'edit'" style="width:17vw" v-model="editForm.credit" maxlength="2" type="number">{{
-    editForm.credit
-}}</el-input>
-          <el-input v-if="typeOperation === 'add'" style="width:17vw" v-model="editForm.credit" maxlength="2" type="number"></el-input>
-        </el-form-item>
+        <el-input v-if="typeOperation === 'edit'" style="width:17vw" v-model="editForm.credit" maxlength="2"
+          type="number">{{
+            editForm.credit
+          }}</el-input>
+        <el-input v-if="typeOperation === 'add'" style="width:17vw" v-model="editForm.credit" maxlength="2"
+          type="number"></el-input>
+      </el-form-item>
       <el-form-item label="授课班级:" prop="studentClass">
         <el-select v-if="typeOperation === 'edit'" v-model="editForm.studentClass" placeholder="1班" multiple="true">
           <el-option v-for="item in classOptions" :key="item.value" :label="item.label" :value="item.value" />
@@ -219,7 +225,7 @@
       <el-table-column label="学号" prop="userNumber" width="250" show-overflow-tooltip />
       <el-table-column label="年级" prop="section" width="150" show-overflow-tooltip />
       <el-table-column label="班级" prop="studentClass" show-overflow-tooltip />
-      <el-table-column  fixed="right" width="120">
+      <el-table-column fixed="right" width="120">
         <template #header>
           操作
         </template>
@@ -247,7 +253,7 @@
       <el-table-column label="学号" prop="userNumber" width="200" show-overflow-tooltip />
       <el-table-column label="年级" prop="section" width="150" show-overflow-tooltip />
       <el-table-column label="班级" prop="studentClass" width="120" show-overflow-tooltip />
-      <el-table-column  fixed="right" width="120">
+      <el-table-column fixed="right" width="120">
         <template #header>
           操作
         </template>
@@ -676,24 +682,6 @@ let tableData = reactive(
     arr: []
   }
 )
-/* let studentData = reactive([
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-  {
-    name: 'xiaoming',
-    studentNumber: '123456',
-  },
-]) */
 const handleChange = (value) => {
   console.log(value)
 }
@@ -737,16 +725,8 @@ let editForm = reactive({
   semester: '',
   credit: '',
   courseId: '',
-  weight:'',
+  weight: '',
 });
-/* let studentForm = reactive({
-  token: '',
-  studentNumber: '',
-  courseId: '',
-  name: '',
-  id: '',
-});
- */
 const loadCourseTable = async () => {
   showLoading();
   await service.post('/api/course/teacherFind', { token: localStorage.getItem("token"), semester: semesterValue.value, year: yearsValue.value }).then(res => {
@@ -901,6 +881,7 @@ const handleDelete = async (row) => {
     }
   )
     .then(() => {
+      showLoading();
       service.post('/api/course/delete', { token: localStorage.getItem("token"), courseId: row.id }).then(res => {
         if (res.data.success) {
           hideLoading()
@@ -913,12 +894,13 @@ const handleDelete = async (row) => {
           messageWarning(res.data.message)
         }
       })
+        .catch(function (error) {
+          hideLoading();
+          messageError("服务器开小差了呢");
+          console.log(error)
+        })
     })
-    .catch(function (error) {
-      hideLoading();
-      messageError("服务器开小差了呢");
-      console.log(error)
-    })
+
 }
 
 //删除课程学生
@@ -1014,7 +996,7 @@ const sumbitEditRow = async () => {
             semester: editForm.semester,
             credit: editForm.credit,
             courseId: editForm.courseId,
-            weight:editForm.weight,
+            weight: editForm.weight,
           })
           .then(res => {  //直接把这一行的数据给出去可以吗
             if (res.data.success) {
@@ -1050,7 +1032,7 @@ const sumbitEditRow = async () => {
             description: editForm.description,
             semester: editForm.semester,
             credit: editForm.credit,
-            weight:editForm.weight,
+            weight: editForm.weight,
           })
           .then(res => {
             if (res.data.success) {

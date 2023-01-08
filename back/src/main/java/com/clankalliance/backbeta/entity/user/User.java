@@ -49,8 +49,6 @@ public abstract class User {
     @JsonSerialize(using= ToStringSerializer.class)
     private long phone;
 
-    private String studentClass;
-
     private String idCardNumber;
 
 

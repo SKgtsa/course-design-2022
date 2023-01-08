@@ -28,8 +28,6 @@ public interface CourseService {
 
     CommonResponse handleTeacherFindCourse(String token, Integer year, String semester);
 
-
-
     CommonResponse handleManagerFind(String token, long id);
 
     CommonResponse handleManagerSave(String token, CourseRequestData course);
@@ -41,4 +39,6 @@ public interface CourseService {
     CommonResponse handleManagerRemoveStudent(String token, long courseId, long studentId);
 
     CommonResponse handleManagerAddStudent(String token, long courseId, long studentNumber);
+
+    CommonResponse handlePersonalFind(long userId);
 }

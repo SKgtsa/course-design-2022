@@ -2,7 +2,7 @@ package com.clankalliance.backbeta.service;
 
 import com.clankalliance.backbeta.response.CommonResponse;
 
-public interface TencentSmsService {
+public interface TencentService {
     /**
      * 发送短信
      * @param phone 电话号码
@@ -10,4 +10,6 @@ public interface TencentSmsService {
      * @return
      */
     CommonResponse sendSms(String phone, String code);
+
+    boolean getTencentCaptchaResult(String ticket, String randstr);
 }

@@ -18,11 +18,14 @@ import com.clankalliance.backbeta.response.dataBody.PostResponseTarget;
 import com.clankalliance.backbeta.service.BlogService;
 import com.clankalliance.backbeta.service.GeneralUploadService;
 import com.clankalliance.backbeta.service.UserService;
+import com.clankalliance.backbeta.utils.AntiInjection;
 import com.clankalliance.backbeta.utils.TokenUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.File;
+import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +70,11 @@ public class BlogServiceImpl implements BlogService {
     private Achievement LIKE = new Achievement(Long.parseLong("20"),"单篇博客收获点赞10个以上","高质量人类作家");
 
 
+    /**
+     * 更新用户成就 返回成就列表
+     * @param user
+     * @return
+     */
     private Set<Achievement> updateAchievementListCollect(User user){
         int collectNum;
         Set<Achievement> achievementSet;
@@ -147,6 +155,7 @@ public class BlogServiceImpl implements BlogService {
         User user = userService.findById(Long.parseLong(response.getMessage()));
         Date date = new Date();
         SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy年MM月dd日 hh时mm分");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));;
         Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), dateFormat.format(date), generalUploadService.upload(topImage), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
 
         if(! (user instanceof Manager)){
@@ -572,6 +581,12 @@ public class BlogServiceImpl implements BlogService {
                 teacherRepository.save(teacher);
             }
             //有权限 进行删除
+            File topImage = new File(System.getProperty("user.dir") + post.getTopImageURL());
+            try{
+                topImage.delete();
+            }catch (Exception e){
+                System.out.println("删除错误");
+            }
             postRepository.delete(post);
             response.setMessage("操作成功");
             return response;

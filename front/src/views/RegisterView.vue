@@ -6,13 +6,13 @@
         <el-form ref="registerForm" :model="formData" :rules="rules" label-width="auto" label-position="right"
           status-icon>
           <el-form-item label="学工号:" prop="userNumber">
-            <el-input v-model="formData.userNumber" maxlength="15" />
+            <el-input v-model="formData.userNumber" maxlength="16" />
           </el-form-item>
           <el-form-item label="姓名:" prop="name">
-            <el-input v-model="formData.name" style="width:10vw" maxlength="10"/>
+            <el-input v-model="formData.name"  maxlength="10"/>
           </el-form-item>
           <el-form-item label="用户名:" prop="nickName">
-            <el-input v-model="formData.nickName"  style="width:10vw" maxlength="8"/>
+            <el-input v-model="formData.nickName" maxlength="8"/>
           </el-form-item>
           <el-form-item label="身份:" prop="identity">
             <el-select v-model="formData.identity" placeholder="选择身份">
@@ -37,7 +37,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="民族:" prop="ethnic"  >
-            <el-input v-model="formData.ethnic" style="width:10vw" maxlength="8"/>
+            <el-input v-model="formData.ethnic"  maxlength="8"/>
           </el-form-item>
           <el-form-item label="邮箱:" prop="eMail">
             <el-input v-model="formData.eMail"  maxlength="20"/>
@@ -195,7 +195,7 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
     }
   }
 }
-/* validator: validatepassword, 
+/* validator: validatepassword,
 validator: validateName
 validator: validateEMail
 validator: validatePhone
@@ -232,7 +232,7 @@ const register = async () => {
         phone: formData.phone, userNumber: formData.userNumber,
         password: formData.password, name: formData.name, idCardNumber: formData.idCardNumber,
         gender: formData.gender, ethnic: formData.ethnic, politicalAffiliation: formData.politicalAffiliation,
-        eMail: formData.eMail, nickName: formData.nickName, identity: formData.identity, code: formData.code
+        email: formData.eMail, nickName: formData.nickName, identity: formData.identity, code: formData.code
       }).then(res => {
         const data = res.data;
         console.log(data);
@@ -240,7 +240,11 @@ const register = async () => {
           hideLoading();
           messageSuccess('注册成功！')
           localStorage.setItem('token', data.token);
-          router.push('/Login')
+          if(data.needSupplement){
+            router.push('/InfoFillIn')
+          }else{
+            router.push('/Login')
+          }
         } else {
           hideLoading();
           messageError(data.message)
@@ -279,7 +283,6 @@ const register = async () => {
 }
 
 .registerForm {
-  width: 30%;
   height: 95%;
   align-items: center;
   position: absolute;

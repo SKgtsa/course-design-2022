@@ -257,27 +257,20 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public CommonResponse handleManagerFind(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("259887250475716608");//Manager
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
-                Optional<Activity> activityOp=activityRepository.findById(id);
-                if(activityOp.isEmpty()){
-                    response.setMessage("对象不存在");
+                User target = userService.findById(id);
+                List<Activity> activityList;
+                if(target instanceof Teacher || target instanceof Manager){
                     response.setSuccess(false);
-                }else{
-                    Activity activity=activityOp.get();
-                    response.setMessage("查找成功");
-                    response.setSuccess(true);
-                    response.setContent(activity);
+                    response.setMessage("老师不具有成果奖励");
                 }
+                activityList = ((Student) target).getActivity();
+                response.setMessage("查找成功");
+                response.setSuccess(true);
+                response.setContent(activityList);
             }else{
                 response.setSuccess(false);
                 response.setMessage("用户权限不足");
@@ -288,14 +281,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public CommonResponse handleManagerDelete(String token,long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//Manager身份
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user= userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){

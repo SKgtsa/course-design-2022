@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserManagerSaveRequest {
     private String token;
-    private User user;
+    private UserRequestTarget user;
 }

@@ -1,15 +1,19 @@
 package com.clankalliance.backbeta.service.impl;
 
+import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.user.User;
 import com.clankalliance.backbeta.entity.user.sub.Manager;
 import com.clankalliance.backbeta.entity.user.sub.Student;
 import com.clankalliance.backbeta.entity.user.sub.Teacher;
+import com.clankalliance.backbeta.repository.blogRepository.PostRepository;
 import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
+import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.clankalliance.backbeta.response.CommonResponse;
-import com.clankalliance.backbeta.service.TencentSmsService;
+import com.clankalliance.backbeta.response.dataBody.UserBriefData;
+import com.clankalliance.backbeta.service.TencentService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.StatusManipulateUtils.ManipulateUtil;
@@ -19,8 +23,9 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.RecursiveTask;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -49,11 +54,13 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
     @Resource
-    private TencentSmsService tencentSmsService;
+    private TencentService tencentService;
+
+    @Resource
+    private PostRepository postRepository;
 
     @Resource
     private SnowFlake snowFlake;
-
 
     public String getDEFAULT_AVATAR_URL() {
         return DEFAULT_AVATAR_URL;
@@ -112,11 +119,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public CommonResponse handleLogin(long userNumber,String password) {
+    public CommonResponse handleLogin(long userNumber,String password,String ticket,String randstr) {
         /*
         增加nickName,avatarURL,character 0Teacher 1Student 2Manager
          */
         CommonResponse  response = new CommonResponse<>();
+        if(!tencentService.getTencentCaptchaResult(ticket, randstr)){
+            response.setSuccess(false);
+            response.setMessage("人机验证不通过");
+            return response;
+        }
         response.setSuccess(false);
         password = DigestUtils.sha1Hex(password);
         User user = findByUserNumber(userNumber);
@@ -136,18 +148,45 @@ public class UserServiceImpl implements UserService {
         response.setUser(user);
         if(user instanceof Student){
             response.setCharacter(0);
+            if(user.getNickName() == "默认昵称"){
+                response.setNeedSupplement(true);
+            }else{
+                response.setNeedSupplement(false);
+            }
+            response.setNeedSupplement(false);
         }else if(user instanceof Teacher){
             response.setCharacter(1);
+            if(((Teacher) user).getResearchDirection() == null){
+                response.setNeedSupplement(true);
+            }else{
+                response.setNeedSupplement(false);
+            }
         }else{
             response.setCharacter(2);
+            response.setNeedSupplement(false);
         }
+
         return response;
     }
 
-    //存在bug: 保存时数据库条目不全 email接收有问题
-
+    /**
+     * 注册方法
+     * @param identity 身份 1:老师 2:管理员
+     * @param code 手机验证码
+     * @param phone 手机
+     * @param userNumber 学工号
+     * @param password 密码
+     * @param name 姓名
+     * @param idCardNumber 身份证号
+     * @param gender 性别
+     * @param ethnic 民族
+     * @param politicalAffiliation 政治面貌
+     * @param eMail 电子邮箱
+     * @param nickName 昵称
+     * @return
+     */
     @Override
-    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String studentClass,String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName) {
+    public CommonResponse handleRegister(Integer identity, String code, long phone, long userNumber, String password, String name, String idCardNumber, Boolean gender, String ethnic, String politicalAffiliation, String eMail,String nickName) {
         password = DigestUtils.sha1Hex(password.getBytes());
         CommonResponse  response = new CommonResponse();
         User user = findByUserNumber(userNumber);
@@ -173,15 +212,11 @@ public class UserServiceImpl implements UserService {
         }
         long id = snowFlake.nextId();
         switch (identity){
-            //取消了学生注册的功能
-//            case 0:
-//                user = new Student(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
-//                break;
             case 1:
-                user = new Teacher(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
+                user = new Teacher(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
             case 2:
-                user = new Manager(id,userNumber,name,password,phone,studentClass,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
+                user = new Manager(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
                 break;
         }
         try{
@@ -197,16 +232,24 @@ public class UserServiceImpl implements UserService {
         response.setUser(user);
         if(user instanceof Student){
             response.setCharacter(0);
+            response.setNeedSupplement(false);
         }else if(user instanceof Teacher){
             response.setCharacter(1);
+            response.setNeedSupplement(true);
         }else{
             response.setCharacter(2);
+            response.setNeedSupplement(false);
         }
         response.setToken(ManipulateUtil.endNode.getToken());
         System.out.println(response);
         return response;
     }
 
+    /**
+     * 手机登录 发送验证码方法
+     * @param phone 手机号
+     * @return
+     */
     @Override
     public CommonResponse handlePhoneLogin(long phone){
         CommonResponse response = new CommonResponse();
@@ -214,7 +257,7 @@ public class UserServiceImpl implements UserService {
         if(user != null){
             ManipulateUtil.updateStatus(user.getId());
             String code = ManipulateUtil.endNode.getVerifyCode();
-            tencentSmsService.sendSms("" + phone,code);
+            tencentService.sendSms("" + phone,code);
             response.setSuccess(true);
             response.setMessage("已发送验证码");
         }else{
@@ -224,11 +267,22 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 手机登录 验证验证码 生成token
+     * @param phone 手机号
+     * @param code 验证码
+     * @return
+     */
     @Override
     public CommonResponse handleCodeLogin(long phone, String code){
         return tokenUtil.phoneCodeCheck(phone,code);
     }
 
+    /**
+     * 注册时发送验证码
+     * @param phone 手机号
+     * @return
+     */
     @Override
     public CommonResponse handlePhoneRegister(long phone){
         CommonResponse response = new CommonResponse();
@@ -242,13 +296,18 @@ public class UserServiceImpl implements UserService {
             long tempId = phone;
             ManipulateUtil.updateStatus(tempId);
             String code = ManipulateUtil.endNode.getVerifyCode();
-            tencentSmsService.sendSms("" + phone,code);
+            tencentService.sendSms("" + phone,code);
             response.setSuccess(true);
             response.setMessage("已发送验证码");
         }
         return response;
     }
 
+    /**
+     * 获取用户信息
+     * @param token
+     * @return
+     */
     @Override
     public CommonResponse handleGetInfo(String token){
         CommonResponse response = tokenUtil.tokenCheck(token);
@@ -266,9 +325,24 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 编辑用户信息
+     * @param token 用戶令牌
+     * @param name 用戶姓名
+     * @param id 用戶id
+     * @param userNumber 学工号
+     * @param ethnic 民族
+     * @param eMail 电子邮箱
+     * @param politicalAffiliation 政治面貌
+     * @param researchDirection 科研方向
+     * @param section 学生届次
+     * @return
+     */
     @Override
-    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation){
+    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
         User user = findById(Long.parseLong(response.getMessage()));
         if(user instanceof Manager){
             user = findById(id);
@@ -293,9 +367,17 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 修改昵称
+     * @param token 用户令牌
+     * @param nickName 新昵称
+     * @return
+     */
     @Override
-    public CommonResponse handleSaveBlogInfo(String token,String nickName){
+    public CommonResponse handleSaveNickName(String token,String nickName){
         CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
         User user = findById(Long.parseLong(response.getMessage()));
         user.setNickName(nickName);
         try{
@@ -305,11 +387,38 @@ public class UserServiceImpl implements UserService {
             response.setMessage("保存失败");
             return response;
         }
+        if(!(user instanceof Manager)){
+            List<Post> postList = new ArrayList<>();
+            if(user instanceof Teacher)
+                postList = ((Teacher) user).getPostList();
+            if(user instanceof Student)
+                postList = ((Student) user).getPostList();
+            for(Post p : postList){
+                p.setNickName(nickName);
+                postRepository.save(p);
+            }
+        }
         response.setMessage("保存成功");
         return response;
     }
 
 
+    /**
+     * 批量注册时保存每个用户的方法
+     * @param userNumber 学工号
+     * @param name 姓名
+     * @param password 密码
+     * @param phone 手机号码
+     * @param studentClass 学生班级
+     * @param idCardNumber 身份证号
+     * @param gender 性别 男:false 女:true
+     * @param ethnic 民族
+     * @param politicalAffiliation 政治面貌
+     * @param eMail 电子邮箱
+     * @param nickName 昵称
+     * @param section 届次
+     * @return
+     */
     @Override
     public boolean handleBatchRegisterStudent(Long userNumber, String name, String password, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail,  String nickName, String section){
         password = DigestUtils.sha1Hex(password.getBytes());
@@ -322,16 +431,15 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * 修改密码
+     * @param token 用户令牌
+     * @param passWord 新密码
+     * @return
+     */
     @Override
     public CommonResponse handleChangePassword(String token, String passWord){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");//xzy
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = findById(Long.parseLong(response.getMessage()));
             String oldPassword=user.getPassword();
@@ -348,16 +456,15 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 管理员查找用户
+     * @param token 用户令牌
+     * @param userNumber 目标用户的学工号
+     * @return
+     */
     @Override
     public CommonResponse handleManagerFind(String token, long userNumber){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");//xzy
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -382,23 +489,33 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 管理员保存用户信息
+     * @param token 用户令牌
+     * @param user 用户信息
+     * @return
+     */
     @Override
-    public CommonResponse handleManagerSave(String token,User user){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+    public CommonResponse handleManagerSave(String token, UserRequestTarget user){
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User currentUser = userService.findById(Long.parseLong(response.getMessage()));
+            User targetUser = userService.findById(user.getId());
             if(currentUser instanceof Manager){
-                if(user instanceof Student){
-                    studentRepository.save((Student) user);
-                }else if(user instanceof Teacher){
-                    teacherRepository.save((Teacher) user);
+                List<Post> postList = new ArrayList<>();
+                if(targetUser instanceof Student){
+                    Student student = (Student)targetUser;
+                    postList = student.getPostList();
+                    studentRepository.save(student);
+                }else if(targetUser instanceof Teacher){
+                    Teacher teacher = (Teacher)targetUser;
+                    postList = teacher.getPostList();
+                    teacherRepository.save(teacher);
+                }
+                for(Post p : postList){
+                    p.setNickName(targetUser.getNickName());
+                    p.setNickName(targetUser.getNickName());
+                    postRepository.save(p);
                 }
                 response.setSuccess(true);
                 response.setMessage("用户保存成功");
@@ -410,16 +527,15 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 管理员删除用户
+     * @param token 用户令牌
+     * @param id 目标用户id
+     * @return
+     */
     @Override
     public CommonResponse handleManagerDelete(String token, long id){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262923114181169152");
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Manager){
@@ -442,5 +558,99 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
+    /**
+     * 修改科研方向
+     * @param token 用户令牌
+     * @param researchDirection 科研方向
+     * @return
+     */
+    @Override
+    public CommonResponse handleSaveResearchDirection(String token,String researchDirection){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = findById(Long.parseLong(response.getMessage()));
+        if(user instanceof Teacher){
+            Teacher teacher = (Teacher) user;
+            teacher.setResearchDirection(researchDirection);
+            teacherRepository.save(teacher);
+            response.setMessage("保存成功");
+        }else{
+            response.setSuccess(false);
+            response.setMessage("出现错误");
+        }
+        return response;
+    }
+
+    /**
+     * 通过手机找回密码 发送验证码
+     * @param userNumber 学工号
+     * @param phone 电话号码
+     * @return
+     */
+    @Override
+    public CommonResponse findPasswordPhone(Long userNumber, Long phone){
+        CommonResponse response = new CommonResponse<>();
+        User user = findByUserNumber(userNumber);
+        if(user == null || user.getPhone() != phone){
+            response.setSuccess(false);
+            response.setMessage("用户不存在或用户与手机不符");
+        }else{
+            ManipulateUtil.updateStatus(user.getId());
+            String code = ManipulateUtil.endNode.getVerifyCode();
+            tencentService.sendSms("" + phone,code);
+            response.setMessage("发送成功");
+            response.setSuccess(true);
+
+        }
+        return response;
+    }
+
+    /**
+     * 验证手机验证码并修改密码
+     * @param phone 电话号码
+     * @param code 验证码
+     * @param password 新密码
+     * @return
+     */
+    @Override
+    public CommonResponse findPasswordCode(Long phone ,String code, String password){
+        CommonResponse<Object,User> response = tokenUtil.phoneCodeCheck(phone,code);
+        if(!response.getSuccess())
+            return response;
+        User user = response.getUser();
+        password = DigestUtils.sha1Hex(password.getBytes());
+        user.setPassword(password);
+        userRepository.save(user);
+        response.setMessage("修改成功");
+        return response;
+    }
+
+    /**
+     * 查找同班同学
+     * @param token 用户令牌
+     * @return
+     */
+    @Override
+    public CommonResponse findClassmate(String token){
+        CommonResponse response = tokenUtil.tokenCheck(token);
+        if(!response.getSuccess())
+            return response;
+        User user = userService.findById(Long.parseLong(response.getMessage()));
+        if(user == null || !(user instanceof Student)){
+            response.setMessage("用户不存在或用户不是学生");
+            response.setSuccess(false);
+        }else {
+            Student student = (Student)user;
+            List<Student> studentList = studentRepository.findUserByStudentClass(student.getStudentClass());
+            List<UserBriefData> dataList = new ArrayList<>();
+            for(Student s: studentList)
+                dataList.add(new UserBriefData(s));
+            response.setContent(dataList);
+            response.setSuccess(true);
+            response.setMessage("查找成功");
+        }
+        return response;
+    }
 
 }

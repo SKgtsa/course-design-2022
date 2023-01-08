@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.clankalliance</groupId>
 	<artifactId>backbeta</artifactId>
-	<version>0.3.8</version>
+	<version>0.5.3</version>
 	<name>backbeta</name>
 	<description>backbeta</description>
 	<properties>
@@ -36,6 +36,24 @@
 			<groupId>commons-codec</groupId>
 			<artifactId>commons-codec</artifactId>
 			<version>1.15</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.openhtmltopdf/openhtmltopdf-core -->
+		<dependency>
+			<groupId>com.openhtmltopdf</groupId>
+			<artifactId>openhtmltopdf-core</artifactId>
+			<version>1.0.9</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.openhtmltopdf/openhtmltopdf-pdfbox -->
+		<dependency>
+			<groupId>com.openhtmltopdf</groupId>
+			<artifactId>openhtmltopdf-pdfbox</artifactId>
+			<version>1.0.9</version>
 		</dependency>
 
 		<!--  Web  -->

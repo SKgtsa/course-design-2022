@@ -6,11 +6,15 @@ import com.clankalliance.backbeta.service.AvatarService;
 import com.clankalliance.backbeta.service.ExcelService;
 import com.clankalliance.backbeta.service.UserService;
 import com.clankalliance.backbeta.utils.TokenUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
+import java.util.Map;
 
 
 @CrossOrigin
@@ -38,12 +42,12 @@ public class UserController {
 
     @PostMapping("/login")
     public CommonResponse login(@RequestBody UserLoginRequest request){
-        return userService.handleLogin(request.getUserNumber(), request.getPassword());
+        return userService.handleLogin(request.getUserNumber(), request.getPassword(),request.getTicket(),request.getRandstr());
     }
 
     @PostMapping("/register")
     public CommonResponse register(@RequestBody UserSaveRequest request){
-        return userService.handleRegister(request.getIdentity(), request.getCode(), request.getPhone(), request.getUserNumber(), request.getPassword(),request.getName(),request.getStudentClass(),request.getIdCardNumber(),request.getGender(),request.getEthnic(),request.getPoliticalAffiliation(), request.getEmail(),request.getNickName());
+        return userService.handleRegister(request.getIdentity(), request.getCode(), request.getPhone(), request.getUserNumber(), request.getPassword(),request.getName(),request.getIdCardNumber(),request.getGender(),request.getEthnic(),request.getPoliticalAffiliation(), request.getEmail(),request.getNickName());
     }
 
     @PostMapping("/tokenCheck")
@@ -71,14 +75,15 @@ public class UserController {
         return userService.handleGetInfo(request.getToken());
     }
 
+    //aaa
     @PostMapping("/editInfo")
     public CommonResponse handleEditInfo(@RequestBody UserSaveRequest request){
-        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation());
+        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation(), request.getResearchDirection(), request.getSection());
     }
 
-    @PostMapping("/editBlogInfo")
-    public CommonResponse handleEditBlogInfo(@RequestBody BlogInfoSaveRequest request){
-        return userService.handleSaveBlogInfo(request.getToken(),request.getNickName());
+    @PostMapping("/editNickName")
+    public CommonResponse handleEditNickName(@RequestBody BlogInfoSaveRequest request){
+        return userService.handleSaveNickName(request.getToken(),request.getNickName());
     }
 
     @PostMapping("/changeAvatar")
@@ -93,6 +98,11 @@ public class UserController {
                                              // 路径变量 解决前后端不一致
                                              @RequestParam("photo") MultipartFile photo, @RequestParam("token") String token){
         return avatarService.handleSavePhoto(photo,token);
+    }
+
+    @PostMapping("/changeResearchDirection")
+    public CommonResponse handleChangeResearchDirection(@RequestBody ChangeResearchDirectionRequest request){
+        return userService.handleSaveResearchDirection(request.getToken(),request.getResearchDirection());
     }
 
     //批量注册
@@ -112,7 +122,7 @@ public class UserController {
     public CommonResponse handleManagerFind(@RequestBody UserManagerFindRequest request){
         return userService.handleManagerFind(request.getToken(),request.getUserNumber());
     }
-
+    //
     @PostMapping("/managerSave")
     public CommonResponse handleManagerSave(@RequestBody UserManagerSaveRequest request){
         return userService.handleManagerSave(request.getToken(), request.getUser());
@@ -121,6 +131,21 @@ public class UserController {
     @PostMapping("/managerDelete")
     public CommonResponse handleManagerDelete(@RequestBody UserManagerDeleteRequest request){
         return userService.handleManagerDelete(request.getToken(), request.getId());
+    }
+
+    @PostMapping("/findPasswordPhone")
+    public CommonResponse findPasswordPhone(@RequestBody FindPasswordRequest request){
+        return userService.findPasswordPhone(request.getUserNumber(),request.getPhone());
+    }
+
+    @PostMapping("/findPasswordCode")
+    public CommonResponse findPasswordCode(@RequestBody FindPasswordRequest request){
+        return userService.findPasswordCode(request.getPhone(), request.getCode(), request.getPassword());
+    }
+
+    @PostMapping("/findClassmate")
+    public CommonResponse findClassmate(@RequestBody TokenCheckRequest request){
+        return userService.findClassmate(request.getToken());
     }
 
 }

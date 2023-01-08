@@ -60,7 +60,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
             response.setSuccess(false);
         }
         return response;
-
     }
     //新建公告
     public CommonResponse handlePushAnnouncement(String token, MultipartFile picture, String heading, String content){
@@ -125,7 +124,6 @@ public class AnnouncementServiceImpl implements AnnouncementService {
         response.setContent(list);
         response.setMessage("查找成功");
         return response;
-
     }
 
     @Override
