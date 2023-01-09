@@ -2,23 +2,23 @@
     <div class="mainArea">
       <div :style="{'display':'flex','flex-direction':`${mobile? 'column':'row'}`,'padding-top':`${mobile? 3:0}vh`}">
         <div class="timeTableCard" :style="{
-          'width': `${mobile? 90: 90*ratio}vw`,
+          'width': `${mobile? 95:60}vw`,
           'height': `${mobile? 23 + 50*verticalRatio: 70}vh`,
           'padding-top': '1vh'
         }">
           <div :style="{
-            'width':`${mobile? 25: 25*ratio}vw`,
+            'width':`${mobile? 18: 25*ratio}vw`,
             'height':`${mobile? 60*verticalRatio: 60}`
           }" class="leftSection">
             <div  :style="{
-              'width':`${mobile? 25: 25*ratio}vw`,
+              'width':`${mobile? 16: 23*ratio}vw`,
               'height':`${mobile? 8*verticalRatio: 8}vh`
               }" style="  display: flex;justify-content: center;">
               <div style="width: 95%;height: 90%;background-color: #0a8ce2;align-self: center;border-radius: 8px"/>
             </div>
             <div
                 :style="{
-                  'width':`${mobile? 25: 25*ratio}vw`,
+                  'width':`${mobile? 16: 23*ratio}vw`,
                   'height':`${mobile? 10*verticalRatio: 10}vh`,
                   'position':'absolute',
                   'top':`${(index * 10 + 18.5)* (mobile? verticalRatio: 1)}vh`
@@ -32,19 +32,23 @@
             </div>
           </div>
           <div :style="{
-            'width':`${mobile? 65: 65*ratio}vw`,
+            'width':`${mobile? 75: 125*ratio}vw`,
+            'padding-left':`${mobile?2:5*ratio}vw`,
+            'padding-right':`${mobile?0:12*ratio}vw`,
           }" class="topWeekDay">
             <div  :style="{
-              'width':`${mobile? 12: 12*ratio}vw`,
+              'width':`${mobile? 75: 12*ratio}vw`,
+              'padding-right':`${mobile?0:0.8*ratio}vw`,
+              'padding-left':`${mobile?0:0.1*ratio}vw`
               }" v-for="item in weekDays">
               <a>{{item}}</a>
             </div>
           </div>
           <div class="lunchTime" :style="{
-            'width':`${mobile? 62: 62*ratio}vw`,
+            'width':`${mobile? 75: 86*ratio}vw`,
             'height':`${mobile? 8*verticalRatio: 8}vh`,
             'top': `${mobile? 11.5 + 30*verticalRatio: 40}vh`,
-            'left':`${mobile? 28: 28*ratio}vw`
+            'left':`${mobile?20:28*ratio}vw`
           }">
             <a style="align-self: center">午休时间</a>
           </div>
@@ -58,11 +62,12 @@
               <template #reference>
                 <div class="timeCard" :style="{
                   'top': `${(item.section > 2? item.section * 10 + 19 :item.section * 10 + 9)* (mobile? verticalRatio: 1)}vh`,
-                   'left': `${((item.weekDay * 13 + 15) * (mobile? 1: ratio))}vw`,
+                   'left': `${((item.weekDay * 13 + 15) * (mobile? 0.95: ratio))}vw`,
                    'position':'absolute',
                    'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`,
-                   'width':`${12 * (mobile? 1: ratio)}vw`,
-                   'height': `${9 * (mobile? verticalRatio: 1)}vh`
+                   'width':`${(mobile?12*1:12*ratio)}vw`,
+                   'height': `${9 * (mobile? verticalRatio: 1)}vh`,
+
                 }" >
                   <a class="courseName">{{pageData.myCourse[item.courseIndex].name}}</a>
                 </div>
@@ -75,8 +80,8 @@
           </div>
         </div>
         <div :style="{
-          'width':`${mobile? 90: 80* (1 - ratio)}vw`,
-          'padding-left':'2vw',
+          'width':`${mobile? 90: 30}vw`,
+          'padding-left':`'${mobile?0:3}vw`,
         }">
           <div class="title">
             <a style="font-size: 4vh;font-weight: bold;color: #0a8ce2;line-height: 8vh">选课指南</a>
@@ -207,7 +212,7 @@ import {mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
 
 //pc端 横向占比
-const ratio = ref(0.7);
+const ratio = ref(0.5);
 //pc端 纵向占比
 const verticalRatio = ref(1.2);
 
@@ -486,6 +491,7 @@ const loadDropDialog = () => {
   padding-bottom: 3vh;
 }
 .timeTableCard{
+  padding-left: 0!important;
   background-color: #FFFFFF;
   border-radius: 2vw;
   display: flex;
