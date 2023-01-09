@@ -213,7 +213,7 @@
       <el-form-item label="身份证号:" prop="idCardNumber">
         <span>{{ information.idCardNumber }}</span>
       </el-form-item>
-      <el-form-item label="研究方向:"  v-if="identity === 1">
+      <el-form-item label="研究方向:" prop="researchDirection"  v-if="identity === 1">
         <el-input v-model="information.researchDirection">{{information.researchDirection}}</el-input>
       </el-form-item>
       <el-form-item label="班级:" prop="studentClass" v-if="identity == 0">
@@ -243,6 +243,10 @@
       <a>提交</a>
     </el-button>
     <el-button v-if="identity === 1"  type="primary" style="height: 4vh;" @click="sumbitEditRowTeacher"
+      :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
+      <a>提交</a>
+    </el-button>
+    <el-button v-if="identity === 2"  type="primary" style="height: 4vh;" @click="sumbitEditRowManager"
       :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
       <a>提交</a>
     </el-button>
@@ -335,7 +339,7 @@ const loadInformationData = async () => {   //查看个人信息
       information.section = content.section;
       information.idCardNumber = content.idCardNumber;
       information.photoURL = getBaseURL() + content.photoURL;
-      information.avatarURL = getBaseURL() + content.avatarUR;
+      information.avatarURL = getBaseURL() + content.avatarURL;
       information.id = content.id;
       localStorage.setItem('token', data.token)
       console.log(information)
@@ -443,6 +447,49 @@ const sumbitEditRowTeacher = () => {
         id: information.id, phone:information.phone, email: information.email,
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
         userNumber: information.userNumber, name: information.name,nickName:information.nickName,researchDirection:information.researchDirection,
+        idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
+        avatarUrl:information.avatarURL,
+      }).then(res => {
+        console.log('返回了数据')
+        console.log(res)
+        if (res.data.success) {
+          let data = res.data;
+          localStorage.setItem('token', data.token)
+          hideLoading();
+          pageData.requesting = false;
+          loadInformationData()
+          messageSuccess(data.message)
+        } else {
+          hideLoading()
+          pageData.requesting = false;
+          messageError(res.data.message)
+        }
+      })
+        .catch(function (error) {
+          messageError("服务器开小差了呢")
+          hideLoading();
+          pageData.requesting = false;
+          console.log(error)
+        })
+    } else {
+      messageError("请完善全部信息")
+    }
+  })
+}
+const sumbitEditRowManager = ()=>{
+  console.log(formData)
+  formData.value.validate((valid) => {
+    if (valid) {
+      pageData.requesting = true;
+      showLoading();
+      console.log("在这")
+      console.log(information.researchDirection)
+      service.post('/api/user/editInfo', {
+        token: localStorage.getItem("token"), //这个修改信息，绑定的值
+        //是information绑定还是用formData绑定？
+        id: information.id, phone:information.phone, email: information.email,
+        gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
+        userNumber: information.userNumber, name: information.name,nickName:information.nickName,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
         avatarUrl:information.avatarURL,
       }).then(res => {

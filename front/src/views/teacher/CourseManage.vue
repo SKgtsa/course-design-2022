@@ -131,14 +131,14 @@
             <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="学期:" prop="semester">
+<!--         <el-form-item label="学期:" prop="semester">
           <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
             <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
           <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="春季学期">
             <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
       </span>
       <el-form-item label="学年:" prop="year" v-if="mobile">
         <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="2020">
@@ -278,8 +278,8 @@ import { ElMessage, ElMessageBox, rowContextKey } from 'element-plus'
 import { hideLoading, showLoading } from "@/utils/loading";
 import { mobile } from "@/global/global";
 const mul = { multiple: true }
-let yearsValue = ref();
-let semesterValue = ref();
+let yearsValue = ref(2019);
+let semesterValue = ref('春季学期');
 interface time {
   weekDay: Number;
   section: Number;

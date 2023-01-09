@@ -360,7 +360,7 @@ const submitEditRow = async (row) => {
   }
   showLoading()
   if (addDialogVisible.value == true) {
-    console.log(row.courseId),
+    console.log(idCourse.value),
       console.log(row.studentId),
       service.post('/api/score/save',
         {
@@ -371,12 +371,12 @@ const submitEditRow = async (row) => {
           endScore: row.endScore,
         })
         .then(res => {
+          console.log(res.data)
           if (res.data.success) {
             hideLoading()
             messageSuccess("添加成功！")
             localStorage.setItem("token", res.data.token)
             checkCourse();
-
           } else {
             hideLoading()
             messageError(res.data.message)
