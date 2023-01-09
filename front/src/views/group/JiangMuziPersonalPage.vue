@@ -138,7 +138,7 @@
           <a style="font-family: 'Microsoft YaHei',serif">3112948409</a>
         </div>
       </div>
-      <div style="padding-top: 20vh;text-align: center;font-size:2.5vh;font-family: 微软雅黑">@姜木子</div>
+      <div style="padding-top: 20vh;text-align: center;font-size:2.5vh;font-family: 微软雅黑">Copyright © 2018 Muzi Jiang. All rights reserved.</div>
     </el-footer>
   </div>
 
