@@ -13,7 +13,7 @@ export let get =async (url,params) =>{
 }
 //定义post请求方法
 export let post = async (url,params) =>{
-    let {data} = await serviceFile.get(url,params)
+    let {data} = await serviceFile.post(url,params)
     return data
 }
 

@@ -552,14 +552,32 @@ const semesterOptions = [
 ]
 const classOptions = [
   {
-    value: 1,
+    value: '1班',
     label: '1班',
   }, {
-    value: 2,
+    value: '2班',
     label: '2班',
   }, {
-    value: 3,
+    value: '3班',
     label: '3班',
+  },{
+    value: '4班',
+    label: '4班',
+  }, {
+    value: '5班',
+    label: '5班',
+  }, {
+    value: '6班',
+    label: '6班',
+  },{
+    value: '7班',
+    label: '7班',
+  }, {
+    value: '8班',
+    label: '8班',
+  }, {
+    value: '菁英班',
+    label: '菁英班',
   }
 ]
 const studentSectionOptions = [

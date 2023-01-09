@@ -148,7 +148,7 @@ public class UserServiceImpl implements UserService {
         response.setUser(user);
         if(user instanceof Student){
             response.setCharacter(0);
-            if(user.getNickName() == "默认昵称"){
+            if(user.getNickName().equals("默认昵称")){
                 response.setNeedSupplement(true);
             }else{
                 response.setNeedSupplement(false);

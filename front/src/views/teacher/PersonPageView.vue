@@ -39,7 +39,7 @@
           <a>姓名：{{ pageData.data.name }}</a>
           <a>性别：{{ pageData.data.gender? '女':'男' }}</a>
           <a>身份：老师</a>
-          <a>邮箱：{{ pageData.data.eMail }}</a>
+          <a>邮箱：{{ pageData.data.email }}</a>
           <a>手机号：{{ pageData.data.phone }}</a>
           <a>研究方向：{{ pageData.data.researchDirection}}</a>
         </div>
@@ -216,7 +216,7 @@ const pageData  = reactive({
   phone:'',
   name:'',
   gender:'',
-  eMail: '',
+  email: '',
   researchDirection:'',
   photoURL:'',
   },
@@ -262,6 +262,7 @@ const getInformation = () =>{
       localStorage.setItem('token', data.token)
       login.value = data.success;
       pageData.data = data.content;
+      console.log(pageData.data.email);
       hideLoading();
       pageData.requesting = false;
       getCourse();
@@ -283,6 +284,7 @@ const getCourse = async()=>{
     let data = res.data;
     if(data.success){
       pageData.course = data.content;
+      console.log(pageData.course)
     }
     hideLoading();
     pageData.requesting = false;
