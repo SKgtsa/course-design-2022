@@ -20,24 +20,26 @@
         </el-button>
       </div>
       <div style="padding-top: 6vh;">
-        <el-upload ref="upload" drag action="#" :http-request="uploadFile" :limit="1">
+        <el-upload ref="upload" drag action="#" :http-request="(file) => {
+                    return uploadFile(file);
+                  }" :limit="1">
           <el-icon class="el-icon--upload" :auto-upload="true">
             <upload-filled/>
           </el-icon>
           <div class="el-upload__text">
             将文件拖曳到此处
-<!--            <em>点击上传</em>-->
+           <em>点击上传</em>
           </div>
           <template #tip>
             <div class="el-upload__tip">
             </div>
           </template>
         </el-upload>
-        <el-upload style="float: right" ref="upload" :http-request="(file) => {
+        <!-- <el-upload style="float: right" ref="upload" :http-request="(file) => {
                     return uploadFile(file);
                   }" :limit="1" :auto-upload="true">
           <el-button icon="upload" type="primary" size="large" style="font-size: 2.5vh;margin-top: 5vh">上传</el-button>
-        </el-upload>
+        </el-upload> -->
       </div>
     </div>
   </div>
