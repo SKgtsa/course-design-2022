@@ -156,6 +156,11 @@ const router = createRouter({
           name: 'ManagerCourseTime',
           component: () => import('../views/manager/CourseTime.vue'),
         },
+        {
+          path:'/Manager/RegisterStudents',
+          name:'ManagerRegisterStudents',
+          component: () => import('../views/manager/RegisterStudents.vue'),
+        },
       ]
     }
   ]

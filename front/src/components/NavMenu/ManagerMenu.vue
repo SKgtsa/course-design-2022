@@ -24,6 +24,18 @@
     </el-icon>
     <template #title>课程管理</template>
   </el-menu-item>
+  <el-menu-item index="/Manager/CourseTime" @click="closeMenu">
+    <el-icon class="menuButton">
+      <DocumentChecked />
+    </el-icon>
+    <template #title>课程时间</template>
+  </el-menu-item>
+  <el-menu-item index="/Manager/RegisterStudents" @click="closeMenu">
+    <el-icon class="menuButton">
+      <DocumentChecked />
+    </el-icon>
+    <template #title>批量注册</template>
+  </el-menu-item>
 </template>
 
 <script lang="ts" setup>

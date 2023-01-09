@@ -65,10 +65,14 @@
             </template>
           </el-table-column>
           <el-table-column label="批量上传">
-            <el-upload ref="upload" :http-request="uploadFile" :limit="1" :auto-upload="true">
-              <template #default="scope">
-                <el-button type="primary" @click="getId(scope.row.courseId)">上传</el-button>
-              </template></el-upload>
+            <template #default="scope">
+            <el-upload ref="uploadRef" :http-request="(file) => {
+                    return uploadFile(file, scope.row);
+                  }" :limit="1" :auto-upload="true">
+                   <el-button type="primary">上传</el-button>
+                </el-upload>
+               
+              </template>
           </el-table-column>
         </el-table>
       </div>
@@ -154,6 +158,8 @@ import { ElMessageBox } from 'element-plus';
 import serviceFile from '@/request/indexFile';
 import { mobile } from '@/global/global';
 import router from '@/router';
+import type { UploadInstance } from 'element-plus'
+const uploadRef = ref<UploadInstance>()
 
 let upload = ref();
 let idCourse = ref();
@@ -254,7 +260,7 @@ const loadFile = (id) => {
   fileId.value = id;
 }
 
-const uploadFile = async (f) => {
+const uploadFile = async (f,row) => {
   await ElMessageBox.confirm(
     '如果某学生已经打分，该次上传将覆盖掉之前成绩，是否继续?',
     'Warning',
@@ -265,14 +271,16 @@ const uploadFile = async (f) => {
     }
   ).then(() => {
     showLoading();
-    console.log(f.file);
-    console.log(id.value)
-    serviceFile.post('/api/score/batchScore', { token: localStorage.getItem('token'),file: f.file,courseId:id.value }).then(res => {
+/*     console.log(f.file);
+    console.log(id.value) */
+    serviceFile.post('/api/score/batchScore', { token: localStorage.getItem('token'),file: f.file,courseId:row.courseId }).then(res => {
+      console.log(row.courseId)
       if (res.data.success) {
         hideLoading();
        /*  upload.clearFiles(); */
         localStorage.setItem('token', res.data.token);
         messageSuccess('上传成功！')
+        uploadRef.value!.submit()
         checkCourse();
       } else {
         hideLoading();
