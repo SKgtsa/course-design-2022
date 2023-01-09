@@ -35,12 +35,12 @@
       <div v-if="mobile" style="display:flex;flex-direction:column">
         <div style="margin-top:3vh;display:flex;flex-direction: row;padding-left: 4vw;"><a>起始时间:</a>
           <el-date-picker style="padding-left: 3vw;" v-model="startTime" type="datetime"
-                          placeholder="Pick a Date" format="YYYY/MM/DD hh:mm:ss"
+                          placeholder="选择起始时间：" format="YYYY/MM/DD hh:mm:ss"
                           value-format="YYYY-MM-DD hh:mm:ss"/>
         </div>
         <div style="margin-top:3vh;display:flex;flex-direction: row;padding-left: 4vw;"><a>截止时间:</a>
           <el-date-picker style="padding-left: 3vw;" v-model="endTime" type="datetime"
-                          placeholder="Pick a Date" format="YYYY/MM/DD hh:mm:ss"
+                          placeholder="选择截止时间：" format="YYYY/MM/DD hh:mm:ss"
                           value-format="YYYY-MM-DD hh:mm:ss"/>
         </div>
         <el-button style="margin-top: 4vh;margin-left:22vw;width: 30vw;" type="primary" @click="submit">

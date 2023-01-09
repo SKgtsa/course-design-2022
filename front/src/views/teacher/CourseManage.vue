@@ -131,14 +131,14 @@
             <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-form-item>
-<!--         <el-form-item label="学期:" prop="semester">
+        <el-form-item label="学期:" prop="semester">
           <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
             <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
           <el-select v-if="typeOperation === 'edit'" v-model="editForm.semester" placeholder="春季学期">
             <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
-        </el-form-item> -->
+        </el-form-item>
       </span>
       <el-form-item label="学年:" prop="year" v-if="mobile">
         <el-select v-if="typeOperation === 'add'" v-model="editForm.year" placeholder="2020">
@@ -208,7 +208,7 @@
       </el-form-item>
     </el-form>
     <div class="dialogButtonPage">
-      <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button>
+      <el-button type="primary" @click="submitEditRow" class="dialogButton">确定</el-button>
       <el-button @click="closeDialog" class="dialogButton">取消</el-button>
     </div>
   </el-dialog>
@@ -278,8 +278,8 @@ import { ElMessage, ElMessageBox, rowContextKey } from 'element-plus'
 import { hideLoading, showLoading } from "@/utils/loading";
 import { mobile } from "@/global/global";
 const mul = { multiple: true }
-let yearsValue = ref(2019);
-let semesterValue = ref('春季学期');
+let yearsValue = ref();
+let semesterValue = ref();
 interface time {
   weekDay: Number;
   section: Number;
@@ -552,32 +552,29 @@ const semesterOptions = [
 ]
 const classOptions = [
   {
-    value: '1班',
+    value: 1,
     label: '1班',
   }, {
-    value: '2班',
+    value: 2,
     label: '2班',
   }, {
-    value: '3班',
+    value: 3,
     label: '3班',
-  },{
-    value: '4班',
+  }, {
+    value: 4,
     label: '4班',
   }, {
-    value: '5班',
+    value: 5,
     label: '5班',
   }, {
-    value: '6班',
+    value: 6,
     label: '6班',
   },{
-    value: '7班',
+    value: 7,
     label: '7班',
-  }, {
-    value: '8班',
+  },{
+    value: 8,
     label: '8班',
-  }, {
-    value: '菁英班',
-    label: '菁英班',
   }
 ]
 const studentSectionOptions = [
@@ -984,7 +981,7 @@ const addStudent = async () => {
 let midTime = reactive([]);//中间变量
 let weekDayValue = ref('');
 let sectionValue = ref('');
-const sumbitEditRow = async () => {
+const submitEditRow = async () => {
   for (let i = 0; i < editForm.time.length; i++) {
     weekDayValue.value = editForm.time[i][0];
     sectionValue.value = editForm.time[i][1];
@@ -1002,6 +999,7 @@ const sumbitEditRow = async () => {
           {
             token: localStorage.getItem("token"),
             name: editForm.name,
+            
             weekStart: editForm.weekStart,
             weekEnd: editForm.weekEnd,
             time: editForm.time,
