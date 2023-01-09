@@ -15,8 +15,9 @@ export default defineConfig({
 // 跨域的写法
     proxy: {
       '/api': {
-        target: 'http://localhost:5174/', // 实际请求地址
+        target: 'https://courseback.clankalliance.cn/', // 实际请求地址
         changeOrigin: true,
+        secure: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },

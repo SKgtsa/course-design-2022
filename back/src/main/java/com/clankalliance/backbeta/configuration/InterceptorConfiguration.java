@@ -1,4 +1,4 @@
-package com.clankalliance.backbeta.controller;
+package com.clankalliance.backbeta.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;

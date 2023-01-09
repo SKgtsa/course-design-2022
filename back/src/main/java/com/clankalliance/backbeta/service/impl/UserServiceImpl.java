@@ -124,11 +124,11 @@ public class UserServiceImpl implements UserService {
         增加nickName,avatarURL,character 0Teacher 1Student 2Manager
          */
         CommonResponse  response = new CommonResponse<>();
-//        if(!tencentService.getTencentCaptchaResult(ticket, randstr)){
-//            response.setSuccess(false);
-//            response.setMessage("人机验证不通过");
-//            return response;
-//        }
+        if(!tencentService.getTencentCaptchaResult(ticket, randstr)){
+            response.setSuccess(false);
+            response.setMessage("人机验证不通过");
+            return response;
+        }
         response.setSuccess(false);
         password = DigestUtils.sha1Hex(password);
         User user = findByUserNumber(userNumber);

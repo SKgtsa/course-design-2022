@@ -1,5 +1,5 @@
 
-<template xmlns="http://www.w3.org/1999/html">
+<template>
   <div class="loginContainer">
     <transition name="el-fade-in-linear">
       <div class="cover" v-if="showCover">

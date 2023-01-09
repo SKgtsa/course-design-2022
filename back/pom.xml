@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.clankalliance</groupId>
 	<artifactId>backbeta</artifactId>
-	<version>0.5.8</version>
+	<version>0.6.5</version>
 	<name>backbeta</name>
 	<description>backbeta</description>
 	<properties>
@@ -112,6 +112,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>2.2</version>
+				<configuration></configuration>
 			</plugin>
 		</plugins>
 	</build>
