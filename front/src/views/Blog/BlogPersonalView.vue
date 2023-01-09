@@ -213,8 +213,8 @@
       <el-form-item label="身份证号:" prop="idCardNumber">
         <span>{{ information.idCardNumber }}</span>
       </el-form-item>
-      <el-form-item label="研究方向:" prop="phone"  v-if="identity == 1">
-        <el-input v-model="information.researchDirection" maxlength="11">{{ information.phone }}</el-input>
+      <el-form-item label="研究方向:"  v-if="identity === 1">
+        <el-input v-model="information.researchDirection"/>
       </el-form-item>
       <el-form-item label="班级:" prop="studentClass" v-if="identity == 0">
         <span>{{ information.studentClass }}</span>
@@ -229,16 +229,13 @@
         <span>{{ information.ethnic }}</span>
       </el-form-item>
       <el-form-item label="昵称:" prop="nickName">
-        <el-input v-model="information.nickName" maxlength="8">{{ information.nickName }}</el-input>
+        <el-input v-model="nickName"/>
       </el-form-item>
       <el-form-item label="邮箱:" prop="email">
-        <el-input v-model="information.email">
-          {{ information.email}}</el-input>
+        <el-input v-model="email"/>
       </el-form-item>
       <el-form-item label="电话" prop="phone">
-        <el-input v-model="information.phone">
-        {{ information.phone }}
-      </el-input>
+        <el-input v-model="phone"/>
       </el-form-item>
     </el-form>
     <el-button type="primary" style="height: 4vh;" @click="sumbitEditRow"
@@ -293,6 +290,11 @@ let information = reactive({
   id: '',
 });
 
+const nickName = ref('')
+const researchDirection = ref('')
+const phone = ref('')
+const email = ref('')
+
 const checkInfo = async() => {
   await loadInformationData();
   infoDialog.value = true;
@@ -321,16 +323,16 @@ const loadInformationData = async () => {   //查看个人信息
         identity.value = 2;
       }
       information.name = content.name;
-      information.email = content.email;
-      information.phone = content.phone;
+      email.value = content.email;
+      phone.value = content.phone;
       if (content.gender == false) { information.gender = '男'; }
       else information.gender = '女';
       information.ethnic = content.ethnic;
       information.politicalAffiliation = content.politicalAffiliation;
       information.userNumber = content.userNumber;
       information.studentClass = content.studentClass;
-      information.nickName = content.nickName;
-      information.researchDirection = content.researchDirection;
+      nickName.value = content.nickName;
+      researchDirection.value = content.researchDirection;
       information.section = content.section;
       information.idCardNumber = content.idCardNumber;
       information.photoURL = getBaseURL() + content.photoURL;
@@ -378,8 +380,6 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
   }
 }
 const rules = reactive({
-
-
   eMail: [{validator: validateEMail, trigger: 'blur' }],
   phone: [{ validator: validatePhone, trigger: 'blur' }],
   nickName: [{ required: true, message: '请输入用户名', trigger: 'blur' },
@@ -387,18 +387,21 @@ const rules = reactive({
   researchDirection:[{ required: true, message: '请输入用户名', trigger: 'blur' }],
 })
 
-const sumbitEditRow = async () => {
-  await formData.value.validate((valid) => {
+const sumbitEditRow = () => {
+  console.log(formData)
+  formData.value.validate((valid) => {
     if (valid) {
       pageData.requesting = true;
       showLoading();
+      console.log("在这")
+      console.log(information)
       service.post('/api/user/editInfo', {
         token: localStorage.getItem("token"), //这个修改信息，绑定的值
         //是information绑定还是用formData绑定？
         id: information.id, phone: information.phone, email: information.email,
-        gender: ((information.gender == '女') ? true : false), ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
-        userNumber: information.userNumber, name: information.name, studentClass: information.studentClass,
-        idCardNumber: information.idCardNumber, photoURL: information.photoURL,classSection:information.section,
+        gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
+        userNumber: information.userNumber, name: information.name,
+        idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
         researchDirection: information.researchDirection,avatarUrl:information.avatarURL,
       }).then(res => {
         console.log('返回了数据')

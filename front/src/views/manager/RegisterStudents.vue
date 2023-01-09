@@ -44,30 +44,37 @@ import { ref } from 'vue';
 
 const download = () => {
     window.location.href =
-        'http://courseback.clankalliance.cn/static/inbuild/%E5%AD%A6%E7%94%9F%E6%89%B9%E9%87%8F%E6%B3%A8%E5%86%8C%E6%A8%A1%E6%9D%BF.xlsx';
+        'https://courseback.clankalliance.cn/static/inbuild/%E5%AD%A6%E7%94%9F%E6%89%B9%E9%87%8F%E6%B3%A8%E5%86%8C%E6%A8%A1%E6%9D%BF.xlsx';
 }
 
 let upload = ref();
 
-const uploadFile = async (f) => {
-    showLoading();
-    await serviceFile.post('/api/user/batchRegister', { file: f.file, token: localStorage.getItem('token') }).then(res => {
-        let data = res.data;
-        if (data.success) {
-            hideLoading();
-            messageSuccess('上传成功！')
-            localStorage.setItem('token',data.token);
-        } else {
-            hideLoading();
-            loginFailed();
-        }
-    })
-        .catch(function (error) {
-            hideLoading();
-            messageError("服务器开小差了呢");
-            loginFailed();
-        })
-
+const uploadFile = (f) => {
+  console.log(f);
+  showLoading();
+  console.log(serviceFile)
+  serviceFile.post('/api/user/batchRegister', { token: localStorage.getItem('token'), file: f.file},{
+    headers: {
+      "Content-Type": "multipart/form-data"
+    }
+  }).then(res => {
+      let data = res.data;
+      console.log(res)
+      if (data.success) {
+          hideLoading();
+          messageSuccess('上传成功！')
+          localStorage.setItem('token',data.token);
+      } else {
+          hideLoading();
+          loginFailed();
+      }
+  })
+  .catch(function (error) {
+    console.log(error)
+    hideLoading();
+    messageError("服务器开小差了呢");
+    loginFailed();
+  })
 }
 
 </script>
