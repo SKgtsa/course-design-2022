@@ -214,7 +214,7 @@
         <span>{{ information.idCardNumber }}</span>
       </el-form-item>
       <el-form-item label="研究方向:"  v-if="identity === 1">
-        <el-input v-model="information.researchDirection"/>
+        <el-input v-model="information.researchDirection">{{information.researchDirection}}</el-input>
       </el-form-item>
       <el-form-item label="班级:" prop="studentClass" v-if="identity == 0">
         <span>{{ information.studentClass }}</span>
@@ -229,16 +229,20 @@
         <span>{{ information.ethnic }}</span>
       </el-form-item>
       <el-form-item label="昵称:" prop="nickName">
-        <el-input v-model="nickName"/>
+        <el-input  v-model="information.nickName">{{information.nickName}}</el-input>
       </el-form-item>
       <el-form-item label="邮箱:" prop="email">
-        <el-input v-model="email"/>
+        <el-input v-model="information.email">{{information.email}}</el-input>
       </el-form-item>
       <el-form-item label="电话" prop="phone">
-        <el-input v-model="phone"/>
+        <el-input v-model="information.phone">{{information.phone}}</el-input>
       </el-form-item>
     </el-form>
-    <el-button type="primary" style="height: 4vh;" @click="sumbitEditRow"
+    <el-button v-if="identity === 0" type="primary" style="height: 4vh;" @click="sumbitEditRowStudent"
+      :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
+      <a>提交</a>
+    </el-button>
+    <el-button v-if="identity === 1"  type="primary" style="height: 4vh;" @click="sumbitEditRowTeacher"
       :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
       <a>提交</a>
     </el-button>
@@ -290,11 +294,6 @@ let information = reactive({
   id: '',
 });
 
-const nickName = ref('')
-const researchDirection = ref('')
-const phone = ref('')
-const email = ref('')
-
 const checkInfo = async() => {
   await loadInformationData();
   infoDialog.value = true;
@@ -323,16 +322,16 @@ const loadInformationData = async () => {   //查看个人信息
         identity.value = 2;
       }
       information.name = content.name;
-      email.value = content.email;
-      phone.value = content.phone;
+      information.email= content.email;
+      information.phone = content.phone;
       if (content.gender == false) { information.gender = '男'; }
       else information.gender = '女';
       information.ethnic = content.ethnic;
       information.politicalAffiliation = content.politicalAffiliation;
       information.userNumber = content.userNumber;
       information.studentClass = content.studentClass;
-      nickName.value = content.nickName;
-      researchDirection.value = content.researchDirection;
+      information.nickName = content.nickName;
+      information.researchDirection = content.researchDirection;
       information.section = content.section;
       information.idCardNumber = content.idCardNumber;
       information.photoURL = getBaseURL() + content.photoURL;
@@ -384,10 +383,10 @@ const rules = reactive({
   phone: [{ validator: validatePhone, trigger: 'blur' }],
   nickName: [{ required: true, message: '请输入用户名', trigger: 'blur' },
   { max: 8, message: '长度请不要超过8位', trigger: 'blur' }],
-  researchDirection:[{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  researchDirection:[{ required: true, message: '请输入研究方向', trigger: 'blur' }],
 })
 
-const sumbitEditRow = () => {
+const sumbitEditRowStudent = () => {
   console.log(formData)
   formData.value.validate((valid) => {
     if (valid) {
@@ -398,11 +397,11 @@ const sumbitEditRow = () => {
       service.post('/api/user/editInfo', {
         token: localStorage.getItem("token"), //这个修改信息，绑定的值
         //是information绑定还是用formData绑定？
-        id: information.id, phone: information.phone, email: information.email,
+        id: information.id, phone:information.phone, email: information.email,
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
-        userNumber: information.userNumber, name: information.name,
+        userNumber: information.userNumber, name: information.name,nickName:information.nickName,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
-        researchDirection: information.researchDirection,avatarUrl:information.avatarURL,
+        avatarUrl:information.avatarURL,
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
@@ -430,6 +429,50 @@ const sumbitEditRow = () => {
     }
   })
 }
+const sumbitEditRowTeacher = () => {
+  console.log(formData)
+  formData.value.validate((valid) => {
+    if (valid) {
+      pageData.requesting = true;
+      showLoading();
+      console.log("在这")
+      console.log(information.researchDirection)
+      service.post('/api/user/editInfo', {
+        token: localStorage.getItem("token"), //这个修改信息，绑定的值
+        //是information绑定还是用formData绑定？
+        id: information.id, phone:information.phone, email: information.email,
+        gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
+        userNumber: information.userNumber, name: information.name,nickName:information.nickName,researchDirection:information.researchDirection,
+        idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
+        avatarUrl:information.avatarURL,
+      }).then(res => {
+        console.log('返回了数据')
+        console.log(res)
+        if (res.data.success) {
+          let data = res.data;
+          localStorage.setItem('token', data.token)
+          hideLoading();
+          pageData.requesting = false;
+          loadInformationData()
+          messageSuccess(data.message)
+        } else {
+          hideLoading()
+          pageData.requesting = false;
+          messageError(res.data.message)
+        }
+      })
+        .catch(function (error) {
+          messageError("服务器开小差了呢")
+          hideLoading();
+          pageData.requesting = false;
+          console.log(error)
+        })
+    } else {
+      messageError("请完善全部信息")
+    }
+  })
+}
+
 
 let uploadImg = async (f) => {
   pageData.requesting = true;
