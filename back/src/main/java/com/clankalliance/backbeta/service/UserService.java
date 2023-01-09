@@ -31,7 +31,7 @@ public interface UserService {
 
     CommonResponse handleGetInfo(String token);
 
-    CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section);
+    CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section, String nickName);
 
     CommonResponse handleSaveNickName(String token,String nickName);
 

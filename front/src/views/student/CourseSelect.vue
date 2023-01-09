@@ -39,7 +39,7 @@
             <div  :style="{
               'width':`${mobile? 75: 12*ratio}vw`,
               'padding-right':`${mobile?0:0.8*ratio}vw`,
-              'padding-left':`${mobile?0:0.1*ratio}vw`
+              'padding-left':`${mobile?0:0.1*ratio}vw`,
               }" v-for="item in weekDays">
               <a>{{item}}</a>
             </div>
@@ -62,10 +62,10 @@
               <template #reference>
                 <div class="timeCard" :style="{
                   'top': `${(item.section > 2? item.section * 10 + 19 :item.section * 10 + 9)* (mobile? verticalRatio: 1)}vh`,
-                   'left': `${((item.weekDay * 13 + 15) * (mobile? 0.95: ratio))}vw`,
+                   'left': `${ mobile?   (item.weekDay * 11 + 9) : (item.weekDay * 6.5 + 8) }vw`,
                    'position':'absolute',
                    'background-color': `${baseColorSet[Math.floor(Math.random() * 6)]}`,
-                   'width':`${(mobile?12*1:12*ratio)}vw`,
+                   'width':`${(mobile?10:6)}vw`,
                    'height': `${9 * (mobile? verticalRatio: 1)}vh`,
 
                 }" >
@@ -73,6 +73,7 @@
                 </div>
               </template>
               <div style="display: flex;flex-direction: column">
+                <a style="font-weight: bold">{{pageData.myCourse[item.courseIndex].name}}</a>
                 <a style="font-weight: bold">{{pageData.myCourse[item.courseIndex].description}}</a>
                 <a>{{pageData.myCourse[item.courseIndex].location}}</a>
               </div>
@@ -87,7 +88,7 @@
             <a style="font-size: 4vh;font-weight: bold;color: #0a8ce2;line-height: 8vh">选课指南</a>
           </div>
           <el-timeline class="progressPage">
-            <el-timeline-item v-for="(activity, index) in activities" :key="index" :type="activity.type"
+            <el-timeline-item v-for="(activity, index) in pageData.activities" :key="index" :type="activity.type"
                               :size="activity.size" :hollow="activity.hollow" :timestamp="activity.timestamp">
               {{ activity.content }}
             </el-timeline-item>
@@ -100,7 +101,7 @@
           </div>
         </div>
       </div>
-      <div class="courseSelectArea">
+      <div class="courseSelectArea" v-if="isShowTable">
         <div class="courseSelectPage">
           <div class="courseSelectTop">
             <a class="courseSelectPageTitle">进入选课</a>
@@ -230,39 +231,6 @@ const baseColorSet = [
   '#23a35d','#85B8CB','#1D6A96','#245a74','#a92939','#ebba11','#631F16'
 ]
 //获得已经选课的课程信息,用于更新课表
-const activities = [
-    {
-        content: '系统关闭',
-        timestamp: '2022-1-10 18:00',
-        type: 'danger',
-        hollow: true,
-    },
-    {
-        content: '退补选',
-        timestamp: '2022-11-05 10:00',
-        type: 'success',
-        hollow: true,
-    },
-    {
-        content: '选课停止',
-        timestamp: '2022-09-28 18:00',
-        type: 'danger',
-        size: 'large',
-        hollow: true,
-    },
-    {
-        content: '正式选课',
-        timestamp: '2022-09-22 10:00',
-        type: 'primary',
-        hollow: true,
-    },
-    {
-        content: '发布选课通知',
-        timestamp: '2022-09-15 18:00',
-        type: 'info',
-        hollow: true,
-    },
-]
 
 const weekDays = ['周一','周二','周三','周四','周五','周六','周日']
 
@@ -273,6 +241,22 @@ const pageData = reactive({
   courseList: [],//可选的课程
   myCourse : [] ,//我的课程
   courseTime: [],//课表上显示的数据 带有课名及时间信息 存储myCourse中的index代表索引
+  activities : [
+    {
+      content: '选课停止',
+      timestamp: '2022-09-28 18:00',
+      type: 'danger',
+      size: 'large',
+      hollow: true,
+    },
+    {
+      content: '开始选课',
+      timestamp: '2022-09-22 10:00',
+      type: 'primary',
+      size: 'large',
+      hollow: true,
+    },
+  ]
 })
 
 interface Course{
@@ -342,7 +326,7 @@ let time = ref('');
 const formatDate = ()=>{
     var date = new Date()
       var year = date.getFullYear()
-      var month = date.getMonth() + 1 < 10 ? 
+      var month = date.getMonth() + 1 < 10 ?
                     '0' + (date.getMonth() + 1) : date.getMonth()+ 1
       var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
       var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
@@ -363,8 +347,14 @@ const courseSelected = () => {
       if (data.success) {
         hideLoading();
         localStorage.setItem('token', data.token);
+        const timeNow = new Date();
+        const startTime = new Date(data.user.startTime);
+        const endTime = new Date(data.user.endTime);
         pageData.myCourse = data.content;
-        if(time.value>=data.user.startTime&&time.value<=data.user.endTime){
+        pageData.activities[1].timestamp = startTime.getFullYear() + '年' + startTime.getMonth() + '月' + startTime.getDay() + '日'
+        pageData.activities[0].timestamp = endTime.getFullYear() + '年' + endTime.getMonth() + '月' + endTime.getDay() + '日'
+        console.log(timeNow.getTime() + '   ' + endTime.getTime() + '     ' + startTime.getTime())
+        if(timeNow.getTime() <= endTime.getTime() && timeNow.getTime() >= startTime.getTime()){
           isShowTable.value = true;
         }else{
           isShowTable.value = false;
@@ -521,7 +511,7 @@ const loadDropDialog = () => {
 .timeCard{
   border-radius: 1vw;
   color: #FFFFFF;
-  font-size: 2.2vh;
+  font-size: 1.8vh;
   display: flex;
   justify-content: center;
 }

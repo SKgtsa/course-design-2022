@@ -121,45 +121,45 @@ public class ScoreServiceImpl implements ScoreService {
                 response.setSuccess(false);
                 response.setMessage("学生不能修改自己的成绩");
             }else{
-            //token验证成功
-            Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
-            long id;
-            if(scoreOp.isEmpty()){
-                //该学生与该课程对应成绩不存在，为成绩的创建
-                id = snowFlake.nextId();
-            }else{
-                //该学生与该课程对应成绩存在，为成绩的修改
-                id = scoreOp.get().getId();
-            }
-            Optional<Student> studentOp = studentRepository.findUserById(studentId);
-            if(studentOp.isEmpty()){
-                response.setSuccess(false);
-                response.setMessage("学生不存在");
-                return response;
-            }
-            Optional<Course> cop = courseRepository.findById(courseId);
-            if(cop.isEmpty()){
-                response.setSuccess(false);
-                response.setMessage("课程不存在");
-                return response;
-            }
-            Student student = studentOp.get();
-            Course course = cop.get();
-            Score score = new Score(id, dailyScore, endScore, student, course);
-            scoreRepository.save(score);
-            //在学生的成绩表中加入成绩
-            Set<Score> studentScoreSet = student.getScoreSet();
-            studentScoreSet.add(score);
-            student.setScoreSet(studentScoreSet);
-            student.setAchievementSet(updateAchievementList(student));
-            studentRepository.save(student);
-            //在课程的成绩表中加入成绩
-            Set<Score> courseScoreSet = course.getScoreSet();
-            courseScoreSet.add(score);
-            course.setScoreSet(courseScoreSet);
-            courseRepository.save(course);
-            response.setSuccess(true);
-            response.setMessage("成绩保存成功");
+                //token验证成功
+                Optional<Score> scoreOp = scoreRepository.findByCourseStudentId(courseId, studentId);
+                long id;
+                if(scoreOp.isEmpty()){
+                    //该学生与该课程对应成绩不存在，为成绩的创建
+                    id = snowFlake.nextId();
+                }else{
+                    //该学生与该课程对应成绩存在，为成绩的修改
+                    id = scoreOp.get().getId();
+                }
+                Optional<Student> studentOp = studentRepository.findUserById(studentId);
+                if(studentOp.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("学生不存在");
+                    return response;
+                }
+                Optional<Course> cop = courseRepository.findById(courseId);
+                if(cop.isEmpty()){
+                    response.setSuccess(false);
+                    response.setMessage("课程不存在");
+                    return response;
+                }
+                Student student = studentOp.get();
+                Course course = cop.get();
+                Score score = new Score(id, dailyScore, endScore, student, course);
+                scoreRepository.save(score);
+                //在学生的成绩表中加入成绩
+                Set<Score> studentScoreSet = student.getScoreSet();
+                studentScoreSet.add(score);
+                student.setScoreSet(studentScoreSet);
+                student.setAchievementSet(updateAchievementList(student));
+                studentRepository.save(student);
+                //在课程的成绩表中加入成绩
+                Set<Score> courseScoreSet = course.getScoreSet();
+                courseScoreSet.add(score);
+                course.setScoreSet(courseScoreSet);
+                courseRepository.save(course);
+                response.setSuccess(true);
+                response.setMessage("成绩保存成功");
             }
         }
         //token无效，直接将token验证的数据返回前端
