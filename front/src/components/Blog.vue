@@ -90,9 +90,9 @@
                   </div>
                   <div class="bottomBottom">
                     <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisPost(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
-                    <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png':'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                    <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image class="likeCollectImage" :src="item.collect? 'https://courseback.clankalliance.cn/static/inbuild/collect-active.png':'https://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
                     <a class="likeNum">{{item.likeNum}}</a>
-                    <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png':'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
+                    <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image class="likeCollectImage" :src="item.like? 'https://courseback.clankalliance.cn/static/inbuild/like-active.png':'https://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
                   </div>
                 </div>
               </div>
@@ -253,10 +253,6 @@ const handleDeleteCheck = (item: Post) => {
 const initOver = ref(false);
 
 const blog = ref('')
-const imageList = [
-  'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
-  'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-]
 const showUpload = ref(true);
 //博客列表陈列分页用
 const startIndex = ref(0);

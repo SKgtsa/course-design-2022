@@ -3,7 +3,7 @@
     <el-backtop :right="30" :bottom="80" />
     <el-affix :offset="0">
       <el-header class="el-header">
-        <img class="logo" src="http://courseback.clankalliance.cn/static/inbuild/jmz/在哲logo.png">
+        <img class="logo" src="https://courseback.clankalliance.cn/static/inbuild/jmz/在哲logo.png">
         <el-button link class="linkButton">
           <a href="#photography" style="color: white">摄影作品</a>
         </el-button>
@@ -22,16 +22,16 @@
       <el-carousel :interval="4000" indicator-position="outside" pause-on-hover arrow="never" type="card"
                    class="carousel">
         <el-carousel-item class="carouselPages">
-          <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/校园.jpg">
+          <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/校园.jpg">
         </el-carousel-item>
         <el-carousel-item class="carouselPages">
-          <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/夜景.jpg">
+          <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/夜景.jpg">
         </el-carousel-item>
         <el-carousel-item class="carouselPages">
-          <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/落.jpg">
+          <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/落.jpg">
         </el-carousel-item>
         <el-carousel-item class="carouselPages">
-          <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/环卫工人.jpg">
+          <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/环卫工人.jpg">
         </el-carousel-item>
       </el-carousel>
     </div>
@@ -48,13 +48,13 @@
           爱好摄影、滑板、羽毛球。曾获软件学院优秀学生干部，优秀共青团员，山东大学数学建模竞赛三等奖，宿舍文化节一等奖等荣誉。
         </p>
       </div>
-      <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/证件照.jpg" class="selfPhoto">
+      <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/证件照.jpg" class="selfPhoto">
       <el-divider/>
     </div>
     <div class="studentUnion" id="studentUnion">
       <div style="float: left;height: 100vh">
         <div style="padding-top: 20vh;padding-left: 10vh">
-          <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/权益菌.jpg" style="height: 20vh;float: left;margin-right: 5vh">
+          <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/权益菌.jpg" style="height: 20vh;float: left;margin-right: 5vh">
           <p style="font-size: 5vh;font-family: 微软雅黑,serif;font-weight: 700;color: gray;padding-left: 6vh;float: left">
             软件学院 权益中心
           </p>
@@ -74,22 +74,22 @@
         <el-carousel :interval="4000"  pause-on-hover arrow="never"
                      class="carousel2">
           <el-carousel-item class="carouselPages">
-            <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/权益中心合照.jpg">
+            <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/权益中心合照.jpg">
           </el-carousel-item>
           <el-carousel-item class="carouselPages">
-            <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/权益中心合照2.jpg">
+            <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/权益中心合照2.jpg">
           </el-carousel-item>
           <el-carousel-item class="carouselPages">
-            <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/蛋糕.jpg">
+            <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/蛋糕.jpg">
           </el-carousel-item>
           <el-carousel-item class="carouselPages">
-            <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/圣诞节.jpg">
+            <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/圣诞节.jpg">
           </el-carousel-item>
           <el-carousel-item class="carouselPages">
-            <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/座谈会1.jpg">
+            <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/座谈会1.jpg">
           </el-carousel-item>
           <el-carousel-item class="carouselPages">
-            <img class="carouselPhoto" src="http://courseback.clankalliance.cn/static/inbuild/jmz/座谈会2.jpg">
+            <img class="carouselPhoto" src="https://courseback.clankalliance.cn/static/inbuild/jmz/座谈会2.jpg">
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -100,42 +100,42 @@
     <div class="photography" id="photography">
       <div style="height: 30vh;"></div>
       <div class="box">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/校园.jpg" alt="" class="img1">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/书架.jpg" alt="" class="img2">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/夜景.jpg" alt="" class="img3">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/夜景2.jpg" alt="" class="img4">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/夜景3.jpg" alt="" class="img5">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/景深.jpg" alt="" class="img6">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/校门.jpg" alt="" class="img7">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/环卫工人.jpg" alt="" class="img8">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/落日.jpg" alt="" class="img9">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/窗.jpg" alt="" class="img10">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/校园.jpg" alt="" class="img1">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/书架.jpg" alt="" class="img2">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/夜景.jpg" alt="" class="img3">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/夜景2.jpg" alt="" class="img4">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/夜景3.jpg" alt="" class="img5">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/景深.jpg" alt="" class="img6">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/校门.jpg" alt="" class="img7">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/环卫工人.jpg" alt="" class="img8">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/落日.jpg" alt="" class="img9">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/窗.jpg" alt="" class="img10">
       </div>
     </div>
     <el-footer class="footer">
       <div class="bottomCell">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/电话.png" class="bottomImage">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/电话.png" class="bottomImage">
         <div style="float: right;margin-top:1vh;margin-left: 1vh">
           <a style="font-family: 'Microsoft YaHei',serif;">TEL:</a><br>
           <a style="font-family: 'Microsoft YaHei',serif">188****1226</a>
         </div>
       </div>
       <div class="bottomCell">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/邮箱.png" class="bottomImage">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/邮箱.png" class="bottomImage">
         <div style="float: right;margin-top:1vh;margin-left: 1vh">
           <a style="font-family: 'Microsoft YaHei',serif">eMail:</a><br>
           <a style="font-family: 'Microsoft YaHei',serif">zaizhe@163.com</a>
         </div>
       </div>
       <div class="bottomCell">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/微信.png" class="bottomImage">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/微信.png" class="bottomImage">
         <div style="float: right;margin-top:1vh;margin-left: 1vh">
           <a style="font-family: 'Microsoft YaHei',serif">WeChat:</a><br>
           <a style="font-family: 'Microsoft YaHei',serif">jmz03128</a>
         </div>
       </div>
       <div class="bottomCell">
-        <img src="http://courseback.clankalliance.cn/static/inbuild/jmz/qq.png" class="bottomImage">
+        <img src="https://courseback.clankalliance.cn/static/inbuild/jmz/qq.png" class="bottomImage">
         <div style="float: right;margin-top:1vh;margin-left: 1vh">
           <a style="font-family: 'Microsoft YaHei',serif">QQ:</a><br>
           <a style="font-family: 'Microsoft YaHei',serif">3112948409</a>
@@ -259,7 +259,7 @@ import {identityJump} from "@/utils/identityJump";
 /*  width: 180px;*/
 /*  height: 180px;*/
 /*  background-color: white;*/
-/*  background-image: url("http://courseback.clankalliance.cn/static/inbuild/jmz/权益中心合照.jpg");*/
+/*  background-image: url("https://courseback.clankalliance.cn/static/inbuild/jmz/权益中心合照.jpg");*/
 /*  background-repeat: no-repeat;*/
 /*  background-size: 100%;*/
 /*  !*filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='male.png', sizingMethod='scale');*!*/

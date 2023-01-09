@@ -38,12 +38,12 @@
             :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
             :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
             <!-- 显示斑马纹和边框 -->
-            <el-table-column fixed="left" label="课程名" prop="courseName" min-width="200" show-overflow-tooltip />
-            <el-table-column label="平时分数" prop="dailyScore" width="160" show-overflow-tooltip />
-            <el-table-column label="平时分数占总分权重" prop="weight" width="100" show-overflow-tooltip />
-            <el-table-column label="期末得分" prop="endScore" width="140" show-overflow-tooltip />
-            <el-table-column label="总分" prop="finalScore" width="140" show-overflow-tooltip />
-            <el-table-column label="排名" prop="rank" width="150" show-overflow-tooltip />
+            <el-table-column fixed="left" label="课程名" prop="courseName" min-width="100" max-width="160" show-overflow-tooltip />
+            <el-table-column label="平时分数" prop="dailyScore" min-width="80" show-overflow-tooltip />
+            <el-table-column label="期末得分" prop="endScore" min-width="80" show-overflow-tooltip />
+            <el-table-column label="平时分数占总分权重" prop="weight" min-width="80" show-overflow-tooltip />
+            <el-table-column label="总分" prop="finalScore" min-width="80" show-overflow-tooltip />
+            <el-table-column label="排名" prop="rank" min-width="80" show-overflow-tooltip />
           </el-table>
         </div>
       </div>
@@ -58,8 +58,8 @@ import { reactive } from '@vue/reactivity';
 import { ref } from 'vue';
 import { mobile } from '@/global/global';
 import { showLoading, hideLoading } from '@/utils/loading';
-let yearsValue = ref();
-let semesterValue = ref();
+let yearsValue = ref(2020);
+let semesterValue = ref('春季学期');
 let tableData = reactive({
   arr: [],
 });
@@ -99,6 +99,9 @@ const check = async () => {
       let data = res.data;
       if (data.success) {
         localStorage.setItem('token', data.token);
+        for(let i = 0;i < data.content.length;i ++){
+          data.content[i].weight = data.content[i].weight * 100 + '%'
+        }
         tableData.arr = data.content;
         messageSuccess("查询成功！")
         let a = yearsValue.value;

@@ -350,6 +350,7 @@ public class ScoreServiceImpl implements ScoreService {
         Optional<Score> scoreOptional = scoreRepository.findByCourseStudentId(courseId,student.getId());
         Score score = new Score();
         if(scoreOptional.isPresent()){
+            score = scoreOptional.get();
             score.setDailyScore(dailyScore);
             score.setEndScore(endScore);
             try{

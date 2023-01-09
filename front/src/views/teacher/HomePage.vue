@@ -21,7 +21,7 @@
           <div class="flex-grow" />
           <div style="padding-right: 2vw;padding-top: 2.5vh">
             <el-button class="menuButton" @click="openMenu">
-              <el-image :src="'http://courseback.clankalliance.cn/inbuild/menu.png'" class="menuButtonImage" />
+              <el-image :src="'https://courseback.clankalliance.cn/inbuild/menu.png'" class="menuButtonImage" />
             </el-button>
           </div>
         </el-menu>

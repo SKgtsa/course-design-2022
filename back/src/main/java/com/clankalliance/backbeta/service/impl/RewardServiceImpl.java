@@ -90,31 +90,32 @@ public class RewardServiceImpl implements RewardService {
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
-                Set<Student> studentSet=new HashSet<>();
+                Reward reward;
                 //先判断id是否为空
                 if(id == 0){
                     //id为空，则为reward的创建
-                    id=snowFlake.nextId();
+                    Set<Student> studentSet = new HashSet<>();
+                    studentSet.add(student);
+                    reward = new Reward(snowFlake.nextId(),name,description,studentSet);
+                    rewardRepository.save(reward);
+                    //将reward加入进学生的活动表中
+                    List<Reward> rewardList=student.getRewardSet();
+                    rewardList.add(reward);
+                    student.setRewardSet(rewardList);
+                    student.setAchievementSet(updateAchievementList(student));
+                    studentRepository.save(student);
                 }else{
                     Optional<Reward> rewardOp= rewardRepository.findById(id);
                     if(rewardOp.isEmpty()){
-                        //所取出的Optional为空,为创建
-                        id=snowFlake.nextId();
-                    }else{ //为reward的修改，需更新学生表,但不需要更改id
-                        Reward OldReward=rewardOp.get();
-                        studentSet=OldReward.getStudentSet();
+                        response.setMessage("奖励不存在");
+                        response.setSuccess(false);
+                        return response;
                     }
+                    reward = rewardOp.get();
+                    reward.setDescription(description);
+                    reward.setName(name);
+                    rewardRepository.save(reward);
                 }
-                studentSet.add(student);
-                Reward reward=new Reward(id,name,description,studentSet);
-                rewardRepository.save(reward);
-
-                //将reward加入进学生的活动表中
-                List<Reward> rewardList=student.getRewardSet();
-                rewardList.add(reward);
-                student.setRewardSet(rewardList);
-                student.setAchievementSet(updateAchievementList(student));
-                studentRepository.save(student);
                 response.setSuccess(true);
                 response.setMessage("成果奖励创建成功");
             }else if(user instanceof Manager){

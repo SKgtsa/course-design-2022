@@ -71,7 +71,7 @@
                   }" :limit="1" :auto-upload="true">
                    <el-button type="primary">上传</el-button>
                 </el-upload>
-               
+
               </template>
           </el-table-column>
         </el-table>
@@ -203,7 +203,7 @@ const getId = (courseId) =>{
 }
 
 const download = () => {
-  window.location.href = 'http://courseback.clankalliance.cn/inbuild/%E6%89%B9%E9%87%8F%E5%BD%95%E5%85%A5%E6%88%90%E7%BB%A9%E8%A1%A8%E6%A0%BC.xlsx';
+  window.location.href = 'https://courseback.clankalliance.cn/inbuild/%E6%89%B9%E9%87%8F%E5%BD%95%E5%85%A5%E6%88%90%E7%BB%A9%E8%A1%A8%E6%A0%BC.xlsx';
 }
 
 const handleCurrentChange = (currentPage) => {

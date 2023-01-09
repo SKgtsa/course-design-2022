@@ -130,11 +130,11 @@
                     </el-icon></el-button>
                   <el-button class="likeCollectButton" @click="collectThis(item, $event)"><el-image
                       class="likeCollectImage"
-                      :src="item.collect ? 'http://courseback.clankalliance.cn/static/inbuild/collect-active.png' : 'http://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
+                      :src="item.collect ? 'https://courseback.clankalliance.cn/static/inbuild/collect-active.png' : 'https://courseback.clankalliance.cn/static/inbuild/collect.png'"></el-image></el-button>
                   <a class="likeNum">{{ item.likeNum }}</a>
                   <el-button class="likeCollectButton" @click="likeThis(item, $event)"><el-image
                       class="likeCollectImage"
-                      :src="item.like ? 'http://courseback.clankalliance.cn/static/inbuild/like-active.png' : 'http://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
+                      :src="item.like ? 'https://courseback.clankalliance.cn/static/inbuild/like-active.png' : 'https://courseback.clankalliance.cn/static/inbuild/like.png'"></el-image></el-button>
                 </div>
               </div>
             </div>

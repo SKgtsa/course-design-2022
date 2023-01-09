@@ -4,20 +4,22 @@
     'height': `${mobile? 'auto':'91vh'}`
   }">
     <div class="pageContent" :style="{
-      'width': `${mobile? 100:80}%`,
+      'width': `${mobile? 93:80}%`,
     }">
       <div class="title">
-        课外活动
-        <el-button class="addButton" @click="add">添加</el-button>
+        <a>课外活动</a>
+        <el-button class="addButton" @click="add" :style="{
+          'width': `${mobile? '20vw':'15vh'}`,
+        }">添加</el-button>
       </div>
       <!-- 表格数据显示 -->
       <el-table :data="tableData.arr" stripe size="large" class="activityTable"
-        :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
+        :header-cell-style="{ 'height': '1vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+        :cell-style="{ 'height': '1vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
         <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
-        <el-table-column label="标题" fixed="left"  prop="name" width="250" show-overflow-tooltip />
+        <el-table-column label="标题" fixed="left"  prop="name" min-width="100" max-width="250" show-overflow-tooltip />
         <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
-        <el-table-column width="300" fixed="right" label="操作">
+        <el-table-column max-width="300" min-width="60" fixed="right" label="操作">
           <template #default="scope">
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
             <el-button size="medium" @click="handleEdit(scope.row)" class="button">编辑</el-button>
@@ -36,19 +38,27 @@
     <el-dialog v-model="centerDialogVisible" :width="`${mobile? '90%':'45%'}`" draggable="true">
       <el-form :model="editForm" class="areaTextInput" ref="formData" :rules="rulesEditForm">
         <el-form-item label="日期" prop="date">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date">{{ editForm.date }}
-          </el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.date"></el-input>
+          <el-date-picker
+            v-model="editForm.date"
+            type="date"
+            placeholder="请选择活动日期"
+            format="YYYY年MM月DD日"
+            value-format="YYYY年MM月DD日"
+            :shortcuts="shortcuts"
+          />
+<!--          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date">{{ editForm.date }}-->
+<!--          </el-input>-->
+<!--          <el-input v-if="typeOperation === 'add'" v-model="editForm.date"></el-input>-->
         </el-form-item>
-        <el-form-item label="标题" prop="activityName">
-          <el-input v-if="typeOperation === 'edit'" v-model="editForm.activityName">{{ editForm.activityName }}
+        <el-form-item label="标题" prop="name">
+          <el-input v-if="typeOperation === 'edit'" v-model="editForm.name">{{ editForm.name }}
           </el-input>
-          <el-input v-if="typeOperation === 'add'" v-model="editForm.activityName"></el-input>
+          <el-input v-if="typeOperation === 'add'" v-model="editForm.name"></el-input>
         </el-form-item>
-        <el-form-item label="内容" prop="activityDescription">
-          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.activityDescription">
-            {{ editForm.activityDescription }}</el-input>
-          <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.activityDescription">
+        <el-form-item label="内容" prop="description">
+          <el-input v-if="typeOperation === 'edit'" type="textarea" rows="15" v-model="editForm.description">
+            {{ editForm.description }}</el-input>
+          <el-input v-if="typeOperation === 'add'" type="textarea" rows="15" v-model="editForm.description">
           </el-input>
         </el-form-item>
         <el-form-item label="成果" prop="result">
@@ -69,11 +79,11 @@
         <el-form-item label="日期" prop="date">
           <span v-if="typeOperation === 'check'">{{ editForm.date }}</span>
         </el-form-item>
-        <el-form-item label="标题" prop="activityName">
-          <span v-if="typeOperation === 'check'">{{ editForm.activityName }}</span>
+        <el-form-item label="标题" prop="name">
+          <span v-if="typeOperation === 'check'">{{ editForm.name }}</span>
         </el-form-item>
-        <el-form-item label="内容" prop="activityDescription">
-          <span v-if="typeOperation === 'check'">{{ editForm.activityDescription }}</span>
+        <el-form-item label="内容" prop="description">
+          <span v-if="typeOperation === 'check'">{{ editForm.description }}</span>
         </el-form-item>
         <el-form-item label="成果" prop="result">
           <span v-if="typeOperation === 'check'">{{ editForm.result }}</span>
@@ -89,6 +99,7 @@ import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {mobile} from "@/global/global";
+import {loginFailed} from "@/utils/tokenCheck";
 
 let tableData = reactive({
   arr: [],
@@ -100,13 +111,36 @@ let pageSize = ref(7);
 let formData = ref();//改增校验绑定的空form
 let pageCount = ref();
 let centerDialogVisibleCheck = ref(false);//查的弹出框
+/*日期快捷选择*/
+const shortcuts = [
+  {
+    text: '今天',
+    value: new Date(),
+  },
+  {
+    text: '昨天',
+    value: () => {
+      const date = new Date()
+      date.setTime(date.getTime() - 3600 * 1000 * 24)
+      return date
+    },
+  },
+  {
+    text: '明天',
+    value: () => {
+      const date = new Date()
+      date.setTime(date.getTime() + 3600 * 1000 * 24)
+      return date
+    },
+  }
+]
 
 /* 定义校验规则 */
 const rulesEditForm = reactive({
-  activityName: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
+  name: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
   { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
   ],
-  activityDescription: [{ required: true, message: '请输入社会实践的内容！', trigger: 'blur' }],
+  description: [{ required: true, message: '请输入社会实践的内容！', trigger: 'blur' }],
   date: [{ required: true, message: '请输入日期', trigger: 'blur' },
   { max: 20, message: '请输入正确的日期!不要超过20位!', trigger: 'blur' }],
   result: [{ required: true, message: '请输入您的成果', trigger: 'blur' },
@@ -116,8 +150,8 @@ const rulesEditForm = reactive({
 
 //改查绑定的form数据
 let editForm = reactive({
-  activityName: '',
-  activityDescription: '',
+  name: '',
+  description: '',
   date: '',
   result: '',
   id: '',
@@ -141,7 +175,10 @@ const loadactivityTable = async () => {
       console.log(tableData)
     } else {
       hideLoading();
-      messageWarning(res.data.message)
+      if(res.data.message === '登录失效')
+        loginFailed()
+      else
+        messageError(res.data.message)
     }
   })
     .catch(function (error) {
@@ -155,8 +192,8 @@ loadactivityTable() //进入默认执行
 const add = () => {
   centerDialogVisible.value = true;
   typeOperation.value = 'add';
-  editForm.activityName = '';
-  editForm.activityDescription = '';
+  editForm.name = '';
+  editForm.description = '';
   editForm.id = '';
   editForm.date = '';
   editForm.result = '';
@@ -164,8 +201,8 @@ const add = () => {
 
 const handleCheck = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   centerDialogVisibleCheck.value = true;
-  editForm.activityDescription = row.activityDescription;
-  editForm.activityName = row.activityName;
+  editForm.description = row.description;
+  editForm.name = row.name;
   editForm.date = row.date;
   editForm.result = row.result;
   editForm.id = row.id;
@@ -175,8 +212,8 @@ const handleCheck = (row) => {   //查看单个的数据 一条一条赋值，�
 const handleEdit = (row) => {  //改  两边属性名字不匹配
   console.log(row)
   centerDialogVisible.value = true;
-  editForm.activityDescription = row.activityDescription;
-  editForm.activityName = row.activityName;
+  editForm.description = row.description;
+  editForm.name = row.name;
   editForm.date = row.date;
   editForm.result = row.result;
   editForm.id = row.id;
@@ -204,7 +241,10 @@ const handleDelete = async (row) => {  //删  //异步不确定是否有问题
           loadactivityTable() //重新加载现在表单中的数据
         } else {
           hideLoading();
-          messageWarning(res.data.message)
+          if(res.data.message === '登录失效')
+            loginFailed()
+          else
+            messageError(res.data.message)
         }
       })
         .catch(function (error) {
@@ -221,9 +261,10 @@ const sumbitEditRow = async () => {
       if (typeOperation.value === 'edit') {
         /* handleEdit() */
         showLoading();
+        console.log(editForm)
         service.post('/api/activity/save',
           {
-            token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
+            token: localStorage.getItem("token"), activityName: editForm.name, activityDescription: editForm.description,
             date: editForm.date, result: editForm.result, id: editForm.id
           })
           .then(res => {  //直接把这一行的数据给出去可以吗
@@ -235,7 +276,10 @@ const sumbitEditRow = async () => {
               loadactivityTable()
             } else {
               hideLoading();
-              messageError(res.data.message)
+              if(res.data.message === '登录失效')
+                loginFailed()
+              else
+                messageError(res.data.message)
             }
           })
           .catch(function (error) {
@@ -246,10 +290,10 @@ const sumbitEditRow = async () => {
       } else if (typeOperation.value === 'add') {
         showLoading()
         console.log('未执行添加前的描述，名字，日期，成果')
-        console.log(editForm.activityDescription, editForm.activityName, editForm.date, editForm.result)
+        console.log(editForm.description, editForm.name, editForm.date, editForm.result)
         service.post('/api/activity/save',
           {
-            token: localStorage.getItem("token"), activityName: editForm.activityName, activityDescription: editForm.activityDescription,
+            token: localStorage.getItem("token"), activityName: editForm.name, activityDescription: editForm.description,
             date: editForm.date, result: editForm.result
           })
           .then(res => {
@@ -266,7 +310,10 @@ const sumbitEditRow = async () => {
 
             } else {
               hideLoading()
-              messageError(res.data.message)
+              if(res.data.message === '登录失效')
+                loginFailed()
+              else
+                messageError(res.data.message)
             }
           }
           )
@@ -283,8 +330,8 @@ const sumbitEditRow = async () => {
     }
   }))
 
-  editForm.activityName = '',
-    editForm.activityDescription = '',
+  editForm.name = '',
+    editForm.description = '',
     editForm.id = '',
     editForm.date = '',
     editForm.result = '',
@@ -317,11 +364,9 @@ const handleCurrentChange = (current) => {
 </script>
 <style lang="scss" scoped>
 .title {
-  margin-top: 1.875vh;
-  height: 7.5vh;
   font-size: 4.5vh;
   font-weight: 500;
-  line-height: 1vh;
+  line-height: 6vh;
   color: #0273f1;
 }
 
@@ -342,15 +387,20 @@ const handleCurrentChange = (current) => {
     background-color: #FFFFFF;
     box-shadow: 0 0 1.25vh 0 #b9ccee;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
     .addButton {
-      width: 10vw;
-      height: 5vh;
+      min-width: 12vh;
       border-color: #0273f1;
       border-style: solid;
-      border-width: 0.5vh;
+      border-width: 5px;
       border-radius: 1vw;
       color: #0273f1;
-      font-size: 2.5vh;
+      font-size: 3vh;
+      float: right;
+      height: 6vh;
+      margin: auto 0;
+      background-color: rgb(0,0,0,0);
     }
 
     ::v-deep .el-table th {
@@ -390,6 +440,6 @@ const handleCurrentChange = (current) => {
 
 .pagination {
   padding-top: 3.75vh;
-  padding-left: 28.75vh;
+  margin: auto;
 }
 </style>

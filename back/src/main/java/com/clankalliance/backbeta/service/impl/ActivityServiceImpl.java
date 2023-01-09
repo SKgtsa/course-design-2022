@@ -107,36 +107,34 @@ public class ActivityServiceImpl implements ActivityService {
      */
     @Override
     public CommonResponse handleSave(String token, long id,String name,String description,String date,String result){
-        CommonResponse response ;
-        if(token.equals("114514")){
-            response = new CommonResponse();
-            response.setSuccess(true);
-            response.setMessage("262555784829865984");//学生身份
-        }else{
-            response = tokenUtil.tokenCheck(token);
-        }
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
+                Activity activity;
                 if(0!=id){
                     Optional<Activity> activityOp= activityRepository.findById(id);
                     if(activityOp.isEmpty()){
-                        //活动不存在，则为课程的创建
-                        id=snowFlake.nextId();
+                        response.setSuccess(false);
+                        response.setMessage("课外活动不存在");
+                        return response;
                     }
+                    activity = activityOp.get();
+                    activity.setName(name);
+                    activity.setDate(date);
+                    activity.setResult(result);
+                    activity.setDescription(description);
+                    activityRepository.save(activity);
                 }else{
-                    id=snowFlake.nextId();
+                    activity = new Activity(snowFlake.nextId(),name,description,date,result,student);
+                    activityRepository.save(activity);
+                    List<Activity> activityList=student.getActivity();
+                    activityList.add(activity);
+                    student.setActivity(activityList);
+                    student.setAchievementSet(updateAchievementList(student));
+                    studentRepository.save(student);
                 }
-                Activity activity=new Activity(id,name,description,date,result,student);
-                activityRepository.save(activity);
-                //将activity加入进学生的活动表中
-                List<Activity> activityList=student.getActivity();
-                activityList.add(activity);
-                student.setActivity(activityList);
-                student.setAchievementSet(updateAchievementList(student));
-                studentRepository.save(student);
-
                 response.setSuccess(true);
                 response.setMessage("课外活动创建成功");
             }else if(user instanceof Manager){

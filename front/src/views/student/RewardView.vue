@@ -4,20 +4,22 @@
     'height': `${mobile? 'auto':'91vh'}`
   }">
     <div class="pageContent" :style="{
-      'width': `${mobile? 100:80}%`,
+      'width': `${mobile? 93:80}%`,
     }">
       <div class="title">
         成果奖励
-        <el-button class="addButton" @click="add">添加</el-button>
+        <el-button class="addButton" @click="add" :style="{
+          'width': `${mobile? '20vw':'15vh'}`,
+        }">添加</el-button>
       </div>
       <!-- 表格数据显示 -->
       <el-table :data="tableData.arr" stripe size="large" class="rewardTable"
         :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '1.75vh', 'font-size': '1.75vh', 'text-align': 'center', 'font-weight': '450' }">
         <!-- <el-table-column label="日期" prop="date" width="240" show-overflow-tooltip /> -->
-        <el-table-column label="标题" fixed="left" prop="name" width="150" show-overflow-tooltip />
+        <el-table-column label="标题" fixed="left" prop="name" min-width="60" max-width="150" show-overflow-tooltip />
         <el-table-column label="描述" prop="description" show-overflow-tooltip></el-table-column>
-        <el-table-column width="300" fixed="right" label="操作">
+        <el-table-column min-width="100" max-width="300" fixed="right" label="操作">
           <template #default="scope">
             <el-button size="medium" @click="handleCheck(scope.row)" class="button" type="primary">查看</el-button>
             <el-button size="medium" @click="handleEdit(scope.row)" class="button">编辑</el-button>
@@ -329,15 +331,19 @@ const handleCurrentChange = (current) => {
     background-color: #FFFFFF;
     box-shadow: 0 0 1.25vh 0 #b9ccee;
     margin: 0 auto;
+    display: flex;
+    flex-direction: column;
     .addButton {
-      width: 10vw;
-      height: 5vh;
       border-color: #0273f1;
       border-style: solid;
       border-width: 0.5vh;
       border-radius: 1vw;
       color: #0273f1;
-      font-size: 2.5vh;
+      font-size: 3vh;
+      float: right;
+      height: 6vh;
+      margin: auto 0;
+      background-color: rgb(0,0,0,0);
     }
 
     ::v-deep .el-table th {
@@ -377,6 +383,6 @@ const handleCurrentChange = (current) => {
 
 .pagination {
   padding-top: 3.75vh;
-  padding-left: 28.75vh;
+  margin: auto;
 }
 </style>

@@ -87,7 +87,7 @@
             'flex-direction': `${mobile? 'column': 'row'}`,
             'margin': `${mobile? '0 auto':'auto'}`
           }" class="littleProgramMain">
-                <el-image src="http://courseback.clankalliance.cn/inbuild/SKgtsa/2.jpg" class="littleProgramImage" :style="{
+                <el-image src="https://courseback.clankalliance.cn/inbuild/SKgtsa/2.jpg" class="littleProgramImage" :style="{
               'width': `${mobile? '30vh':'40%'}`
             }"/>
                 <div :style="{

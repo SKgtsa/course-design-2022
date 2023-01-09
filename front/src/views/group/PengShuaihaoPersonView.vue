@@ -2,10 +2,10 @@
     <div class="container">
       <div class="header">
         <div class="titleBox">
-          <img class="chineseImg" v-if="!mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格.png' />
-          <img class="englishImg" v-if="!mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格英语.png' />
-          <img class="chineseImg" style="width:60%" v-if="mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格.png' />
-          <img class="englishImg" style="width:60%" v-if="mobile" src='http://courseback.clankalliance.cn/static/inbuild/psh/烟火一格英语.png' />
+          <img class="chineseImg" v-if="!mobile" src='https://courseback.clankalliance.cn/static/inbuild/psh/烟火一格.png' />
+          <img class="englishImg" v-if="!mobile" src='https://courseback.clankalliance.cn/static/inbuild/psh/烟火一格英语.png' />
+          <img class="chineseImg" style="width:60%" v-if="mobile" src='https://courseback.clankalliance.cn/static/inbuild/psh/烟火一格.png' />
+          <img class="englishImg" style="width:60%" v-if="mobile" src='https://courseback.clankalliance.cn/static/inbuild/psh/烟火一格英语.png' />
         </div>
         <div class="imgBox">
         </div>
@@ -38,38 +38,38 @@
           }" v-if="!isMenu">
           <el-carousel ref="carousel" v-touch:swipe.left="right" v-touch:swipe.right="left" class="carouselPage" height="100%" interval="4000">
             <el-carousel-item class="carouselItem">
-              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/static/inbuild/psh/横屏3.jpg' />
+              <img style="width: 100%; height: 100%" src='https://courseback.clankalliance.cn/static/inbuild/psh/横屏3.jpg' />
             </el-carousel-item>
             <el-carousel-item class="carouselItem">
-              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/static/inbuild/psh/横屏2.jpg' />
+              <img style="width: 100%; height: 100%" src='https://courseback.clankalliance.cn/static/inbuild/psh/横屏2.jpg' />
             </el-carousel-item>
             <el-carousel-item class="carouselItem">
-              <img style="width: 100%; height: 100%" src='http://courseback.clankalliance.cn/static/inbuild/psh/雪景.jpg' />
+              <img style="width: 100%; height: 100%" src='https://courseback.clankalliance.cn/static/inbuild/psh/雪景.jpg' />
             </el-carousel-item>
           </el-carousel>
         </div>
         <div class="content" v-if="!isMenu" :style="{'height':`${mobile? '120vh': '80vh'}`}">
           <div v-if="!mobile" class="tourDiv">
-            <img  src="http://courseback.clankalliance.cn/static/inbuild/psh/导游.jpg" class="tour">
+            <img  src="https://courseback.clankalliance.cn/static/inbuild/psh/导游.jpg" class="tour">
           </div>
           <el-scrollbar v-if="!mobile" class="contentSrollbar">
             <div class="cardBox" v-if="!mobile">
               <el-card class="card" @click="showBaotu">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg">
+                <img class="cardImg" src="https://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg">
                 <span class="cardText">趵突泉</span>
               </el-card>
               <el-card class="card" @click="showHouse">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg">
+                <img class="cardImg" src="https://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg">
                 <span class="cardText">洪家楼</span>
               </el-card>
             </div>
             <div class="cardBox" v-if="!mobile">
               <el-card class="card" @click="showLake">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png">
+                <img class="cardImg" src="https://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png">
                 <span class="cardText">大明湖</span>
               </el-card>
               <el-card class="card" @click="showLeave">
-                <img class="cardImg" src="http://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg">
+                <img class="cardImg" src="https://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg">
                 <span class="cardText">红叶谷</span>
               </el-card>
             </div>
@@ -78,32 +78,32 @@
               <a class="mobileTitle">景致</a>
             <el-scrollbar style="height:110vh;">
               <el-card class="cardMobile" @click="showBaotu" >
-                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg">
+                <img class="cardImgMobile" src="https://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg">
                 <span class="cardText">趵突泉</span>
               </el-card>
               <el-card class="cardMobile" @click="showHouse">
-                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg">
+                <img class="cardImgMobile" src="https://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg">
                 <span class="cardText">洪家楼</span>
               </el-card>
               <el-card class="cardMobile" @click="showLake">
-                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png">
+                <img class="cardImgMobile" src="https://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png">
                 <span class="cardText">大明湖</span>
               </el-card>
               <el-card class="cardMobile" @click="showLeave">
-                <img class="cardImgMobile" src="http://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg">
+                <img class="cardImgMobile" src="https://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg">
                 <span class="cardText">红叶谷</span>
               </el-card>
             </el-scrollbar>
             </div>
-          
+
         </div>
         <div class="carouselBox" v-if="isMenu">
-          <img v-if="attractions == 'Baotu'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg"/>
-          <img v-if="attractions == 'lake'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png"/>
-          <img v-if="attractions == 'leave'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg"/>
-          <img v-if="attractions == 'house'" style="width:100%;height: 100%;" src="http://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg"/>
+          <img v-if="attractions == 'Baotu'" style="width:100%;height: 100%;" src="https://courseback.clankalliance.cn/static/inbuild/psh/趵突泉.jpg"/>
+          <img v-if="attractions == 'lake'" style="width:100%;height: 100%;" src="https://courseback.clankalliance.cn/static/inbuild/psh/大明湖.png"/>
+          <img v-if="attractions == 'leave'" style="width:100%;height: 100%;" src="https://courseback.clankalliance.cn/static/inbuild/psh/红叶谷.jpeg"/>
+          <img v-if="attractions == 'house'" style="width:100%;height: 100%;" src="https://courseback.clankalliance.cn/static/inbuild/psh/洪家楼.jpg"/>
         </div>
-  
+
         <div class="contentAttraction" v-if="isMenu">
           <!--  <div class="divider">
           </div> -->
@@ -530,7 +530,7 @@
   import router from '@/router';
 import { messageSuccess } from '@/utils/message';
   import { ref } from 'vue';
-  
+
   const handleSelect = (key: string, keyPath: string[]) => {
     console.log(key, keyPath)
   }
@@ -580,85 +580,85 @@ import { messageSuccess } from '@/utils/message';
     height: 230vh;
     display: flex;
     flex-direction: column;
-  
+
     .header {
       background-color: #FFFFFF;
       display: flex;
       flex-direction: row;
       height: 24vh;
-  
+
       .titleBox {
         padding-left: 4vw;
         padding-top: 5vh;
         width: 40%;
         display: flex;
         flex-direction: column;
-  
+
         .chineseImg {
           height: 50%;
           width: 35%;
-  
+
         }
-  
+
         .englishImg {
           height: 30%;
           width: 35%;
         }
       }
-  
+
       .imgBox {
         height: 100%;
         width: 60%;
         overflow: hidden;
         background-size: 100% 100%;
-        background-image: linear-gradient(to right, #FFFFFF, transparent), url('http://courseback.clankalliance.cn/static/inbuild/psh/散步.jpg');
+        background-image: linear-gradient(to right, #FFFFFF, transparent), url('https://courseback.clankalliance.cn/static/inbuild/psh/散步.jpg');
         background-repeat: no-repeat;
       }
     }
-  
+
     .menuBox {
       background-color: rgb(170, 104, 37);
       height: 8vh;
-  
+
       .menu {
         height: 100%;
         padding-left: 10%;
         padding-right: 10%;
       }
     }
-  
+
     .main {
       background-color: rgb(247, 249, 235);
       height: 190vh;
  /*      padding-left: 10vw;
       padding-right: 10vw; */
-  
+
       .carouselBox {
     /*     background-color: coral; */
         height: 70vh;
         width: 100%;
-  
+
         .carouselPage {
           height: 100%;
           width: 100%;
-  
+
           .carouselItem {
             height: 100%;
             width: 100%;
           }
         }
       }
-  
+
       .introductionBox {
         display: flex;
         flex-direction: row;
         background-color: rgb(196, 214, 248);
         height: 40vh;
         width: 100%;
-  
+
         .imgIntroductionBox {
           /* background-color: aqua; */
-          background-image: url('http://courseback.clankalliance.cn/static/inbuild/psh/济南.jpg');
+          background-image: url('https://courseback.clankalliance.cn/static/inbuild/psh/济南.jpg');
           background-size: 100% 100%;
           background-repeat: no-repeat;
           margin-left: 3vw;
@@ -666,7 +666,7 @@ import { messageSuccess } from '@/utils/message';
           height: 30vh;
           width: 40vw;
         }
-  
+
         .textIntroductionBox {
           background-color: rgb(248, 226, 226);
           border-radius: 1vw;
@@ -675,7 +675,7 @@ import { messageSuccess } from '@/utils/message';
           margin-right: 0.4vw;
           height: 90%;
           width: 45%;
-  
+
           .introTitle {
             font-size: 2vw;
             margin-top: 1.5vh;
@@ -684,7 +684,7 @@ import { messageSuccess } from '@/utils/message';
             margin-bottom: 0.4vh !important;
             font-family: 微软雅黑;
           }
-  
+
           .introText {
             /*  margin-block-start: 1em; */
             padding-top: 3vh;
@@ -693,37 +693,37 @@ import { messageSuccess } from '@/utils/message';
           }
         }
       }
-  
+
       .content {
         background-color: #FFFFFF;
         display: flex;
         flex-direction: row;
         height: 80vh;
         width: 100%;
-  
+
         .tourDiv {
           padding-top: 8vh;
           width: 25vw;
           height: 60vh;
-  
+
           .tour {
             width: 25vw;
             height: 60vh;
           }
         }
-  
+
         .contentSrollbar {
           height: 80vh;
           width: 52.5vw;
           padding-left: 0vw;
         }
-  
+
         .cardBox {
           padding-top: 4vh;
           display: flex;
           flex-direction: row;
           padding-left: 0vw;
-  
+
           .card {
             margin-left: 5vw;
             --el-card-padding: 0 !important;
@@ -740,20 +740,20 @@ import { messageSuccess } from '@/utils/message';
               height: 33vh;
               width: 18vw;
             }
-  
+
             .cardImg {
               height: 27vh;
               width: 18vw;
             }
-  
+
             .cardText {
-  
+
               font-size: 1.2vw;
               font-weight: 550;
             }
-  
+
           }
-  
+
           .card:hover {
             box-shadow: 0.2vw 0.5vw 0.3vw 0.5vw rgba(48, 55, 66, 0.15) !important;
             transition: all 0.1s ease-in-out !important;
@@ -784,22 +784,22 @@ import { messageSuccess } from '@/utils/message';
               height: 33vh;
               width: 80vw;
             }
-            
-  
-  
+
+
+
       }
-  
+
       .contentAttraction {
         background-color: #FFFFFF;
         height: 80vh;
         width: 100%;
         display: flex;
         flex-direction: column;
-  
+
         .attractionScrollbar {
           padding-left: 2vw;
           padding-right: 2vw;
-  
+
           .attractionTitle {
             padding-top: 0 !important;
             font-size: 2vw;
@@ -808,13 +808,13 @@ import { messageSuccess } from '@/utils/message';
             color: black;
             font-weight: 600;
           }
-  
+
           .attrIntro {
             font-size: 1vw;
             padding-right: 15vw !important;
           }
         }
-  
+
         .divider {
           padding-bottom: 0vh;
           height: 3vh;
@@ -823,11 +823,11 @@ import { messageSuccess } from '@/utils/message';
         }
       }
     }
-  
+
     .footer {
       background-color: #545c64;
       height: 10vh;
-  
+
       .copyright {
         font-size: 1.3vw;
         padding-top: 2vh;
@@ -837,6 +837,6 @@ import { messageSuccess } from '@/utils/message';
         color: #faefef;
       }
     }
-  
+
   }
   </style>
