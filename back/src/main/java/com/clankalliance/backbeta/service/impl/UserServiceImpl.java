@@ -124,11 +124,11 @@ public class UserServiceImpl implements UserService {
         增加nickName,avatarURL,character 0Teacher 1Student 2Manager
          */
         CommonResponse  response = new CommonResponse<>();
-        if(!tencentService.getTencentCaptchaResult(ticket, randstr)){
-            response.setSuccess(false);
-            response.setMessage("人机验证不通过");
-            return response;
-        }
+//        if(!tencentService.getTencentCaptchaResult(ticket, randstr)){
+//            response.setSuccess(false);
+//            response.setMessage("人机验证不通过");
+//            return response;
+//        }
         response.setSuccess(false);
         password = DigestUtils.sha1Hex(password);
         User user = findByUserNumber(userNumber);
@@ -339,7 +339,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section){
+    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section, String nickName){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -356,6 +356,13 @@ public class UserServiceImpl implements UserService {
         user.setEthnic(ethnic);
         user.setEMail(eMail);
         user.setPoliticalAffiliation(politicalAffiliation);
+        user.setNickName(nickName);
+        if(user instanceof Teacher){
+            ((Teacher) user).setResearchDirection(researchDirection);
+        }
+        if(user instanceof Student){
+            ((Student) user).setSection(section);
+        }
         try{
             userRepository.save(user);
         }catch (Exception e){
