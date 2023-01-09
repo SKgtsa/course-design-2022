@@ -201,7 +201,7 @@
           </el-icon>
         </el-upload>
       </el-form-item>
-      <el-form-item label="学号:" prop="userNumber">
+      <el-form-item label="学号/工号:" prop="userNumber">
         <span>{{ information.userNumber }}</span>
       </el-form-item>
       <el-form-item label="姓名:" prop="name">

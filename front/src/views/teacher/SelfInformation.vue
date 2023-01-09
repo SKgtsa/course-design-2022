@@ -78,7 +78,7 @@
       </el-form-item>
     </el-form>
     <div class="dialogButtonPage">
-      <el-button @click="sumbitEditRow" class="dialogButton">
+      <el-button @click="submitEditRow" class="dialogButton">
         <a>确定</a>
       </el-button>
       <el-button @click="closeDialog" class="dialogButton">
@@ -286,7 +286,7 @@ const closeDialog = () => {
   centerDialogVisibleInf.value = false;
 }
 
-const sumbitEditRow = async () => {
+const submitEditRow = async () => {
   console.log('进入提交方法')
   await formData.value.validate((valid) => {
     console.log('校验方法')
