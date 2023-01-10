@@ -162,7 +162,7 @@
       }" class="detailTopImage"/>
       <a class="detailHeading">{{pageData.target.heading}}</a>
       <div class="postContent">
-        <div v-html="pageData.targetContent.content"/>
+        <div v-html="pageData.targetContent"/>
       </div>
     </el-dialog>
   </template>
@@ -191,7 +191,8 @@ import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
 import {getBaseURL, getUserId, mobile} from "@/global/global";
-import { messageError } from '@/utils/message'
+import {handleResponseMessage} from "@/utils/tokenCheck";
+import {messageError, messageSuccess} from "@/utils/message";
 let userId = router.currentRoute.value.query.userId as String;
 console.log(userId)
 const blog = ref('')
@@ -233,7 +234,7 @@ const pageData  = reactive({
     userId: '',
   },
   requesting:false,
-  targetContent: {content: '',commentList: []},
+  targetContent: '',
   announcementList: [],
   targetAnnouncement: {
     id: '0',
@@ -301,7 +302,6 @@ const getCourse = async()=>{
     refresh();
   })
 }
-
 const deleteThisPublication = (target: Publication, event: Event) => {
   event.stopPropagation();
   ElMessageBox.confirm('你确定要删除这条论文吗？','警告',{
@@ -346,12 +346,11 @@ const jumpToDetail = (target: Publication) => {
     const data = res.data;
     console.log('获取正文成功')
     console.log(res)
-    if (data.success) {
-      let content = data.content;
-      /* content.content = content.content.toString().replace('<img',"<img style='max-width:100%;height:auto;'") */
-      pageData.targetContent = content;
+    pageData.targetContent = data.content;
+    console.log(pageData.targetContent)
+    if(data.success)
       localStorage.setItem('token', data.token)
-    }
+
     hideLoading();
     showDetail.value = true;
   })
@@ -562,7 +561,6 @@ const refresh = () => {
 }
 
 const submit = () => {
-  showLoading();
   if(topImage == null){
     ElMessage({
       message: '请选择封面图片',
@@ -579,6 +577,7 @@ const submit = () => {
       type: 'error'
     })
   }else{
+    showLoading();
     console.log(localStorage.getItem("token"))
     serviceFile.post('api/publication/submit', { token: localStorage.getItem("token"), heading: heading.value, content: postContent.value,topImage: topImage }).then(res => {
       const data = res.data;
@@ -589,6 +588,7 @@ const submit = () => {
           message: '发送成功',
           type: 'success'
         })
+        messageSuccess('发送成功')
         localStorage.setItem('token', data.token)
         drawerOpen.value = false;
         hideLoading();
@@ -598,12 +598,9 @@ const submit = () => {
         refresh();
         //用新token向后端要新的blog列表并更新显示
       } else {
-        console.log(res)
-        ElMessage({
-          message: data.message,
-          type: 'error'
-        })
         hideLoading();
+        console.log(res)
+        handleResponseMessage(res.data.message)
       }
     })
   }

@@ -125,6 +125,7 @@ public class AvatarServiceImpl implements AvatarService {
             System.out.println("文件状态异常或文件读写异常");
         }
         user.setAvatarURL(avatar);
+        userRepository.save(user);
         if(!(user instanceof Manager)){
             List<Post> postList = new ArrayList<>();
             if(user instanceof Teacher)

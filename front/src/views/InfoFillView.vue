@@ -24,7 +24,6 @@
           }" />
           </el-upload>
         </div>
-
         <a class="notice">请选择您的头像</a>
       </div>
     </el-carousel-item>
