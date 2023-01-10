@@ -766,6 +766,22 @@ const loadStudentTable = async (id) => {
 //编辑课程信息
 const handleEdit = (row) => {  //改
   console.log(row)
+  editForm.name = '';
+  editForm.weekStart = '';
+  editForm.weekEnd = '';
+  /* editForm.time.weekDay = '';
+  editForm.time.section = ''; */
+  editForm.capacity = '';
+  editForm.time = [],
+    editForm.location = '';
+  editForm.studentClass = [];
+  editForm.studentSection = [];
+  editForm.year = '';
+  editForm.description = '';
+  editForm.semester = '';
+  editForm.credit = '';
+  editForm.courseId = '0';
+  editForm.weight = '';
   editForm.name = row.name;
   editForm.weekStart = row.weekStart;
   editForm.weekEnd = row.weekEnd;
