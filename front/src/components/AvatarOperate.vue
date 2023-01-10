@@ -11,7 +11,7 @@
         'height': `${mobile? 12:4}vh`,
         'border-radius': `${mobile? 6:2}vh`
       }">
-        <el-image  :src="getAvatarURL()"  :style="{
+        <el-image  :src="getBaseURL()+getAvatarURL()"  :style="{
         'width': `${mobile? 12:4}vh`,
         'height': `${mobile? 12:4}vh`,
         'border-radius': `${mobile? 6:2}vh`
@@ -54,7 +54,7 @@
   <el-dialog v-model="dialogVisibleImg" width="30vh">
     <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
                :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
-      <img v-if="getAvatarURL()" class="avatar" :src="getAvatarURL()" />
+      <img v-if="getBaseURL()+getAvatarURL()" class="avatar" :src="getBaseURL()+getAvatarURL()" />
     </el-upload>
   </el-dialog>
   <!-- 修改密码弹出框 -->
@@ -165,7 +165,7 @@
     await pwdEditData.value.validate((valid) => {
       if (valid) {
         showLoading();
-        service.post('//api/user/changePassword', {
+        service.post('/api/user/changePassword', {
           token: localStorage.getItem('token'),
           oldPassward: formEditPwd.oldPwd, newPassward: formEditPwd.newPwd
         }).then(res => {
@@ -201,7 +201,7 @@
       if (data.success) {
         hideLoading();
         localStorage.setItem('token', data.token);
-        let url = getBaseURL() + data.content;
+        let url = data.content;
         console.log(url);
         localStorage.setItem('avatarURL', url);
         reload()

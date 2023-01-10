@@ -76,7 +76,7 @@
                         </el-form-item>
                         <a  class="findPwd" @click="findPwd">忘记密码?</a>
                         <el-form-item>
-                          <el-button type="primary" @click="submitPwd" class="loginPageEl-botton buttonLogin"
+                          <el-button type="primary" @click="submitPhone" class="loginPageEl-botton buttonLogin"
                                      color="#0a8ce2"><a style="font-size:2vh;">登录</a></el-button>
                         </el-form-item>
                         <el-form-item>
@@ -129,7 +129,7 @@ import service from "@/request";
 import { Lock, User, Message, Phone } from '@element-plus/icons-vue';
 import { messageError, messageSuccess } from "@/utils/message";
 import { hideLoading, showLoading } from "@/utils/loading";
-import { getBaseURL, setAvatarURL, setNickName, setUserId } from "@/global/global";
+import { getAvatarURL, getBaseURL, setAvatarURL, setNickName, setUserId } from "@/global/global";
 import { identityJump } from "@/utils/identityJump";
 import { mobile } from "@/global/global";
 const showCover = ref(false);
@@ -218,7 +218,9 @@ const submitPwd = (formEl: FormInstance | undefined) => {
             console.log(localStorage.getItem('token'))
             setUserId(data.user.id);
             setNickName(data.user.nickName);
-            setAvatarURL(url);
+            setAvatarURL(data.user.avatarURL);
+            console.log(data.user.avatarURL);
+            console.log(getAvatarURL())
             hideLoading();
             /*       localStorage.setItem("userName", data.user.name) */
             messageSuccess(data.message)
@@ -258,10 +260,10 @@ const submitPhone = async (formEl: FormInstance | undefined) => {
         const data = res.data;
         if (data.success) {
           localStorage.setItem("token", data.token)
-          let url = getBaseURL() + data.user.avatarURL
+/*           let url = getBaseURL() + data.user.avatarURL */
           setNickName(data.user.nickName);
           setUserId(data.user.id);
-          setAvatarURL(url);
+          setAvatarURL(data.user.avatarURL);
           messageSuccess("登录成功!")
           hideLoading()
           identityJump(data.character)

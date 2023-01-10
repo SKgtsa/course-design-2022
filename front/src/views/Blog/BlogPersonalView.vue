@@ -196,7 +196,7 @@
       <el-form-item label="照片">
         <el-upload class="avatar-uploader" action="#" :show-file-list="false" :before-upload="beforeAvatarUpload"
           :http-request="uploadImg" accept=".jpg,.jpeg,.png,.JPG,.JPEG">
-          <img v-if="information.photoURL" class="avatar" :src="information.photoURL" />
+          <img v-if="getBaseURL()+information.photoURL" class="avatar" :src="getBaseURL()+information.photoURL" />
           <el-icon v-else class="avatar-uploader-icon">
             <Plus />
           </el-icon>
@@ -339,8 +339,8 @@ const loadInformationData = async () => {   //查看个人信息
       information.researchDirection = content.researchDirection;
       information.section = content.section;
       information.idCardNumber = content.idCardNumber;
-      information.photoURL = getBaseURL() + content.photoURL;
-      information.avatarURL = getBaseURL() + content.avatarURL;
+      information.photoURL =content.photoURL;
+      information.avatarURL =content.avatarURL;
       information.id = content.id;
       localStorage.setItem('token', data.token)
       console.log(information)
@@ -866,6 +866,7 @@ const init = () => {
       let temp = data.content;
       login.value = data.success;
       pageData.data = temp;
+      console.log(temp)
       hideLoading();
       pageData.requesting = false;
       refresh();
