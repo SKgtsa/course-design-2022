@@ -14,7 +14,9 @@
           <a class="title">课程管理</a>
           <div class="search">
             <span class="searchSpan">
-              <el-input v-model="searchOrigin" type="text" class="searchTerm" maxlength="30"
+              <el-input v-model="searchOrigin" :style="{
+                'width':`${mobile?'50':'40'}vw`
+              }" type="text" class="searchTerm" maxlength="30" clearable 
                 placeholder="输入课程号"/>
               <el-button type="submit" class="searchButton" @click="check">
                 <el-icon class="icon">
@@ -128,13 +130,17 @@
                 </el-input>
               </el-form-item>
               <el-form-item label="课容量:" prop="capacity">
-                <el-input style="width:8vw" v-model="editForm.capacity" maxlength="5" type="number">{{
+                <el-input :style="{
+                  'width':`${mobile?'40':'8'}vw`
+                }" v-model="editForm.capacity" maxlength="5" type="number">{{
                     editForm.capacity
                   }}
                 </el-input>
               </el-form-item>
               <el-form-item label="学分:" prop="credit">
-                <el-input style="width:8vw" v-model="editForm.credit" maxlength="2" type="number">{{
+                <el-input :style="{
+                  'width':`${mobile?'40':'8'}vw`
+                }" v-model="editForm.credit" maxlength="2" type="number">{{
                     editForm.credit
                   }}
                 </el-input>
