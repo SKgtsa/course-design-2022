@@ -179,6 +179,7 @@
       </div>
     </div>
   </el-dialog>
+  <!--学生互评窗口-->
   <el-drawer v-model="openEvaluateDrawer" title="学生互评" :direction="'ttb'" :before-close="handleDrawerClose">
     <el-form :model="evaluateForm">
       <el-form-item label="称号">
@@ -238,15 +239,15 @@
         <el-input v-model="information.phone">{{information.phone}}</el-input>
       </el-form-item>
     </el-form>
-    <el-button v-if="identity === 0" type="primary" style="height: 4vh;" @click="sumbitEditRowStudent"
+    <el-button v-if="identity === 0" type="primary" style="height: 4vh;" @click="submitEditRowStudent"
       :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
       <a>提交</a>
     </el-button>
-    <el-button v-if="identity === 1"  type="primary" style="height: 4vh;" @click="sumbitEditRowTeacher"
+    <el-button v-if="identity === 1"  type="primary" style="height: 4vh;" @click="submitEditRowTeacher"
       :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
       <a>提交</a>
     </el-button>
-    <el-button v-if="identity === 2"  type="primary" style="height: 4vh;" @click="sumbitEditRowManager"
+    <el-button v-if="identity === 2"  type="primary" style="height: 4vh;" @click="submitEditRowManager"
       :style="{ 'width': `${mobile ? 30 : 9}vw`, 'margin-left': `${mobile ? 25 : 14}vw` }">
       <a>提交</a>
     </el-button>
@@ -390,7 +391,7 @@ const rules = reactive({
   researchDirection:[{ required: true, message: '请输入研究方向', trigger: 'blur' }],
 })
 
-const sumbitEditRowStudent = () => {
+const submitEditRowStudent = () => {
   console.log(formData)
   formData.value.validate((valid) => {
     if (valid) {
@@ -416,6 +417,7 @@ const sumbitEditRowStudent = () => {
           pageData.requesting = false;
           loadInformationData()
           messageSuccess(data.message)
+          init()
         } else {
           hideLoading()
           pageData.requesting = false;
@@ -433,7 +435,7 @@ const sumbitEditRowStudent = () => {
     }
   })
 }
-const sumbitEditRowTeacher = () => {
+const submitEditRowTeacher = () => {
   console.log(formData)
   formData.value.validate((valid) => {
     if (valid) {
@@ -459,24 +461,25 @@ const sumbitEditRowTeacher = () => {
           pageData.requesting = false;
           loadInformationData()
           messageSuccess(data.message)
+          init()
         } else {
           hideLoading()
           pageData.requesting = false;
           messageError(res.data.message)
         }
       })
-        .catch(function (error) {
-          messageError("服务器开小差了呢")
-          hideLoading();
-          pageData.requesting = false;
-          console.log(error)
-        })
+      .catch(function (error) {
+        messageError("内部错误")
+        hideLoading();
+        pageData.requesting = false;
+        console.log(error)
+      })
     } else {
       messageError("请完善全部信息")
     }
   })
 }
-const sumbitEditRowManager = ()=>{
+const submitEditRowManager = ()=>{
   console.log(formData)
   formData.value.validate((valid) => {
     if (valid) {
@@ -502,6 +505,7 @@ const sumbitEditRowManager = ()=>{
           pageData.requesting = false;
           loadInformationData()
           messageSuccess(data.message)
+          init()
         } else {
           hideLoading()
           pageData.requesting = false;
@@ -509,7 +513,7 @@ const sumbitEditRowManager = ()=>{
         }
       })
         .catch(function (error) {
-          messageError("服务器开小差了呢")
+          messageError("内部错误")
           hideLoading();
           pageData.requesting = false;
           console.log(error)
@@ -540,12 +544,12 @@ let uploadImg = async (f) => {
       messageError(data.message)
     }
   })
-      .catch(function (error) {
-        hideLoading();
-        pageData.requesting = false;
-        messageError("服务器开小差了呢");
-        console.log(error)
-      })
+  .catch(function (error) {
+    messageError("内部错误")
+    hideLoading();
+    pageData.requesting = false;
+    console.log(error)
+  })
 }
 let beforeAvatarUpload = (file) => {
   const isLt2M = (file.size / 1024 / 1024) < 2
@@ -588,6 +592,7 @@ const submitEvaluate = () => {
       hideLoading();
       pageData.requesting = false;
       init();
+      openEvaluateDrawer.value = false;
     } else {
       hideLoading();
       pageData.requesting = false;

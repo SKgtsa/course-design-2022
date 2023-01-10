@@ -66,6 +66,8 @@ public class PublicationServiceImpl implements PublicationService {
             }
             Teacher teacher = (Teacher) user;
             List<Publication> publicationList = teacher.getPublicationList();
+            if(publicationList == null)
+                publicationList = new ArrayList<>();
             publicationList.add(publication);
             teacher.setPublicationList(publicationList);
             teacherRepository.save(teacher);

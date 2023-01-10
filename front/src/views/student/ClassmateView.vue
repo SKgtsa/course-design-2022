@@ -7,14 +7,14 @@
     }">
       <a class="tittle">同班同学</a>
       <el-scrollbar class="studentContainer">
-        <div class="studentPaper" v-for="(item,index) in pageData.studentList">
-          <div class="studentCardArea">
-            <div class="studentCard" @click="jumpToPersonal(item)">
+        <div class="studentPaper">
+          <div class="studentCardArea" v-for="(item,index) in pageData.studentList">
+            <el-button class="studentCard" @click="jumpToPersonal(item)">
               <div class="leftArea">
                 <el-image :src="getBaseURL() + item.photoURL" class="photo"/>
               </div>
               <a class="name">{{item.name}}</a>
-            </div>
+            </el-button>
           </div>
         </div>
       </el-scrollbar>
@@ -92,21 +92,23 @@ init();
 }
 .studentPaper{
   width: 100%;
-  display: block;
   font-size: 0;
 }
 .studentCardArea{
-  width: auto;
   height: 10vh;
   display: inline-block;
+  padding-left: 1vh;
+  padding-right: 1vh;
 }
 .studentCard{
   background-color: #DDD;
   box-shadow: 0 0 5px 0 #b9ccee;
-  width: 95%;
+  width: auto;
+  padding-right: 1vh;
   height: 95%;
   border-radius: 2vh;
   display: flex;
+  flex-direction: row;
 }
 .photo{
   width: 8vh;

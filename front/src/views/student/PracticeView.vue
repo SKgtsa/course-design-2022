@@ -79,6 +79,7 @@ import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {mobile} from "@/global/global";
+import {handleResponseMessage} from "@/utils/tokenCheck";
 
 let tableData = reactive({
   arr: [],
@@ -131,13 +132,12 @@ const loadpracticeTable = async () => {
       console.log(tableData)
     } else {
       hideLoading();
-      messageWarning(res.data.message)
+      handleResponseMessage(res.data.message)
     }
   })
     .catch(function (error) {
       hideLoading();
-      messageError("服务器开小差了呢");
-      console.log(error)
+      handleResponseMessage('内部错误')
     })
 }
 loadpracticeTable() //进入默认执行
@@ -148,16 +148,12 @@ const add = () => {
   editForm.practiceName = '';
   editForm.practiceDescription = '';
   editForm.id = '';
-  // editForm.date = '';
-  // editForm.result = '';
 }
 
 const handleCheck = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   centerDialogVisibleCheck.value = true;
   editForm.practiceDescription = row.description;
   editForm.practiceName = row.name;
-  // editForm.date = row.date;
-  // editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'check';
 }
@@ -167,8 +163,6 @@ const handleEdit = (row) => {  //改  两边属性名字不匹配
   centerDialogVisible.value = true;
   editForm.practiceDescription = row.description;
   editForm.practiceName = row.name;
-  // editForm.date = row.date;
-  // editForm.result = row.result;
   editForm.id = row.id;
   typeOperation.value = 'edit';
   console.log(editForm)
@@ -194,13 +188,12 @@ const handleDelete = async (row) => {  //删  //异步不确定是否有问题
           loadpracticeTable() //重新加载现在表单中的数据
         } else {
           hideLoading();
-          messageWarning(res.data.message)
+          handleResponseMessage(res.data.message)
         }
       })
         .catch(function (error) {
           hideLoading();
-          messageError("服务器开小差了呢");
-          console.log(error)
+          handleResponseMessage('内部错误')
         })
     })
 }
@@ -214,8 +207,6 @@ const sumbitEditRow = async () => {
         service.post('/api/practice/save',
           {
             token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
-            // date: editForm.date,
-            // result: editForm.result,
             id: editForm.id
           })
           .then(res => {  //直接把这一行的数据给出去可以吗
@@ -227,26 +218,21 @@ const sumbitEditRow = async () => {
               loadpracticeTable()
             } else {
               hideLoading();
-              messageError(res.data.message)
+              handleResponseMessage(res.data.message)
             }
           })
           .catch(function (error) {
             hideLoading();
-            messageError("服务器开小差了呢");
+            handleResponseMessage('内部错误')
             console.log(error)
           })
       } else if (typeOperation.value === 'add') {
         showLoading()
         console.log('未执行添加前的描述，名字，日期，成果')
-        console.log(editForm.practiceDescription, editForm.practiceName,
-            // editForm.date,
-            // editForm.result
-        )
+        console.log(editForm.practiceDescription, editForm.practiceName)
         service.post('/api/practice/save',
           {
             token: localStorage.getItem("token"), practiceName: editForm.practiceName, practiceDescription: editForm.practiceDescription,
-            // date: editForm.date,
-            // result: editForm.result
           })
           .then(res => {
             if (res.data.success) {
@@ -257,18 +243,15 @@ const sumbitEditRow = async () => {
               console.log(localStorage.getItem('token'))
               messageSuccess("添加成功！")
               typeOperation.value = '';
-              console.log('我执行了')
               loadpracticeTable()
-
             } else {
               hideLoading()
-              messageError(res.data.message)
+              handleResponseMessage(res.data.message)
             }
-          }
-          )
+          })
           .catch(function (error) {
             hideLoading();
-            messageError("服务器开小差了呢");
+            handleResponseMessage('内部错误')
             console.log(error)
           })
       } else {
@@ -278,13 +261,10 @@ const sumbitEditRow = async () => {
       messageWarning("请填写完整!")
     }
   }))
-
   editForm.practiceName = '',
-    editForm.practiceDescription = '',
-    editForm.id = '',
-    // editForm.date = '',
-    // editForm.result = '',
-    centerDialogVisible.value = false;
+  editForm.practiceDescription = '',
+  editForm.id = '',
+  centerDialogVisible.value = false;
   centerDialogVisibleCheck.value = false;
   typeOperation.value = '';
   formData.value = null;
