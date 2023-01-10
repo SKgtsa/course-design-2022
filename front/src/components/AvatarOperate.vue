@@ -219,11 +219,11 @@
   }
   // 上传图片前的过滤
   let beforeAvatarUpload = (file) => {
-    const isLt2M = (file.size / 1024 / 1024) < 2
-    if (!isLt2M) {
-      messageError('上传头像图片大小不能超过 2MB!')
+    const isLt1_5M = (file.size / 1024 / 1024) < 1.5
+    if (!isLt1_5M) {
+      messageError('上传头像图片大小不能超过 1.5MB!')
     }
-    return isLt2M
+    return isLt1_5M
   }
 
   //更改新密码

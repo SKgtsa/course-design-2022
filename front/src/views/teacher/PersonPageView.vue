@@ -119,6 +119,7 @@
           data="{token: localstorage.getItem('token')}"
           ref="uploadRef"
           :on-change="handleChange"
+          :before-upload="beforeAvatarUpload"
       >
         <el-icon><Plus /></el-icon>
         <template #file="{ file }">
@@ -190,6 +191,7 @@ import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
 import {getBaseURL, getUserId, mobile} from "@/global/global";
+import { messageError } from '@/utils/message'
 let userId = router.currentRoute.value.query.userId as String;
 console.log(userId)
 const blog = ref('')
@@ -276,6 +278,14 @@ const getInformation = () =>{
 }
 getInformation();
 
+let beforeAvatarUpload = (file) => {
+  const isLt1_5M = (file.size / 1024 / 1024) < 1.5
+  if (!isLt1_5M) {
+    messageError('上传头像图片大小不能超过 1.5MB!')
+  }
+  return isLt1_5M
+}
+
 //获得课程列表
 const getCourse = async()=>{
   showLoading();
@@ -291,6 +301,7 @@ const getCourse = async()=>{
     refresh();
   })
 }
+
 const deleteThisPublication = (target: Publication, event: Event) => {
   event.stopPropagation();
   ElMessageBox.confirm('你确定要删除这条论文吗？','警告',{

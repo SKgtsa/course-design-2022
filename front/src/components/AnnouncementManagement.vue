@@ -71,6 +71,7 @@
         data="{token: localstorage.getItem('token')}"
         ref="uploadRef"
         :on-change="handleChange"
+        :before-upload="beforeAvatarUpload"
     >
       <el-icon><Plus /></el-icon>
       <template #file="{ file }">
@@ -143,6 +144,7 @@ import {hideLoading, showLoading} from "@/utils/loading";
 import router from "@/router";
 import {getBaseURL, mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
+import { messageError } from '@/utils/message'
 const blog = ref('')
 const imageList = [
   'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
@@ -201,7 +203,13 @@ const updateAnnouncement = () => {
 
 updateAnnouncement();
 
-
+let beforeAvatarUpload = (file) => {
+    const isLt1_5M = (file.size / 1024 / 1024) < 1.5
+    if (!isLt1_5M) {
+      messageError('上传头像图片大小不能超过 1.5MB!')
+    }
+    return isLt1_5M
+  }
 const jumpToAnnouncementDetail = (item: Announcement) => {
   showLoading();
   console.log(item)
