@@ -63,10 +63,10 @@
     <div>
       <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData" label-width="auto">
         <el-form-item label="旧密码:" prop="oldPwd">
-          <el-input v-model="formEditPwd.oldPwd"></el-input>
+          <el-input v-model="formEditPwd.oldPwd" type="password"></el-input>
         </el-form-item>
         <el-form-item label="新密码:" prop="newPwd">
-          <el-input v-model="formEditPwd.newPwd"></el-input>
+          <el-input v-model="formEditPwd.newPwd" type="password"></el-input>
         </el-form-item>
       </el-form>
       <div style="width:60%;padding-left:20%">
@@ -167,7 +167,7 @@
         showLoading();
         service.post('/api/user/changePassword', {
           token: localStorage.getItem('token'),
-          oldPassward: formEditPwd.oldPwd, newPassward: formEditPwd.newPwd
+          oldPassword: formEditPwd.oldPwd, newPassword: formEditPwd.newPwd
         }).then(res => {
           let data = res.data;
           if (data.success == true) {
