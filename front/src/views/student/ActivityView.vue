@@ -42,8 +42,8 @@
             v-model="editForm.date"
             type="date"
             placeholder="请选择活动日期"
-            format="YYYY-MM-DD hh:mm:ss"
-            value-format="YYYY-MM-DD hh:mm:ss"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
             :shortcuts="shortcuts"
           />
         </el-form-item>
@@ -160,9 +160,6 @@ const formatDate = () => {
   var month = date.getMonth() + 1 < 10 ?
       '0' + (date.getMonth() + 1) : date.getMonth() + 1
   var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
-  var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-  var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-  var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
   return year + '-' + month + '-' + day
 }
 
