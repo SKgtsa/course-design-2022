@@ -10,7 +10,6 @@ import com.clankalliance.backbeta.repository.userRepository.UserRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.ManagerRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.StudentRepository;
 import com.clankalliance.backbeta.repository.userRepository.sub.TeacherRepository;
-import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.clankalliance.backbeta.response.CommonResponse;
 import com.clankalliance.backbeta.response.dataBody.UserBriefData;
 import com.clankalliance.backbeta.service.TencentService;
@@ -213,7 +212,7 @@ public class UserServiceImpl implements UserService {
         long id = snowFlake.nextId();
         switch (identity){
             case 1:
-                user = new Teacher(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
+                user = new Teacher(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL,null);
                 break;
             case 2:
                 user = new Manager(id,userNumber,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,DEFAULT_AVATAR_URL,nickName,DEFAULT_PHOTO_URL);
@@ -498,30 +497,44 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 管理员保存用户信息
-     * @param token 用户令牌
-     * @param user 用户信息
+     * @param token
+     * @param id
+     * @param userNumber
+     * @param nickName
+     * @param name
+     * @param phone
+     * @param studentClass
+     * @param idCardNumber
+     * @param gender
+     * @param ethnic
+     * @param politicalAffiliation
+     * @param eMail
+     * @param avatarURL
+     * @param photoURL
+     * @param researchDirection
+     * @param section
      * @return
      */
     @Override
-    public CommonResponse handleManagerSave(String token, UserRequestTarget user){
+    public CommonResponse handleManagerSave(String token, Long id, Long userNumber, String nickName, String name, Long phone, String studentClass, String idCardNumber, boolean gender, String ethnic, String politicalAffiliation, String eMail, String avatarURL, String photoURL, String researchDirection, String section){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User currentUser = userService.findById(Long.parseLong(response.getMessage()));
-            User targetUser = userService.findById(user.getId());
+            User targetUser = userService.findById(id);
             if(currentUser instanceof Manager){
                 List<Post> postList = new ArrayList<>();
                 if(targetUser instanceof Student){
-                    Student student = (Student)targetUser;
+                    Student student = new Student(id, userNumber,name,targetUser.getPassword(),phone,studentClass,idCardNumber, gender,ethnic,politicalAffiliation,eMail,avatarURL,nickName,photoURL,section);
                     postList = student.getPostList();
                     studentRepository.save(student);
                 }else if(targetUser instanceof Teacher){
-                    Teacher teacher = (Teacher)targetUser;
+                    Teacher teacher = new Teacher(id,userNumber,name,targetUser.getPassword(),phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,nickName,photoURL,researchDirection);
                     postList = teacher.getPostList();
                     teacherRepository.save(teacher);
                 }
                 for(Post p : postList){
-                    p.setNickName(targetUser.getNickName());
-                    p.setNickName(targetUser.getNickName());
+                    p.setNickName(nickName);
+                    p.setAvatarUrl(avatarURL);
                     postRepository.save(p);
                 }
                 response.setSuccess(true);

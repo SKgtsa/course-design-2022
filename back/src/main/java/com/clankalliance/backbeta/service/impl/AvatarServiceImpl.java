@@ -136,7 +136,6 @@ public class AvatarServiceImpl implements AvatarService {
                 postRepository.save(p);
             }
         }
-        userRepository.save(user);
         // 返回用户头像的路径给前端，将来用于头像的展示使用
         System.out.println("内容保存至" + avatar);
         response.setSuccess(true);

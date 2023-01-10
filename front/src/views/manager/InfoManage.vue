@@ -32,11 +32,11 @@
           'width': `${mobile? '100%':'40%'}`
         }">
           <div class="imgBox">
-            <el-image class="img" :src="userIsTeacher? userTeacherForm.avatarURL:userStudentForm.avatarURL" fit="cover">
+            <el-image class="img" :src=" getBaseURL() + (userIsTeacher? userTeacherForm.avatarURL:userStudentForm.avatarURL)" fit="cover">
             </el-image>
           </div>
           <div class="imgBox">
-            <el-image class="img" :src="userIsTeacher? userTeacherForm.photoURL:userStudentForm.photoURL" fit="cover">
+            <el-image class="img" :src=" getBaseURL() + (userIsTeacher? userTeacherForm.photoURL:userStudentForm.photoURL)" fit="cover">
             </el-image>
           </div>
         </div>
@@ -95,9 +95,6 @@
                   <el-form-item label="学号:" prop="userNumber">
                     <el-input v-model="userStudentForm.userNumber"></el-input>
                   </el-form-item>
-                  <el-form-item label="Id:" prop="id">
-                    <el-input v-model="userStudentForm.id"></el-input>
-                  </el-form-item>
                   <el-form-item label="姓名:" prop="name">
                     <el-input v-model="userStudentForm.name"></el-input>
                   </el-form-item>
@@ -125,15 +122,15 @@
                   <el-form-item label="电话:" prop="phone">
                     <el-input v-model="userStudentForm.phone"></el-input>
                   </el-form-item>
+                  <el-form-item label="学生届次:" prop="section">
+                    <el-input v-model="userStudentForm.section"></el-input>
+                  </el-form-item>
                 </el-form>
               </div>
               <div v-else>
                 <el-form :model="userTeacherForm" class="areaTextInput" ref="formData">
                   <el-form-item label="工号:" prop="userNumber">
                     <el-input v-model="userTeacherForm.userNumber"></el-input>
-                  </el-form-item>
-                  <el-form-item label="Id:" prop="id">
-                    <el-input v-model="userTeacherForm.id"></el-input>
                   </el-form-item>
                   <el-form-item label="姓名:" prop="name">
                     <el-input v-model="userTeacherForm.name"></el-input>
@@ -158,6 +155,9 @@
                   </el-form-item>
                   <el-form-item label="电话:" prop="phone">
                     <el-input v-model="userTeacherForm.phone"></el-input>
+                  </el-form-item>
+                  <el-form-item label="科研方向:" prop="researchDirection">
+                    <el-input v-model="userTeacherForm.researchDirection"></el-input>
                   </el-form-item>
                 </el-form>
               </div>
@@ -346,6 +346,7 @@ let userTeacherForm = reactive({
   eMail: '',
   avatarURL: '',
   photoURL: '',
+  researchDirection: ''
 });
 let formData = ref();
 let isLoad = ref(false);
@@ -359,23 +360,24 @@ const submitInfo = async () => {
       showLoading();
       if (characterIsStudent.value == true) {
         console.log(userStudentForm);
-        service.post('/api/user/manageSave', {
+        service.post('/api/user/managerSave', {
           token: localStorage.getItem("token"), //这个修改信息，绑定的值
           //是userStudentForm绑定还是用formData绑定？
           id: userStudentForm.id,
-          nickName:userStudentForm.nickName,
-          phone: userStudentForm.phone,
-          email: userStudentForm.eMail,
-          gender: ((userStudentForm.gender == '女') ? true : false),
-          ethnic: userStudentForm.ethnic,
-          politicalAffiliation: userStudentForm.politicalAffiliation,
           userNumber: userStudentForm.userNumber,
+          nickName:userStudentForm.nickName,
           name: userStudentForm.name,
-          section:userStudentForm.section,
+          phone: userStudentForm.phone,
           studentClass: userStudentForm.studentClass,
           idCardNumber: userStudentForm.idCardNumber,
-          photoURL: userStudentForm.photoURL,
+          gender: userStudentForm.gender === '女',
+          ethnic: userStudentForm.ethnic,
+          politicalAffiliation: userStudentForm.politicalAffiliation,
+          email: userStudentForm.eMail,
           avatarURL:userStudentForm.avatarURL,
+          photoURL: userStudentForm.photoURL,
+          researchDirection: '',
+          section: userStudentForm.section,
         }).then(res => {
           console.log('返回了数据')
           console.log(res)
@@ -396,21 +398,24 @@ const submitInfo = async () => {
             })
       } else {
         console.log(userTeacherForm);
-        service.post('/api/user/manageSave', {
+        service.post('/api/user/managerSave', {
           token: localStorage.getItem("token"), //这个修改信息，绑定的值
           //是userTeacherForm绑定还是用formData绑定？
           id: userTeacherForm.id,
+          userNumber: userTeacherForm.userNumber,
+          nickName:userTeacherForm.nickName,
+          name: userTeacherForm.name,
           phone: userTeacherForm.phone,
-          email: userTeacherForm.eMail,
-          gender: ((userTeacherForm.gender == '女') ? true : false),
+          studentClass: '',
+          idCardNumber: userTeacherForm.idCardNumber,
+          gender: userTeacherForm.gender === '女',
           ethnic: userTeacherForm.ethnic,
           politicalAffiliation: userTeacherForm.politicalAffiliation,
-          userNumber: userTeacherForm.userNumber,
-          name: userTeacherForm.name,
-          nickName:userTeacherForm.nickName,
-          idCardNumber: userTeacherForm.idCardNumber,
+          email: userTeacherForm.eMail,
+          avatarURL:userTeacherForm.avatarURL,
           photoURL: userTeacherForm.photoURL,
-          avatarURL:userStudentForm.avatarURL,
+          researchDirection: userTeacherForm.researchDirection,
+          section: '',
         }).then(res => {
           console.log('返回了数据')
           console.log(res)
@@ -478,7 +483,7 @@ const checkUser = async (userNumber) => {   //查看个人信息
   }).then(res => {
     console.log('返回了数据')
     let data = res.data;
-    console.log(data.token)
+    console.log(data)
     if (res.data.success) {
       console.log(search.value);
       hideLoading();
@@ -499,10 +504,11 @@ const checkUser = async (userNumber) => {   //查看个人信息
         } else userTeacherForm.gender = '女';
         userTeacherForm.ethnic = content.ethnic;
         userTeacherForm.politicalAffiliation = content.politicalAffiliation;
-        userTeacherForm.eMail = content.eMail;
+        userTeacherForm.eMail = content.email;
         userTeacherForm.userNumber = content.userNumber;
-        userTeacherForm.avatarURL = getBaseURL() + content.avatarURL;
-        userTeacherForm.photoURL = getBaseURL() + content.photoURL;
+        userTeacherForm.avatarURL = content.avatarURL;
+        userTeacherForm.photoURL = content.photoURL;
+        userTeacherForm.researchDirection = content.researchDirection;
         userIsTeacher.value = true;
         console.log('查询用户为老师')
         console.log(userTeacherForm)
@@ -520,10 +526,10 @@ const checkUser = async (userNumber) => {   //查看个人信息
         } else userStudentForm.gender = '女';
         userStudentForm.ethnic = content.ethnic;
         userStudentForm.politicalAffiliation = content.politicalAffiliation;
-        userStudentForm.eMail = content.eMail;
+        userStudentForm.eMail = content.email;
         userStudentForm.userNumber = content.userNumber;
-        userStudentForm.avatarURL = getBaseURL() + content.avatarURL;
-        userStudentForm.photoURL = getBaseURL() + content.photoURL;
+        userStudentForm.avatarURL = content.avatarURL;
+        userStudentForm.photoURL = content.photoURL;
         userStudentForm.section = content.section;
         userIsTeacher.value = false;
         console.log('查询用户为学生')
@@ -543,8 +549,8 @@ const checkUser = async (userNumber) => {   //查看个人信息
 }
 const checkPractice = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   practiceDialog.value = true;
-  practiceForm.practiceDescription = row.practiceDescription;
-  practiceForm.practiceName = row.practiceName;
+  practiceForm.practiceDescription = row.description;
+  practiceForm.practiceName = row.name;
   practiceForm.id = row.id;
   practiceTypeOperation.value = 'check';
 }
@@ -615,8 +621,8 @@ const deletePractice = async (row) => {  //删  //异步不确定是否有问题
 // loadPracticeTable() //进入默认执行
 const checkReward = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   rewardDialog.value = true;
-  rewardForm.rewardDescription = row.rewardDescription;
-  rewardForm.rewardName = row.rewardName;
+  rewardForm.rewardDescription = row.description;
+  rewardForm.rewardName = row.name;
   rewardForm.id = row.id;
   rewardTypeOperation.value = 'check';
 }
@@ -714,8 +720,8 @@ const loadActivityTable = () => {
 // loadActivityTable() //进入默认执行
 const checkActivity = (row) => {   //查看单个的数据 一条一条赋值，一起赋值出bug了
   activityDialog.value = true;
-  activityForm.practiceDescription = row.practiceDescription;
-  activityForm.practiceName = row.practiceName;
+  activityForm.practiceDescription = row.description;
+  activityForm.practiceName = row.name;
   activityForm.date = row.date;
   activityForm.result = row.result;
   activityForm.id = row.id;

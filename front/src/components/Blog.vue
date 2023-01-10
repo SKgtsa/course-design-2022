@@ -30,9 +30,9 @@
                   :mode="`${mobile? 'horizontal':'vertical'}`"
               >
                 <el-menu-item index="1">广场</el-menu-item>
-                <el-menu-item index="2">我的关注</el-menu-item>
-                <el-menu-item index="3">我的博客</el-menu-item>
-                <el-menu-item index="4">我的收藏</el-menu-item>
+                <el-menu-item index="2" v-if="!getManager()">我的关注</el-menu-item>
+                <el-menu-item index="3" v-if="!getManager()">我的博客</el-menu-item>
+                <el-menu-item index="4" v-if="!getManager()">我的收藏</el-menu-item>
               </el-menu>
             </div>
           </div>

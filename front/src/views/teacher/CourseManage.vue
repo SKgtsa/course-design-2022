@@ -278,8 +278,8 @@ import { ElMessage, ElMessageBox, rowContextKey } from 'element-plus'
 import { hideLoading, showLoading } from "@/utils/loading";
 import { mobile } from "@/global/global";
 const mul = { multiple: true }
-let yearsValue = ref();
-let semesterValue = ref();
+let yearsValue = ref(2022);
+let semesterValue = ref('春季学期');
 interface time {
   weekDay: Number;
   section: Number;
@@ -470,59 +470,6 @@ const time = [
   },
 ]
 
-const dayOptions = [
-  {
-    value: 1,
-    label: '星期一',
-  },
-  {
-    value: 2,
-    label: '星期二',
-  },
-  {
-    value: 3,
-    label: '星期三',
-  },
-  {
-    value: 4,
-    label: '星期四',
-  },
-  {
-    value: 5,
-    label: '星期五',
-  },
-  {
-    value: 6,
-    label: '星期六',
-  },
-  {
-    value: 7,
-    label: '星期日',
-  },
-]
-const sectionOptions = [
-  {
-    value: 1,
-    label: '1-2节',
-  },
-  {
-    value: 2,
-    label: '3-4节',
-  },
-  {
-    value: 3,
-    label: '5-6节',
-  },
-  {
-    value: 4,
-    label: '7-8节',
-  },
-  {
-    value: 5,
-    label: '9-10节',
-  },
-
-]
 const yearOptions = [
   {
     value: 2019,
@@ -701,7 +648,6 @@ const handleChange = (value) => {
   console.log(value)
 }
 
-/* let tableData =reactive([]); */ //table中的所有数据，数组中应该是很多个对象的集合
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false); //控制改增弹出框
 let studentDialogVisible = ref(false); //控制学生弹出框
@@ -739,7 +685,7 @@ let editForm = reactive({
   description: '',
   semester: '',
   credit: '',
-  courseId: '',
+  courseId: '0',
   weight: '',
 });
 const loadCourseTable = async () => {
@@ -762,32 +708,12 @@ const loadCourseTable = async () => {
       console.log(error)
     })
 }
-
-let detailsForm = reactive({
-  /*   name: '',
-    weekStart: '',
-    weekEnd: '',
-    time:[],
-    capacity:'',
-    studentClass:[],
-    studentSection:[],
-    location:'',
-    year:'',
-    semester:'',
-    credit:'',
-    descrition:'', */
-})
-
-
-
 const add = () => {
   centerDialogVisible.value = true;
   typeOperation.value = 'add';
   editForm.name = '';
   editForm.weekStart = '';
   editForm.weekEnd = '';
-  /*   editForm.time.weekDay = '';
-    editForm.time.section = ''; */
   editForm.capacity = '';
   editForm.studentClass = [];
   editForm.studentSection = [];
@@ -799,12 +725,6 @@ const add = () => {
   editForm.credit = '';
   editForm.weight = '';
 }
-// const addStudent = () => {
-//   typeOperation.value = 'addStudent';
-//   studentForm.studentNumber='';
-//   studentForm.name='';
-//
-// }
 
 let studentData = reactive({
   arr: [],
@@ -999,7 +919,7 @@ const submitEditRow = async () => {
           {
             token: localStorage.getItem("token"),
             name: editForm.name,
-            
+            id: editForm.courseId,
             weekStart: editForm.weekStart,
             weekEnd: editForm.weekEnd,
             time: editForm.time,
@@ -1089,7 +1009,7 @@ const submitEditRow = async () => {
   editForm.description = '';
   editForm.semester = '';
   editForm.credit = '';
-  editForm.courseId = '';
+  editForm.courseId = '0';
   editForm.weight = '';
   centerDialogVisible.value = false;
   centerDialogVisibleCheck.value = false;

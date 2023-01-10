@@ -125,7 +125,7 @@ public class UserController {
     //
     @PostMapping("/managerSave")
     public CommonResponse handleManagerSave(@RequestBody UserManagerSaveRequest request){
-        return userService.handleManagerSave(request.getToken(), request.getUser());
+        return userService.handleManagerSave(request.getToken(), request.getId(), request.getUserNumber(), request.getNickName(), request.getName(), request.getPhone(), request.getStudentClass(), request.getIdCardNumber(), request.getGender(), request.getEthnic(), request.getPoliticalAffiliation(), request.getEmail(), request.getAvatarURL(), request.getPhotoURL(), request.getResearchDirection(), request.getSection());
     }
 
     @PostMapping("/managerDelete")

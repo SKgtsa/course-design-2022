@@ -4,17 +4,11 @@ import com.clankalliance.backbeta.entity.*;
 import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.user.User;
-import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -55,19 +49,6 @@ public class Student extends User {
                 this.studentClass = gradeClass;
         }
 
-        public void UpdateInfo(UserRequestTarget target){
-                super.setEthnic(target.getEthnic());
-                super.setName(target.getName());
-                super.setNickName(target.getNickName());
-                super.setEMail(target.getEMail());
-                super.setGender(target.getGender());
-                super.setUserNumber(target.getUserNumber());
-                super.setPhone(target.getPhone());
-                super.setPoliticalAffiliation(target.getPoliticalAffiliation());
-                super.setIdCardNumber(target.getIdCardNumber());
-                studentClass = target.getStudentClass();
-                section = target.getSection();
-        }
 
         public String getSection() {
                 return section;

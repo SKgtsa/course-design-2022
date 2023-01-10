@@ -5,10 +5,8 @@ import com.clankalliance.backbeta.entity.blog.Post;
 import com.clankalliance.backbeta.entity.course.Course;
 import com.clankalliance.backbeta.entity.publications.Publication;
 import com.clankalliance.backbeta.entity.user.User;
-import com.clankalliance.backbeta.request.user.UserRequestTarget;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -36,27 +34,15 @@ public class Teacher extends User {
                 researchDirection = null;
         }
 
-        public void UpdateInfo(UserRequestTarget target){
-                super.setEthnic(target.getEthnic());
-                super.setName(target.getName());
-                super.setNickName(target.getNickName());
-                super.setEMail(target.getEMail());
-                super.setGender(target.getGender());
-                super.setUserNumber(target.getUserNumber());
-                super.setPhone(target.getPhone());
-                super.setPoliticalAffiliation(target.getPoliticalAffiliation());
-                super.setIdCardNumber(target.getIdCardNumber());
-                researchDirection = target.getResearchDirection();
-        }
 
-        public Teacher(long id,long userNumber,String name,String password,long phone,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL){
+        public Teacher(long id,long userNumber,String name,String password,long phone,String idCardNumber,Boolean gender,String ethnic,String politicalAffiliation, String eMail, String avatarURL,String nickName,String photoURL,String researchDirection){
                 super(id,userNumber,nickName,name,password,phone,idCardNumber,gender,ethnic,politicalAffiliation,eMail,avatarURL,photoURL);
                 courseSet = new HashSet<>();
                 collection = new ArrayList<>();
                 postList = new ArrayList<>();
                 achievementSet = new HashSet<>();
                 publicationList = new ArrayList<>();
-                researchDirection = null;
+                this.researchDirection = researchDirection;
         }
 
         public Set<Course> getCourseSet() {
