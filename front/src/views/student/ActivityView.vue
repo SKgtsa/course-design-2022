@@ -42,13 +42,10 @@
             v-model="editForm.date"
             type="date"
             placeholder="请选择活动日期"
-            format="YYYY-MM-DD hh:mm:ss"
-            value-format="YYYY-MM-DD hh:mm:ss"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
             :shortcuts="shortcuts"
           />
-<!--          <el-input v-if="typeOperation === 'edit'" v-model="editForm.date">{{ editForm.date }}-->
-<!--          </el-input>-->
-<!--          <el-input v-if="typeOperation === 'add'" v-model="editForm.date"></el-input>-->
         </el-form-item>
         <el-form-item label="标题" prop="name">
           <el-input v-if="typeOperation === 'edit'" v-model="editForm.name">{{ editForm.name }}
@@ -70,7 +67,7 @@
       </el-form>
       <div class="dialogButtonPage">
         <el-button @click="closeDialog" class="dialogButton">取消</el-button>
-        <el-button type="primary" @click="sumbitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
+        <el-button type="primary" @click="submitEditRow" class="dialogButton">确定</el-button> <!-- 在这个方法里面来判断是啥？ -->
       </div>
     </el-dialog>
     <!-- 查看弹出框 -->
@@ -99,7 +96,7 @@ import service from '../../request/index'
 import { messageSuccess, messageWarning, messageError, messageInfo } from '../../utils/message'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import {mobile} from "@/global/global";
-import {loginFailed} from "@/utils/tokenCheck";
+import {handleResponseMessage, loginFailed} from "@/utils/tokenCheck";
 
 let tableData = reactive({
   arr: [],
@@ -163,9 +160,6 @@ const formatDate = () => {
   var month = date.getMonth() + 1 < 10 ?
       '0' + (date.getMonth() + 1) : date.getMonth() + 1
   var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate()
-  var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
-  var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
-  var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
   return year + '-' + month + '-' + day
 }
 
@@ -190,12 +184,12 @@ const loadactivityTable = async () => {
       if(res.data.message === '登录失效')
         loginFailed()
       else
-        messageError(res.data.message)
+        handleResponseMessage(res.data.message)
     }
   })
     .catch(function (error) {
       hideLoading();
-      messageError("服务器开小差了呢");
+      handleResponseMessage('内部错误')
       console.log(error)
     })
 }
@@ -256,18 +250,18 @@ const handleDelete = async (row) => {  //删  //异步不确定是否有问题
           if(res.data.message === '登录失效')
             loginFailed()
           else
-            messageError(res.data.message)
+            handleResponseMessage(res.data.message)
         }
       })
         .catch(function (error) {
           hideLoading();
-          messageError("服务器开小差了呢");
+          handleResponseMessage('内部错误')
           console.log(error)
         })
     })
 }
 
-const sumbitEditRow = async () => {
+const submitEditRow = async () => {
   time.value = formatDate();
   if(time.value<editForm.date){
     messageWarning('活动日期不能晚于当前日期！')
@@ -323,20 +317,24 @@ const sumbitEditRow = async () => {
               messageSuccess("添加成功！")
               typeOperation.value = '';
               console.log('我执行了')
+              editForm.name = '',
+              editForm.description = '',
+              editForm.id = '',
+              editForm.date = '',
+              editForm.result = '',
+              centerDialogVisible.value = false;
+              centerDialogVisibleCheck.value = false;
+              typeOperation.value = '';
+              formData.value = null;
               loadactivityTable()
-
             } else {
               hideLoading()
-              if(res.data.message === '登录失效')
-                loginFailed()
-              else
-                messageError(res.data.message)
+              handleResponseMessage(res.data.message)
             }
-          }
-          )
+          })
           .catch(function (error) {
             hideLoading();
-            messageError("服务器开小差了呢");
+            handleResponseMessage('内部错误')
             console.log(error)
           })
       } else {
@@ -346,16 +344,6 @@ const sumbitEditRow = async () => {
       messageWarning("请填写完整!")
     }
   }))
-
-  editForm.name = '',
-    editForm.description = '',
-    editForm.id = '',
-    editForm.date = '',
-    editForm.result = '',
-    centerDialogVisible.value = false;
-  centerDialogVisibleCheck.value = false;
-  typeOperation.value = '';
-  formData.value = null;
 };
 
 const closeDialog = () => {

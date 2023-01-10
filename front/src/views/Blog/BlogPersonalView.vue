@@ -202,17 +202,29 @@
           </el-icon>
         </el-upload>
       </el-form-item>
-      <el-form-item label="学号/工号:" prop="userNumber">
+      <el-form-item label="学号/工号:" prop="userNumber" v-if="identity!=2">
         <span>{{ information.userNumber }}</span>
       </el-form-item>
-      <el-form-item label="姓名:" prop="name">
+      <el-form-item label="学号/工号:" prop="userNumber" v-if="identity==2">
+        <el-input v-model="information.userNumber"/>
+      </el-form-item>
+      <el-form-item label="姓名:" prop="name" v-if="identity!=2">
         <span>{{ information.name }}</span>
       </el-form-item>
-      <el-form-item label="性别:" prop="gender">
+      <el-form-item label="姓名:" prop="name" v-if="identity==2">
+        <el-input v-model="information.name"/>
+      </el-form-item>
+      <el-form-item label="性别:" prop="gender" v-if="identity!=2">
         <span>{{ information.gender }}</span>
       </el-form-item>
-      <el-form-item label="身份证号:" prop="idCardNumber">
+      <el-form-item label="性别:" prop="gender" v-if="identity==2">
+        <el-input v-model="information.gender"/>
+      </el-form-item>
+      <el-form-item label="身份证号:" prop="idCardNumber" v-if="identity!=2">
         <span>{{ information.idCardNumber }}</span>
+      </el-form-item>
+      <el-form-item label="身份证号:" prop="idCardNumber" v-if="identity==2">
+        <el-input v-model="information.idCardNumber"/>
       </el-form-item>
       <el-form-item label="研究方向:" prop="researchDirection"  v-if="identity === 1">
         <el-input v-model="information.researchDirection">{{information.researchDirection}}</el-input>
@@ -223,11 +235,17 @@
       <el-form-item label="年级:" prop="section" v-if="identity == 0">
         <span>{{ information.section }}</span>
       </el-form-item>
-      <el-form-item label="政治面貌:" prop="politicalAffiliation">
+      <el-form-item label="政治面貌:" prop="politicalAffiliation" v-if="identity!=2">
         <span>{{ information.politicalAffiliation }}</span>
       </el-form-item>
-      <el-form-item label="民族:" prop="ethnic">
+      <el-form-item label="政治面貌:" prop="politicalAffiliation" v-if="identity==2">
+        <el-input  v-model="information.politicalAffiliation"/>
+      </el-form-item>
+      <el-form-item label="民族:" prop="ethnic" v-if="identity!=2">
         <span>{{ information.ethnic }}</span>
+      </el-form-item>
+      <el-form-item label="民族:" prop="ethnic" v-if="identity==2">
+        <el-input v-model="information.ethnic"/>
       </el-form-item>
       <el-form-item label="昵称:" prop="nickName">
         <el-input  v-model="information.nickName">{{information.nickName}}</el-input>
@@ -383,12 +401,48 @@ const validatePhone = (rule, value, callback) => { //检验手机号(不能是�
     }
   }
 }
+const validateName = (rule, value, callback) => {  //校验姓名，考虑少数民族
+  const reg = /(^[\u4e00-\u9fa5]{1}[\u4e00-\u9fa5\.·.]{0,18}[\u4e00-\u9fa5]{1}$)|(^[a-zA-Z]{1}[a-zA-Z\s]{0,18}[a-zA-Z]{1}$)/;
+  if (value == '' || value == undefined || value == null) {
+    callback(new Error('请输入姓名！'));
+  } else {
+    if ((!reg.test(value)) && value != '') {
+      callback(new Error('请输入正确的姓名！'));
+    } else {
+      callback();
+    }
+  }
+}
+
+const validateIdCardNumber = (rule, value, callback) => {  //检验身份证号(精确校验)
+  const reg = /^[1-9]\d{5}(19|20)\d{2}((0[1-9])|(1[0-2]))(([0-2][1-9])|10|20|30|31)\d{3}[0-9Xx]$/;
+  if (value == '' || value == undefined || value == null) {
+    callback(new Error('请输入身份证号'));
+  } else {
+    if ((!reg.test(value)) && value != '') {
+      callback(new Error('请输入正确的身份证号码！'));
+    } else {
+      callback();
+    }
+  }
+}
+
 const rules = reactive({
   eMail: [{validator: validateEMail, trigger: 'blur' }],
   phone: [{ validator: validatePhone, trigger: 'blur' }],
   nickName: [{ required: true, message: '请输入用户名', trigger: 'blur' },
   { max: 8, message: '长度请不要超过8位', trigger: 'blur' }],
   researchDirection:[{ required: true, message: '请输入研究方向', trigger: 'blur' }],
+
+  name: [{ validator: validateName, trigger: 'blur' },
+  { max: 10, message: '姓名没有超过10位', trigger: 'blur' }],
+  userNumber: [{ required: true, message: '请输入学号', trigger: 'blur' }],
+  identity: [{ required: true, message: '请选择您的身份', triggwe: 'blur' }],
+  gender: [{ required: true, message: '请选择性别', trigger: 'blur' }],
+  idCardNumber: [{ validator: validateIdCardNumber, trigger: 'blur' }],
+  ethnic: [{ required: true, message: '请填写您的民族', triggwe: 'blur' }],
+  politicalAffiliation: [{ required: true, message: '请选择您的政治面貌', triggwe: 'blur' }],
+ 
 })
 
 const submitEditRowStudent = () => {
@@ -406,7 +460,7 @@ const submitEditRowStudent = () => {
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
         userNumber: information.userNumber, name: information.name,nickName:information.nickName,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
-        avatarUrl:information.avatarURL,
+        avatarUrl:information.avatarURL,researchDirection:'',studentClass:information.studentClass
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
@@ -450,7 +504,7 @@ const submitEditRowTeacher = () => {
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
         userNumber: information.userNumber, name: information.name,nickName:information.nickName,researchDirection:information.researchDirection,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
-        avatarUrl:information.avatarURL,
+        avatarUrl:information.avatarURL,studentClass:information.studentClass,
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
@@ -494,7 +548,7 @@ const submitEditRowManager = ()=>{
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
         userNumber: information.userNumber, name: information.name,nickName:information.nickName,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
-        avatarUrl:information.avatarURL,
+        avatarUrl:information.avatarURL,researchDirection:'',
       }).then(res => {
         console.log('返回了数据')
         console.log(res)

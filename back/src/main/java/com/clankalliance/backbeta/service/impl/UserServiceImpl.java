@@ -338,7 +338,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section, String nickName){
+    public CommonResponse handleEditInfo(String token,String name,long id,long userNumber,String ethnic,String eMail,String politicalAffiliation, String researchDirection, String section, String nickName,Long phone){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(!response.getSuccess())
             return response;
@@ -356,6 +356,7 @@ public class UserServiceImpl implements UserService {
         user.setEMail(eMail);
         user.setPoliticalAffiliation(politicalAffiliation);
         user.setNickName(nickName);
+        user.setPhone(phone);
         if(user instanceof Teacher){
             ((Teacher) user).setResearchDirection(researchDirection);
         }
