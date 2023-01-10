@@ -61,7 +61,7 @@
   <el-dialog v-model="dialogVisiblePwd" :width="`${mobile? 90:40}%`" >
     <!-- 没有校验的时候显示，就是密码不正确或者没有执行找回密码操作的时候 -->
     <div>
-      <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData">
+      <el-form :model="formEditPwd" :rules="pwdEditRules" ref="pwdEditData" label-width="auto">
         <el-form-item label="旧密码:" prop="oldPwd">
           <el-input v-model="formEditPwd.oldPwd"></el-input>
         </el-form-item>
@@ -157,7 +157,7 @@
   }
 
   const pwdEditRules = reactive({
-    oldPwd: [{ validator: validatepassword, trigger: 'blur' }],
+   oldPwd: [{required:true,message:'请填写完整', trigger: 'blur' }],
     newPwd: [{ validator: validatepassword, trigger: 'blur' }],
   })
 
@@ -173,7 +173,7 @@
           if (data.success == true) {
             hideLoading();
             localStorage.setItem('token', data.token); //返回token吗
-            messageSuccess(data.message)
+            messageSuccess('修改成功!')
           } else {
             hideLoading();
             handleResponseMessage(data.message)

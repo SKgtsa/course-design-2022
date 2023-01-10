@@ -75,7 +75,7 @@ const formatDate = () => {
   var hours = date.getHours() < 10 ? '0' + date.getHours() : date.getHours()
   var minutes = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes()
   var seconds = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds()
-  return year + '-' + month + '-' + day
+  return year + '-' + month + '-' + day + '-' + hours + '-' + minutes + '-' +seconds
 }
 
 
