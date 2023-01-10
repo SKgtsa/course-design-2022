@@ -172,8 +172,9 @@ import {showRouter} from "@/global/global";
 import {reload} from "@/utils/reloadRouter";
 
 router.beforeEach(async (to, from, next) => {
-  /* console.log('进入beforeEach函数') */
-  if(from.path === '/login' || from.path === '/register'){
+  console.log('进入beforeEach函数')
+  console.log(from)
+  if(from.path === '/login' || from.path === '/register' || from.path === '/Login' || from.path === '/Register'){
     reload()
   }
   showRouter.value = false;

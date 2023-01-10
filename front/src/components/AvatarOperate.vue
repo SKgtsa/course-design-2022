@@ -23,7 +23,7 @@
           <el-dropdown-item @click="editAvatar">修改头像</el-dropdown-item>
           <el-dropdown-item @click="editNick">修改昵称</el-dropdown-item>
           <el-dropdown-item @click="editPwd">修改密码</el-dropdown-item>
-<!--            <el-dropdown-item @click="drop">退出</el-dropdown-item> -->
+          <el-dropdown-item @click="drop">登出</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -85,23 +85,23 @@
 <script lang="ts" setup>
   import router from "@/router";
   import {reactive, ref} from "vue";
-  import {getAvatarURL, getBaseURL, getNickName, getUserId, mobile, setNickName} from "@/global/global";
+  import {
+    getAvatarURL,
+    getBaseURL,
+    getDefaultAvatarURL,
+    getNickName,
+    getUserId,
+    mobile,
+    setManager,
+    setNickName
+  } from "@/global/global";
   import {hideLoading, showLoading} from "@/utils/loading";
   import service from "@/request";
   import {messageError, messageSuccess} from "@/utils/message";
   import serviceFile from "@/request/indexFile";
   import {reload} from "@/utils/reloadRouter";
+  import {handleResponseMessage} from "@/utils/tokenCheck";
   let nickData = ref();
-
-
-  let isPass = ref(false); //这个是否让它改密码
-
-  //初始密码表单
-  let originFormPwd = reactive({
-    originPwd: '',
-  });
-  let originPwdData = ref();
-
   let dialogVisibleImg = ref(false)
   let dialogVisibleName = ref(false)
   let dialogVisiblePwd = ref(false)
@@ -124,14 +124,14 @@
             reload()
           } else {
             hideLoading();
-            messageError(data.message);
+            handleResponseMessage(data.message)
           }
         })
-            .catch(function (error) {
-              hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
-            })
+          .catch(function (error) {
+            hideLoading();
+            handleResponseMessage('内部错误')
+            console.log(error)
+          })
       } else {
         messageError("请填写正确！")
       }
@@ -176,14 +176,14 @@
             messageSuccess(data.message)
           } else {
             hideLoading();
-            messageError(data.message)
+            handleResponseMessage(data.message)
           }
         })
-            .catch(function (error) {
-              hideLoading();
-              messageError("服务器开小差了呢");
-              console.log(error)
-            })
+          .catch(function (error) {
+            hideLoading();
+            handleResponseMessage('内部错误')
+            console.log(error)
+          })
       } else {
         messageError("请正确填写！")
       }
@@ -206,16 +206,18 @@
         localStorage.setItem('avatarURL', url);
         reload()
         messageSuccess("更换成功！")
+        dialogVisibleImg.value = false
       } else {
         hideLoading();
-        messageError(data.message)
+        handleResponseMessage(data.message)
       }
     })
-        .catch(function (error) {
-          hideLoading();
-          messageError("服务器开小差了呢");
-          console.log(error)
-        })
+      .catch(function (error) {
+        hideLoading();
+        handleResponseMessage('内部错误')
+        console.log(error)
+      })
+
   }
   // 上传图片前的过滤
   let beforeAvatarUpload = (file) => {
@@ -253,6 +255,11 @@
   }
 
   const drop = () => {  //退出
+    setManager(false)
+    localStorage.setItem('token',null);
+    localStorage.setItem('avatarURL',getDefaultAvatarURL())
+    localStorage.setItem('nickName','')
+    localStorage.setItem('userId',null)
     router.push('/Login');
   }
 
