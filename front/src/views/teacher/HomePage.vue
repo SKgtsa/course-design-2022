@@ -6,7 +6,7 @@
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
           background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd" router>
           <img src="../../assets/images/logo.png" alt="logo未加载">
-          <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
+          <el-menu-item class="logo" index="/Teacher/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
           <div class="nick">
               <avatar-operate/>
