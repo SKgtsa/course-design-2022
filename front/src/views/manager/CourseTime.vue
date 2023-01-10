@@ -15,7 +15,7 @@
       <el-divider/>
       <div v-if="!mobile" class="selectTimeBox" style="display:flex;flex-direction:column;">
         <div
-            style="border-style: none;border-radius: 3vh;width: 80vh;margin-left:20vh;padding: 10vh 0vh;background-color: #99CCFF88">
+            style="border-style: none;border-radius: 3vh;width: 40vw;margin-left:10vw;padding: 10vh 0vh;background-color: #99CCFF88">
           <div style="display:flex;flex-direction: row;padding-left: 2vh;"><a
               style="font-size:3vh;padding-left: 2vh;color: gray">起始时间:</a>
             <el-date-picker style="height:5vh;padding-left:3vw;width: 25vw;font-size: 3vh;" v-model="startTime"

@@ -8,32 +8,26 @@
   <el-menu-item index="/Manager/Notice" @click="closeMenu">
     <template #title>通知管理</template>
     <el-icon class="menuButton">
-      <Document />
+    <BellFilled />
     </el-icon>
   </el-menu-item>
   <el-menu-item index="/Manager/InfoManage" @click="closeMenu">
     <template #title>信息管理</template>
-    <el-icon class="menuButton">
-      <Document />
-    </el-icon>
+    <el-icon class="menuButton"><UserFilled /></el-icon>
   </el-menu-item>
 
   <el-menu-item index="/Manager/CourseManage" @click="closeMenu">
-    <el-icon class="menuButton">
-      <DocumentChecked />
-    </el-icon>
+    <el-icon class="menuButton"><Notebook /></el-icon>
     <template #title>课程管理</template>
   </el-menu-item>
   <el-menu-item index="/Manager/CourseTime" @click="closeMenu">
     <el-icon class="menuButton">
-      <DocumentChecked />
+      <Timer />
     </el-icon>
     <template #title>课程时间</template>
   </el-menu-item>
   <el-menu-item index="/Manager/RegisterStudents" @click="closeMenu">
-    <el-icon class="menuButton">
-      <DocumentChecked />
-    </el-icon>
+    <el-icon  class="menuButton"><FolderOpened /></el-icon>
     <template #title>批量注册</template>
   </el-menu-item>
 </template>

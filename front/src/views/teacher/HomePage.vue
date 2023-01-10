@@ -14,7 +14,7 @@
         </el-menu>
       </el-header>
       <!--移动端的顶部操作栏-->
-      <el-header v-if="mobile">
+      <el-header style="height:10vh" v-if="mobile">
         <el-menu style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row" mode="horizontal"
           :ellipsis="false">
           <a style="font-size: 5vh;color: #FFFFFF;font-weight: bold;line-height: 10vh">教学系统</a>

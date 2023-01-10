@@ -9,7 +9,7 @@
           <avatar-operate/>
         </el-menu>
       </el-header>
-      <el-header v-if="mobile" >
+      <el-header style="height:10vh" v-if="mobile" >
         <el-menu
             style="height: 10vh;background-color: #0a8ce2; display: flex;flex-direction: row"
             mode="horizontal"

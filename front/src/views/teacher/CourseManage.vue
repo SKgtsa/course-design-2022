@@ -54,8 +54,8 @@
       <el-table :data="tableData.arr" border stripe size="large" class="courseTable"
         :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
         :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
-        <el-table-column fixed="left" label="课程号" prop="id" width="200" show-overflow-tooltip />
-        <el-table-column fixed="left" label="课程" prop="name" width="160" show-overflow-tooltip />
+        <el-table-column  label="课程号" prop="id" width="200" show-overflow-tooltip />
+        <el-table-column label="课程" prop="name" width="160" show-overflow-tooltip />
         <el-table-column label="地点" prop="location" width="160" show-overflow-tooltip />
         <el-table-column label="开课周" prop="weekStart" width="100" show-overflow-tooltip />
         <el-table-column label="结束周" prop="weekEnd" width="100" show-overflow-tooltip />
@@ -68,7 +68,7 @@
             </p>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" width="250">
+        <el-table-column width="250">
           <template #header>
             操作
           </template>
@@ -148,7 +148,7 @@
           <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="学期:" prop="semester">
+      <el-form-item label="学期:" prop="semester" v-if="mobile">
         <el-select v-if="typeOperation === 'add'" v-model="editForm.semester" placeholder="春季学期">
           <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>

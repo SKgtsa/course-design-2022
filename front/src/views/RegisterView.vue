@@ -43,7 +43,7 @@
                   <el-input v-model="formData.ethnic"  maxlength="8"/>
                 </el-form-item>
                 <el-form-item label="邮箱:" prop="eMail">
-                  <el-input v-model="formData.eMail"  maxlength="20"/>
+                  <el-input v-model="formData.eMail"  maxlength="30"/>
                 </el-form-item>
                 <el-form-item label="手机号:" prop="phone">
                   <el-input v-model="formData.phone" placeholder="请输入手机号"/>

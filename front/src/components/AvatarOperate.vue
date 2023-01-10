@@ -23,7 +23,7 @@
           <el-dropdown-item @click="editAvatar">修改头像</el-dropdown-item>
           <el-dropdown-item @click="editNick">修改昵称</el-dropdown-item>
           <el-dropdown-item @click="editPwd">修改密码</el-dropdown-item>
-           <el-dropdown-item @click="drop">退出</el-dropdown-item>
+<!--            <el-dropdown-item @click="drop">退出</el-dropdown-item> -->
         </el-dropdown-menu>
       </template>
     </el-dropdown>
