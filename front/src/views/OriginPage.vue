@@ -1,7 +1,7 @@
 <template>
 </template>
 <script setup lang="ts">
-import {loginFailed, tokenCheckWithUser} from "@/utils/tokenCheck";
+import {loginFailed} from "@/utils/tokenCheck";
 import router from "@/router";
 import {hideLoading, showLoading} from "@/utils/loading";
 import service from "@/request";
