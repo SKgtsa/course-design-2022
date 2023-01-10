@@ -4,7 +4,7 @@
       <el-header class="el-header" v-if="!mobile">
         <el-menu class="nav-bar-top" mode="horizontal" :ellipsis="false" @select="handleSelect"
           background-color="#f0f2ff" text-color="#3e5ca8" active-text-color="#2d67fd"  router>
-          <el-menu-item class="logo" index="/Main">教学系统</el-menu-item>
+          <el-menu-item class="logo" index="/Manager/Main">教学系统</el-menu-item>
           <div class="flex-grow" />
           <avatar-operate/>
         </el-menu>

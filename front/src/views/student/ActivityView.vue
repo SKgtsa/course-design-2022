@@ -137,10 +137,10 @@ const shortcuts = [
 
 /* 定义校验规则 */
 const rulesEditForm = reactive({
-  name: [{ required: true, message: '请输入社会实践的标题！', trigger: 'blur' },
+  name: [{ required: true, message: '请输入课外活动的标题！', trigger: 'blur' },
   { max: 30, message: '长度不得超过30位!', trigger: 'blur' }
   ],
-  description: [{ required: true, message: '请输入社会实践的内容！', trigger: 'blur' }],
+  description: [{ required: true, message: '请输入课外活动的内容！', trigger: 'blur' }],
   date: [{ required: true, message: '请输入日期', trigger: 'blur' },
   { max: 20, message: '请输入正确的日期!不要超过20位!', trigger: 'blur' }],
   result: [{ required: true, message: '请输入您的成果', trigger: 'blur' },
