@@ -174,8 +174,29 @@ import {reload} from "@/utils/reloadRouter";
 router.beforeEach(async (to, from, next) => {
   console.log('进入beforeEach函数')
   console.log(from)
-  if(from.path === '/login' || from.path === '/register' || from.path === '/Login' || from.path === '/Register'){
-    reload()
+  if(
+      from.path === '/'
+      || from.path === '/login'
+      || from.path === '/register'
+      || from.path === '/Login'
+      || from.path === '/Register'
+      || from.path === '/personalPage'
+      || from.path === '/InfoFillIn'
+
+  ){
+    if(
+        to.path === '/'
+    || to.path === '/login'
+    || to.path === '/register'
+    || to.path === '/Login'
+    || to.path === '/Register'
+    || to.path === '/personalPage'
+    || to.path === '/InfoFillIn'
+    ){
+
+    }else{
+      reload()
+    }
   }
   showRouter.value = false;
   NProgress.start();

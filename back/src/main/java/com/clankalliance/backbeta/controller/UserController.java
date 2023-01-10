@@ -78,7 +78,7 @@ public class UserController {
     //aaa
     @PostMapping("/editInfo")
     public CommonResponse handleEditInfo(@RequestBody UserSaveRequest request){
-        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation(), request.getResearchDirection(), request.getSection(),request.getNickName());
+        return userService.handleEditInfo(request.getToken(),request.getName(),request.getId(),request.getUserNumber(),request.getEthnic(),request.getEmail(),request.getPoliticalAffiliation(), request.getResearchDirection(), request.getSection(),request.getNickName(),request.getPhone());
     }
 
     @PostMapping("/editNickName")
