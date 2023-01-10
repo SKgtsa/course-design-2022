@@ -406,7 +406,7 @@ const submitEditRowStudent = () => {
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
         userNumber: information.userNumber, name: information.name,nickName:information.nickName,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
-        avatarUrl:information.avatarURL,
+        avatarUrl:information.avatarURL,researchDirection:'',studentClass:information.studentClass
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
@@ -450,7 +450,7 @@ const submitEditRowTeacher = () => {
         gender: information.gender === '女' , ethnic: information.ethnic, politicalAffiliation: information.politicalAffiliation,
         userNumber: information.userNumber, name: information.name,nickName:information.nickName,researchDirection:information.researchDirection,
         idCardNumber: information.idCardNumber, photoURL: information.photoURL,section:information.section,
-        avatarUrl:information.avatarURL,
+        avatarUrl:information.avatarURL,studentClass:information.studentClass,
       }).then(res => {
         console.log('返回了数据')
         console.log(res)

@@ -499,30 +499,33 @@ const semesterOptions = [
 ]
 const classOptions = [
   {
-    value: 1,
+    value: '1班',
     label: '1班',
   }, {
-    value: 2,
+    value: '2班',
     label: '2班',
   }, {
-    value: 3,
+    value: '3班',
     label: '3班',
   }, {
-    value: 4,
+    value: '4班',
     label: '4班',
   }, {
-    value: 5,
+    value: '5班',
     label: '5班',
   }, {
-    value: 6,
+    value: '6班',
     label: '6班',
   },{
-    value: 7,
+    value: '7班',
     label: '7班',
   },{
-    value: 8,
+    value: '8班',
     label: '8班',
-  }
+  },{
+    value: '菁英班',
+    label: '菁英班',
+  },
 ]
 const studentSectionOptions = [
   {
@@ -763,12 +766,11 @@ const loadStudentTable = async (id) => {
 //编辑课程信息
 const handleEdit = (row) => {  //改
   console.log(row)
-  centerDialogVisible.value = true;
   editForm.name = row.name;
   editForm.weekStart = row.weekStart;
   editForm.weekEnd = row.weekEnd;
   editForm.capacity = row.capacity;
-  editForm.studentClass = row.studentClass;
+/*   editForm.studentClass = row.studentClass; */
   editForm.courseId = row.id;
   editForm.weight = row.weight;
   let arrIntSet = [];
@@ -782,7 +784,7 @@ const handleEdit = (row) => {  //改
   // 将字符串转换成数组，此时是字符串数组
   let arrString = row.studentClass.substr(1, row.studentClass.length - 2).split(',');
   for (let arrInt = 0; arrInt < arrString.length; arrInt++) {
-    arrIntSet.push(parseInt(arrString[arrInt]))
+    arrIntSet.push(arrString[arrInt])
   }
   // 将新的Number数组，绑定到select空间的v-model上
   editForm.studentClass = arrIntSet;
@@ -790,9 +792,15 @@ const handleEdit = (row) => {  //改
   let arrInt;
   arrString = row.studentSection.substr(1, row.studentSection.length - 2).split(',');
   for (arrInt = 0; arrInt < arrString.length; arrInt++) {
-    arrIntSet.push(parseInt(arrString[arrInt]))
+    arrIntSet.push(arrString[arrInt])
   }
   editForm.studentSection = arrIntSet;
+  /* for(let arrInt = 0 ;arrInt < row.studentClass.length;arrInt++){
+    editForm.studentClass.push(row.studentClass[arrInt])
+  }
+  for(let arrInt = 0 ;arrInt < row.studentSection.length;arrInt++){
+    editForm.studentSection.push(row.studentSection[arrInt])
+  } */
   editForm.location = row.location;
   editForm.year = row.year;
   editForm.description = row.description;
@@ -800,6 +808,7 @@ const handleEdit = (row) => {  //改
   editForm.credit = row.credit;
   editForm.courseId = row.id;
   typeOperation.value = 'edit';
+  centerDialogVisible.value = true;
   console.log(editForm)
 }
 
