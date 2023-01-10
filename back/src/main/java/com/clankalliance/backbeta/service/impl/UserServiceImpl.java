@@ -532,10 +532,12 @@ public class UserServiceImpl implements UserService {
                     postList = teacher.getPostList();
                     teacherRepository.save(teacher);
                 }
-                for(Post p : postList){
-                    p.setNickName(nickName);
-                    p.setAvatarUrl(avatarURL);
-                    postRepository.save(p);
+                if(postList != null) {
+                    for (Post p : postList) {
+                        p.setNickName(nickName);
+                        p.setAvatarUrl(avatarURL);
+                        postRepository.save(p);
+                    }
                 }
                 response.setSuccess(true);
                 response.setMessage("用户保存成功");

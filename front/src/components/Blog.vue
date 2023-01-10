@@ -72,7 +72,7 @@
             <el-input v-model="pageData.input" style="font-size: 3vh;line-height: 3vh;height: 4vh"/>
             <el-button @click="search" style="height: 4vh;width: 20%">搜索</el-button>
           </div>
-          <div v-infinite-scroll="refresh" class="listArea" style="overflow: auto;height: 90%;">
+          <div v-infinite-scroll=" refresh"  infinite-scroll-distance="50" class="listArea" style="overflow: auto;height: 90%;">
             <div v-for="(item,index) in pageData.postList"   :key="index"  style="padding-top: 2vh">
               <div class="postBox" :style="{ 'background-image': `url(${item.topImageURL})` }">
                 <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToDetail(item)">
@@ -241,9 +241,11 @@ import router from "@/router";
 import {getBaseURL, getManager, getUserId, mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
 
+const noOperate = () => {
+
+}
+
 const handleDeleteCheck = (item: Post) => {
-  console.log(item.userId)
-  console.log(getUserId())
   if(item.userId == getUserId()){
     return true;
   }else{
@@ -274,7 +276,7 @@ const showDetail = ref(false);
 
 const showAnnouncementDetail = ref(false)
 
-console.log(getUserId())
+console.log(getManager())
 
 let carousel = ref(null)
 
@@ -751,11 +753,13 @@ const writeBlog = () => {
 const refresh = () => {
   if(!requesting.value){
     if(loadOver.value){
+      console.log('到底了')
       // ElMessage({
       //   message: "已经到底了",
       //   type: 'error'
       // })
     }else{
+      console.log('没在请求且没有到底')
       showLoading();
       requesting.value = true;
       console.log(pageData.keyWord)
@@ -789,6 +793,8 @@ const refresh = () => {
         requesting.value = false;
       })
     }
+  }else{
+    console.log('请求中')
   }
 }
 
@@ -910,7 +916,6 @@ const getContent = (v: string) => {
   width: 75vw;
   height: 40vh;
   background-position: top;
-  background-attachment: fixed;
   background-size: cover;
 }
 .headingInputWrapper{

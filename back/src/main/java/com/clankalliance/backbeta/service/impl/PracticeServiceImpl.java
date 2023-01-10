@@ -107,27 +107,29 @@ public class PracticeServiceImpl implements PracticeService {
                 if(id == 0){
                     //id为空，则为Practice的创建
                     id=snowFlake.nextId();
+                    studentSet.add(student);
+                    Practice practice=new Practice(id,name,description,studentSet);
+                    practiceRepository.save(practice);
+                    //将practice加入进学生的活动表中
+                    List<Practice> practiceList=student.getPracticeSet();
+                    practiceList.add(practice);
+                    student.setPracticeSet(practiceList);
+                    student.setAchievementSet(updateAchievementList(student));
+                    studentRepository.save(student);
                 }else{
                     Optional<Practice> practiceOp= practiceRepository.findById(id);
                     if(practiceOp.isEmpty()){
-                        //所取出的Optional为空,为创建
-                        id=snowFlake.nextId();
+                        response.setSuccess(false);
+                        response.setMessage("社会实践不存在");
+                        return response;
                     }else{ //为Practice的修改，需更新学生表,但不需要更改id
                         Practice OldPractice=practiceOp.get();
                         studentSet=OldPractice.getStudentSet();
+                        studentSet.add(student);
+                        Practice practice=new Practice(id,name,description,studentSet);
+                        practiceRepository.save(practice);
                     }
                 }
-                studentSet.add(student);
-                Practice practice=new Practice(id,name,description,studentSet);
-                practiceRepository.save(practice);
-
-                //将practice加入进学生的活动表中
-                List<Practice> practiceList=student.getPracticeSet();
-                practiceList.add(practice);
-                student.setPracticeSet(practiceList);
-                student.setAchievementSet(updateAchievementList(student));
-                studentRepository.save(student);
-
                 response.setSuccess(true);
                 response.setMessage("社会实践创建成功");
             }else if(user instanceof Manager){
@@ -135,9 +137,7 @@ public class PracticeServiceImpl implements PracticeService {
                 Practice practiceOld = practiceRepository.findById(id).get();
                 Set<Student> studentSet=practiceOld.getStudentSet();
                 Practice practice=new Practice(id,name,description,studentSet);
-
                 practiceRepository.save(practice);
-
                 response.setSuccess(true);
                 response.setMessage("社会实践修改成功");
             }

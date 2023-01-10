@@ -46,5 +46,5 @@ export let setManager = (manager) =>{
     localStorage.setItem('manager',manager)
 }
 export let getManager=  ()=>{
-    return localStorage.getItem('manager');
+    return localStorage.getItem('manager') === 'true';
 }

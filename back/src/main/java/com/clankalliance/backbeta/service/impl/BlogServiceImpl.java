@@ -154,7 +154,7 @@ public class BlogServiceImpl implements BlogService {
             return response;
         User user = userService.findById(Long.parseLong(response.getMessage()));
         Date date = new Date();
-        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy年MM月dd日 hh时mm分");
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy年MM月dd日 HH时mm分");
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+8:00"));;
         Post post = new Post(UUID.randomUUID().toString(),heading,content, user.getNickName(), user.getAvatarURL(), user.getId(), dateFormat.format(date), generalUploadService.upload(topImage), new ArrayList<>(),new ArrayList<>(), new ArrayList<>());
 
@@ -175,12 +175,16 @@ public class BlogServiceImpl implements BlogService {
         if(user instanceof Teacher){
             Teacher teacher = (Teacher) user;
             List<Post> postList = teacher.getPostList();
+            if(postList == null)
+                postList = new ArrayList<>();
             postList.add(post);
             teacher.setPostList(postList);
             teacherRepository.save(teacher);
         }else if(user instanceof Student){
             Student student = (Student) user;
             List<Post> postList = student.getPostList();
+            if(postList == null)
+                postList = new ArrayList<>();
             postList.add(post);
             student.setPostList(postList);
             studentRepository.save(student);
