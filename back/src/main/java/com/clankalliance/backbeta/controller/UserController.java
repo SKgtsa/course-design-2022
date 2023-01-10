@@ -115,7 +115,7 @@ public class UserController {
 
     @PostMapping("/changePassword")
     public CommonResponse handleChangePassword(@RequestBody PasswordChangeRequest request){
-        return userService.handleChangePassword(request.getToken(),request.getPassword());
+        return userService.handleChangePassword(request.getToken(),request.getOldPassword(),request.getNewPassword());
     }
 
     @PostMapping("/managerFind")

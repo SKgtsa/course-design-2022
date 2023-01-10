@@ -42,7 +42,7 @@
           <a>{{ pageData.data.eMail }}</a>
         </div>
         <span style="display: flex;flex-dirction:row">
-          <el-button v-if="getUserId() &&  userId.toString() === getUserId().toString()" class="subscribeButton" :style="{
+          <el-button v-if="getUserId() &&  userId.toString() === getUserId().toString() && login" class="subscribeButton" :style="{
             'width': `${mobile ? 'auto' : '13vw'}`
           }" @click="checkInfo">个人信息</el-button>
           <el-button v-if="login" @click="subscribe" class="subscribeButton" :style="{
@@ -191,6 +191,7 @@
     </el-form>
     <el-button @click="submitEvaluate">提交</el-button>
   </el-drawer>
+  <!--个人信息页-->
   <el-dialog v-model="infoDialog" title="" :width="`${mobile ? 90 : 40}%`">
     <el-form :model="information" class="areaTextInput" ref="formData" label-position="right" label-width="auto" :rules="rules">
       <el-form-item label="照片">
@@ -331,7 +332,7 @@ const loadInformationData = async () => {   //查看个人信息
   console.log('进入loadInformationData')
   pageData.requesting = true;
   showLoading();
-  service.post('/api/user/myInfo', { token: localStorage.getItem("token") }).then(res => {
+  await service.post('/api/user/myInfo', { token: localStorage.getItem("token") }).then(res => {
     console.log(res);
     if (res.data.success) {
       const data = res.data;
@@ -442,7 +443,7 @@ const rules = reactive({
   idCardNumber: [{ validator: validateIdCardNumber, trigger: 'blur' }],
   ethnic: [{ required: true, message: '请填写您的民族', triggwe: 'blur' }],
   politicalAffiliation: [{ required: true, message: '请选择您的政治面貌', triggwe: 'blur' }],
- 
+
 })
 
 const submitEditRowStudent = () => {
@@ -464,14 +465,15 @@ const submitEditRowStudent = () => {
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
+        localStorage.setItem('token', res.data.token)
         if (res.data.success) {
           let data = res.data;
-          localStorage.setItem('token', data.token)
           hideLoading();
           pageData.requesting = false;
-          loadInformationData()
+          loadInformationData().then(() => {
+            init()
+          })
           messageSuccess(data.message)
-          init()
         } else {
           hideLoading()
           pageData.requesting = false;
@@ -508,14 +510,14 @@ const submitEditRowTeacher = () => {
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
+        localStorage.setItem('token', res.data.token)
         if (res.data.success) {
-          let data = res.data;
-          localStorage.setItem('token', data.token)
           hideLoading();
           pageData.requesting = false;
-          loadInformationData()
-          messageSuccess(data.message)
-          init()
+          loadInformationData().then(() => {
+            init()
+          })
+          messageSuccess(res.data.message)
         } else {
           hideLoading()
           pageData.requesting = false;
@@ -552,14 +554,15 @@ const submitEditRowManager = ()=>{
       }).then(res => {
         console.log('返回了数据')
         console.log(res)
+        localStorage.setItem('token', res.data.token)
         if (res.data.success) {
           let data = res.data;
-          localStorage.setItem('token', data.token)
           hideLoading();
           pageData.requesting = false;
-          loadInformationData()
+          loadInformationData().then(() => {
+            init()
+          })
           messageSuccess(data.message)
-          init()
         } else {
           hideLoading()
           pageData.requesting = false;
@@ -905,13 +908,14 @@ const refresh = () => {
   }
 }
 
-const init = () => {
+const init = async () => {
   if (hasUser.value) {
     showLoading()
     console.log(userId)
     pageData.requesting = true;
+    console.log('init')
     //初始化方法
-    service.post('api/blog/getPersonal', { token: localStorage.getItem("token"), userId: userId }).then(res => {
+    await service.post('api/blog/getPersonal', { token: localStorage.getItem("token"), userId: userId }).then(res => {
       const data = res.data;
       console.log('初始化成功')
       console.log(res)

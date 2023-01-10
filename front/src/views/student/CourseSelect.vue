@@ -12,7 +12,7 @@
           }" class="leftSection">
             <div  :style="{
               'width':`${mobile? 16: 23*ratio}vw`,
-              'height':`${mobile? 8*verticalRatio: 8}vh`
+              'height':`${mobile? 6*verticalRatio: 8}vh`
               }" style="  display: flex;justify-content: center;">
               <div style="width: 95%;height: 90%;background-color: #0a8ce2;align-self: center;border-radius: 8px"/>
             </div>
@@ -282,22 +282,6 @@ interface Course{
   description: '',
 }
 
-interface CourseTime{
-  weekDay: 0,
-  section: 0,
-}
-
-interface CourseTimeData{
-  courseIndex: 0,
-  weekDay: 0,
-  section: 0,
-}
-
-const handlePosition = (target : CourseTimeData) => {
-  console.log('position: absolute; top:' + target.section * 2 + 'vh; left: ' + target.weekDay * 2 + 'vw');
-  return 'position: absolute; top:' + target.section * 2 + 'vh; left: ' + target.weekDay * 2 + 'vw';
-}
-
 /**
  * 根据myCourse更新课程时间
  */
@@ -351,8 +335,8 @@ const courseSelected = () => {
         const startTime = new Date(data.user.startTime);
         const endTime = new Date(data.user.endTime);
         pageData.myCourse = data.content;
-        pageData.activities[1].timestamp = startTime.getFullYear() + '年' + startTime.getMonth() + '月' + startTime.getDay() + '日'
-        pageData.activities[0].timestamp = endTime.getFullYear() + '年' + endTime.getMonth() + '月' + endTime.getDay() + '日'
+        pageData.activities[1].timestamp = startTime.getFullYear() + '年' + (startTime.getMonth() + 1) + '月' + (startTime.getDate() - 1) + '日'
+        pageData.activities[0].timestamp = endTime.getFullYear() + '年' + (endTime.getMonth() + 1) + '月' + (endTime.getDate() - 1) + '日'
         console.log(timeNow.getTime() + '   ' + endTime.getTime() + '     ' + startTime.getTime())
         if(timeNow.getTime() <= endTime.getTime() && timeNow.getTime() >= startTime.getTime()){
           isShowTable.value = true;

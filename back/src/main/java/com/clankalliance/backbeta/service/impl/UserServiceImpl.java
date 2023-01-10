@@ -440,24 +440,25 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 修改密码
-     * @param token 用户令牌
-     * @param passWord 新密码
+     * @param token
+     * @param oldPassword
+     * @param newPassword
      * @return
      */
     @Override
-    public CommonResponse handleChangePassword(String token, String passWord){
+    public CommonResponse handleChangePassword(String token, String oldPassword, String newPassword){
         CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user = findById(Long.parseLong(response.getMessage()));
-            String oldPassword=user.getPassword();
-            if(oldPassword.equals(passWord)){
-                response.setSuccess(false);
-                response.setMessage("密码未进行更改");
-            }else{
-                user.setPassword(passWord);
+            oldPassword = DigestUtils.sha1Hex(oldPassword);
+            newPassword = DigestUtils.sha1Hex(newPassword);
+            if(oldPassword.equals(user.getPassword())){
+                user.setPassword(newPassword);
                 userRepository.save(user);
-                response.setSuccess(true);
-                response.setMessage("密码修改成功");
+            }else{
+                response.setSuccess(false);
+                response.setMessage("密码错误");
+                return response;
             }
         }
         return response;

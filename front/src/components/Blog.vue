@@ -123,7 +123,7 @@
         data="{token: localstorage.getItem('token')}"
         ref="uploadRef"
         :on-change="handleChange"
-        ::before-upload="beforeAvatarUpload"
+        :before-upload="beforeAvatarUpload"
     >
       <el-icon><Plus /></el-icon>
       <template #file="{ file }">
@@ -134,7 +134,7 @@
               v-if="!disabled"
               class="el-upload-list__item-delete"
               @click="handleRemove(file)"
-              
+
           >
             <el-icon><Delete /></el-icon>
           </span>
