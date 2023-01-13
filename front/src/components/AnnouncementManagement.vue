@@ -1,46 +1,48 @@
 <template>
-  <div class="main" :style="{
-    'flex-direction': `${mobile? 'column':'row'}`,
-    'height': `${mobile? 'auto':'93vh'}`,
-    'padding-top': `${mobile? '3vh':'0'}`,
-    'padding-bottom': `${mobile? '8vh':'0'}`,
-  }">
-    <div class="leftWindow" :style="{
-      'flex-direction': `${mobile? 'column-reverse':'column'}`,
-      'padding-left': `${mobile? '0':'1vw'}`,
-      'margin': `${mobile? '0':'0 1%'}`
-    }">
-      <div class="panel" :style="{
-        'padding-bottom': `${mobile? '2vh':'0'}`
+  <transition name="el-zoom-in-bottom">
+    <div class="main" :style="{
+      'flex-direction': `${mobile? 'column':'row'}`,
+      'height': `${mobile? 'auto':'93vh'}`,
+      'padding-top': `${mobile? '3vh':'0'}`,
+      'padding-bottom': `${mobile? '8vh':'0'}`,
+    }" v-if="initOver">
+      <div class="leftWindow" :style="{
+        'flex-direction': `${mobile? 'column-reverse':'column'}`,
+        'padding-left': `${mobile? '0':'1vw'}`,
+        'margin': `${mobile? '0':'0 1%'}`
       }">
-        <div class="panelCard" :style="{
-          'height': `${mobile? '10vh':'10vh'}`,
-          'margin': `${mobile? 'auto':'0'}`,
+        <div class="panel" :style="{
+          'padding-bottom': `${mobile? '2vh':'0'}`
         }">
-          <el-button class="writeButton" @click="writeAnnouncement">
-            <el-image />
-            <a><el-icon><EditPen /></el-icon>发布通知</a>
-          </el-button>
+          <div class="panelCard" :style="{
+            'height': `${mobile? '10vh':'10vh'}`,
+            'margin': `${mobile? 'auto':'0'}`,
+          }">
+            <el-button class="writeButton" @click="writeAnnouncement">
+              <el-image />
+              <a><el-icon><EditPen /></el-icon>发布通知</a>
+            </el-button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="rightWindow"  :style="{
-        'padding-right':`${mobile? 0:'0.2vw'}`,
-        'width':`${mobile? 'auto': '70vw'}`
-      }">
-      <div class="operationCard" :style="{
-        'width': `${mobile? '100%':'70vw'}`,
-      }">
-        <div  class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
-          <div v-for="(item,index) in pageData.announcementList"   :key="index"  style="padding-top: 2vh">
-            <div class="announcementBox" :style="{ 'background-image': `url(${item.pictureUrl})` }">
-              <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToAnnouncementDetail(item)">
-                <div class="cardContent" >
-                  <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
-                </div>
-                <div class="announcementBoxBottom">
-                  <div class="bottom">
-                    <el-button class="deleteButton" @click="deleteThis(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+      <div class="rightWindow"  :style="{
+          'padding-right':`${mobile? 0:'0.2vw'}`,
+          'width':`${mobile? 'auto': '70vw'}`
+        }">
+        <div class="operationCard" :style="{
+          'width': `${mobile? '100%':'70vw'}`,
+        }">
+          <div  class="listArea" style="overflow: auto;height: 70vh;padding-top: 2vh">
+            <div v-for="(item,index) in pageData.announcementList"   :key="index"  style="padding-top: 2vh">
+              <div class="announcementBox" :style="{ 'background-image': `url(${item.pictureUrl})` }">
+                <div class="boxContainer" style="background-color: rgba(10,10,10,0.6)" @click="jumpToAnnouncementDetail(item)">
+                  <div class="cardContent" >
+                    <a :style="{'font-size':`${mobile? 6:4}vh`}">{{item.heading}}</a>
+                  </div>
+                  <div class="announcementBoxBottom">
+                    <div class="bottom">
+                      <el-button class="deleteButton" @click="deleteThis(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -49,7 +51,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </transition>
   <!--弹出框 写通知-->
   <el-drawer
       with-header="false"
@@ -141,15 +143,11 @@ import type { UploadFile } from 'element-plus'
 import service from "@/request";
 import serviceFile from "@/request/indexFile";
 import {hideLoading, showLoading} from "@/utils/loading";
-import router from "@/router";
 import {getBaseURL, mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
 import { messageError } from '@/utils/message'
 const blog = ref('')
-const imageList = [
-  'http://localhost:5174/static/file/8DFDB35A-C058-4CEA-8CA3-5A076B5D4240.webp',
-  'http://localhost:5174/static/file/BFD9E6FC-7AAB-4821-B769-12DB9779F90F.jpg',
-]
+const initOver = ref(false)
 const showUpload = ref(true);
 //抽屉是否打开（呈现）
 const drawerOpen = ref(false);
@@ -159,8 +157,6 @@ const heading = ref('');
 const requesting = ref(false);
 //封面图片
 let topImage = null;
-//若为true,展示博客正文
-const showDetail = ref(false);
 
 const showAnnouncementDetail = ref(false)
 
@@ -194,6 +190,7 @@ const updateAnnouncement = () => {
       pageData.announcementList = data.content;
       hideLoading();
       requesting.value = false;
+      initOver.value = true;
     }else{
       hideLoading();
       loginFailed();
@@ -232,7 +229,6 @@ const jumpToAnnouncementDetail = (item: Announcement) => {
     }
   })
 }
-
 
 const disabled = ref(false)
 const uploadRef = ref();
