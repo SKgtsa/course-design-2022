@@ -1,90 +1,91 @@
 <template>
-  <div class="content" :style="{
+  <transition name="el-zoom-in-bottom">
+    <div class="content" :style="{
     'padding-top': `${mobile ? '5vh' : '1vh'}`,
     'height': `${mobile ? '90vh' : '100vh'}`
-  }">
-    <div class="pageContent" :style="{
+  }" v-if="initOver" >
+      <div class="pageContent" :style="{
       'width': `${mobile ? '100%' : '80vw'}`
     }">
-      <!-- :row-key="record=>record.id" -->
-      <div class="titleBox">
-        <a style="font-size: 6vh;
+        <!-- :row-key="record=>record.id" -->
+        <div class="titleBox">
+          <a style="font-size: 6vh;
         font-weight: 500;
         padding-left: 2vw;
       ">课程管理</a>
-        <el-button class="addButton" @click="add">
-          <a> 添加课程</a>
-        </el-button>
-      </div>
-      <div class="checkBox" v-if="!mobile">
-        <a class="selectLabel">学年:</a>
-        <el-select style="width:8vw;height:auto" v-model="yearsValue" placeholder="学年">
-          <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
-        </el-select>
-        <a class=" selectLabel" style="padding-left:8vw">学期:</a>
-        <el-select style="width:13vw" v-model="semesterValue" placeholder="学期：">
-          <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
-            :value="item.value"></el-option>
-        </el-select>
-        <el-button
-          style="margin-left: 5vw;width: 20vh;height:6vh;background-color: rgba(211,227,253,0.9);color: rgba(4,30,73);border-radius: 1vw;float: right"
-          @click="loadCourseTable">
-          <a style=" font-size:2vh;font-weight: 600;">查询创建课程信息</a>
-        </el-button>
-      </div>
-      <div class="checkBox" v-if="mobile">
+          <el-button class="addButton" @click="add">
+            <a> 添加课程</a>
+          </el-button>
+        </div>
+        <div class="checkBox" v-if="!mobile">
+          <a class="selectLabel">学年:</a>
+          <el-select style="width:8vw;height:auto" v-model="yearsValue" placeholder="学年">
+            <el-option v-for="item in yearOptions" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
+          <a class=" selectLabel" style="padding-left:8vw">学期:</a>
+          <el-select style="width:13vw" v-model="semesterValue" placeholder="学期：">
+            <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
+                       :value="item.value"></el-option>
+          </el-select>
+          <el-button
+              style="margin-left: 5vw;width: 20vh;height:6vh;background-color: rgba(211,227,253,0.9);color: rgba(4,30,73);border-radius: 1vw;float: right"
+              @click="loadCourseTable">
+            <a style=" font-size:2vh;font-weight: 600;">查询创建课程信息</a>
+          </el-button>
+        </div>
+        <div class="checkBox" v-if="mobile">
         <span style="display: flex;flex-direction: row;"><a class="selectLabel"
-            style="font-size:3.1vw;line-height: 4vh;">学年:</a>
+                                                            style="font-size:3.1vw;line-height: 4vh;">学年:</a>
           <el-select style="width:30vw;height:auto" v-model="yearsValue" placeholder="学年">
             <el-option v-for="item in yearOptions" :key="item.value" :label="item.label"
-              :value="item.value"></el-option>
+                       :value="item.value"></el-option>
           </el-select>
           <a class=" selectLabel" style="padding-left:8vw;font-size: 3.1vw;line-height: 4vh;">学期:</a>
           <el-select style="width:30vw" v-model="semesterValue" placeholder="学期：">
             <el-option v-for="item in semesterOptions" :key="item.value" :label="item.label"
-              :value="item.value"></el-option>
+                       :value="item.value"></el-option>
           </el-select>
         </span>
-        <el-button
-          style="margin-left: 30vw;margin-top: 3vh;width: 20vh;height:6vh;background-color: rgba(211,227,253,0.9);color: rgba(4,30,73);border-radius: 1vw;"
-          @click="loadCourseTable">
-          <a style=" font-size:2vh;font-weight: 600;">查询创建课程信息</a>
-        </el-button>
+          <el-button
+              style="margin-left: 30vw;margin-top: 3vh;width: 20vh;height:6vh;background-color: rgba(211,227,253,0.9);color: rgba(4,30,73);border-radius: 1vw;"
+              @click="loadCourseTable">
+            <a style=" font-size:2vh;font-weight: 600;">查询创建课程信息</a>
+          </el-button>
+        </div>
+        <el-table :data="tableData.arr" border stripe size="large" class="courseTable"
+                  :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
+                  :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
+          <el-table-column  label="课程号" prop="id" width="200" show-overflow-tooltip />
+          <el-table-column label="课程" prop="name" width="160" show-overflow-tooltip />
+          <el-table-column label="地点" prop="location" width="160" show-overflow-tooltip />
+          <el-table-column label="开课周" prop="weekStart" width="100" show-overflow-tooltip />
+          <el-table-column label="结束周" prop="weekEnd" width="100" show-overflow-tooltip />
+          <el-table-column label="上课时间" prop="time" width="200" show-overflow-tooltip>
+            <template #default="time">
+              <p v-for="(item, index) in time.row.time">
+                星期{{ time.row.time[index].weekDay }}的第{{
+                  time.row.time[index].section
+                }}大节
+              </p>
+            </template>
+          </el-table-column>
+          <el-table-column width="250">
+            <template #header>
+              操作
+            </template>
+            <template #default="scope" style="display: flex;flex-direction: column">
+              <!-- 默认行和列 -->
+              <!-- <el-button @click="viewDetails(scope.row)" class="button" type="primary">课程详情</el-button> -->
+              <el-button size="small" @click="loadStudentTable(scope.row.id)" class="button"
+                         type="primary">选课学生</el-button>
+              <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑</el-button>
+              <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </div>
-      <el-table :data="tableData.arr" border stripe size="large" class="courseTable"
-        :header-cell-style="{ 'height': '3.75vh', 'font-size': '2.25vh', 'text-align': 'center', 'font-weight': '800' }"
-        :cell-style="{ 'height': '1.875vh', 'font-size': '2vh', 'text-align': 'center', 'font-weight': '450' }">
-        <el-table-column  label="课程号" prop="id" width="200" show-overflow-tooltip />
-        <el-table-column label="课程" prop="name" width="160" show-overflow-tooltip />
-        <el-table-column label="地点" prop="location" width="160" show-overflow-tooltip />
-        <el-table-column label="开课周" prop="weekStart" width="100" show-overflow-tooltip />
-        <el-table-column label="结束周" prop="weekEnd" width="100" show-overflow-tooltip />
-        <el-table-column label="上课时间" prop="time" width="200" show-overflow-tooltip>
-          <template #default="time">
-            <p v-for="(item, index) in time.row.time">
-              星期{{ time.row.time[index].weekDay }}的第{{
-                time.row.time[index].section
-              }}大节
-            </p>
-          </template>
-        </el-table-column>
-        <el-table-column width="250">
-          <template #header>
-            操作
-          </template>
-          <template #default="scope" style="display: flex;flex-direction: column">
-            <!-- 默认行和列 -->
-            <!-- <el-button @click="viewDetails(scope.row)" class="button" type="primary">课程详情</el-button> -->
-            <el-button size="small" @click="loadStudentTable(scope.row.id)" class="button"
-              type="primary">选课学生</el-button>
-            <el-button size="small" @click="handleEdit(scope.row)" class="button">编辑</el-button>
-            <el-button size="small" type="danger" class="button" @click="handleDelete(scope.row)">删除课程</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-  </div>
-
+    </div >
+  </transition>
   <el-dialog v-model="centerDialogVisible" :width="mobile ? '90%' : '45%'">
     <el-form :model="editForm" class="areaTextInput" ref="formCourseData" :rules="rulesEditForm" label-width="auto"
       label-position="right">
@@ -647,10 +648,7 @@ let tableData = reactive(
     arr: []
   }
 )
-const handleChange = (value) => {
-  console.log(value)
-}
-
+const initOver = ref(false);
 let typeOperation = ref(''); //edit,check,add 编辑，查看，添加
 let centerDialogVisible = ref(false); //控制改增弹出框
 let studentDialogVisible = ref(false); //控制学生弹出框
@@ -1057,8 +1055,9 @@ const handleCurrentChange = (currentPage) => {
   pageNum.value = currentPage;
   console.log(currentPage)
 }
-
-
+setTimeout(() => {
+  initOver.value = true;
+},200)
 </script>
 <style lang="scss" scoped>
 .studentTitle {
@@ -1070,17 +1069,12 @@ const handleCurrentChange = (currentPage) => {
   line-height: 1vh;
   color: #0273f1;
 }
-
 .studentNumberInput {
   width: 40%;
 }
-
-
 .content {
   width: 100%;
-
   padding-top: 1vh;
-
   .pageContent {
     height: 80vh;
     background-color: #FFFFFF;
@@ -1089,13 +1083,11 @@ const handleCurrentChange = (currentPage) => {
     padding-bottom: 3vh;
     box-shadow: 0 0 10px 0 #b9ccee;
     margin: auto;
-
     .titleBox {
       margin-top: 1.5vh;
       height: 5vh;
       line-height: 1vh;
       color: #0273f1;
-
       .addButton {
         font-size: 2vh;
         width: 15vh;
@@ -1107,30 +1099,22 @@ const handleCurrentChange = (currentPage) => {
         color: #0273f1;
         margin: 0 3%;
       }
-
     }
-
-
     .courseTable {
       height: 75%;
       width: 98%;
       margin: auto;
     }
-
     .checkBox {
       padding: 3vh 2vw 2vh;
-
       .selectLabel {
         font-size: 1.5vw;
         padding-right: 3vw;
         line-height: 4vh;
       }
-
     }
-
     .pracitceTable {
       background-color: aqua;
-
       .button {
         width: 9vw;
         height: 5.5vh;

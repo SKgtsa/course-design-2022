@@ -134,7 +134,6 @@
               v-if="!disabled"
               class="el-upload-list__item-delete"
               @click="handleRemove(file)"
-
           >
             <el-icon><Delete /></el-icon>
           </span>
@@ -191,7 +190,7 @@
                 <el-button class="avatarButton" @click="jumpToPersonal(pageData.target.userId, $event)"><el-image :src="getBaseURL() + item.avatarURL" class="avatar"/></el-button>
                 <a class="nickName" @click="jumpToPersonal(pageData.target.userId, $event)">{{item.nickName}}</a>
               </div>
-              <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" @click="deleteThisComment(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
+              <el-button v-if="handleDeleteCheck(item) || getManager()" class="likeCollectButton" style="color: #8a8f97;" @click="deleteThisComment(item, $event)"><el-icon><DeleteFilled /></el-icon></el-button>
             </div>
           </div>
         </div>
@@ -244,9 +243,6 @@ import {getBaseURL, getManager, getUserId, mobile} from "@/global/global";
 import {loginFailed} from "@/utils/tokenCheck";
 import { messageError } from '@/utils/message'
 
-const noOperate = () => {
-
-}
 
 const handleDeleteCheck = (item: Post) => {
   if(item.userId == getUserId()){
