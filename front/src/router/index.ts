@@ -33,7 +33,11 @@ const router = createRouter({
     },{
       path:'/PengShuaihao',
       name:'PengShuaihaoPersonalPage',
-      component:() =>import('../views/group/PengShuaihaoPersonView.vue')
+      component:() =>import('../views/group/PengShuaihao/PengShuaihaoPersonView.vue')
+    },{
+      path:'/PengShuaihao/SelfInfo',
+      name:'PengShuaihaoInfo',
+      component:() =>import('../views/group/PengShuaihao/PengShuaihaoInfo.vue')
     }
     ,{
       path: '/InfoFillIn',
