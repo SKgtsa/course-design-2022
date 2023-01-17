@@ -22,7 +22,6 @@ import com.clankalliance.backbeta.response.dataBody.FindCourseStudentData;
 import com.clankalliance.backbeta.utils.AntiInjection;
 import com.clankalliance.backbeta.utils.SnowFlake;
 import com.clankalliance.backbeta.utils.TokenUtil;
-import org.openxmlformats.schemas.drawingml.x2006.main.CTOuterShadowEffect;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -387,13 +386,17 @@ public class CourseServiceImpl implements CourseService {
      * @return
      */
     public CommonResponse handleFindAllCourse(String token,boolean filterOpen,Integer pageNum,Integer pageSize){
-        CommonResponse response = tokenUtil.tokenCheck(token);;
+        CommonResponse response = tokenUtil.tokenCheck(token);
         if(response.getSuccess()){
             User user=userService.findById(Long.parseLong(response.getMessage()));
             if(user instanceof Student){
                 Student student=(Student) user;
                 Set<Course> courseSet=student.getCourseSet();
                 List<Course> allCourseList=courseRepository.findAll();
+                for(Course c : courseSet){
+                    //移除已选
+                    allCourseList.remove(c);
+                }
                 //过滤器打开时，在全部课表中删除时间冲突课程
                 if(filterOpen){
                     for(Course c : courseSet){

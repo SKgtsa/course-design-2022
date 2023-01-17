@@ -129,7 +129,7 @@ public class ManipulateUtil {
             StatusNode node = headNode.getNext();
             boolean find = false;
             while(node != null && !find){
-                if(node.getToken().equals(token)){
+                if(node.getToken() != null && node.getToken().equals(token)){
                     result = node;
                     deleteNextStatus(lastNode);
                     find = true;
