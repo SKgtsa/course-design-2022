@@ -105,11 +105,48 @@
         </div>
       </el-carousel-item>
       <el-carousel-item style="height: 100vh">
+        <div class="githubPageContent">
+          <div style="margin: auto;height: 8vh;display: flex">
+            <a class="githubText">{{githubText}}</a>
+            <transition name="el-fade-in-linear">
+              <el-button class="githubButton" @click="toGithub" v-if="showGithubButton"><el-image class="githubIcon" src="https://courseback.clankalliance.cn/static/inbuild/SKgtsa/github.png" />Github个人主页</el-button>
+            </transition>
+          </div>
+        </div>
+      </el-carousel-item>
+      <el-carousel-item style="height: 100vh">
+        <div class="videoContainer">
+          <video class="fullScreenVideo" :style="{
+            'width': `${windowWidth / windowHeight < 1920 / 1080? 'auto': '100vw'}`,
+            'height': `${windowWidth / windowHeight < 1920 / 1080? '100vh': 'auto'}`,
+            'left': `${windowWidth / windowHeight < 1920 / 1080? (0.5*windowWidth - windowHeight*1920/1080/2 + 'px'): '0'}`,
+            'top': `${windowWidth / windowHeight < 1920 / 1080? '0':  (0.5*windowHeight - windowWidth*1080/1920/2 + 'px')}`,
+          }" autoplay loop muted>
+            <!--获取的b站视频源-->
+            <source type="video/mp4" src="https://courseback.clankalliance.cn/static/inbuild/SKgtsa/video.mp4">
+          </video>
+        </div>
+        <div class="cover">
+          <div class="endPageName">
+            <a style="padding: 3vh">我的爱好</a>
+          </div>
+          <div class="endPageContent">
+            <a  style="padding: 3vh">我热爱汽车与汽车文化，乐于了解车辆本身与其背后的故事，同时也喜欢驾驶的感觉</a>
+          </div>
+          <div class="endPageBottom">
+            <a  style="padding: 1vh">视频来自《GrandTurismo 7》</a>
+          </div>
+        </div>
+      </el-carousel-item>
+      <el-carousel-item style="height: 100vh">
         <div class="page" :style="{
         'height': '100vh',
         'width': `${mobile? 'auto':'100vw'}`,
       }" >
-          <a style="margin: auto;font-size: 6vh;font-weight: bold;color: #FFFFFF">Have a nice day</a>
+          <div class="endNote">
+            <a>感谢您的浏览</a>
+            <a>Have a nice day</a>
+          </div>
         </div>
       </el-carousel-item>
     </el-carousel>
@@ -172,11 +209,10 @@ import service from "@/request";
 import {ElMessage} from "element-plus";
 import {hideLoading, showLoading} from "@/utils/loading";
 import {reactive, ref} from "vue";
-import {defineEmits, onMounted, watch} from "@vue/runtime-core";
+import {onMounted} from "@vue/runtime-core";
 import {loginFailed} from "@/utils/tokenCheck";
-import {getBaseURL} from "@/global/global";
+import {getBaseURL, windowHeight, windowWidth} from "@/global/global";
 import {mobile} from "@/global/global";
-
 
 const userId  = '262483010111279104';
 console.log(userId)
@@ -185,7 +221,7 @@ console.log(router)
 let carousel = ref(null)
 
 //当该值为true时允许滑动或滚动 避免页面过于敏感
-const moveAvaliable = ref(true);
+const moveAvailable = ref(true);
 
 const hasUser = ref(true)
 
@@ -194,17 +230,17 @@ const showBA = ref(false)
 const showBB = ref(false)
 const showCA = ref(false)
 const showCB = ref(false)
-
-
-if(userId == undefined)
-  hasUser.value = false;
+const showD = ref(false)
 
 const login = ref(false);
 
-const emits = defineEmits(["getContent"])
 const commentContent = ref("")
 const commentEditorId = ref("vue-tinymce-" + +new Date() + ((Math.random() * 1000).toFixed(0) + ""))
 const openEvaluateDrawer = ref(false)
+
+const githubText = ref('')
+const resultText = ref('当然，也欢迎到我的')
+const showGithubButton = ref(false)
 
 const openEvaluate = () => {
   console.log('openEvaluate')
@@ -268,25 +304,6 @@ const initComment = reactive({
   content_css: '/tinymce/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
 })
 
-//监听外部传递进来的的数据变化
-watch(
-    () => props.value,
-    () => {
-      commentContent.value = props.value
-      emits("getContent", commentContent.value)
-      console.log("外部传来" + commentContent.value)
-    }
-)
-//监听富文本中的数据变化
-watch(
-    () => commentContent.value,
-    () => {
-      emits("getContent", commentContent.value)
-      console.log("文本变化" + commentContent.value)
-    },
-
-)
-
 setTimeout(() => {
   showA.value = true;
 },300)
@@ -298,6 +315,9 @@ const handleCarouselChange = (e ) => {
   showBB.value = false;
   showCA.value = false;
   showCB.value = false;
+  showD.value = false;
+  githubText.value = '';
+  showGithubButton.value = false;
   switch (e){
     case 0:
       setTimeout(() => {
@@ -319,6 +339,31 @@ const handleCarouselChange = (e ) => {
         },600)
       },400)
       break;
+    case 3:
+      setTimeout(() => {
+        showD.value = true;
+        let i = 0;
+        let j = 2;
+        let timer = setInterval(() => {
+          if(i <= 2){
+            githubText.value += resultText.value.charAt(i);
+            i ++;
+          }else if(i < 9){
+            if(j > 0){
+              j --;
+            }else{
+              githubText.value += resultText.value.charAt(i);
+              i ++;
+            }
+          }else{
+            clearInterval(timer)
+            setTimeout(() => {
+              showGithubButton.value = true;
+            },300)
+          }
+        },200)
+      },400)
+      break;
   }
 }
 
@@ -330,17 +375,17 @@ const right = () => {
   carousel.value.next();
 }
 
-const state = reactive({
-  startX: null,
-  startY: null,
-})
+const toGithub = () => {
+  window.open("https://github.com/SKgtsa")
+}
+
 //监听滚轮 切换页面
 const handleScroll = (res) => {
   console.log(res)
-  if(moveAvaliable.value){
-    moveAvaliable.value = false;
+  if(moveAvailable.value){
+    moveAvailable.value = false;
     setTimeout(() => {
-      moveAvaliable.value = true;
+      moveAvailable.value = true;
     },1000)
     if(res.deltaX > 0 || res.deltaY >0){
       right();
@@ -689,5 +734,69 @@ const commentSubmit = () => {
   color: #EEE;
   font-size: 3vh;
   margin: auto;
+}
+.githubPageContent{
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+.githubText{
+  color: #FFFFFF;
+  font-size: 4vh;
+  font-weight: bold;
+  margin: auto;
+}
+.githubButton{
+  height: 5vh;
+  margin: auto;
+}
+.githubIcon{
+  width: 4vh;
+  height: 4vh;
+}
+.endNote{
+  margin: auto;
+  font-size: 6vh;
+  font-weight: bold;
+  color: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+.videoContainer {
+  z-index: 0;
+  position: absolute;
+}
+.fullScreenVideo{
+  position: absolute;
+  background-color: #FFFFFF;
+}
+.cover{
+  background-color: rgba(0,0,0,0.5);
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  color: #FFFFFF;
+}
+.endPageName{
+  width: 100%;
+  height: 15vh;
+  display: flex;
+  font-size: 6vh;
+  font-weight: bold;
+}
+.endPageContent{
+  width: 100%;
+  height: 77vh;
+  display: flex;
+  font-size: 3vh;
+}
+.endPageBottom{
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
 }
 </style>
