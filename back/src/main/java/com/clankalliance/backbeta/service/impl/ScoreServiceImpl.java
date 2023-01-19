@@ -50,11 +50,11 @@ public class ScoreServiceImpl implements ScoreService {
     @Resource
     private ActivityService activityService;
 
-    private final Achievement POINT_C = new Achievement(Long.parseLong("1"),"绩点3.5以上","勤奋好学");
+    public final Achievement POINT_C = new Achievement(Long.parseLong("1"),"绩点3.5以上","勤奋好学");
 
-    private final Achievement POINT_B = new Achievement(Long.parseLong("2"),"绩点3.8以上","博学多闻");
+    public final Achievement POINT_B = new Achievement(Long.parseLong("2"),"绩点3.8以上","博学多闻");
 
-    private final Achievement POINT_A = new Achievement(Long.parseLong("3"),"绩点4.0以上","百科字典");
+    public final Achievement POINT_A = new Achievement(Long.parseLong("3"),"绩点4.0以上","百科字典");
 
     @Override
     public Achievement getPOINT_A() {

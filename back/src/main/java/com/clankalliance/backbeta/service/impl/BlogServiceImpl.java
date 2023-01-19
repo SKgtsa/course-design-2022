@@ -55,19 +55,19 @@ public class BlogServiceImpl implements BlogService {
     private TeacherRepository teacherRepository;
 
 
-    private Achievement COLLECT_C = new Achievement(Long.parseLong("4"),"收藏博客5篇以上","博客初心者");
+    public Achievement COLLECT_C = new Achievement(Long.parseLong("4"),"收藏博客5篇以上","博客初心者");
 
-    private Achievement COLLECT_B = new Achievement(Long.parseLong("5"),"收藏博客30篇以上","食量巨大的阅读者");
+    public Achievement COLLECT_B = new Achievement(Long.parseLong("5"),"收藏博客30篇以上","食量巨大的阅读者");
 
-    private Achievement COLLECT_A = new Achievement(Long.parseLong("6"),"收藏博客50篇以上","识文解意的爱书人");
+    public Achievement COLLECT_A = new Achievement(Long.parseLong("6"),"收藏博客50篇以上","识文解意的爱书人");
 
-    private Achievement WRITE_C = new Achievement(Long.parseLong("17"),"撰写第一篇博客","初级作家");
+    public Achievement WRITE_C = new Achievement(Long.parseLong("17"),"撰写第一篇博客","初级作家");
 
-    private Achievement WRITE_B = new Achievement(Long.parseLong("18"),"撰写博客5篇以上","生产力作家");
+    public Achievement WRITE_B = new Achievement(Long.parseLong("18"),"撰写博客5篇以上","生产力作家");
 
-    private Achievement WRITE_A = new Achievement(Long.parseLong("19"),"撰写博客10篇以上","文豪");
+    public Achievement WRITE_A = new Achievement(Long.parseLong("19"),"撰写博客10篇以上","文豪");
 
-    private Achievement LIKE = new Achievement(Long.parseLong("20"),"单篇博客收获点赞10个以上","高质量人类作家");
+    public Achievement LIKE = new Achievement(Long.parseLong("20"),"单篇博客收获点赞10个以上","高质量人类作家");
 
 
     /**

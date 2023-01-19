@@ -68,5 +68,11 @@
 **6.**&emsp;引入了腾讯云短信api 可以通过短信的方式进行防刷验证以及手机验证码登录。<br/>
 **7.**&emsp;引入腾讯云图形验证，作为账号密码登录时的机器人验证。<br/>
 **8.**&emsp;后端有sql防注入设计 包括 严格限制传参数据类型 所有数据库操作都在token验证成果后才执行. 对于String参数 先检查格式，然后进行数据库查找。使用@Query注解，起到了预编译的效果。<br/>
+**9.**&emsp;通过nginx反向代理，实现了在一台服务器上同时架设前端和后端，并对应不同的域名。<br/>
+**10.**&emsp;通过在后端设置CrossOrigin 解决了前后端交互时的跨域问题。<br/>
+**11.**&emsp;通过SHA3散列加密对密码加密存储，保证了数据的安全性。<br/>
+**12.**&emsp;前后端均已上线：<br/>&emsp;&emsp; 前端[https://coursedesign.clankalliance.cn](https://coursedesign.clankalliance.cn) <br/>
+&emsp;&emsp; 后端[https://courseback.clankalliance.cn](https://courseback.clankalliance.cn) <br/>&emsp;&emsp; 均配置了https证书，保证前后端通讯 安全性。<br/>
+**13.**&emsp;引入cdn内容分发网络，提高前端的响应速度。<br/>
 # 一定不要将后端的application.yml上传git!!!
 # 包含腾讯云密钥 会导致严重数据泄露事故

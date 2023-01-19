@@ -75,9 +75,9 @@ public class CourseServiceImpl implements CourseService {
         courseSelectEndTime = time.getEndTime();
     }
 
-    private final Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
+    public final Achievement COURSE_B = new Achievement(Long.parseLong("22"),"教授课程10门以上","园丁");
 
-    private final Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
+    public final Achievement COURSE_A = new Achievement(Long.parseLong("23"),"教授课程25门以上","先生");
 
     private Set<Achievement> updateAchievementListCourse(Teacher teacher){
         Set<Course> courseSet = teacher.getCourseSet();

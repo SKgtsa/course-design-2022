@@ -39,11 +39,11 @@ public class RewardServiceImpl implements RewardService {
     private RewardRepository rewardRepository;
 
 
-    private final Achievement REWARD_C = new Achievement(Long.parseLong("7"),"成果奖励3项以上","淡泊名利小修士");
+    public final Achievement REWARD_C = new Achievement(Long.parseLong("7"),"成果奖励3项以上","淡泊名利小修士");
 
-    private final Achievement REWARD_B = new Achievement(Long.parseLong("8"),"成果奖励7项以上","勤勤恳恳打工人");
+    public final Achievement REWARD_B = new Achievement(Long.parseLong("8"),"成果奖励7项以上","勤勤恳恳打工人");
 
-    private final Achievement REWARD_A = new Achievement(Long.parseLong("9"),"成果奖励10项以上","奖金证书收割机");
+    public final Achievement REWARD_A = new Achievement(Long.parseLong("9"),"成果奖励10项以上","奖金证书收割机");
 
     private Set<Achievement> updateAchievementList(Student student){
         List<Reward> rewardList = student.getRewardSet();

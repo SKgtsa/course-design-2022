@@ -29,7 +29,7 @@
                   <a style="text-align: right;font-size: 6vh;color: #333333;font-weight: bold" >项目经历:</a>
                   <a style="font-size: 3vh;color: #333333;font-weight: bold;text-align: right;">可使用滚轮</a>
                 </div>
-                <el-button class="startButton"><el-icon style="color: #FFFFFF;font-size: 10vh"><ArrowRightBold /></el-icon></el-button>
+                <el-button class="startButton" @click="right"><el-icon style="color: #FFFFFF;font-size: 10vh"><ArrowRightBold /></el-icon></el-button>
               </div>
             </div>
           </transition>
@@ -134,7 +134,7 @@
             <a  style="padding: 3vh">我热爱汽车与汽车文化，乐于了解车辆本身与其背后的故事，同时也喜欢驾驶的感觉</a>
           </div>
           <div class="endPageBottom">
-            <a  style="padding: 1vh">视频来自《GrandTurismo 7》</a>
+            <a  style="padding: 1vh">视频来自《GranTurismo 7》</a>
           </div>
         </div>
       </el-carousel-item>
@@ -613,6 +613,7 @@ const commentSubmit = () => {
   display: flex;
   flex-direction: column;
   padding: 1.5vh;
+  width: 80%;
 }
 .startButton{
   width: 20%;

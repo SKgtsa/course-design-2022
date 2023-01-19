@@ -41,11 +41,11 @@ public class PracticeServiceImpl implements PracticeService {
     private StudentRepository studentRepository;
 
 
-    private final Achievement PRACTICE_C = new Achievement(Long.parseLong("14"),"社会实践5项以上","回报社会");
+    public final Achievement PRACTICE_C = new Achievement(Long.parseLong("14"),"社会实践5项以上","回报社会");
 
-    private final Achievement PRACTICE_B = new Achievement(Long.parseLong("15"),"社会实践12项以上","乐于实践");
+    public final Achievement PRACTICE_B = new Achievement(Long.parseLong("15"),"社会实践12项以上","乐于实践");
 
-    private final Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
+    public final Achievement PRACTICE_A = new Achievement(Long.parseLong("16"),"社会实践20项以上","报复社会");
 
     /**
      * 更新学生成绩 返回更新后的成绩表

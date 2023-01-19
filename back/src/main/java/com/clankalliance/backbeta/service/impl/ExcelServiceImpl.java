@@ -20,9 +20,6 @@ import java.io.File;
 public class ExcelServiceImpl implements ExcelService {
 
     @Resource
-    private ScoreService scoreService;
-
-    @Resource
     private TokenUtil tokenUtil;
 
     @Override
